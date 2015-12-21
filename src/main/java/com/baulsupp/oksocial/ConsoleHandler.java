@@ -32,6 +32,8 @@ public class ConsoleHandler implements OutputHandler {
       out.write(source.buffer(), source.buffer().size());
       out.flush();
     }
+    // TODO is this always needed?
+    System.out.println();
 
     response.body().close();
   }

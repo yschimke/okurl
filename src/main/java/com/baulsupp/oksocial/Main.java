@@ -16,10 +16,9 @@
 package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
+import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
 import io.airlift.command.HelpOption;
@@ -27,13 +26,10 @@ import io.airlift.command.Option;
 import io.airlift.command.SingleCommand;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -46,6 +42,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.ConnectionPool;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -68,22 +65,6 @@ public class Main extends HelpOption implements Runnable {
 
   public static void main(String... args) {
     fromArgs(args).run();
-  }
-
-  private static String versionString() {
-    try {
-      Properties prop = new Properties();
-      InputStream in = Main.class.getResourceAsStream("/oksocial-version.properties");
-      prop.load(in);
-      in.close();
-      return prop.getProperty("version");
-    } catch (IOException e) {
-      throw new AssertionError("Could not load oksocial-version.properties.");
-    }
-  }
-
-  private static String protocols() {
-    return Joiner.on(", ").join(Protocol.values());
   }
 
   @Option(name = { "-X", "--request" }, description = "Specify request command to use")
@@ -137,6 +118,10 @@ public class Main extends HelpOption implements Runnable {
 
   private OkHttpClient client;
 
+  private String versionString() {
+    return Util.versionString("/oksocial-version.properties");
+  }
+
   @Override public void run() {
     configureLogging();
 
@@ -145,7 +130,7 @@ public class Main extends HelpOption implements Runnable {
     }
     if (version) {
       System.out.println(NAME + " " + versionString());
-      System.out.println("Protocols: " + protocols());
+      System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
       return;
     }
 
@@ -191,14 +176,23 @@ public class Main extends HelpOption implements Runnable {
 
     client.setCache(new Cache(cacheDirectory, 64 * 1024 * 1024));
 
+    configureApiInterceptors(client);
+
+    List<Protocol> requestProtocols = buildProtocols();
+    if (requestProtocols != null) {
+      client.setProtocols(requestProtocols);
+    }
+
+    return client;
+  }
+
+  private void configureApiInterceptors(OkHttpClient client) {
     TwurlCredentialsStore credentialsStore =
         new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
     TwitterCredentials credentials = credentialsStore.readDefaultCredentials();
     client.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
 
-    client.setProtocols(buildProtocols());
-
-    return client;
+    client.networkInterceptors().add(new TwitterCachingInterceptor());
   }
 
   private List<Protocol> buildProtocols() {
@@ -219,7 +213,7 @@ public class Main extends HelpOption implements Runnable {
 
       return protocolValues;
     } else {
-      return Arrays.asList(Protocol.values());
+      return null;
     }
   }
 

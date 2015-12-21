@@ -31,9 +31,10 @@ public class TwitterAuthInterceptor implements Interceptor {
   private final SecureRandom secureRandom = new SecureRandom();
 
   public static final Set<String> TWITTER_API_HOSTS =
-      Collections.unmodifiableSet(new HashSet<String>(
+      Collections.unmodifiableSet(new HashSet<>(
           Arrays.asList("api.twitter.com", "upload.twitter.com", "stream.twitter.com",
-              "mobile.twitter.com", "syndication.twitter.com")
+              "mobile.twitter.com", "syndication.twitter.com", "pbs.twimg.com",
+              "t.co")
       ));
 
   private final TwitterCredentials credentials;
