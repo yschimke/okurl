@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ ! -f target/okhttp-social-*-SNAPSHOT-jar-with-dependencies.jar ]; then
+  mvn package
+fi
+
+JAVA_CMD=java
+BCP=
+
+if [ -x /usr/libexec/java_home ]; then
+  JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+  if [ $? -eq 0 ]; then
+    JAVA_CMD="$JAVA_HOME/bin/java"
+    BCP="-Xbootclasspath/p:$HOME/.m2/repository/org/mortbay/jetty/alpn/alpn-boot/8.1.2.v20141202/alpn-boot-8.1.2.v20141202.jar"
+  fi
+fi
+
+$JAVA_CMD $BCP -jar target/okhttp-social-*-SNAPSHOT-jar-with-dependencies.jar "$@"
+
