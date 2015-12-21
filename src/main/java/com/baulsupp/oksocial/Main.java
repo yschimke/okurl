@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
@@ -129,8 +128,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = { "--cache" }, description = "Cache directory")
   public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
 
-  @Option(name = { "--protocols" }, description = "Protocols", allowedValues = { "http/1.1", "spdy/3.1", "h2" })
-  private List<String> protocols = Lists.newArrayList("h2", "http/1.1");
+  @Option(name = { "--protocol" }, description = "Protocol", allowedValues = { "http/1.1", "spdy/3.1", "h2" })
+  private String protocol = "http/1.1";
 
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls;
@@ -204,15 +203,15 @@ public class Main extends HelpOption implements Runnable {
   private List<Protocol> buildProtocols() {
     List<Protocol> protocolValues = new ArrayList<>();
 
-    //for (String s: protocols) {
-    //  try {
-    //    protocolValues.add(Protocol.get(s));
-    //  } catch (IOException e) {
-    //    throw new IllegalArgumentException("unknown protocol '" + s + "'");
-    //  }
-    //}
-    protocolValues.add(Protocol.HTTP_2);
-    protocolValues.add(Protocol.HTTP_1_1);
+    try {
+      protocolValues.add(Protocol.get(protocol));
+    } catch (IOException e) {
+      throw new IllegalArgumentException(e);
+    }
+
+    if (!protocolValues.contains(Protocol.HTTP_1_1)) {
+      protocolValues.add(Protocol.HTTP_1_1);
+    }
 
     return protocolValues;
   }
