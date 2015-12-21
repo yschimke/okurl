@@ -3,25 +3,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>com.squareup.okhttp3</groupId>
-    <artifactId>parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
-  </parent>
+  <parentId>com.baulsupp</parentId>
+  <artifactId>okhttp-social</artifactId>
+  <name>OkHttp Social Authentication</name>
 
-  <artifactId>okhttp-twitter</artifactId>
-  <name>OkHttp Twitter Authentication</name>
+  <properties>
+    <okhttp.version>3.0.0-SNAPSHOT</okhttp.version>
+  </properties>
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>${project.version}</version>
+      <version>${okhttp.version}</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okcurl</artifactId>
+      <version>${okhttp.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp-testing-support</artifactId>
-      <version>${project.version}</version>
+      <version>${okhttp.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
