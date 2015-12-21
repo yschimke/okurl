@@ -19,28 +19,19 @@ import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
 import com.google.common.base.Joiner;
-import java.io.File;
-import okhttp3.Cache;
-import okhttp3.ConnectionPool;
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.internal.http.StatusLine;
-import okhttp3.internal.framed.Http2;
-
+import com.google.common.collect.Lists;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
 import io.airlift.command.HelpOption;
 import io.airlift.command.Option;
 import io.airlift.command.SingleCommand;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
@@ -54,9 +45,15 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import okio.BufferedSource;
-import okio.Okio;
-import okio.Sink;
+import okhttp3.Cache;
+import okhttp3.ConnectionPool;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.internal.framed.Http2;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -120,6 +117,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = "--frames", description = "Log HTTP/2 frames to STDERR")
   public boolean showHttp2Frames;
 
+  @Option(name = "--debug", description = "Debug")
+  public boolean debug;
+
   @Option(name = { "-e", "--referer" }, description = "Referer URL")
   public String referer;
 
@@ -129,12 +129,17 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = { "--cache" }, description = "Cache directory")
   public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
 
-  @Arguments(title = "url", description = "Remote resource URL")
-  public String url;
+  @Option(name = { "--protocols" }, description = "Protocols", allowedValues = { "http/1.1", "spdy/3.1", "h2" })
+  private List<String> protocols = Lists.newArrayList("h2", "http/1.1");
+
+  @Arguments(title = "urls", description = "Remote resource URLs")
+  public List<String> urls;
 
   private OkHttpClient client;
 
   @Override public void run() {
+    configureLogging();
+
     if (showHelpIfRequested()) {
       return;
     }
@@ -144,34 +149,25 @@ public class Main extends HelpOption implements Runnable {
       return;
     }
 
-    if (showHttp2Frames) {
-      enableHttp2FrameLogging();
-    }
+    OutputHandler outputHandler =
+        new com.baulsupp.oksocial.ConsoleHandler(showHeaders);
 
     client = createClient();
-    Request request = createRequest();
     try {
-      Response response = client.newCall(request).execute();
-      if (showHeaders) {
-        System.out.println(StatusLine.get(response));
-        Headers headers = response.headers();
-        for (int i = 0, size = headers.size(); i < size; i++) {
-          System.out.println(headers.name(i) + ": " + headers.value(i));
+      for (String url: urls) {
+        if (urls.size() > 1) {
+          System.err.println(url);
         }
-        System.out.println();
-      }
 
-      // Stream the response to the System.out as it is returned from the server.
-      Sink out = Okio.sink(System.out);
-      BufferedSource source = response.body().source();
-      while (!source.exhausted()) {
-        out.write(source.buffer(), source.buffer().size());
-        out.flush();
-      }
+        try {
+          Request request = createRequest(url);
+          Response response = client.newCall(request).execute();
 
-      response.body().close();
-    } catch (IOException e) {
-      e.printStackTrace();
+          outputHandler.showOutput(response);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     } finally {
       close();
     }
@@ -200,7 +196,25 @@ public class Main extends HelpOption implements Runnable {
     TwitterCredentials credentials = credentialsStore.readDefaultCredentials();
     client.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
 
+    client.setProtocols(buildProtocols());
+
     return client;
+  }
+
+  private List<Protocol> buildProtocols() {
+    List<Protocol> protocolValues = new ArrayList<>();
+
+    //for (String s: protocols) {
+    //  try {
+    //    protocolValues.add(Protocol.get(s));
+    //  } catch (IOException e) {
+    //    throw new IllegalArgumentException("unknown protocol '" + s + "'");
+    //  }
+    //}
+    protocolValues.add(Protocol.HTTP_2);
+    protocolValues.add(Protocol.HTTP_1_1);
+
+    return protocolValues;
   }
 
   private String getRequestMethod() {
@@ -234,7 +248,7 @@ public class Main extends HelpOption implements Runnable {
     return RequestBody.create(MediaType.parse(mimeType), bodyData);
   }
 
-  Request createRequest() {
+  Request createRequest(String url) {
     Request.Builder request = new Request.Builder();
 
     request.url(url);
@@ -289,16 +303,23 @@ public class Main extends HelpOption implements Runnable {
     };
   }
 
-  private static void enableHttp2FrameLogging() {
-    Logger logger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
-    logger.setLevel(Level.FINE);
-    ConsoleHandler handler = new ConsoleHandler();
-    handler.setLevel(Level.FINE);
-    handler.setFormatter(new SimpleFormatter() {
-      @Override public String format(LogRecord record) {
-        return String.format("%s%n", record.getMessage());
-      }
-    });
-    logger.addHandler(handler);
+  private void configureLogging() {
+    if (debug) {
+      ConsoleHandler handler = new ConsoleHandler();
+      handler.setLevel(Level.ALL);
+      Logger.getLogger("").addHandler(handler);
+      Logger.getLogger("").setLevel(Level.ALL);
+    } else if (showHttp2Frames) {
+      Logger logger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
+      logger.setLevel(Level.FINE);
+      ConsoleHandler handler = new ConsoleHandler();
+      handler.setLevel(Level.FINE);
+      handler.setFormatter(new SimpleFormatter() {
+        @Override public String format(LogRecord record) {
+          return String.format("%s%n", record.getMessage());
+        }
+      });
+      logger.addHandler(handler);
+    }
   }
 }
