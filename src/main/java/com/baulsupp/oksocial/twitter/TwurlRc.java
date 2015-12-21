@@ -1,4 +1,4 @@
-package okhttp.twitter;
+package com.baulsupp.oksocial.twitter;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package okhttp.twitter;
+package com.baulsupp.oksocial.twitter;
 
 import com.google.common.base.Joiner;
 import com.twitter.joauth.Normalizer;

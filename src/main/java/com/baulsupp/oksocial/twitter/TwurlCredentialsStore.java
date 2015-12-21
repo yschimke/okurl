@@ -1,4 +1,4 @@
-package okhttp.twitter;
+package com.baulsupp.oksocial.twitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
