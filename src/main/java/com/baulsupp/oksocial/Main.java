@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
@@ -128,8 +129,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = { "--cache" }, description = "Cache directory")
   public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
 
-  @Option(name = { "--protocol" }, description = "Protocol", allowedValues = { "http/1.1", "spdy/3.1", "h2" })
-  private String protocol = "http/1.1";
+  @Option(name = { "--protocols" }, description = "Protocols")
+  private String protocols;
 
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls;
@@ -201,19 +202,25 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private List<Protocol> buildProtocols() {
-    List<Protocol> protocolValues = new ArrayList<>();
+    if (protocols != null) {
+      List<Protocol> protocolValues = new ArrayList<>();
 
-    try {
-      protocolValues.add(Protocol.get(protocol));
-    } catch (IOException e) {
-      throw new IllegalArgumentException(e);
+      try {
+        for (String protocol: protocols.split(",")) {
+          protocolValues.add(Protocol.get(protocol));
+        }
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e);
+      }
+
+      if (!protocolValues.contains(Protocol.HTTP_1_1)) {
+        protocolValues.add(Protocol.HTTP_1_1);
+      }
+
+      return protocolValues;
+    } else {
+      return Arrays.asList(Protocol.values());
     }
-
-    if (!protocolValues.contains(Protocol.HTTP_1_1)) {
-      protocolValues.add(Protocol.HTTP_1_1);
-    }
-
-    return protocolValues;
   }
 
   private String getRequestMethod() {
