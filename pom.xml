@@ -9,7 +9,7 @@
   <name>OkHttp Social Authentication</name>
 
   <properties>
-    <okhttp.version>3.0.0-SNAPSHOT</okhttp.version>
+    <okhttp.version>3.0.0-RC1</okhttp.version>
   </properties>
 
   <scm>
