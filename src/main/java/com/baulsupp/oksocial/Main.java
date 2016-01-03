@@ -116,7 +116,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     OutputHandler outputHandler =
-        new com.baulsupp.oksocial.ConsoleHandler(showHeaders);
+        new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
 
     client = createClient();
     try {
