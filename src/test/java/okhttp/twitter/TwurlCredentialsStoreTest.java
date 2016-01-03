@@ -1,6 +1,9 @@
 package okhttp.twitter;
 
 import java.io.File;
+
+import com.baulsupp.oksocial.twitter.TwitterCredentials;
+import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

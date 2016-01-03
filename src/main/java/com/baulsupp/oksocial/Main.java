@@ -19,11 +19,11 @@ import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
-import io.airlift.command.Arguments;
-import io.airlift.command.Command;
-import io.airlift.command.HelpOption;
-import io.airlift.command.Option;
-import io.airlift.command.SingleCommand;
+import io.airlift.command.*;
+import okhttp3.*;
+import okhttp3.internal.framed.Http2;
+
+import javax.net.ssl.*;
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -31,26 +31,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import okhttp3.Cache;
-import okhttp3.CacheControl;
-import okhttp3.ConnectionPool;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.internal.framed.Http2;
+import java.util.logging.*;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -159,40 +140,40 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private OkHttpClient createClient() {
-    OkHttpClient client = new OkHttpClient();
-    client.setFollowSslRedirects(followRedirects);
+    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+    builder.followSslRedirects(followRedirects);
     if (connectTimeout != DEFAULT_TIMEOUT) {
-      client.setConnectTimeout(connectTimeout, SECONDS);
+      builder.connectTimeout(connectTimeout, SECONDS);
     }
     if (readTimeout != DEFAULT_TIMEOUT) {
-      client.setReadTimeout(readTimeout, SECONDS);
+      builder.readTimeout(readTimeout, SECONDS);
     }
     if (allowInsecure) {
-      client.setSslSocketFactory(createInsecureSslSocketFactory());
-      client.setHostnameVerifier(createInsecureHostnameVerifier());
+      builder.sslSocketFactory(createInsecureSslSocketFactory());
+      builder.hostnameVerifier(createInsecureHostnameVerifier());
     }
     // If we don't set this reference, there's no way to clean shutdown persistent connections.
-    client.setConnectionPool(ConnectionPool.getDefault());
+    builder.connectionPool(new ConnectionPool());
 
-    client.setCache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
 
-    configureApiInterceptors(client);
+    configureApiInterceptors(builder);
 
     List<Protocol> requestProtocols = buildProtocols();
     if (requestProtocols != null) {
-      client.setProtocols(requestProtocols);
+      builder.protocols(requestProtocols);
     }
 
-    return client;
+    return builder.build();
   }
 
-  private void configureApiInterceptors(OkHttpClient client) {
+  private void configureApiInterceptors(OkHttpClient.Builder builder) {
     TwurlCredentialsStore credentialsStore =
         new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
     TwitterCredentials credentials = credentialsStore.readDefaultCredentials();
-    client.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
+    builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
 
-    client.networkInterceptors().add(new TwitterCachingInterceptor());
+    builder.networkInterceptors().add(new TwitterCachingInterceptor());
   }
 
   private List<Protocol> buildProtocols() {
@@ -269,7 +250,7 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void close() {
-    client.getConnectionPool().evictAll(); // Close any persistent connections.
+    client.connectionPool().evictAll(); // Close any persistent connections.
   }
 
   private static SSLSocketFactory createInsecureSslSocketFactory() {
@@ -296,11 +277,7 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private static HostnameVerifier createInsecureHostnameVerifier() {
-    return new HostnameVerifier() {
-      @Override public boolean verify(String s, SSLSession sslSession) {
-        return true;
-      }
-    };
+    return (s, sslSession) -> true;
   }
 
   private void configureLogging() {
