@@ -19,4 +19,9 @@ public final class Util {
       throw new AssertionError("Could not load oksocial-version.properties.");
     }
   }
+
+  public static boolean isOSX() {
+    String osName = System.getProperty("os.name");
+    return osName.contains("OS X");
+  }
 }

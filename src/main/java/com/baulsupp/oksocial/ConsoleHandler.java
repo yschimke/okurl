@@ -19,11 +19,6 @@ public class ConsoleHandler implements OutputHandler {
     this.openMedia = openMedia;
   }
 
-  public static boolean isOSX() {
-    String osName = System.getProperty("os.name");
-    return osName.contains("OS X");
-  }
-
   @Override public void showOutput(Response response) throws IOException {
     try {
       if (showHeaders) {
@@ -40,7 +35,7 @@ public class ConsoleHandler implements OutputHandler {
       MediaType contentType = response.body().contentType();
 
       // TODO OSX only
-      if (openMedia && isOSX() && contentType.type().equals("image")) {
+      if (openMedia && Util.isOSX() && contentType.type().equals("image")) {
         openPreview(source);
       } else {
         writeToConsole(source);

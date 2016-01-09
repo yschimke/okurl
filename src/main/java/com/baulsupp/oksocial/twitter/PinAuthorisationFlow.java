@@ -1,31 +1,89 @@
 package com.baulsupp.oksocial.twitter;
 
+import com.twitter.joauth.keyvalue.KeyValueHandler;
+import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 public class PinAuthorisationFlow {
-  public static void authorise(OkHttpClient client) throws IOException {
-    RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "oauth_callback=oob");
-    Request request = new Request.Builder().url("https://api.twitter.com/oauth/request_token").post(body).build();
+  private static final MediaType FORM_URL_ENCODED =
+      MediaType.parse("application/x-www-form-urlencoded");
 
-    Response response = client.newCall(request).execute();
+  public static TwitterCredentials authorise(OkHttpClient client, TwitterCredentials unauthed)
+      throws IOException {
+    TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
 
-    System.out.println(response.body().source().readUtf8());
+    String pin = promptForPin(requestCredentials);
+
+    TwitterCredentials accessCredentials = generateAccessToken(client, requestCredentials, pin);
+
+    return accessCredentials;
   }
 
-  public static void main(String[] args) throws IOException {
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+  private static TwitterCredentials generateRequestToken(OkHttpClient client,
+      TwitterCredentials unauthed) throws IOException {
+    OkHttpClient client2 = TwitterAuthInterceptor.updateCredentials(client, unauthed);
 
-    TwitterCredentials credentials = new TwitterCredentials("yschimke", "pKrYKZjbhN7rmtWXenRgr8kHY", "FpOK8mUesjggvZ7YprMnhStKmdyVcikNYtjNm1PetymgfE32jJ", null, "");
+    RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_callback=oob");
+    Request request =
+        new Request.Builder().url("https://api.twitter.com/oauth/request_token")
+            .post(body)
+            .build();
 
-    builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
-    OkHttpClient client = builder.build();
+    Response response = client2.newCall(request).execute();
+    if (!response.isSuccessful()) {
+      throw new IllegalStateException("unable to request token");
+    }
 
-    authorise(client);
+    Map<String, String> tokenMap = parseTokenMap(response.body().source().readUtf8());
+    return new TwitterCredentials(unauthed.username, unauthed.consumerKey,
+        unauthed.consumerSecret,
+        tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
+  }
+
+  private static String promptForPin(TwitterCredentials newCredentials) {
+    System.err.println(
+        "Authorise http://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
+
+    return new String(System.console().readPassword("Enter PIN: "));
+  }
+
+  private static TwitterCredentials generateAccessToken(OkHttpClient client,
+      TwitterCredentials requestCredentials, String pin) throws IOException {
+    OkHttpClient client3 = TwitterAuthInterceptor.updateCredentials(client, requestCredentials);
+
+    RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_verifier=" + pin);
+    Request request =
+        new Request.Builder().url("https://api.twitter.com/oauth/access_token")
+            .post(body)
+            .build();
+
+    Response response = client3.newCall(request).execute();
+    if (!response.isSuccessful()) {
+      throw new IllegalStateException("unable to authorize token");
+    }
+
+    String s = response.body().source().readUtf8();
+    Map<String, String> tokenMap = parseTokenMap(s);
+    return new TwitterCredentials(tokenMap.get("screen_name"), requestCredentials.consumerKey,
+        requestCredentials.consumerSecret,
+        tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
+  }
+
+  private static Map<String, String> parseTokenMap(String tokenDetails) {
+    KeyValueHandler.SingleKeyValueHandler handler =
+        new KeyValueHandler.SingleKeyValueHandler();
+
+    KeyValueParser.StandardKeyValueParser bodyParser =
+        new KeyValueParser.StandardKeyValueParser("&", "=");
+    bodyParser.parse(tokenDetails, Arrays.asList(handler));
+
+    return handler.toMap();
   }
 }

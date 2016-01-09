@@ -12,8 +12,6 @@ import okio.Okio;
 
 public class OSXCredentialStore implements CredentialsStore {
   @Override public TwitterCredentials readDefaultCredentials() throws IOException {
-    // security find-generic-password -a "api.twitter.com" -D "oauth credentials" -w
-
     Process process =
         new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", "api.twitter.com",
             "-D", "oauth credentials", "-w").redirectError(ProcessBuilder.Redirect.INHERIT).start();
@@ -47,8 +45,6 @@ public class OSXCredentialStore implements CredentialsStore {
   }
 
   @Override public void storeCredentials(TwitterCredentials credentials) throws IOException {
-    // security add-generic-password -a "api.twitter.com" -s "Twitter API" -D "oauth credentials" -U -w abc
-
     String credentialsString = formatCredentialsString(credentials);
 
     Process process =

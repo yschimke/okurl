@@ -15,6 +15,9 @@
  */
 package com.baulsupp.oksocial;
 
+import com.baulsupp.oksocial.twitter.CredentialsStore;
+import com.baulsupp.oksocial.twitter.OSXCredentialStore;
+import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
@@ -48,16 +51,16 @@ public class Main extends HelpOption implements Runnable {
     fromArgs(args).run();
   }
 
-  @Option(name = { "-X", "--request" }, description = "Specify request command to use")
+  @Option(name = {"-X", "--request"}, description = "Specify request command to use")
   public String method;
 
-  @Option(name = { "-d", "--data" }, description = "HTTP POST data")
+  @Option(name = {"-d", "--data"}, description = "HTTP POST data")
   public String data;
 
-  @Option(name = { "-H", "--header" }, description = "Custom header to pass to server")
+  @Option(name = {"-H", "--header"}, description = "Custom header to pass to server")
   public List<String> headers;
 
-  @Option(name = { "-A", "--user-agent" }, description = "User-Agent to send to server")
+  @Option(name = {"-A", "--user-agent"}, description = "User-Agent to send to server")
   public String userAgent = NAME + "/" + versionString();
 
   @Option(name = "--connect-timeout", description = "Maximum time allowed for connection (seconds)")
@@ -66,14 +69,14 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = "--read-timeout", description = "Maximum time allowed for reading data (seconds)")
   public int readTimeout = DEFAULT_TIMEOUT;
 
-  @Option(name = { "-L", "--location" }, description = "Follow redirects")
+  @Option(name = {"-L", "--location"}, description = "Follow redirects")
   public boolean followRedirects;
 
-  @Option(name = { "-k", "--insecure" },
+  @Option(name = {"-k", "--insecure"},
       description = "Allow connections to SSL sites without certs")
   public boolean allowInsecure;
 
-  @Option(name = { "-i", "--include" }, description = "Include protocol headers in the output")
+  @Option(name = {"-i", "--include"}, description = "Include protocol headers in the output")
   public boolean showHeaders;
 
   @Option(name = "--frames", description = "Log HTTP/2 frames to STDERR")
@@ -82,16 +85,16 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = "--debug", description = "Debug")
   public boolean debug;
 
-  @Option(name = { "-e", "--referer" }, description = "Referer URL")
+  @Option(name = {"-e", "--referer"}, description = "Referer URL")
   public String referer;
 
-  @Option(name = { "-V", "--version" }, description = "Show version number and quit")
+  @Option(name = {"-V", "--version"}, description = "Show version number and quit")
   public boolean version;
 
-  @Option(name = { "--cache" }, description = "Cache directory")
+  @Option(name = {"--cache"}, description = "Cache directory")
   public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
 
-  @Option(name = { "--protocols" }, description = "Protocols")
+  @Option(name = {"--protocols"}, description = "Protocols")
   private String protocols;
 
   @Arguments(title = "urls", description = "Remote resource URLs")
@@ -120,22 +123,31 @@ public class Main extends HelpOption implements Runnable {
 
     client = createClient();
     try {
-      for (String url: urls) {
+      for (String url : urls) {
         if (urls.size() > 1) {
           System.err.println(url);
         }
 
         try {
-          Request request = createRequest(url);
-          Response response = client.newCall(request).execute();
+          if (url.equals("authorize")) {
+            System.err.println("Authorising");
+            TwitterCredentials newCredentials =
+                PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);
 
-          outputHandler.showOutput(response);
+            updateCredentials(newCredentials);
+            client = TwitterAuthInterceptor.updateCredentials(client, newCredentials);
+          } else {
+            Request request = createRequest(url);
+            Response response = client.newCall(request).execute();
+
+            outputHandler.showOutput(response);
+          }
         } catch (IOException e) {
           e.printStackTrace();
         }
       }
     } finally {
-      close();
+      client.connectionPool().evictAll();
     }
   }
 
@@ -152,8 +164,6 @@ public class Main extends HelpOption implements Runnable {
       builder.sslSocketFactory(createInsecureSslSocketFactory());
       builder.hostnameVerifier(createInsecureHostnameVerifier());
     }
-    // If we don't set this reference, there's no way to clean shutdown persistent connections.
-    builder.connectionPool(new ConnectionPool());
 
     builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
 
@@ -168,13 +178,13 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
-    TwurlCredentialsStore credentialsStore =
-        new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
     TwitterCredentials credentials = null;
     try {
-      credentials = credentialsStore.readDefaultCredentials();
+      credentials = readCredentials();
 
-      builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
+      if (credentials != null) {
+        builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
+      }
 
       builder.networkInterceptors().add(new TwitterCachingInterceptor());
     } catch (IOException e) {
@@ -182,12 +192,48 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
+  private TwitterCredentials readCredentials()
+      throws IOException {
+    CredentialsStore nativeCredentialsStore = buildNativeCredentialsStore();
+
+    TwitterCredentials credentials = null;
+
+    if (nativeCredentialsStore != null) {
+      credentials = nativeCredentialsStore.readDefaultCredentials();
+    }
+
+    if (credentials == null) {
+      TwurlCredentialsStore twurlCredentialsStore =
+          new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
+
+      credentials = twurlCredentialsStore.readDefaultCredentials();
+
+      if (credentials != null && nativeCredentialsStore != null) {
+        nativeCredentialsStore.storeCredentials(credentials);
+      }
+    }
+
+    return credentials;
+  }
+
+  private void updateCredentials(TwitterCredentials newCredentials) throws IOException {
+    CredentialsStore nativeCredentialsStore = buildNativeCredentialsStore();
+
+    if (nativeCredentialsStore != null) {
+      nativeCredentialsStore.storeCredentials(newCredentials);
+    }
+  }
+
+  private OSXCredentialStore buildNativeCredentialsStore() {
+    return Util.isOSX() ? new OSXCredentialStore() : null;
+  }
+
   private List<Protocol> buildProtocols() {
     if (protocols != null) {
       List<Protocol> protocolValues = new ArrayList<>();
 
       try {
-        for (String protocol: protocols.split(",")) {
+        for (String protocol : protocols.split(",")) {
           protocolValues.add(Protocol.get(protocol));
         }
       } catch (IOException e) {
@@ -255,10 +301,6 @@ public class Main extends HelpOption implements Runnable {
     return request.build();
   }
 
-  private void close() {
-    client.connectionPool().evictAll(); // Close any persistent connections.
-  }
-
   private static SSLSocketFactory createInsecureSslSocketFactory() {
     try {
       SSLContext context = SSLContext.getInstance("TLS");
@@ -275,7 +317,7 @@ public class Main extends HelpOption implements Runnable {
           return null;
         }
       };
-      context.init(null, new TrustManager[] { permissive }, null);
+      context.init(null, new TrustManager[] {permissive}, null);
       return context.getSocketFactory();
     } catch (Exception e) {
       throw new AssertionError(e);
