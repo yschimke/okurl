@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.twitter;
 
+import com.baulsupp.oksocial.ConsoleHandler;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;
@@ -47,9 +48,10 @@ public class PinAuthorisationFlow {
         tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
   }
 
-  private static String promptForPin(TwitterCredentials newCredentials) {
+  private static String promptForPin(TwitterCredentials newCredentials) throws IOException {
     System.err.println(
-        "Authorise http://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
+        "Authorise by entering the PIN throught a web browser");
+    ConsoleHandler.openLink("http://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
 
     return new String(System.console().readPassword("Enter PIN: "));
   }

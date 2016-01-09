@@ -2,6 +2,7 @@ package com.baulsupp.oksocial;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -45,8 +46,11 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
-  private void openPreview(BufferedSource source) throws IOException {
-    ProcessBuilder pb = new ProcessBuilder("open", "-f", "-a", "/Applications/Preview.app");
+  public static void openPreview(BufferedSource source) throws IOException {
+    ProcessBuilder pb =
+        new ProcessBuilder("open", "-f", "-a", "/Applications/Preview.app")
+            .redirectInput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT);
 
     Process process = pb.start();
 
@@ -60,8 +64,13 @@ public class ConsoleHandler implements OutputHandler {
       processStdin.close();
 
       try {
-        int result = process.waitFor();
+        boolean completed = process.waitFor(5, TimeUnit.SECONDS);
 
+        if (!completed) {
+          throw new IOException("preview failed to launch in 5 seconds");
+        }
+
+        int result = process.exitValue();
         if (result != 0) {
           System.err.println("preview returned " + result);
         }
@@ -75,10 +84,46 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
+  public static void openLink(String url) throws IOException {
+    if (Util.isOSX()) {
+      ProcessBuilder pb =
+          new ProcessBuilder("open", url).redirectInput(ProcessBuilder.Redirect.INHERIT)
+              .redirectError(ProcessBuilder.Redirect.INHERIT);
+      Process process = pb.start();
+
+      try {
+        OutputStream processStdin = process.getOutputStream();
+        processStdin.close();
+
+        try {
+          boolean completed = process.waitFor(5, TimeUnit.SECONDS);
+
+          if (!completed) {
+            throw new IOException("preview failed to launch in 5 seconds");
+          }
+
+          int result = process.exitValue();
+          if (result != 0) {
+            System.err.println("preview returned " + result);
+          }
+        } catch (InterruptedException e) {
+          throw new IOException(e);
+        }
+      } finally {
+        if (process.isAlive()) {
+          process.destroyForcibly();
+        }
+      }
+    } else {
+      System.err.println(url);
+    }
+  }
+
   /**
    * Stream the response to the System.out as it is returned from the server.
    */
-  private void writeToConsole(BufferedSource source) throws IOException {
+
+  private static void writeToConsole(BufferedSource source) throws IOException {
     // TODO support a nice hex mode for binary files
 
     Sink out = Okio.sink(System.out);
@@ -88,7 +133,7 @@ public class ConsoleHandler implements OutputHandler {
     System.out.println();
   }
 
-  private void writeToSink(BufferedSource source, Sink out) throws IOException {
+  private static void writeToSink(BufferedSource source, Sink out) throws IOException {
     while (!source.exhausted()) {
       out.write(source.buffer(), source.buffer().size());
       out.flush();
