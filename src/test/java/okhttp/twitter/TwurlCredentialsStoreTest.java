@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
+import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,7 +15,7 @@ import static org.junit.Assert.fail;
 
 public class TwurlCredentialsStoreTest {
   @Test
-  public void testReadDefaultCredentials() {
+  public void testReadDefaultCredentials() throws IOException {
     File file =
         new File(TwurlCredentialsStoreTest.class.getResource("/single_twurlrc.yaml").getFile());
     TwurlCredentialsStore store = new TwurlCredentialsStore(file);

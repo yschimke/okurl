@@ -170,10 +170,16 @@ public class Main extends HelpOption implements Runnable {
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
     TwurlCredentialsStore credentialsStore =
         new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
-    TwitterCredentials credentials = credentialsStore.readDefaultCredentials();
-    builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
+    TwitterCredentials credentials = null;
+    try {
+      credentials = credentialsStore.readDefaultCredentials();
 
-    builder.networkInterceptors().add(new TwitterCachingInterceptor());
+      builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
+
+      builder.networkInterceptors().add(new TwitterCachingInterceptor());
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to read twitter credentials", e);
+    }
   }
 
   private List<Protocol> buildProtocols() {
