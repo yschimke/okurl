@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +55,11 @@ public class TwitterAuthInterceptor implements Interceptor {
 
     if (requiresTwitterAuth(request)) {
       try {
+        String authHeader = generateAuthorization(request);
         request =
-            request.newBuilder().addHeader("Authorization", generateAuthorization(request)).build();
+            request.newBuilder().addHeader("Authorization", authHeader).build();
+
+        System.out.println(authHeader);
       } catch (NoSuchAlgorithmException e) {
         throw new IOException(e);
       } catch (InvalidKeyException e) {
@@ -137,13 +141,15 @@ public class TwitterAuthInterceptor implements Interceptor {
 
     String signature = signer.getString(normalized, credentials.secret, credentials.consumerSecret);
 
-    Map<String, String> oauthHeaders = new HashMap<>();
+    Map<String, String> oauthHeaders = new LinkedHashMap<>();
     oauthHeaders.put(OAuthParams.OAUTH_CONSUMER_KEY, quoted(credentials.consumerKey));
-    oauthHeaders.put(OAuthParams.OAUTH_TOKEN, quoted(credentials.token));
+    oauthHeaders.put(OAuthParams.OAUTH_NONCE, quoted(nonce));
     oauthHeaders.put(OAuthParams.OAUTH_SIGNATURE, quoted(signature));
     oauthHeaders.put(OAuthParams.OAUTH_SIGNATURE_METHOD, quoted(OAuthParams.HMAC_SHA1));
     oauthHeaders.put(OAuthParams.OAUTH_TIMESTAMP, quoted(Long.toString(timestampSecs)));
-    oauthHeaders.put(OAuthParams.OAUTH_NONCE, quoted(nonce));
+    if (credentials.token != null && credentials.token.length() > 0) {
+      oauthHeaders.put(OAuthParams.OAUTH_TOKEN, quoted(credentials.token));
+    }
     oauthHeaders.put(OAuthParams.OAUTH_VERSION, quoted(OAuthParams.ONE_DOT_OH));
 
     return "OAuth " + Joiner.on(", ").withKeyValueSeparator("=").join(oauthHeaders);
@@ -153,5 +159,9 @@ public class TwitterAuthInterceptor implements Interceptor {
     // TODO should we consider case? or parse properly?
     String contentType = request.header("Content-Type");
     return contentType != null && contentType.startsWith("application/x-www-form-urlencoded");
+  }
+
+  public static void main(String[] args) throws IOException {
+    PinAuthorisationFlow.main(args);
   }
 }

@@ -87,20 +87,4 @@ public class OSXCredentialStore implements CredentialsStore {
         .join(credentials.username, credentials.consumerKey, credentials.consumerSecret,
             credentials.token, credentials.secret);
   }
-
-  public static void main(String[] args) throws IOException {
-    TwurlCredentialsStore orig = new TwurlCredentialsStore(new File(System.getenv("HOME"), ".twurlrc"));
-
-    TwitterCredentials creds = orig.readDefaultCredentials();
-
-    System.out.println(creds);
-
-    OSXCredentialStore s = new OSXCredentialStore();
-
-    s.storeCredentials(creds);
-
-    TwitterCredentials creds2 = s.readDefaultCredentials();
-
-    System.out.println(creds2);
-  }
 }
