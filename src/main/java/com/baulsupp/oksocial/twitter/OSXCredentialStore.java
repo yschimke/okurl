@@ -89,7 +89,7 @@ public class OSXCredentialStore implements CredentialsStore {
   }
 
   public static void main(String[] args) throws IOException {
-    TwurlCredentialsStore orig = new TwurlCredentialsStore(new File("/Users/yurischimke/.twurlrc"));
+    TwurlCredentialsStore orig = new TwurlCredentialsStore(new File(System.getenv("HOME"), ".twurlrc"));
 
     TwitterCredentials creds = orig.readDefaultCredentials();
 
