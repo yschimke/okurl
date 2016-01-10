@@ -38,14 +38,19 @@ public class PinAuthorisationFlow {
             .build();
 
     Response response = client2.newCall(request).execute();
-    if (!response.isSuccessful()) {
-      throw new IllegalStateException("unable to request token");
-    }
 
-    Map<String, String> tokenMap = parseTokenMap(response.body().source().readUtf8());
-    return new TwitterCredentials(unauthed.username, unauthed.consumerKey,
-        unauthed.consumerSecret,
-        tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
+    try {
+      if (!response.isSuccessful()) {
+        throw new IllegalStateException("unable to request token");
+      }
+
+      Map<String, String> tokenMap = parseTokenMap(response.body().source().readUtf8());
+      return new TwitterCredentials(unauthed.username, unauthed.consumerKey,
+          unauthed.consumerSecret,
+          tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
+    } finally {
+      response.body().close();
+    }
   }
 
   private static String promptForPin(TwitterCredentials newCredentials) throws IOException {
@@ -68,15 +73,20 @@ public class PinAuthorisationFlow {
             .build();
 
     Response response = client3.newCall(request).execute();
-    if (!response.isSuccessful()) {
-      throw new IllegalStateException("unable to authorize token");
-    }
 
-    String s = response.body().source().readUtf8();
-    Map<String, String> tokenMap = parseTokenMap(s);
-    return new TwitterCredentials(tokenMap.get("screen_name"), requestCredentials.consumerKey,
-        requestCredentials.consumerSecret,
-        tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
+    try {
+      if (!response.isSuccessful()) {
+        throw new IllegalStateException("unable to authorize token");
+      }
+
+      String s = response.body().source().readUtf8();
+      Map<String, String> tokenMap = parseTokenMap(s);
+      return new TwitterCredentials(tokenMap.get("screen_name"), requestCredentials.consumerKey,
+          requestCredentials.consumerSecret,
+          tokenMap.get("oauth_token"), tokenMap.get("oauth_token_secret"));
+    } finally {
+      response.body().close();
+    }
   }
 
   private static Map<String, String> parseTokenMap(String tokenDetails) {
