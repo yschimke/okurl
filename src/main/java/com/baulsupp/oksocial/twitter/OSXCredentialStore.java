@@ -2,10 +2,8 @@ package com.baulsupp.oksocial.twitter;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
@@ -49,7 +47,8 @@ public class OSXCredentialStore implements CredentialsStore {
 
     Process process =
         new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", "api.twitter.com",
-            "-D", "oauth credentials", "-s", "Twitter API", "-U", "-w", credentialsString).redirectError(
+            "-D", "oauth credentials", "-s", "Twitter API", "-U", "-w",
+            credentialsString).redirectError(
             ProcessBuilder.Redirect.INHERIT).redirectInput(ProcessBuilder.Redirect.INHERIT).start();
 
     try {

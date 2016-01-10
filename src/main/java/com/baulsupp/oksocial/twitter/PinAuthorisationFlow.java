@@ -51,7 +51,8 @@ public class PinAuthorisationFlow {
   private static String promptForPin(TwitterCredentials newCredentials) throws IOException {
     System.err.println(
         "Authorise by entering the PIN throught a web browser");
-    ConsoleHandler.openLink("http://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
+    ConsoleHandler.openLink(
+        "http://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
 
     return new String(System.console().readPassword("Enter PIN: "));
   }
