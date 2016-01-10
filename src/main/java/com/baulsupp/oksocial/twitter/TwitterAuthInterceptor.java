@@ -15,13 +15,15 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import okhttp3.FormBody;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -36,6 +38,10 @@ public class TwitterAuthInterceptor implements Interceptor {
               "mobile.twitter.com", "syndication.twitter.com", "pbs.twimg.com",
               "t.co")
       ));
+
+  public static final TwitterCredentials TEST_CREDENTIALS =
+      new TwitterCredentials(null, "pKrYKZjbhN7rmtWXenRgr8kHY",
+          "FpOK8mUesjggvZ7YprMnhStKmdyVcikNYtjNm1PetymgfE32jJ", null, "");
 
   private final TwitterCredentials credentials;
 
@@ -54,8 +60,9 @@ public class TwitterAuthInterceptor implements Interceptor {
 
     if (requiresTwitterAuth(request)) {
       try {
+        String authHeader = generateAuthorization(request);
         request =
-            request.newBuilder().addHeader("Authorization", generateAuthorization(request)).build();
+            request.newBuilder().addHeader("Authorization", authHeader).build();
       } catch (NoSuchAlgorithmException e) {
         throw new IOException(e);
       } catch (InvalidKeyException e) {
@@ -137,13 +144,15 @@ public class TwitterAuthInterceptor implements Interceptor {
 
     String signature = signer.getString(normalized, credentials.secret, credentials.consumerSecret);
 
-    Map<String, String> oauthHeaders = new HashMap<>();
+    Map<String, String> oauthHeaders = new LinkedHashMap<>();
     oauthHeaders.put(OAuthParams.OAUTH_CONSUMER_KEY, quoted(credentials.consumerKey));
-    oauthHeaders.put(OAuthParams.OAUTH_TOKEN, quoted(credentials.token));
+    oauthHeaders.put(OAuthParams.OAUTH_NONCE, quoted(nonce));
     oauthHeaders.put(OAuthParams.OAUTH_SIGNATURE, quoted(signature));
     oauthHeaders.put(OAuthParams.OAUTH_SIGNATURE_METHOD, quoted(OAuthParams.HMAC_SHA1));
     oauthHeaders.put(OAuthParams.OAUTH_TIMESTAMP, quoted(Long.toString(timestampSecs)));
-    oauthHeaders.put(OAuthParams.OAUTH_NONCE, quoted(nonce));
+    if (credentials.token != null) {
+      oauthHeaders.put(OAuthParams.OAUTH_TOKEN, quoted(credentials.token));
+    }
     oauthHeaders.put(OAuthParams.OAUTH_VERSION, quoted(OAuthParams.ONE_DOT_OH));
 
     return "OAuth " + Joiner.on(", ").withKeyValueSeparator("=").join(oauthHeaders);
@@ -153,5 +162,25 @@ public class TwitterAuthInterceptor implements Interceptor {
     // TODO should we consider case? or parse properly?
     String contentType = request.header("Content-Type");
     return contentType != null && contentType.startsWith("application/x-www-form-urlencoded");
+  }
+
+  public static void remove(OkHttpClient.Builder builder) {
+    Iterator<Interceptor> i = builder.networkInterceptors().iterator();
+    while (i.hasNext()) {
+      Interceptor interceptor = i.next();
+
+      if (interceptor instanceof TwitterAuthInterceptor) {
+        i.remove();
+      }
+    }
+  }
+
+  public static OkHttpClient updateCredentials(OkHttpClient client,
+      TwitterCredentials newCredentials) {
+    OkHttpClient.Builder builder = client.newBuilder();
+
+    TwitterAuthInterceptor.remove(builder);
+    builder.networkInterceptors().add(new TwitterAuthInterceptor(newCredentials));
+    return builder.build();
   }
 }

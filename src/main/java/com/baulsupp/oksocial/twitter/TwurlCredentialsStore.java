@@ -14,27 +14,39 @@ public class TwurlCredentialsStore implements CredentialsStore {
   }
 
   public TwurlRc readTwurlRc() throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-    objectMapper.setPropertyNamingStrategy(
-        PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+    if (file.isFile()) {
+      ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+      objectMapper.setPropertyNamingStrategy(
+          PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 
-    return objectMapper.readValue(file, TwurlRc.class);
+      return objectMapper.readValue(file, TwurlRc.class);
+    } else {
+      return null;
+    }
   }
 
   public TwitterCredentials readDefaultCredentials() throws IOException {
     TwurlRc twurlRc = readTwurlRc();
 
-    String username = twurlRc.defaultProfile().get(0);
-    String consumerKey = twurlRc.defaultProfile().get(1);
+    if (twurlRc != null) {
+      String username = twurlRc.defaultProfile().get(0);
+      String consumerKey = twurlRc.defaultProfile().get(1);
 
-    return twurlRc.readCredentials(username, consumerKey);
+      return twurlRc.readCredentials(username, consumerKey);
+    } else {
+      return null;
+    }
   }
 
   public TwitterCredentials readCredentials(String username, String consumerKey)
       throws IOException {
     TwurlRc twurlRc = readTwurlRc();
 
-    return twurlRc.readCredentials(username, consumerKey);
+    if (twurlRc != null) {
+      return twurlRc.readCredentials(username, consumerKey);
+    } else {
+      return null;
+    }
   }
 
   @Override public void storeCredentials(TwitterCredentials credentials) throws IOException {
