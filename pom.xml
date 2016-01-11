@@ -5,8 +5,18 @@
 
   <groupId>com.baulsupp</groupId>
   <artifactId>oksocial</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>OkHttp Social Authentication</name>
+  <description>OkHttp Social Authentication - library and command line</description>
+  <url>https://github.com/yschimke/oksocial</url>
+
+  <developers>
+    <developer>
+      <id>yschimke</id>
+      <name>Yuri Schimke</name>
+      <email>yuri@schimke.ee</email>
+    </developer>
+  </developers>
 
   <properties>
     <okhttp.version>3.0.0-RC1</okhttp.version>
