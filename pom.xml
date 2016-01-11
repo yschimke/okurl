@@ -25,8 +25,7 @@
   <scm>
     <url>https://github.com/yschimke/oksocial/</url>
     <connection>scm:git:https://github.com/yschimke/oksocial.git</connection>
-    <developerConnection>scm:git:git@github.com:yschimke/oksocial.git</developerConnection>
-    <tag>oksocial-1.0.0</tag>
+    <developerConnection>scm:git:https://github.com/yschimke/oksocial.git</developerConnection>
   </scm>
 
   <issueManagement>
