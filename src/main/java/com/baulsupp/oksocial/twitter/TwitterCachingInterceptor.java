@@ -14,7 +14,7 @@ public class TwitterCachingInterceptor implements Interceptor {
 
     String host = chain.request().url().host();
 
-    if (TwitterAuthInterceptor.TWITTER_API_HOSTS.contains(host)) {
+    if (TwitterUtil.TWITTER_API_HOSTS.contains(host)) {
       if (originalResponse.code() == 200) {
         int cacheSeconds = 60;
 

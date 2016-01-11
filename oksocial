@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 codesha() {
   tar cf - pom.xml src/ | shasum | cut -f 1 -d ' '
 }

@@ -21,6 +21,7 @@ import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
+import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
@@ -204,11 +205,13 @@ public class Main extends HelpOption implements Runnable {
     try {
       credentials = readCredentials();
 
+      builder.networkInterceptors().add(new TwitterCachingInterceptor());
+
       if (credentials != null) {
         builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
       }
 
-      builder.networkInterceptors().add(new TwitterCachingInterceptor());
+      builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
     } catch (IOException e) {
       throw new IllegalStateException("Unable to read twitter credentials", e);
     }
