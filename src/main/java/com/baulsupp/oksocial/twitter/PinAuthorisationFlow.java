@@ -95,7 +95,7 @@ public class PinAuthorisationFlow {
 
     KeyValueParser.StandardKeyValueParser bodyParser =
         new KeyValueParser.StandardKeyValueParser("&", "=");
-    bodyParser.parse(tokenDetails, Arrays.asList(handler));
+    bodyParser.parse(tokenDetails, Arrays.<KeyValueHandler>asList(handler));
 
     return handler.toMap();
   }

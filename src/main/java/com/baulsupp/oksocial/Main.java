@@ -24,6 +24,7 @@ import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
+import io.airlift.command.Help;
 import io.airlift.command.HelpOption;
 import io.airlift.command.Option;
 import io.airlift.command.SingleCommand;
@@ -40,6 +41,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -126,6 +128,10 @@ public class Main extends HelpOption implements Runnable {
     configureLogging();
 
     if (showHelpIfRequested()) {
+      return;
+    }
+    if (urls == null || urls.isEmpty()) {
+      Help.help(this.commandMetadata);
       return;
     }
     if (version) {
@@ -341,7 +347,11 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private static HostnameVerifier createInsecureHostnameVerifier() {
-    return (s, sslSession) -> true;
+    return new HostnameVerifier() {
+      @Override public boolean verify(String s, SSLSession sslSession) {
+        return true;
+      }
+    };
   }
 
   private void configureLogging() {
