@@ -14,8 +14,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,13 +30,6 @@ import okio.Buffer;
 public class TwitterAuthInterceptor implements Interceptor {
   private final SecureRandom secureRandom = new SecureRandom();
 
-  public static final Set<String> TWITTER_API_HOSTS =
-      Collections.unmodifiableSet(new HashSet<>(
-          Arrays.asList("api.twitter.com", "upload.twitter.com", "stream.twitter.com",
-              "mobile.twitter.com", "syndication.twitter.com", "pbs.twimg.com",
-              "t.co")
-      ));
-
   public static final TwitterCredentials TEST_CREDENTIALS =
       new TwitterCredentials(null, "pKrYKZjbhN7rmtWXenRgr8kHY",
           "FpOK8mUesjggvZ7YprMnhStKmdyVcikNYtjNm1PetymgfE32jJ", null, "");
@@ -52,7 +43,7 @@ public class TwitterAuthInterceptor implements Interceptor {
   public boolean requiresTwitterAuth(Request request) {
     String host = request.url().host();
 
-    return TWITTER_API_HOSTS.contains(host);
+    return TwitterUtil.TWITTER_API_HOSTS.contains(host);
   }
 
   @Override public Response intercept(Chain chain) throws IOException {
