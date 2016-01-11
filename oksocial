@@ -8,7 +8,7 @@ SHA=$(codesha)
 
 if [ ! -f "target/cached-$SHA.jar" ]; then
   mvn -DskipTests clean package dependency:copy-dependencies
-  mv "target/oksocial-*.jar" "target/cached-$SHA.jar"
+  mv target/oksocial-*.jar "target/cached-$SHA.jar"
 fi
 
 JAVA_CMD=java
