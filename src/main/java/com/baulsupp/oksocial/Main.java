@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -341,7 +342,11 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private static HostnameVerifier createInsecureHostnameVerifier() {
-    return (s, sslSession) -> true;
+    return new HostnameVerifier() {
+      @Override public boolean verify(String s, SSLSession sslSession) {
+        return true;
+      }
+    };
   }
 
   private void configureLogging() {
