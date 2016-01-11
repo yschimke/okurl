@@ -104,6 +104,11 @@
         <configuration>
           <descriptor>src/assembly/bundle.xml</descriptor>
           <finalName>oksocial-${pom.version}</finalName>
+          <archive>
+            <manifest>
+              <mainClass>com.baulsupp.oksocial.Main</mainClass>
+            </manifest>
+          </archive>
         </configuration>
         <executions>
           <execution>

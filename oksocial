@@ -1,7 +1,14 @@
 #!/bin/sh
 
-if [ ! -f target/okhttp-social-*-SNAPSHOT-jar-with-dependencies.jar ]; then
-  mvn package
+codesha() {
+  tar cf - pom.xml src/ | shasum | cut -f 1 -d ' '
+}
+
+SHA=$(codesha)
+
+if [ ! -f "target/cached-$SHA.jar" ]; then
+  mvn -DskipTests clean package dependency:copy-dependencies
+  mv "target/oksocial-*.jar" "target/cached-$SHA.jar"
 fi
 
 JAVA_CMD=java
@@ -17,5 +24,6 @@ if [ -x /usr/libexec/java_home ]; then
   fi
 fi
 
-$JAVA_CMD $DEBUG $BCP -jar target/okhttp-social-*-SNAPSHOT-jar-with-dependencies.jar "$@"
+MAIN_JAR=$(ls "target/cached-$SHA.jar")
+$JAVA_CMD $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* com.baulsupp.oksocial.Main "$@"
 

@@ -12,4 +12,4 @@ if [ -x /usr/libexec/java_home ]; then
   fi
 fi
 
-$JAVA_CMD $BCP -jar $INSTALLDIR/lib/okhttp-social-*.jar "$@"
+$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\* com.baulsupp.oksocial.Main "$@"
