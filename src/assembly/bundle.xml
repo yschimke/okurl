@@ -27,5 +27,9 @@
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
     </fileSet>
+    <fileSet>
+      <directory>target/alpn</directory>
+      <outputDirectory>alpn</outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>
