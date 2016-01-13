@@ -1,17 +1,17 @@
-package com.baulsupp.oksocial.twitter;
+package com.baulsupp.oksocial.credentials;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
 
-public class OSXCredentialStore implements CredentialsStore {
-  @Override public TwitterCredentials readDefaultCredentials() throws IOException {
+public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
+  public abstract String apiHost();
+  public abstract String serviceName();
+
+  @Override public T readDefaultCredentials() throws IOException {
     Process process =
-        new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", "api.twitter.com",
+        new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
             "-D", "oauth credentials", "-w")
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .start();
@@ -44,12 +44,12 @@ public class OSXCredentialStore implements CredentialsStore {
     }
   }
 
-  @Override public void storeCredentials(TwitterCredentials credentials) throws IOException {
+  @Override public void storeCredentials(T credentials) throws IOException {
     String credentialsString = formatCredentialsString(credentials);
 
     Process process =
-        new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", "api.twitter.com",
-            "-D", "oauth credentials", "-s", "Twitter API", "-U", "-w",
+        new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", apiHost(),
+            "-D", "oauth credentials", "-s", serviceName(), "-U", "-w",
             credentialsString)
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
             .redirectError(ProcessBuilder.Redirect.INHERIT)
@@ -71,19 +71,7 @@ public class OSXCredentialStore implements CredentialsStore {
     }
   }
 
-  private TwitterCredentials parseCredentialsString(String s) {
-    List<String> list = Splitter.on(",").splitToList(s);
+  public abstract T parseCredentialsString(String s);
 
-    if (list.size() != 5) {
-      throw new IllegalStateException("can't split '" + s + "'");
-    }
-
-    return new TwitterCredentials(list.get(0), list.get(1), list.get(2), list.get(3), list.get(4));
-  }
-
-  private String formatCredentialsString(TwitterCredentials credentials) {
-    return Joiner.on(",")
-        .join(credentials.username, credentials.consumerKey, credentials.consumerSecret,
-            credentials.token, credentials.secret);
-  }
+  public abstract String formatCredentialsString(T credentials);
 }
