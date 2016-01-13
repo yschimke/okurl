@@ -116,6 +116,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--protocols"}, description = "Protocols")
   private String protocols;
 
+  @Option(name = {"-o", "--output"}, description = "Output file/directory")
+  public File outputDirectory;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls;
 
@@ -141,8 +144,13 @@ public class Main extends HelpOption implements Runnable {
       return;
     }
 
-    OutputHandler outputHandler =
-        new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
+    OutputHandler outputHandler;
+    if (outputDirectory != null) {
+      outputHandler = new DownloadHandler(outputDirectory);
+    } else {
+      outputHandler =
+          new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
+    }
 
     client = createClient();
     try {

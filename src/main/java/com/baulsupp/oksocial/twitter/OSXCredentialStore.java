@@ -12,7 +12,9 @@ public class OSXCredentialStore implements CredentialsStore {
   @Override public TwitterCredentials readDefaultCredentials() throws IOException {
     Process process =
         new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", "api.twitter.com",
-            "-D", "oauth credentials", "-w").redirectError(ProcessBuilder.Redirect.INHERIT).start();
+            "-D", "oauth credentials", "-w")
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start();
 
     try {
       process.getOutputStream().close();
@@ -48,8 +50,10 @@ public class OSXCredentialStore implements CredentialsStore {
     Process process =
         new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", "api.twitter.com",
             "-D", "oauth credentials", "-s", "Twitter API", "-U", "-w",
-            credentialsString).redirectError(
-            ProcessBuilder.Redirect.INHERIT).redirectInput(ProcessBuilder.Redirect.INHERIT).start();
+            credentialsString)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start();
 
     try {
       process.getOutputStream().close();

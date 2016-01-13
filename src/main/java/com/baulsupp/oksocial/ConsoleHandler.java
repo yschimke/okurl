@@ -49,7 +49,7 @@ public class ConsoleHandler implements OutputHandler {
   public static void openPreview(BufferedSource source) throws IOException {
     ProcessBuilder pb =
         new ProcessBuilder("open", "-f", "-a", "/Applications/Preview.app")
-            .redirectInput(ProcessBuilder.Redirect.INHERIT)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
             .redirectError(ProcessBuilder.Redirect.INHERIT);
 
     Process process = pb.start();
@@ -88,6 +88,7 @@ public class ConsoleHandler implements OutputHandler {
     if (Util.isOSX()) {
       ProcessBuilder pb =
           new ProcessBuilder("open", url).redirectInput(ProcessBuilder.Redirect.INHERIT)
+              .redirectOutput(ProcessBuilder.Redirect.INHERIT)
               .redirectError(ProcessBuilder.Redirect.INHERIT);
       Process process = pb.start();
 
