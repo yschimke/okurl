@@ -15,14 +15,16 @@
  */
 package com.baulsupp.oksocial;
 
-import com.baulsupp.oksocial.twitter.CredentialsStore;
-import com.baulsupp.oksocial.twitter.OSXCredentialStore;
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
-import com.baulsupp.oksocial.twitter.TwurlCredentialsStore;
+import com.baulsupp.oksocial.twitter.TwurlCompatibleCredentialsStore;
+import com.baulsupp.oksocial.uber.UberAuthInterceptor;
+import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
+import com.baulsupp.oksocial.uber.UberServerCredentials;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
 import io.airlift.command.Help;
@@ -114,15 +116,24 @@ public class Main extends HelpOption implements Runnable {
   public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
 
   @Option(name = {"--protocols"}, description = "Protocols")
-  private String protocols;
+  public String protocols;
 
   @Option(name = {"-o", "--output"}, description = "Output file/directory")
   public File outputDirectory;
 
+  @Option(name = {"--authorize"}, description = "Authorize API (twitter, uber)")
+  public String authorize;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
-  public List<String> urls;
+  public List<String> urls = new ArrayList<>();
 
   private OkHttpClient client;
+
+  private CredentialsStore<TwitterCredentials> twitterCredentialsStore =
+      new TwurlCompatibleCredentialsStore();
+
+  private CredentialsStore<UberServerCredentials> uberCredentialsStore =
+      new UberOSXCredentialsStore();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -134,7 +145,7 @@ public class Main extends HelpOption implements Runnable {
     if (showHelpIfRequested()) {
       return;
     }
-    if (urls == null || urls.isEmpty()) {
+    if (authorize == null && urls.isEmpty()) {
       Help.help(this.commandMetadata);
       return;
     }
@@ -154,31 +165,49 @@ public class Main extends HelpOption implements Runnable {
 
     client = createClient();
     try {
+      if (authorize != null) {
+        authorizeApi();
+      }
+
       for (String url : urls) {
         if (urls.size() > 1) {
           System.err.println(url);
         }
 
         try {
-          if (url.equals("authorize")) {
-            System.err.println("Authorising");
-            TwitterCredentials newCredentials =
-                PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);
+          Request request = createRequest(url);
+          Response response = client.newCall(request).execute();
 
-            updateCredentials(newCredentials);
-            client = TwitterAuthInterceptor.updateCredentials(client, newCredentials);
-          } else {
-            Request request = createRequest(url);
-            Response response = client.newCall(request).execute();
-
-            outputHandler.showOutput(response);
-          }
+          outputHandler.showOutput(response);
         } catch (IOException e) {
           e.printStackTrace();
         }
       }
     } finally {
       client.connectionPool().evictAll();
+    }
+  }
+
+  private void authorizeApi() {
+    try {
+      if ("twitter".equals(authorize)) {
+        System.err.println("Authorising Twitter API");
+        TwitterCredentials newCredentials =
+            PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);
+
+        twitterCredentialsStore.storeCredentials(newCredentials);
+        client = TwitterAuthInterceptor.updateCredentials(client, newCredentials);
+      } else if ("uber".equals(authorize)) {
+        char[] password = System.console().readPassword("Uber Server Token: ");
+
+        if (password != null) {
+          UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
+          uberCredentialsStore.storeCredentials(newCredentials);
+          client = UberAuthInterceptor.updateCredentials(client, newCredentials);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
@@ -209,56 +238,23 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
-    TwitterCredentials credentials = null;
     try {
-      credentials = readCredentials();
-
       builder.networkInterceptors().add(new TwitterCachingInterceptor());
 
-      if (credentials != null) {
-        builder.networkInterceptors().add(new TwitterAuthInterceptor(credentials));
+      TwitterCredentials twitterCredentials = twitterCredentialsStore.readDefaultCredentials();
+      if (twitterCredentials != null) {
+        builder.networkInterceptors().add(new TwitterAuthInterceptor(twitterCredentials));
+      }
+
+      UberServerCredentials uberCredentials = uberCredentialsStore.readDefaultCredentials();
+      if (uberCredentials != null) {
+        builder.networkInterceptors().add(new UberAuthInterceptor(uberCredentials));
       }
 
       builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
     } catch (IOException e) {
       throw new IllegalStateException("Unable to read twitter credentials", e);
     }
-  }
-
-  private TwitterCredentials readCredentials()
-      throws IOException {
-    CredentialsStore nativeCredentialsStore = buildNativeCredentialsStore();
-
-    TwitterCredentials credentials = null;
-
-    if (nativeCredentialsStore != null) {
-      credentials = nativeCredentialsStore.readDefaultCredentials();
-    }
-
-    if (credentials == null) {
-      TwurlCredentialsStore twurlCredentialsStore =
-          new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
-
-      credentials = twurlCredentialsStore.readDefaultCredentials();
-
-      if (credentials != null && nativeCredentialsStore != null) {
-        nativeCredentialsStore.storeCredentials(credentials);
-      }
-    }
-
-    return credentials;
-  }
-
-  private void updateCredentials(TwitterCredentials newCredentials) throws IOException {
-    CredentialsStore nativeCredentialsStore = buildNativeCredentialsStore();
-
-    if (nativeCredentialsStore != null) {
-      nativeCredentialsStore.storeCredentials(newCredentials);
-    }
-  }
-
-  private OSXCredentialStore buildNativeCredentialsStore() {
-    return Util.isOSX() ? new OSXCredentialStore() : null;
   }
 
   private List<Protocol> buildProtocols() {

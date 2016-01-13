@@ -170,7 +170,7 @@ public class TwitterAuthInterceptor implements Interceptor {
       TwitterCredentials newCredentials) {
     OkHttpClient.Builder builder = client.newBuilder();
 
-    TwitterAuthInterceptor.remove(builder);
+    remove(builder);
     builder.networkInterceptors().add(new TwitterAuthInterceptor(newCredentials));
     return builder.build();
   }

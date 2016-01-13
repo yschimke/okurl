@@ -1,12 +1,13 @@
 package com.baulsupp.oksocial.twitter;
 
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class TwurlCredentialsStore implements CredentialsStore {
+public class TwurlCredentialsStore implements CredentialsStore<TwitterCredentials> {
   private final File file;
 
   public TwurlCredentialsStore(File file) {
