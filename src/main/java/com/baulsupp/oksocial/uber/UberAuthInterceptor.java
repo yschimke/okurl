@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.uber;
 
-import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import java.io.IOException;
 import java.util.Iterator;
 import okhttp3.Interceptor;

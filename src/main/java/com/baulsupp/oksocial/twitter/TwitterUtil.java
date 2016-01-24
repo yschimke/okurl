@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.twitter;
 
 import com.google.common.collect.Sets;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 public class TwitterUtil {

@@ -7,6 +7,7 @@ import okio.Okio;
 
 public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
   public abstract String apiHost();
+
   public abstract String serviceName();
 
   @Override public T readDefaultCredentials() throws IOException {

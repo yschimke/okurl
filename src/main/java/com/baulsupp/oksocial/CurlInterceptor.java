@@ -2,7 +2,6 @@ package com.baulsupp.oksocial;
 
 import java.io.IOException;
 import okhttp3.Headers;
-import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -16,8 +15,8 @@ public class CurlInterceptor implements okhttp3.Interceptor {
 
     Headers headers = request.headers();
 
-    for (String name: headers.names()) {
-      for (String value: headers.values(name)) {
+    for (String name : headers.names()) {
+      for (String value : headers.values(name)) {
         buffy.append("-H \"");
         buffy.append(name);
         buffy.append(": ");
