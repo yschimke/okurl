@@ -91,26 +91,26 @@ public class Main extends HelpOption implements Runnable {
   public int readTimeout = DEFAULT_TIMEOUT;
 
   @Option(name = {"-L", "--location"}, description = "Follow redirects")
-  public boolean followRedirects;
+  public boolean followRedirects = false;
 
   @Option(name = {"-k", "--insecure"},
       description = "Allow connections to SSL sites without certs")
-  public boolean allowInsecure;
+  public boolean allowInsecure = false;
 
   @Option(name = {"-i", "--include"}, description = "Include protocol headers in the output")
-  public boolean showHeaders;
+  public boolean showHeaders = false;
 
   @Option(name = "--frames", description = "Log HTTP/2 frames to STDERR")
-  public boolean showHttp2Frames;
+  public boolean showHttp2Frames = false;
 
   @Option(name = "--debug", description = "Debug")
-  public boolean debug;
+  public boolean debug = false;
 
   @Option(name = {"-e", "--referer"}, description = "Referer URL")
   public String referer;
 
   @Option(name = {"-V", "--version"}, description = "Show version number and quit")
-  public boolean version;
+  public boolean version = false;
 
   @Option(name = {"--cache"}, description = "Cache directory")
   public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
@@ -123,6 +123,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--authorize"}, description = "Authorize API (twitter, uber)")
   public String authorize;
+
+  @Option(name = {"--curl"}, description = "Show curl commands")
+  public boolean curl = false;
 
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
@@ -176,6 +179,7 @@ public class Main extends HelpOption implements Runnable {
 
         try {
           Request request = createRequest(url);
+
           Response response = client.newCall(request).execute();
 
           outputHandler.showOutput(response);
@@ -252,6 +256,10 @@ public class Main extends HelpOption implements Runnable {
       }
 
       builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
+
+      if (curl) {
+        builder.networkInterceptors().add(new CurlInterceptor());
+      }
     } catch (IOException e) {
       throw new IllegalStateException("Unable to read twitter credentials", e);
     }
