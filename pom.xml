@@ -151,6 +151,7 @@
               <mainClass>com.baulsupp.oksocial.Main</mainClass>
             </manifest>
           </archive>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
