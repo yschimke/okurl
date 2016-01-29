@@ -15,16 +15,17 @@ public class LoginAuthFlow {
   public static FacebookCredentials login(OkHttpClient client) throws IOException {
     String clientId = System.console().readLine("Facebook Client Id: ");
     String clientSecret = new String(System.console().readPassword("Facebook Client Secret: "));
+    String scopes = System.console().readLine("Scopes: ");
 
     LocalServer s = new LocalServer("localhost", 3000);
 
     try {
       String serverUri = s.getRedirectUri();
 
-      String loginUrl = "https://www.facebook.com/dialog/oauth?client_id="
-          + clientId
-          + "&redirect_uri="
-          + serverUri;
+      String loginUrl = "https://www.facebook.com/dialog/oauth"
+          + "?client_id=" + clientId
+          + "&redirect_uri=" + serverUri
+          + "&scope=" + scopes;
 
       ConsoleHandler.openLink(loginUrl);
 
@@ -84,9 +85,5 @@ public class LoginAuthFlow {
     }
 
     return null;
-  }
-
-  public static void main(String[] args) throws IOException {
-    LoginAuthFlow.login(new OkHttpClient());
   }
 }
