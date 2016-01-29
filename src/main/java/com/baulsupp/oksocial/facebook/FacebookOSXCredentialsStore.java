@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.facebook;
 
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
-import com.baulsupp.oksocial.uber.UberServerCredentials;
 
 public class FacebookOSXCredentialsStore extends OSXCredentialsStore<FacebookCredentials> {
 

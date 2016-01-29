@@ -19,6 +19,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.facebook.FacebookAuthInterceptor;
 import com.baulsupp.oksocial.facebook.FacebookCredentials;
 import com.baulsupp.oksocial.facebook.FacebookOSXCredentialsStore;
+import com.baulsupp.oksocial.facebook.LoginAuthFlow;
 import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
@@ -37,6 +38,7 @@ import io.airlift.command.Option;
 import io.airlift.command.SingleCommand;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
+import okio.Okio;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -202,17 +205,26 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private Map<String, String> readAliasMap() {
+  private Map<String, String> readAliasMap() throws IOException {
     Map<String, String> m = Maps.newHashMap();
 
-    m.put("showtweet", "https://api.twitter.com/1.1/statuses/show.json?id=%s");
     m.put("twitterapi", "https://api.twitter.com%s");
     m.put("fbgraph", "https://graph.facebook.com%s");
+    m.put("uberapi", "https://api.uber.com%s");
+
+    // TODO make this configurable only, possibly without the cute basename and system property
+//    File aliasFile = new File(System.getenv("HOME"), ".oksocial.alias");
+//
+//    if (aliasFile.isFile()) {
+//      String content = Okio.buffer(Okio.source(aliasFile)).readString(Charset.defaultCharset());
+//
+//
+//    }
 
     return m;
   }
 
-  private String checkAlias(String url) {
+  private String checkAlias(String url) throws IOException {
     String alias = System.getProperty("command.name", "oksocial");
 
     if (!alias.equals("oksocial")) {
@@ -244,13 +256,10 @@ public class Main extends HelpOption implements Runnable {
           client = UberAuthInterceptor.updateCredentials(client, newCredentials);
         }
       } else if ("facebook".equals(authorize)) {
-        char[] password = System.console().readPassword("Facebook Access Token: ");
-
-        if (password != null) {
-          FacebookCredentials newCredentials = new FacebookCredentials(new String(password));
-          facebookCredentialsStore.storeCredentials(newCredentials);
-          client = FacebookAuthInterceptor.updateCredentials(client, newCredentials);
-        }
+        System.err.println("Authorising Facebook API");
+        FacebookCredentials newCredentials = LoginAuthFlow.login(client);
+        facebookCredentialsStore.storeCredentials(newCredentials);
+        client = FacebookAuthInterceptor.updateCredentials(client, newCredentials);
       }
     } catch (IOException e) {
       e.printStackTrace();
