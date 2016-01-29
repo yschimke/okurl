@@ -16,6 +16,9 @@
 package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.facebook.FacebookAuthInterceptor;
+import com.baulsupp.oksocial.facebook.FacebookCredentials;
+import com.baulsupp.oksocial.facebook.FacebookOSXCredentialsStore;
 import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
@@ -138,6 +141,9 @@ public class Main extends HelpOption implements Runnable {
   private CredentialsStore<UberServerCredentials> uberCredentialsStore =
       new UberOSXCredentialsStore();
 
+  private CredentialsStore<FacebookCredentials> facebookCredentialsStore =
+          new FacebookOSXCredentialsStore();
+
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
   }
@@ -178,6 +184,8 @@ public class Main extends HelpOption implements Runnable {
         }
 
         try {
+          url = checkAlias(url);
+
           Request request = createRequest(url);
 
           Response response = client.newCall(request).execute();
@@ -190,6 +198,23 @@ public class Main extends HelpOption implements Runnable {
     } finally {
       client.connectionPool().evictAll();
     }
+  }
+
+  private String checkAlias(String url) {
+    String alias = System.getProperty("command.name");
+
+    // TODO make this flexible
+    if (!url.startsWith("http")) {
+      if ("showtweet".equals(alias)) {
+        url = String.format("https://api.twitter.com/1.1/statuses/show.json?id=%s", url);
+      } else if ("twitterapi".equals(alias)) {
+        url = String.format("https://api.twitter.com%s", url);
+      } else if ("fbgraph".equals(alias)) {
+        url = String.format("https://graph.facebook.com%s", url);
+      }
+    }
+
+    return url;
   }
 
   private void authorizeApi() {
@@ -208,6 +233,14 @@ public class Main extends HelpOption implements Runnable {
           UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
           uberCredentialsStore.storeCredentials(newCredentials);
           client = UberAuthInterceptor.updateCredentials(client, newCredentials);
+        }
+      } else if ("facebook".equals(authorize)) {
+        char[] password = System.console().readPassword("Facebook Access Token: ");
+
+        if (password != null) {
+          FacebookCredentials newCredentials = new FacebookCredentials(new String(password));
+          facebookCredentialsStore.storeCredentials(newCredentials);
+          client = FacebookAuthInterceptor.updateCredentials(client, newCredentials);
         }
       }
     } catch (IOException e) {
@@ -253,6 +286,11 @@ public class Main extends HelpOption implements Runnable {
       UberServerCredentials uberCredentials = uberCredentialsStore.readDefaultCredentials();
       if (uberCredentials != null) {
         builder.networkInterceptors().add(new UberAuthInterceptor(uberCredentials));
+      }
+
+      FacebookCredentials facebookCredentials = facebookCredentialsStore.readDefaultCredentials();
+      if (facebookCredentials != null) {
+        builder.networkInterceptors().add(new FacebookAuthInterceptor(facebookCredentials));
       }
 
       builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
