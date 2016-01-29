@@ -11,17 +11,18 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class LoginAuthFlow {
-  public static final String CLIENT_ID = "550830111748623";
-  public static final String CLIENT_SECRET = "";
 
   public static FacebookCredentials login(OkHttpClient client) throws IOException {
+    String clientId = System.console().readLine("Facebook Client Id: ");
+    String clientSecret = new String(System.console().readPassword("Facebook Client Secret: "));
+
     LocalServer s = new LocalServer("localhost", 3000);
 
     try {
       String serverUri = s.getRedirectUri();
 
       String loginUrl = "https://www.facebook.com/dialog/oauth?client_id="
-          + CLIENT_ID
+          + clientId
           + "&redirect_uri="
           + serverUri;
 
@@ -30,9 +31,9 @@ public class LoginAuthFlow {
       String code = s.waitForCode();
 
       String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
-          + "?client_id=" + CLIENT_ID
+          + "?client_id=" + clientId
           + "&redirect_uri=" + serverUri
-          + "&client_secret=" + CLIENT_SECRET
+          + "&client_secret=" + clientSecret
           + "&code=" + code;
 
       String shortTokenJson = makeRequest(client, tokenUrl);
@@ -44,8 +45,8 @@ public class LoginAuthFlow {
 
       String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
           + "?grant_type=fb_exchange_token"
-          + "&client_id=" + CLIENT_ID
-          + "&client_secret=" + CLIENT_SECRET
+          + "&client_id=" + clientId
+          + "&client_secret=" + clientSecret
           + "&fb_exchange_token=" + shortToken;
 
       String longTokenBody = makeRequest(client, exchangeUrl);
@@ -65,11 +66,7 @@ public class LoginAuthFlow {
         throw new IllegalStateException("unable to request token");
       }
 
-      String body = response.body().source().readString(Charsets.UTF_8);
-
-      //System.out.println(body);
-
-      return body;
+      return response.body().source().readString(Charsets.UTF_8);
     } finally {
       response.body().close();
     }
