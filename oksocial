@@ -3,7 +3,7 @@
 set -e
 
 codesha() {
-  tar cf - pom.xml src/ | shasum | cut -f 1 -d ' '
+  find pom.xml src -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
 }
 
 SHA=$(codesha)
@@ -22,7 +22,8 @@ if [ -x /usr/libexec/java_home ]; then
 
   if [ $? -eq 0 ]; then
     JAVA_CMD="$JAVA_HOME/bin/java"
-    BCP="-Xbootclasspath/p:target/alpn/alpn-boot-8.1.7.v20160121.jar"
+    ALPN=$(ls target/alpn/alpn-boot-*.jar)
+    BCP="-Xbootclasspath/p:$ALPN"
   fi
 fi
 
