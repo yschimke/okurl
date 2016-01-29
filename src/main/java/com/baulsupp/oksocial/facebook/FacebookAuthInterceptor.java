@@ -17,7 +17,7 @@ public class FacebookAuthInterceptor implements Interceptor {
 
     if (requiresServerAuth(request)) {
       String token = facebookCredentials.accessToken;
-      token = "CAAH0ZBiEkcg8BAPp8tVQsegHnJUgw6gifx63JfF4LRwZA5xZCl58HAzpYiZADDKIkU0xA4sIKjGO4pYwLOYm3QarQ2r0nvfQb4qp8FHSoFl8zzLTv1xuUDxup2xe3SSgN5JtAofMjL27P1ZC1s2sg1izAczUcvaINVlIa5YHje58sByuViQAK1jle573k8uKNw3OVMUEtpfe4aZAB2ZA5s5iZBkU0iJkn7UZD";
+//      token = "CAAH0ZBiEkcg8BAPp8tVQsegHnJUgw6gifx63JfF4LRwZA5xZCl58HAzpYiZADDKIkU0xA4sIKjGO4pYwLOYm3QarQ2r0nvfQb4qp8FHSoFl8zzLTv1xuUDxup2xe3SSgN5JtAofMjL27P1ZC1s2sg1izAczUcvaINVlIa5YHje58sByuViQAK1jle573k8uKNw3OVMUEtpfe4aZAB2ZA5s5iZBkU0iJkn7UZD";
 
       HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
 

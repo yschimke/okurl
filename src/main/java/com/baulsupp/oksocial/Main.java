@@ -28,6 +28,7 @@ import com.baulsupp.oksocial.twitter.TwurlCompatibleCredentialsStore;
 import com.baulsupp.oksocial.uber.UberAuthInterceptor;
 import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
 import com.baulsupp.oksocial.uber.UberServerCredentials;
+import com.google.common.collect.Maps;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
 import io.airlift.command.Help;
@@ -40,6 +41,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -200,17 +202,24 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private String checkAlias(String url) {
-    String alias = System.getProperty("command.name");
+  private Map<String, String> readAliasMap() {
+    Map<String, String> m = Maps.newHashMap();
 
-    // TODO make this flexible
-    if (!url.startsWith("http")) {
-      if ("showtweet".equals(alias)) {
-        url = String.format("https://api.twitter.com/1.1/statuses/show.json?id=%s", url);
-      } else if ("twitterapi".equals(alias)) {
-        url = String.format("https://api.twitter.com%s", url);
-      } else if ("fbgraph".equals(alias)) {
-        url = String.format("https://graph.facebook.com%s", url);
+    m.put("showtweet", "https://api.twitter.com/1.1/statuses/show.json?id=%s");
+    m.put("twitterapi", "https://api.twitter.com%s");
+    m.put("fbgraph", "https://graph.facebook.com%s");
+
+    return m;
+  }
+
+  private String checkAlias(String url) {
+    String alias = System.getProperty("command.name", "oksocial");
+
+    if (!alias.equals("oksocial")) {
+      String urlFormat = readAliasMap().get(alias);
+
+      if (urlFormat != null) {
+        url = String.format(urlFormat, url);
       }
     }
 
