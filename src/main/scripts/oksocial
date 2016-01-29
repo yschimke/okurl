@@ -8,7 +8,7 @@ if [ -x /usr/libexec/java_home ]; then
 
   if [ $? -eq 0 ]; then
     JAVA_CMD="$JAVA_HOME/bin/java"
-    BCP="-Xbootclasspath/p:$INSTALLDIR/alpn/alpn-boot-8.1.2.v20141202.jar"
+    BCP="-Xbootclasspath/p:$INSTALLDIR/alpn/alpn-boot-*.jar"
   fi
 fi
 
