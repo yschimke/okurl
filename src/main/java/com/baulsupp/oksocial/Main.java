@@ -69,6 +69,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
+  private static Logger logger = Logger.getLogger(Main.class.getName());
+
   static final String NAME = "oksocial";
   static final int DEFAULT_TIMEOUT = -1;
 
@@ -178,12 +180,15 @@ public class Main extends HelpOption implements Runnable {
     }
 
     client = createClient();
+    logger.log(Level.FINE, client.toString());
     try {
       if (authorize != null) {
         authorizeApi();
       }
 
       for (String url : urls) {
+        logger.log(Level.FINE, "url " + url);
+
         if (urls.size() > 1) {
           System.err.println(url);
         }
@@ -192,6 +197,8 @@ public class Main extends HelpOption implements Runnable {
           url = checkAlias(url);
 
           Request request = createRequest(url);
+
+          logger.log(Level.FINE, "Request " + request);
 
           Response response = client.newCall(request).execute();
 
