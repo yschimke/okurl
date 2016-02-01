@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.credentials;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
@@ -13,8 +14,7 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
   @Override public T readDefaultCredentials() throws IOException {
     Process process =
         new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
-            "-D", "oauth credentials", "-w")
-            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            "-D", "oauth", "-w")
             .start();
 
     try {
@@ -27,6 +27,13 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
 
       if (process.exitValue() == 44) {
         return null;
+      }
+
+      BufferedSource stderr = Okio.buffer(Okio.source(process.getErrorStream()));
+      String errorLog = stderr.readString(Charset.defaultCharset());
+
+      if (errorLog != null) {
+        System.err.print(errorLog);
       }
 
       if (process.exitValue() != 0) {
@@ -50,7 +57,7 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
 
     Process process =
         new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", apiHost(),
-            "-D", "oauth credentials", "-s", serviceName(), "-U", "-w",
+            "-D", "oauth", "-s", serviceName(), "-U", "-w",
             credentialsString)
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
             .redirectError(ProcessBuilder.Redirect.INHERIT)

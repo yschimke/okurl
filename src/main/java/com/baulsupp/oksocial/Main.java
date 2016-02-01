@@ -16,6 +16,10 @@
 package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.facebook.FacebookAuthInterceptor;
+import com.baulsupp.oksocial.facebook.FacebookCredentials;
+import com.baulsupp.oksocial.facebook.FacebookOSXCredentialsStore;
+import com.baulsupp.oksocial.facebook.LoginAuthFlow;
 import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
@@ -25,6 +29,7 @@ import com.baulsupp.oksocial.twitter.TwurlCompatibleCredentialsStore;
 import com.baulsupp.oksocial.uber.UberAuthInterceptor;
 import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
 import com.baulsupp.oksocial.uber.UberServerCredentials;
+import com.google.common.collect.Maps;
 import io.airlift.command.Arguments;
 import io.airlift.command.Command;
 import io.airlift.command.Help;
@@ -33,10 +38,12 @@ import io.airlift.command.Option;
 import io.airlift.command.SingleCommand;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -56,11 +63,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
+import okio.Okio;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
+  private static Logger logger = Logger.getLogger(Main.class.getName());
+
   static final String NAME = "oksocial";
   static final int DEFAULT_TIMEOUT = -1;
 
@@ -138,6 +148,9 @@ public class Main extends HelpOption implements Runnable {
   private CredentialsStore<UberServerCredentials> uberCredentialsStore =
       new UberOSXCredentialsStore();
 
+  private CredentialsStore<FacebookCredentials> facebookCredentialsStore =
+          new FacebookOSXCredentialsStore();
+
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
   }
@@ -167,18 +180,25 @@ public class Main extends HelpOption implements Runnable {
     }
 
     client = createClient();
+    logger.log(Level.FINE, client.toString());
     try {
       if (authorize != null) {
         authorizeApi();
       }
 
       for (String url : urls) {
+        logger.log(Level.FINE, "url " + url);
+
         if (urls.size() > 1) {
           System.err.println(url);
         }
 
         try {
+          url = checkAlias(url);
+
           Request request = createRequest(url);
+
+          logger.log(Level.FINE, "Request " + request);
 
           Response response = client.newCall(request).execute();
 
@@ -190,6 +210,39 @@ public class Main extends HelpOption implements Runnable {
     } finally {
       client.connectionPool().evictAll();
     }
+  }
+
+  private Map<String, String> readAliasMap() throws IOException {
+    Map<String, String> m = Maps.newHashMap();
+
+    m.put("twitterapi", "https://api.twitter.com%s");
+    m.put("fbgraph", "https://graph.facebook.com%s");
+    m.put("uberapi", "https://api.uber.com%s");
+
+    // TODO make this configurable only, possibly without the cute basename and system property
+//    File aliasFile = new File(System.getenv("HOME"), ".oksocial.alias");
+//
+//    if (aliasFile.isFile()) {
+//      String content = Okio.buffer(Okio.source(aliasFile)).readString(Charset.defaultCharset());
+//
+//
+//    }
+
+    return m;
+  }
+
+  private String checkAlias(String url) throws IOException {
+    String alias = System.getProperty("command.name", "oksocial");
+
+    if (!alias.equals("oksocial")) {
+      String urlFormat = readAliasMap().get(alias);
+
+      if (urlFormat != null) {
+        url = String.format(urlFormat, url);
+      }
+    }
+
+    return url;
   }
 
   private void authorizeApi() {
@@ -209,6 +262,11 @@ public class Main extends HelpOption implements Runnable {
           uberCredentialsStore.storeCredentials(newCredentials);
           client = UberAuthInterceptor.updateCredentials(client, newCredentials);
         }
+      } else if ("facebook".equals(authorize)) {
+        System.err.println("Authorising Facebook API");
+        FacebookCredentials newCredentials = LoginAuthFlow.login(client);
+        facebookCredentialsStore.storeCredentials(newCredentials);
+        client = FacebookAuthInterceptor.updateCredentials(client, newCredentials);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -253,6 +311,11 @@ public class Main extends HelpOption implements Runnable {
       UberServerCredentials uberCredentials = uberCredentialsStore.readDefaultCredentials();
       if (uberCredentials != null) {
         builder.networkInterceptors().add(new UberAuthInterceptor(uberCredentials));
+      }
+
+      FacebookCredentials facebookCredentials = facebookCredentialsStore.readDefaultCredentials();
+      if (facebookCredentials != null) {
+        builder.networkInterceptors().add(new FacebookAuthInterceptor(facebookCredentials));
       }
 
       builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());

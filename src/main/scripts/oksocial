@@ -1,5 +1,7 @@
 #!/bin/sh
 
+CMD=$(basename $0)
+
 JAVA_CMD=java
 INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
@@ -13,4 +15,4 @@ if [ -x /usr/libexec/java_home ]; then
   fi
 fi
 
-$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\* com.baulsupp.oksocial.Main "$@"
+$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\* -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
