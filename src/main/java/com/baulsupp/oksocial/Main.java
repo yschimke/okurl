@@ -34,6 +34,7 @@ import io.airlift.airline.SingleCommand;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.Proxy;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -133,6 +134,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
+
+  @Option(name = {"--socks"}, description = "Use SOCKS proxy")
+  public InetAddress socksProxy;
 
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
@@ -255,6 +259,10 @@ public class Main extends HelpOption implements Runnable {
     }
 
     configureApiInterceptors(builder);
+
+    if (socksProxy != null) {
+      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+    }
 
     List<Protocol> requestProtocols = buildProtocols();
     if (requestProtocols != null) {
