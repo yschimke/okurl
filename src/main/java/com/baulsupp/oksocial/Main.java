@@ -32,7 +32,9 @@ import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -43,12 +45,13 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import okhttp3.Cache;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -227,9 +230,13 @@ public class Main extends HelpOption implements Runnable {
     if (allowInsecure) {
       builder.sslSocketFactory(createInsecureSslSocketFactory());
       builder.hostnameVerifier(createInsecureHostnameVerifier());
+    } else {
+      builder.sslSocketFactory(
+          createClientSslSocketFactory(new File("/Users/yuri/clientkeystore"), "HdVP6uMemJVx8e"));
+      builder.hostnameVerifier(createInsecureHostnameVerifier());
     }
 
-    builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    //builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
 
     configureApiInterceptors(builder);
 
@@ -338,23 +345,49 @@ public class Main extends HelpOption implements Runnable {
     return request.build();
   }
 
+  private static SSLSocketFactory createClientSslSocketFactory(File keystore, String password) {
+    try {
+      TrustManager[] trustManagers = createInsecureTrustManagers();
+
+      SSLContext context = SSLContext.getInstance("TLS");
+
+      KeyStore keystore_client = KeyStore.getInstance("JKS");
+      keystore_client.load(new FileInputStream(keystore), password.toCharArray());
+      KeyManagerFactory kmf =
+          KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      kmf.init(keystore_client, password.toCharArray());
+      KeyManager[] keyManagers = kmf.getKeyManagers();
+
+      context.init(keyManagers, trustManagers, null);
+
+      return context.getSocketFactory();
+    } catch (Exception e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  private static TrustManager[] createInsecureTrustManagers() {
+    TrustManager permissive = new X509TrustManager() {
+      @Override public void checkClientTrusted(X509Certificate[] chain, String authType)
+          throws CertificateException {
+      }
+
+      @Override public void checkServerTrusted(X509Certificate[] chain, String authType)
+          throws CertificateException {
+      }
+
+      @Override public X509Certificate[] getAcceptedIssuers() {
+        return new X509Certificate[0];
+      }
+    };
+
+    return new TrustManager[] {permissive};
+  }
+
   private static SSLSocketFactory createInsecureSslSocketFactory() {
     try {
       SSLContext context = SSLContext.getInstance("TLS");
-      TrustManager permissive = new X509TrustManager() {
-        @Override public void checkClientTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
-        }
-
-        @Override public void checkServerTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
-        }
-
-        @Override public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-      };
-      context.init(null, new TrustManager[] {permissive}, null);
+      context.init(null, createInsecureTrustManagers(), null);
       return context.getSocketFactory();
     } catch (Exception e) {
       throw new AssertionError(e);
