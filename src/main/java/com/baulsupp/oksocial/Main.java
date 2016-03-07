@@ -52,6 +52,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import okhttp3.Cache;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -116,7 +117,7 @@ public class Main extends HelpOption implements Runnable {
   public boolean version = false;
 
   @Option(name = {"--cache"}, description = "Cache directory")
-  public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
+  public File cacheDirectory = null;
 
   @Option(name = {"--protocols"}, description = "Protocols")
   public String protocols;
@@ -129,6 +130,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
+
+  @Option(name = {"--clientcert"}, description = "Send Client Certificate")
+  public File clientCert = null;
 
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
@@ -227,16 +231,28 @@ public class Main extends HelpOption implements Runnable {
     if (readTimeout != DEFAULT_TIMEOUT) {
       builder.readTimeout(readTimeout, SECONDS);
     }
+
+    TrustManager[] trustManagers = null;
+    KeyManager[] keyManagers = null;
+
     if (allowInsecure) {
-      builder.sslSocketFactory(createInsecureSslSocketFactory());
-      builder.hostnameVerifier(createInsecureHostnameVerifier());
-    } else {
-      builder.sslSocketFactory(
-          createClientSslSocketFactory(new File("/Users/yuri/clientkeystore"), "HdVP6uMemJVx8e"));
+      trustManagers = createInsecureTrustManagers();
       builder.hostnameVerifier(createInsecureHostnameVerifier());
     }
 
-    //builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    if (clientCert != null) {
+      char[] password = System.console().readPassword("keystore password: ");
+      keyManagers =
+          createLocalKeyManagers(clientCert, password);
+    }
+
+    if (keyManagers != null || trustManagers != null) {
+      builder.sslSocketFactory(createSslSocketFactory(keyManagers, trustManagers));
+    }
+
+    if (cacheDirectory != null) {
+      builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    }
 
     configureApiInterceptors(builder);
 
@@ -345,22 +361,27 @@ public class Main extends HelpOption implements Runnable {
     return request.build();
   }
 
-  private static SSLSocketFactory createClientSslSocketFactory(File keystore, String password) {
+  private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
+      TrustManager[] trustManagers) {
     try {
-      TrustManager[] trustManagers = createInsecureTrustManagers();
-
       SSLContext context = SSLContext.getInstance("TLS");
-
-      KeyStore keystore_client = KeyStore.getInstance("JKS");
-      keystore_client.load(new FileInputStream(keystore), password.toCharArray());
-      KeyManagerFactory kmf =
-          KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(keystore_client, password.toCharArray());
-      KeyManager[] keyManagers = kmf.getKeyManagers();
 
       context.init(keyManagers, trustManagers, null);
 
       return context.getSocketFactory();
+    } catch (Exception e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  private static KeyManager[] createLocalKeyManagers(File keystore, char[] password) {
+    try {
+      KeyStore keystore_client = KeyStore.getInstance("JKS");
+      keystore_client.load(new FileInputStream(keystore), password);
+      KeyManagerFactory kmf =
+          KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      kmf.init(keystore_client, password);
+      return kmf.getKeyManagers();
     } catch (Exception e) {
       throw new AssertionError(e);
     }
@@ -382,16 +403,6 @@ public class Main extends HelpOption implements Runnable {
     };
 
     return new TrustManager[] {permissive};
-  }
-
-  private static SSLSocketFactory createInsecureSslSocketFactory() {
-    try {
-      SSLContext context = SSLContext.getInstance("TLS");
-      context.init(null, createInsecureTrustManagers(), null);
-      return context.getSocketFactory();
-    } catch (Exception e) {
-      throw new AssertionError(e);
-    }
   }
 
   private static HostnameVerifier createInsecureHostnameVerifier() {
