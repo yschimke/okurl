@@ -150,7 +150,7 @@
         <version>2.6</version>
         <configuration>
           <descriptor>src/assembly/bundle.xml</descriptor>
-          <finalName>oksocial-${pom.version}</finalName>
+          <finalName>oksocial-${project.version}</finalName>
           <archive>
             <manifest>
               <mainClass>com.baulsupp.oksocial.Main</mainClass>

@@ -15,7 +15,7 @@ fi
 
 JAVA_CMD=java
 BCP=
-#DEBUG=-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.0.26:5005,suspend=y
+#DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
 
 if [ -x /usr/libexec/java_home ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 1.8)

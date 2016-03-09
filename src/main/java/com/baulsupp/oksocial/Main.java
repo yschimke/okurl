@@ -267,8 +267,9 @@ public class Main extends HelpOption implements Runnable {
 
     if (debug) {
       HttpLoggingInterceptor logging =
-          new HttpLoggingInterceptor(logger::info);
+          new HttpLoggingInterceptor();
       logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      builder.networkInterceptors().add(logging);
     }
 
     if (socksProxy != null) {
