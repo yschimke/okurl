@@ -61,11 +61,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
+  private static final Logger logger = Logger.getLogger("http");
+
   static final String NAME = "oksocial";
   static final int DEFAULT_TIMEOUT = -1;
 
@@ -159,10 +162,12 @@ public class Main extends HelpOption implements Runnable {
     if (showHelpIfRequested()) {
       return;
     }
+
     if (authorize == null && urls.isEmpty()) {
       Help.help(this.commandMetadata);
       return;
     }
+
     if (version) {
       System.out.println(NAME + " " + versionString());
       System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
@@ -259,6 +264,12 @@ public class Main extends HelpOption implements Runnable {
     }
 
     configureApiInterceptors(builder);
+
+    if (debug) {
+      HttpLoggingInterceptor logging =
+          new HttpLoggingInterceptor(logger::info);
+      logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    }
 
     if (socksProxy != null) {
       builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
