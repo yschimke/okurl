@@ -25,6 +25,7 @@ import com.baulsupp.oksocial.twitter.TwurlCompatibleCredentialsStore;
 import com.baulsupp.oksocial.uber.UberAuthInterceptor;
 import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
 import com.baulsupp.oksocial.uber.UberServerCredentials;
+import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.Help;
@@ -301,7 +302,7 @@ public class Main extends HelpOption implements Runnable {
       builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
 
       if (curl) {
-        builder.networkInterceptors().add(new CurlInterceptor());
+        builder.networkInterceptors().add(new CurlInterceptor(System.err::println));
       }
     } catch (IOException e) {
       throw new IllegalStateException("Unable to read twitter credentials", e);
