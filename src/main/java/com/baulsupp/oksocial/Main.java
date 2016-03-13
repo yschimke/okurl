@@ -139,6 +139,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
 
+  @Option(name = {"--esteid"}, description = "Send Estonian Client Certificate")
+  public boolean esteid = false;
+
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
   public InetAddress socksProxy;
 
@@ -254,6 +257,9 @@ public class Main extends HelpOption implements Runnable {
       char[] password = System.console().readPassword("keystore password: ");
       keyManagers =
           createLocalKeyManagers(clientCert, password);
+    } else if (esteid) {
+      char[] password = System.console().readPassword("estonian password: ");
+      keyManagers = createEstonianKeyManagers(password);
     }
 
     if (keyManagers != null || trustManagers != null) {
@@ -403,6 +409,14 @@ public class Main extends HelpOption implements Runnable {
           KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
       kmf.init(keystore_client, password);
       return kmf.getKeyManagers();
+    } catch (Exception e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  private static KeyManager[] createEstonianKeyManagers(char[] password) {
+    try {
+      return TestMain.getKeyManagers(password, 0);
     } catch (Exception e) {
       throw new AssertionError(e);
     }

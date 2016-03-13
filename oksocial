@@ -16,6 +16,7 @@ fi
 JAVA_CMD=java
 BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
+DEBUG=-Djavax.net.debug=ssl:handshake
 
 if [ -x /usr/libexec/java_home ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
