@@ -52,17 +52,6 @@
     </repository>
   </distributionManagement>
 
-  <repositories>
-    <repository>
-      <id>jitpack</id>
-      <url>https://jitpack.io</url>
-    </repository>
-    <repository>
-      <id>eu</id>
-      <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
@@ -97,7 +86,7 @@
     <dependency>
       <groupId>com.github.mrmike</groupId>
       <artifactId>ok2curl</artifactId>
-      <version>0.2.2</version>
+      <version>0.2.3</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -123,35 +112,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jcl</artifactId>
       <version>1.7.18</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-model</artifactId>
-      <version>4.6.0</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-spi</artifactId>
-      <version>4.6.0</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-token</artifactId>
-      <version>4.6.0</version>
-    </dependency>
-    <dependency>
-      <groupId>ee.sk</groupId>
-      <artifactId>digidoc4j</artifactId>
-      <version>1.0.2</version>
-      <scope>system</scope>
-      <systemPath>/Users/yuri/workspace/oksocial/lib/digidoc4j-1.0.2.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>ee.sk</groupId>
-      <artifactId>jdigidoc</artifactId>
-      <version>3.12.0-781</version>
-      <scope>system</scope>
-      <systemPath>/Users/yuri/workspace/oksocial/lib/jdigidoc-3.12.0-781.jar</systemPath>
     </dependency>
 
     <dependency>

@@ -68,8 +68,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
-  private static final Logger logger = Logger.getLogger("http");
-
   static final String NAME = "oksocial";
   static final int DEFAULT_TIMEOUT = -1;
 
@@ -139,8 +137,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
 
-  @Option(name = {"--esteid"}, description = "Send Estonian Client Certificate")
-  public boolean esteid = false;
+  @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate")
+  public boolean opensc = false;
 
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
   public InetAddress socksProxy;
@@ -186,7 +184,13 @@ public class Main extends HelpOption implements Runnable {
           new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
     }
 
-    client = createClient();
+    try {
+      client = createClient();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
     try {
       if (authorize != null) {
         authorizeApi();
@@ -235,7 +239,7 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private OkHttpClient createClient() {
+  private OkHttpClient createClient() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder.followSslRedirects(followRedirects);
     if (connectTimeout != DEFAULT_TIMEOUT) {
@@ -257,9 +261,9 @@ public class Main extends HelpOption implements Runnable {
       char[] password = System.console().readPassword("keystore password: ");
       keyManagers =
           createLocalKeyManagers(clientCert, password);
-    } else if (esteid) {
-      char[] password = System.console().readPassword("estonian password: ");
-      keyManagers = createEstonianKeyManagers(password);
+    } else if (opensc) {
+      char[] password = System.console().readPassword("smartcard password: ");
+      keyManagers = OpenSCUtil.getKeyManagers(password);
     }
 
     if (keyManagers != null || trustManagers != null) {
@@ -401,25 +405,14 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private static KeyManager[] createLocalKeyManagers(File keystore, char[] password) {
-    try {
-      KeyStore keystore_client = KeyStore.getInstance("JKS");
-      keystore_client.load(new FileInputStream(keystore), password);
-      KeyManagerFactory kmf =
-          KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(keystore_client, password);
-      return kmf.getKeyManagers();
-    } catch (Exception e) {
-      throw new AssertionError(e);
-    }
-  }
-
-  private static KeyManager[] createEstonianKeyManagers(char[] password) {
-    try {
-      return TestMain.getKeyManagers(password, 0);
-    } catch (Exception e) {
-      throw new AssertionError(e);
-    }
+  private static KeyManager[] createLocalKeyManagers(File keystore, char[] password)
+      throws Exception {
+    KeyStore keystore_client = KeyStore.getInstance("JKS");
+    keystore_client.load(new FileInputStream(keystore), password);
+    KeyManagerFactory kmf =
+        KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    kmf.init(keystore_client, password);
+    return kmf.getKeyManagers();
   }
 
   private static TrustManager[] createInsecureTrustManagers() {
