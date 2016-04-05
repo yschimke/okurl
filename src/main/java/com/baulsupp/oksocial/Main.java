@@ -36,9 +36,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Proxy;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -50,10 +50,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -393,16 +391,12 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
-      TrustManager[] trustManagers) {
-    try {
-      SSLContext context = SSLContext.getInstance("TLS");
+      TrustManager[] trustManagers) throws NoSuchAlgorithmException, KeyManagementException {
+    SSLContext context = SSLContext.getInstance("TLS");
 
-      context.init(keyManagers, trustManagers, null);
+    context.init(keyManagers, trustManagers, null);
 
-      return context.getSocketFactory();
-    } catch (Exception e) {
-      throw new AssertionError(e);
-    }
+    return context.getSocketFactory();
   }
 
   private static KeyManager[] createLocalKeyManagers(File keystore, char[] password)
@@ -416,29 +410,13 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private static TrustManager[] createInsecureTrustManagers() {
-    TrustManager permissive = new X509TrustManager() {
-      @Override public void checkClientTrusted(X509Certificate[] chain, String authType)
-          throws CertificateException {
-      }
-
-      @Override public void checkServerTrusted(X509Certificate[] chain, String authType)
-          throws CertificateException {
-      }
-
-      @Override public X509Certificate[] getAcceptedIssuers() {
-        return new X509Certificate[0];
-      }
-    };
+    TrustManager permissive = new InsecureTrustManager();
 
     return new TrustManager[] {permissive};
   }
 
   private static HostnameVerifier createInsecureHostnameVerifier() {
-    return new HostnameVerifier() {
-      @Override public boolean verify(String s, SSLSession sslSession) {
-        return true;
-      }
-    };
+    return new InsecureHostnameVerifier();
   }
 
   private void configureLogging() {
