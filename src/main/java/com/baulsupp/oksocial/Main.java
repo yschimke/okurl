@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -251,8 +250,8 @@ public class Main extends HelpOption implements Runnable {
     KeyManager[] keyManagers = null;
 
     if (allowInsecure) {
-      trustManagers = createInsecureTrustManagers();
-      builder.hostnameVerifier(createInsecureHostnameVerifier());
+      trustManagers = new TrustManager[] {new InsecureTrustManager()};
+      builder.hostnameVerifier(new InsecureHostnameVerifier());
     }
 
     if (clientCert != null) {
@@ -407,16 +406,6 @@ public class Main extends HelpOption implements Runnable {
         KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
     kmf.init(keystore_client, password);
     return kmf.getKeyManagers();
-  }
-
-  private static TrustManager[] createInsecureTrustManagers() {
-    TrustManager permissive = new InsecureTrustManager();
-
-    return new TrustManager[] {permissive};
-  }
-
-  private static HostnameVerifier createInsecureHostnameVerifier() {
-    return new InsecureHostnameVerifier();
   }
 
   private void configureLogging() {
