@@ -78,8 +78,6 @@ public class DnsSelector implements Dns {
         break;
     }
 
-    System.out.println(addresses);
-
     return addresses;
   }
 

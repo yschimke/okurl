@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.credentials;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
@@ -14,7 +15,7 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
     Process process =
         new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
             "-D", "oauth credentials", "-w")
-            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(new File("/dev/null"))
             .start();
 
     try {
