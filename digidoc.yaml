@@ -1,0 +1,162 @@
+PKCS11_MODULE: /Applications/qdigidocclient.app/Contents/MacOS/esteid-pkcs11.so
+
+DIGIDOC_CAS:
+- DIGIDOC_CA:
+    NAME: AS Sertifitseerimiskeskus
+    TRADENAME: SK
+    CERTS:
+      - jar://certs/EID-SK.crt
+      - jar://certs/ESTEID-SK.crt
+      - jar://certs/ESTEID-SK 2007.crt
+      - jar://certs/EID-SK 2007.crt
+      - jar://certs/JUUR-SK.crt
+      - jar://certs/KLASS3-SK.crt
+      - jar://certs/EECCRCA.crt
+      - jar://certs/ESTEID-SK 2011.crt
+      - jar://certs/ESTEID-SK 2015.crt
+      - jar://certs/EID-SK 2011.crt
+      - jar://certs/KLASS3-SK 2010.crt
+      - jar://certs/KLASS3-SK 2010 EECCRCA.crt
+      - jar://certs/TEST-SK.crt
+      - jar://certs/TEST EECCRCA.crt
+      - jar://certs/TEST ESTEID-SK 2011.crt
+      - jar://certs/TEST ESTEID-SK 2015.crt
+      - jar://certs/TEST EID-SK 2011.crt
+      - jar://certs/TEST KLASS3 2010.crt
+      - jar://certs/TEST Juur-SK.crt
+    OCSPS:
+      - OCSP:
+        CA_CN: ESTEID-SK
+        CA_CERT: jar://certs/ESTEID-SK 2007.crt
+        CN: ESTEID-SK 2007 OCSP RESPONDER
+        CERTS:
+         - jar://certs/ESTEID-SK 2007 OCSP.crt
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CA_CN: KLASS3-SK
+        CA_CERT: jar://certs/KLASS3-SK.crt
+        CN: KLASS3-SK OCSP RESPONDER
+        CERTS:
+         - jar://certs/KLASS3-SK OCSP.crt
+         - jar://certs/KLASS3-SK OCSP 2006.crt
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CA_CN: EID-SK
+        CA_CERT: jar://certs/EID-SK 2007.crt
+        CN: EID-SK 2007 OCSP RESPONDER
+        CERTS:
+         - jar://certs/EID-SK 2007 OCSP.crt
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/EID-SK 2007 OCSP.crt
+        CN: EID-SK OCSP RESPONDER 2007
+        CA_CERT: jar://certs/EID-SK 2007.crt
+        CA_CN: EID-SK 2007
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CN: ESTEID-SK 2007 OCSP RESPONDER
+        CERTS:
+         - jar://certs/ESTEID-SK 2007 OCSP.crt
+        CA_CERT: jar://certs/ESTEID-SK 2007.crt
+        CA_CN: ESTEID-SK 2007
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CN: ESTEID-SK 2007 OCSP RESPONDER 2010
+        CERTS:
+         - jar://certs/ESTEID-SK 2007 OCSP 2010.crt
+        CA_CERT: jar://certs/ESTEID-SK 2007.crt
+        CA_CN: ESTEID-SK 2007
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/EID-SK 2007 OCSP 2010.crt
+        CN: EID-SK 2007 OCSP RESPONDER 2010
+        CA_CERT: jar://certs/EID-SK 2007.crt
+        CA_CN: EID-SK 2007
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/EID-SK 2007 OCSP.crt
+        CN: EID-SK 2007 OCSP RESPONDER
+        CA_CERT: jar://certs/EID-SK 2007.crt
+        CA_CN: EID-SK 2007
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/ESTEID-SK OCSP 2005.crt
+        CN: ESTEID-SK OCSP RESPONDER 2005
+        CA_CERT: jar://certs/ESTEID-SK.crt
+        CA_CN: ESTEID-SK
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/SK OCSP 2011.crt
+        CN: SK OCSP RESPONDER 2011
+        CA_CERT: jar://certs/EECCRCA.crt
+        CA_CN: EE Certification Centre Root CA
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CA_CN: KLASS3-SK
+        CA_CERT: jar://certs/KLASS3-SK.crt
+        CN: KLASS3-SK OCSP RESPONDER 2009
+        CERTS:
+         - jar://certs/KLASS3-SK OCSP 2009.crt
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/ESTEID-SK OCSP.crt
+        CN: ESTEID-SK OCSP RESPONDER
+        CA_CERT: jar://certs/ESTEID-SK.crt
+        CA_CN: ESTEID-SK
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/EID-SK OCSP.crt
+         - jar://certs/EID-SK OCSP 2006.crt
+        CN: EID-SK OCSP RESPONDER
+        CA_CERT: jar://certs/EID-SK.crt
+        CA_CN: EID-SK
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/KLASS3-SK 2010 OCSP.crt
+        CN: KLASS3-SK 2010 OCSP RESPONDER
+        CA_CERT: jar://certs/KLASS3-SK 2010.crt
+        CA_CN: KLASS3-SK 2010
+        URL: http://ocsp.sk.ee
+      - OCSP:
+        CERTS:
+         - jar://certs/TEST-SK OCSP 2005.crt
+        CN: TEST-SK OCSP RESPONDER 2005
+        CA_CERT: jar://certs/TEST-SK.crt
+        CA_CN: TEST-SK
+        URL: http://demo.sk.ee/ocsp
+      - OCSP:
+        CERTS:
+         - jar://certs/TEST SK OCSP 2011.crt
+        CN: TEST of SK OCSP RESPONDER 2011
+        CA_CERT: jar://certs/TEST EECCRCA.crt
+        CA_CN: TEST of EE Certification Centre Root CA
+        URL: http://demo.sk.ee/ocsp
+      - OCSP:
+        CA_CN: TEST of ESTEID-SK 2011
+        CA_CERT: jar://certs/TEST ESTEID-SK 2011.crt
+        CN: TEST of SK OCSP RESPONDER 2011
+        CERTS:
+         - jar://certs/TEST SK OCSP 2011.crt
+        URL: http://demo.sk.ee/ocsp
+      - OCSP:
+        CERTS:
+         - jar://certs/TEST SK OCSP 2011.crt
+        CN: TEST of SK OCSP RESPONDER 2011
+        CA_CERT: jar://certs/KLASS3-SK 2010.crt
+        CA_CN: KLASS3-SK 2010
+        URL: http://demo.sk.ee/ocsp
+      - OCSP:
+        CERTS:
+         - jar://certs/SK_proxy_OCSP_responder_2009.pem.cer
+        CA_CN: KLASS3-SK
+        CA_CERT: jar://certs/KLASS3-SK.crt
+        CN: SK Proxy OCSP Responder 2009
+        URL: http://ocsp.sk.ee
