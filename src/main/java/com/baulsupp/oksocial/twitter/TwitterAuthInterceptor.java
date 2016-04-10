@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -122,7 +123,7 @@ public class TwitterAuthInterceptor implements Interceptor {
 
         KeyValueParser.StandardKeyValueParser bodyParser =
             new KeyValueParser.StandardKeyValueParser("&", "=");
-        bodyParser.parse(encodedBody, Arrays.<KeyValueHandler>asList(handler));
+        bodyParser.parse(encodedBody, Collections.singletonList(handler));
 
         javaParams.addAll(handler.toList());
       }

@@ -5,6 +5,7 @@ import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -22,9 +23,7 @@ public class PinAuthorisationFlow {
 
     String pin = promptForPin(requestCredentials);
 
-    TwitterCredentials accessCredentials = generateAccessToken(client, requestCredentials, pin);
-
-    return accessCredentials;
+    return generateAccessToken(client, requestCredentials, pin);
   }
 
   private static TwitterCredentials generateRequestToken(OkHttpClient client,
@@ -95,7 +94,7 @@ public class PinAuthorisationFlow {
 
     KeyValueParser.StandardKeyValueParser bodyParser =
         new KeyValueParser.StandardKeyValueParser("&", "=");
-    bodyParser.parse(tokenDetails, Arrays.<KeyValueHandler>asList(handler));
+    bodyParser.parse(tokenDetails, Collections.singletonList(handler));
 
     return handler.toMap();
   }
