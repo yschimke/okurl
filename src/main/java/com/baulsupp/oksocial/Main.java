@@ -51,6 +51,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -130,6 +132,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
+
+  @Option(name = {"--dns"}, description = "IP Preferences", allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
+  public String ipmode = "system";
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
@@ -246,11 +251,11 @@ public class Main extends HelpOption implements Runnable {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
-    TrustManager[] trustManagers = null;
+    X509TrustManager trustManager = null;
     KeyManager[] keyManagers = null;
 
     if (allowInsecure) {
-      trustManagers = new TrustManager[] {new InsecureTrustManager()};
+      trustManager = new InsecureTrustManager();
       builder.hostnameVerifier(new InsecureHostnameVerifier());
     }
 
@@ -263,8 +268,17 @@ public class Main extends HelpOption implements Runnable {
       keyManagers = OpenSCUtil.getKeyManagers(password);
     }
 
-    if (keyManagers != null || trustManagers != null) {
-      builder.sslSocketFactory(createSslSocketFactory(keyManagers, trustManagers));
+    builder.dns(DnsSelector.byName(ipmode));
+
+    if (keyManagers != null || trustManager != null) {
+      if (trustManager == null) {
+        TrustManagerFactory trustManagerFactory =
+            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init((KeyStore) null);
+        trustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
+      }
+
+      builder.sslSocketFactory(createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}), trustManager);
     }
 
     if (cacheDirectory != null) {
@@ -369,7 +383,7 @@ public class Main extends HelpOption implements Runnable {
     return RequestBody.create(MediaType.parse(mimeType), bodyData);
   }
 
-  Request createRequest(String url) {
+  private Request createRequest(String url) {
     Request.Builder request = new Request.Builder();
 
     request.url(url);

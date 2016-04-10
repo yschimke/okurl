@@ -19,7 +19,7 @@
   </developers>
 
   <properties>
-    <okhttp.version>3.2.0</okhttp.version>
+    <okhttp.version>3.3.0-SNAPSHOT</okhttp.version>
   </properties>
 
   <scm>
@@ -51,6 +51,13 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
