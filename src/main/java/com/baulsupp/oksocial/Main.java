@@ -127,6 +127,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
 
+  @Option(name = {"-6", "--ipv6"}, description = "Prefer IPv6")
+  public boolean ipv6 = false;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
 
@@ -227,6 +230,9 @@ public class Main extends HelpOption implements Runnable {
     if (allowInsecure) {
       builder.sslSocketFactory(createInsecureSslSocketFactory());
       builder.hostnameVerifier(createInsecureHostnameVerifier());
+    }
+    if (ipv6) {
+      builder.dns(new DnsSelector(DnsSelector.Mode.IPV6_FIRST));
     }
 
     builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
