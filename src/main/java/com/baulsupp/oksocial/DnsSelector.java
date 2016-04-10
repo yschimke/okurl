@@ -14,6 +14,7 @@ import okhttp3.Dns;
 import static java.util.stream.Collectors.toList;
 
 public class DnsSelector implements Dns {
+
   public enum Mode {
     SYSTEM,
     IPV6_FIRST,
@@ -30,6 +31,29 @@ public class DnsSelector implements Dns {
     this.mode = mode;
   }
 
+  public static Dns byName(String ipMode) {
+    Mode selectedMode;
+    switch (ipMode) {
+      case "ipv6":
+        selectedMode = Mode.IPV6_FIRST;
+        break;
+      case "ipv4":
+        selectedMode = Mode.IPV4_FIRST;
+        break;
+      case "ipv6only":
+        selectedMode = Mode.IPV6_ONLY;
+        break;
+      case "ipv4only":
+        selectedMode = Mode.IPV4_ONLY;
+        break;
+      default:
+        selectedMode = Mode.SYSTEM;
+        break;
+    }
+
+    return new DnsSelector(selectedMode);
+  }
+
   @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
     List<InetAddress> addresses = overrides.get(hostname.toLowerCase());
 
@@ -42,15 +66,19 @@ public class DnsSelector implements Dns {
     switch (mode) {
       case IPV6_FIRST:
         addresses.sort(Comparator.comparing(Inet4Address.class::isInstance));
-        return addresses;
+        break;
       case IPV4_FIRST:
         addresses.sort(Comparator.comparing(Inet4Address.class::isInstance).reversed());
-        return addresses;
+        break;
       case IPV6_ONLY:
-        return addresses.stream().filter(Inet4Address.class::isInstance).collect(toList());
+        addresses = addresses.stream().filter(Inet6Address.class::isInstance).collect(toList());
+        break;
       case IPV4_ONLY:
-        return addresses.stream().filter(Inet6Address.class::isInstance).collect(toList());
+        addresses = addresses.stream().filter(Inet4Address.class::isInstance).collect(toList());
+        break;
     }
+
+    System.out.println(addresses);
 
     return addresses;
   }
