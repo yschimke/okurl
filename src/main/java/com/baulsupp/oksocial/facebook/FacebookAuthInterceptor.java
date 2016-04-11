@@ -10,12 +10,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class FacebookAuthInterceptor implements AuthInterceptor {
-  private final CredentialsStore<FacebookCredentials> credentialsStore;
+public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredentials> {
+  private final CredentialsStore<FacebookCredentials> credentialsStore =
+      CredentialsStore.create(new FacebookOSXCredentials());
+
   private FacebookCredentials credentials = null;
 
   public FacebookAuthInterceptor() {
-    credentialsStore = CredentialsStore.create(new FacebookOSXCredentials());
   }
 
   @Override public String mapUrl(String alias, String url) {
@@ -27,7 +28,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor {
     }
   }
 
-  private FacebookCredentials getCredentials() {
+  public FacebookCredentials credentials() {
     if (credentials == null) {
       credentials = credentialsStore.readDefaultCredentials();
     }
@@ -35,10 +36,14 @@ public class FacebookAuthInterceptor implements AuthInterceptor {
     return credentials;
   }
 
+  @Override public CredentialsStore credentialsStore() {
+    return credentialsStore;
+  }
+
   @Override public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    String token = getCredentials().accessToken;
+    String token = credentials().accessToken;
     //      token = "CAAH0ZBiEkcg8BAPp8tVQsegHnJUgw6gifx63JfF4LRwZA5xZCl58HAzpYiZADDKIkU0xA4sIKjGO4pYwLOYm3QarQ2r0nvfQb4qp8FHSoFl8zzLTv1xuUDxup2xe3SSgN5JtAofMjL27P1ZC1s2sg1izAczUcvaINVlIa5YHje58sByuViQAK1jle573k8uKNw3OVMUEtpfe4aZAB2ZA5s5iZBkU0iJkn7UZD";
 
     HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();

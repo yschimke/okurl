@@ -23,6 +23,10 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
     return serviceCredentials.serviceName();
   }
 
+  @Override public String credentialsString(T credentials) {
+    return serviceCredentials.formatCredentialsString(credentials);
+  }
+
   @Override public T readDefaultCredentials() {
     try {
       Process process =

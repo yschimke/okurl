@@ -10,13 +10,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class UberAuthInterceptor implements AuthInterceptor {
-  private final CredentialsStore<UberServerCredentials> credentialsStore;
+public class UberAuthInterceptor implements AuthInterceptor<UberServerCredentials> {
+  private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberOSXCredentials());
   private UberServerCredentials credentials = null;
-
-  public UberAuthInterceptor() {
-    credentialsStore = CredentialsStore.create(new UberOSXCredentials());
-  }
 
   @Override public String mapUrl(String alias, String url) {
     switch (alias) {
@@ -30,7 +26,7 @@ public class UberAuthInterceptor implements AuthInterceptor {
   @Override public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    String token = getCredentials().serverToken;
+    String token = credentials().serverToken;
 
     request =
         request.newBuilder().addHeader("Authorization", "Token " + token).build();
@@ -38,7 +34,7 @@ public class UberAuthInterceptor implements AuthInterceptor {
     return chain.proceed(request);
   }
 
-  private UberServerCredentials getCredentials() {
+  public UberServerCredentials credentials() {
     if (credentials == null) {
       credentials = credentialsStore.readDefaultCredentials();
     }
@@ -46,10 +42,14 @@ public class UberAuthInterceptor implements AuthInterceptor {
     return credentials;
   }
 
+  @Override public CredentialsStore<UberServerCredentials> credentialsStore() {
+    return credentialsStore;
+  }
+
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return getCredentials() != null && UberUtil.API_HOSTS.contains(host);
+    return credentials() != null && UberUtil.API_HOSTS.contains(host);
   }
 
   @Override public void authorize(OkHttpClient client) {

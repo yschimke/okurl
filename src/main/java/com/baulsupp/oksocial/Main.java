@@ -124,8 +124,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"-o", "--output"}, description = "Output file/directory")
   public File outputDirectory;
 
-  @Option(name = {"--authorize"}, description = "Authorize API (twitter, uber)")
-  public String authorize;
+  @Option(name = {"--authorize"}, description = "Authorize API")
+  public boolean authorize;
 
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
@@ -143,6 +143,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
   public InetAddress socksProxy;
 
+  @Option(name = {"--show-credentials"}, description = "Show Credentials")
+  public boolean showCredentials = false;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
 
@@ -158,11 +161,6 @@ public class Main extends HelpOption implements Runnable {
     configureLogging();
 
     if (showHelpIfRequested()) {
-      return;
-    }
-
-    if (authorize == null && urls.isEmpty()) {
-      Help.help(this.commandMetadata);
       return;
     }
 
@@ -188,15 +186,30 @@ public class Main extends HelpOption implements Runnable {
     }
 
     try {
-      if (authorize != null) {
+      if (showCredentials) {
+        for (AuthInterceptor a : serviceInterceptor.services()) {
+          printKnownCredentials(a);
+        }
+
+        return;
+      }
+
+      if (authorize) {
         if (urls.size() != 1) {
           System.err.println("only one url supported at a time");
+          return;
+        }
+
+        if (urls.isEmpty()) {
+          Help.help(this.commandMetadata);
           return;
         }
 
         String url = mapAlias(urls.get(0));
 
         authorizeApi(HttpUrl.parse(url));
+
+        return;
       }
 
       for (String url : urls) {
@@ -223,6 +236,13 @@ public class Main extends HelpOption implements Runnable {
     } finally {
       client.connectionPool().evictAll();
     }
+  }
+
+  private <T> void printKnownCredentials(AuthInterceptor<T> a) {
+    T credentials = a.credentials();
+    String credentialsString =
+        credentials != null ? a.credentialsStore().credentialsString(credentials) : "None";
+    System.out.println(a.credentialsStore().apiHost() + " " + credentialsString);
   }
 
   private String mapAlias(String url) {

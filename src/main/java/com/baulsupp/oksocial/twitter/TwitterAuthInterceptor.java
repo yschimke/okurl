@@ -28,19 +28,15 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
 
-public class TwitterAuthInterceptor implements AuthInterceptor {
+public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
   private final SecureRandom secureRandom = new SecureRandom();
 
   public static final TwitterCredentials TEST_CREDENTIALS =
       new TwitterCredentials(null, "pKrYKZjbhN7rmtWXenRgr8kHY",
           "FpOK8mUesjggvZ7YprMnhStKmdyVcikNYtjNm1PetymgfE32jJ", null, "");
 
-  private CredentialsStore<TwitterCredentials> credentialsStore;
+  private CredentialsStore<TwitterCredentials> credentialsStore = CredentialsStore.create(new TwitterOSXCredentials());
   private TwitterCredentials credentials = null;
-
-  public TwitterAuthInterceptor() {
-    credentialsStore = CredentialsStore.create(new TwitterOSXCredentials());
-  }
 
   public TwitterAuthInterceptor(TwitterCredentials credentials) {
     this.credentials = credentials;
@@ -55,7 +51,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor {
     }
   }
 
-  private TwitterCredentials getCredentials() {
+  public TwitterCredentials credentials() {
     if (credentials == null) {
       credentials = credentialsStore.readDefaultCredentials();
     }
@@ -63,10 +59,14 @@ public class TwitterAuthInterceptor implements AuthInterceptor {
     return credentials;
   }
 
+  public CredentialsStore<TwitterCredentials> credentialsStore() {
+    return credentialsStore;
+  }
+
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return getCredentials() != null && TwitterUtil.TWITTER_API_HOSTS.contains(host);
+    return credentials() != null && TwitterUtil.TWITTER_API_HOSTS.contains(host);
   }
 
   @Override public Response intercept(Interceptor.Chain chain) throws IOException {

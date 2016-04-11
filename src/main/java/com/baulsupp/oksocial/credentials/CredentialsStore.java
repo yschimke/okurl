@@ -1,6 +1,11 @@
 package com.baulsupp.oksocial.credentials;
 
 public interface CredentialsStore<T> {
+
+  String apiHost();
+
+  String serviceName();
+
   T readDefaultCredentials();
 
   void storeCredentials(T credentials);
@@ -9,4 +14,6 @@ public interface CredentialsStore<T> {
     // TODO platform support
     return new OSXCredentialsStore<R>(serviceCredentials);
   }
+
+  String credentialsString(T credentials);
 }
