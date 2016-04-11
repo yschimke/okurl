@@ -26,10 +26,12 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
   @Override public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    String token = credentials().serverToken;
+    if (credentials() != null) {
+      String token = credentials().serverToken;
 
-    request =
-        request.newBuilder().addHeader("Authorization", "Token " + token).build();
+      request =
+          request.newBuilder().addHeader("Authorization", "Token " + token).build();
+    }
 
     return chain.proceed(request);
   }
@@ -49,7 +51,7 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return credentials() != null && UberUtil.API_HOSTS.contains(host);
+    return UberUtil.API_HOSTS.contains(host);
   }
 
   @Override public void authorize(OkHttpClient client) {

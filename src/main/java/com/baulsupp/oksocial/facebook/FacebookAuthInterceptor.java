@@ -43,13 +43,14 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
   @Override public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    String token = credentials().accessToken;
-    //      token = "CAAH0ZBiEkcg8BAPp8tVQsegHnJUgw6gifx63JfF4LRwZA5xZCl58HAzpYiZADDKIkU0xA4sIKjGO4pYwLOYm3QarQ2r0nvfQb4qp8FHSoFl8zzLTv1xuUDxup2xe3SSgN5JtAofMjL27P1ZC1s2sg1izAczUcvaINVlIa5YHje58sByuViQAK1jle573k8uKNw3OVMUEtpfe4aZAB2ZA5s5iZBkU0iJkn7UZD";
+    if (credentials() != null) {
+      String token = credentials().accessToken;
 
-    HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
+      HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
 
-    request =
-        request.newBuilder().url(newUrl).build();
+      request =
+          request.newBuilder().url(newUrl).build();
+    }
 
     return chain.proceed(request);
   }

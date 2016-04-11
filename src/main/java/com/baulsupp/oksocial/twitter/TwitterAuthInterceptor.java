@@ -38,6 +38,9 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   private CredentialsStore<TwitterCredentials> credentialsStore = CredentialsStore.create(new TwitterOSXCredentials());
   private TwitterCredentials credentials = null;
 
+  public TwitterAuthInterceptor() {
+  }
+
   public TwitterAuthInterceptor(TwitterCredentials credentials) {
     this.credentials = credentials;
   }
@@ -66,15 +69,17 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return credentials() != null && TwitterUtil.TWITTER_API_HOSTS.contains(host);
+    return TwitterUtil.TWITTER_API_HOSTS.contains(host);
   }
 
   @Override public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    String authHeader = generateAuthorization(request);
-    request =
-        request.newBuilder().addHeader("Authorization", authHeader).build();
+    if (credentials() != null) {
+      String authHeader = generateAuthorization(request);
+      request =
+          request.newBuilder().addHeader("Authorization", authHeader).build();
+    }
 
     return chain.proceed(request);
   }

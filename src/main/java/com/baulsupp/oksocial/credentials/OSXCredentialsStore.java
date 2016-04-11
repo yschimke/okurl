@@ -31,7 +31,7 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
     try {
       Process process =
           new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
-              "-D", "oauth credentials", "-w")
+              "-D", "oauth", "-w")
               .redirectError(new File("/dev/null"))
               .start();
 

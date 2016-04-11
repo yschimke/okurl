@@ -195,17 +195,23 @@ public class Main extends HelpOption implements Runnable {
       }
 
       if (authorize) {
-        if (urls.size() != 1) {
-          System.err.println("only one url supported at a time");
+        if (urls.size() > 1) {
+          System.err.println("authorize requires a single url");
           return;
         }
 
+        String url;
+
         if (urls.isEmpty()) {
+          url = mapAlias("/");
+        } else {
+          url = mapAlias(urls.get(0));
+        }
+
+        if (url.equals("/")) {
           Help.help(this.commandMetadata);
           return;
         }
-
-        String url = mapAlias(urls.get(0));
 
         authorizeApi(HttpUrl.parse(url));
 
@@ -266,6 +272,7 @@ public class Main extends HelpOption implements Runnable {
         OkHttpClient client2 = b.build();
 
         a.authorize(client2);
+        return;
       }
     }
 
