@@ -1,9 +1,8 @@
 package com.baulsupp.oksocial.facebook;
 
-import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
+import com.baulsupp.oksocial.credentials.ServiceCredentials;
 
-public class FacebookOSXCredentialsStore extends OSXCredentialsStore<FacebookCredentials> {
-
+public class FacebookOSXCredentials implements ServiceCredentials<FacebookCredentials> {
   @Override public String apiHost() {
     return "graph.facebook.com";
   }

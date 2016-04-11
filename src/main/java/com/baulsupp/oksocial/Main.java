@@ -15,21 +15,10 @@
  */
 package com.baulsupp.oksocial;
 
-import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.facebook.FacebookAuthInterceptor;
-import com.baulsupp.oksocial.facebook.FacebookCredentials;
-import com.baulsupp.oksocial.facebook.FacebookOSXCredentialsStore;
-import com.baulsupp.oksocial.facebook.LoginAuthFlow;
-import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
-import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
-import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
-import com.baulsupp.oksocial.twitter.TwurlCompatibleCredentialsStore;
-import com.baulsupp.oksocial.uber.UberAuthInterceptor;
-import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
-import com.baulsupp.oksocial.uber.UberServerCredentials;
-import com.google.common.collect.Maps;
 import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
@@ -46,7 +35,6 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -60,6 +48,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -159,14 +148,7 @@ public class Main extends HelpOption implements Runnable {
 
   private OkHttpClient client;
 
-  private CredentialsStore<TwitterCredentials> twitterCredentialsStore =
-      new TwurlCompatibleCredentialsStore();
-
-  private CredentialsStore<UberServerCredentials> uberCredentialsStore =
-      new UberOSXCredentialsStore();
-
-  private CredentialsStore<FacebookCredentials> facebookCredentialsStore =
-      new FacebookOSXCredentialsStore();
+  private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -207,7 +189,14 @@ public class Main extends HelpOption implements Runnable {
 
     try {
       if (authorize != null) {
-        authorizeApi();
+        if (urls.size() != 1) {
+          System.err.println("only one url supported at a time");
+          return;
+        }
+
+        String url = mapAlias(urls.get(0));
+
+        authorizeApi(HttpUrl.parse(url));
       }
 
       for (String url : urls) {
@@ -218,7 +207,7 @@ public class Main extends HelpOption implements Runnable {
         }
 
         try {
-          url = checkAlias(url);
+          url = mapAlias(url);
 
           Request request = createRequest(url);
 
@@ -236,65 +225,31 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private Map<String, String> readAliasMap() throws IOException {
-    Map<String, String> m = Maps.newHashMap();
-
-    m.put("twitterapi", "https://api.twitter.com%s");
-    m.put("fbgraph", "https://graph.facebook.com%s");
-    m.put("uberapi", "https://api.uber.com%s");
-
-    // TODO make this configurable only, possibly without the cute basename and system property
-    //    File aliasFile = new File(System.getenv("HOME"), ".oksocial.alias");
-    //
-    //    if (aliasFile.isFile()) {
-    //      String content = Okio.buffer(Okio.source(aliasFile)).readString(Charset.defaultCharset());
-    //
-    //
-    //    }
-
-    return m;
-  }
-
-  private String checkAlias(String url) throws IOException {
+  private String mapAlias(String url) {
     String alias = System.getProperty("command.name", "oksocial");
 
-    if (!alias.equals("oksocial")) {
-      String urlFormat = readAliasMap().get(alias);
-
-      if (urlFormat != null) {
-        url = String.format(urlFormat, url);
+    for (AuthInterceptor a : serviceInterceptor.services()) {
+      String newUrl = a.mapUrl(alias, url);
+      if (newUrl != null) {
+        return newUrl;
       }
     }
 
     return url;
   }
 
-  private void authorizeApi() {
-    try {
-      if ("twitter".equals(authorize)) {
-        System.err.println("Authorising Twitter API");
-        TwitterCredentials newCredentials =
-            PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);
+  private void authorizeApi(HttpUrl url) {
+    for (AuthInterceptor a : serviceInterceptor.services()) {
+      if (a.supportsUrl(url)) {
+        OkHttpClient.Builder b = client.newBuilder();
+        b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
+        OkHttpClient client2 = b.build();
 
-        twitterCredentialsStore.storeCredentials(newCredentials);
-        client = TwitterAuthInterceptor.updateCredentials(client, newCredentials);
-      } else if ("uber".equals(authorize)) {
-        char[] password = System.console().readPassword("Uber Server Token: ");
-
-        if (password != null) {
-          UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
-          uberCredentialsStore.storeCredentials(newCredentials);
-          client = UberAuthInterceptor.updateCredentials(client, newCredentials);
-        }
-      } else if ("facebook".equals(authorize)) {
-        System.err.println("Authorising Facebook API");
-        FacebookCredentials newCredentials = LoginAuthFlow.login(client);
-        facebookCredentialsStore.storeCredentials(newCredentials);
-        client = FacebookAuthInterceptor.updateCredentials(client, newCredentials);
+        a.authorize(client2);
       }
-    } catch (IOException e) {
-      e.printStackTrace();
     }
+
+    throw new IllegalStateException("no auth found");
   }
 
   private OkHttpClient createClient() throws Exception {
@@ -365,31 +320,14 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
-    try {
-      builder.networkInterceptors().add(new TwitterCachingInterceptor());
+    builder.addNetworkInterceptor(new TwitterCachingInterceptor());
 
-      TwitterCredentials twitterCredentials = twitterCredentialsStore.readDefaultCredentials();
-      if (twitterCredentials != null) {
-        builder.networkInterceptors().add(new TwitterAuthInterceptor(twitterCredentials));
-      }
+    builder.addNetworkInterceptor(serviceInterceptor);
 
-      UberServerCredentials uberCredentials = uberCredentialsStore.readDefaultCredentials();
-      if (uberCredentials != null) {
-        builder.networkInterceptors().add(new UberAuthInterceptor(uberCredentials));
-      }
+    builder.addNetworkInterceptor(new TwitterDeflatedResponseInterceptor());
 
-      FacebookCredentials facebookCredentials = facebookCredentialsStore.readDefaultCredentials();
-      if (facebookCredentials != null) {
-        builder.networkInterceptors().add(new FacebookAuthInterceptor(facebookCredentials));
-      }
-
-      builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
-
-      if (curl) {
-        builder.networkInterceptors().add(new CurlInterceptor(System.err::println));
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to read twitter credentials", e);
+    if (curl) {
+      builder.addNetworkInterceptor(new CurlInterceptor(System.err::println));
     }
   }
 

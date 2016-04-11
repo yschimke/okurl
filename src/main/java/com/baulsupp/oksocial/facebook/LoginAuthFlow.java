@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.LocalServer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import com.google.common.base.Charsets;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
@@ -12,49 +13,53 @@ import okhttp3.Response;
 
 public class LoginAuthFlow {
 
-  public static FacebookCredentials login(OkHttpClient client) throws IOException {
-    String clientId = System.console().readLine("Facebook Client Id: ");
-    String clientSecret = new String(System.console().readPassword("Facebook Client Secret: "));
-    String scopes = System.console().readLine("Scopes: ");
-
-    LocalServer s = new LocalServer("localhost", 3000);
-
+  public static FacebookCredentials login(OkHttpClient client) {
     try {
-      String serverUri = s.getRedirectUri();
+      String clientId = System.console().readLine("Facebook Client Id: ");
+      String clientSecret = new String(System.console().readPassword("Facebook Client Secret: "));
+      String scopes = System.console().readLine("Scopes: ");
 
-      String loginUrl = "https://www.facebook.com/dialog/oauth"
-          + "?client_id=" + clientId
-          + "&redirect_uri=" + serverUri
-          + "&scope=" + scopes;
+      LocalServer s = new LocalServer("localhost", 3000);
 
-      ConsoleHandler.openLink(loginUrl);
+      try {
+        String serverUri = s.getRedirectUri();
 
-      String code = s.waitForCode();
+        String loginUrl = "https://www.facebook.com/dialog/oauth"
+            + "?client_id=" + clientId
+            + "&redirect_uri=" + serverUri
+            + "&scope=" + scopes;
 
-      String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
-          + "?client_id=" + clientId
-          + "&redirect_uri=" + serverUri
-          + "&client_secret=" + clientSecret
-          + "&code=" + code;
+        ConsoleHandler.openLink(loginUrl);
 
-      String shortTokenJson = makeRequest(client, tokenUrl);
+        String code = s.waitForCode();
 
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode tree = mapper.readTree(shortTokenJson);
+        String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
+            + "?client_id=" + clientId
+            + "&redirect_uri=" + serverUri
+            + "&client_secret=" + clientSecret
+            + "&code=" + code;
 
-      String shortToken = tree.get("access_token").asText();
+        String shortTokenJson = makeRequest(client, tokenUrl);
 
-      String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
-          + "?grant_type=fb_exchange_token"
-          + "&client_id=" + clientId
-          + "&client_secret=" + clientSecret
-          + "&fb_exchange_token=" + shortToken;
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode tree = mapper.readTree(shortTokenJson);
 
-      String longTokenBody = makeRequest(client, exchangeUrl);
+        String shortToken = tree.get("access_token").asText();
 
-      return new FacebookCredentials(parseExchangeRequest(longTokenBody));
-    } finally {
-      s.stop();
+        String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
+            + "?grant_type=fb_exchange_token"
+            + "&client_id=" + clientId
+            + "&client_secret=" + clientSecret
+            + "&fb_exchange_token=" + shortToken;
+
+        String longTokenBody = makeRequest(client, exchangeUrl);
+
+        return new FacebookCredentials(parseExchangeRequest(longTokenBody));
+      } finally {
+        s.stop();
+      }
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
     }
   }
 

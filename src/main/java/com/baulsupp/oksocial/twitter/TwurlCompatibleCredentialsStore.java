@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.Util;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import java.io.File;
 import java.io.IOException;
 
@@ -9,10 +10,10 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
   private TwurlCredentialsStore twurlStore =
       new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
 
-  private TwitterOSXCredentialsStore nativeStore;
+  private OSXCredentialsStore<TwitterCredentials> nativeStore = null;
 
   public TwurlCompatibleCredentialsStore() {
-    nativeStore = Util.isOSX() ? new TwitterOSXCredentialsStore() : null;
+    nativeStore = Util.isOSX() ? new OSXCredentialsStore<>(new TwitterOSXCredentials()) : null;
   }
 
   @Override public TwitterCredentials readDefaultCredentials() throws IOException {

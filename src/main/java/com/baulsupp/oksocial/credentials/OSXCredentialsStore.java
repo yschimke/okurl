@@ -7,10 +7,20 @@ import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
 
-public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
-  public abstract String apiHost();
+public class OSXCredentialsStore<T> implements CredentialsStore<T> {
+  private ServiceCredentials<T> serviceCredentials;
 
-  public abstract String serviceName();
+  public OSXCredentialsStore(ServiceCredentials<T> serviceCredentials) {
+    this.serviceCredentials = serviceCredentials;
+  }
+
+  public String apiHost() {
+    return serviceCredentials.apiHost();
+  }
+
+  public String serviceName() {
+    return serviceCredentials.serviceName();
+  }
 
   @Override public T readDefaultCredentials() throws IOException {
     Process process =
@@ -44,7 +54,7 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
 
       BufferedSource stdout = Okio.buffer(Okio.source(process.getInputStream()));
 
-      return parseCredentialsString(stdout.readUtf8LineStrict());
+      return serviceCredentials.parseCredentialsString(stdout.readUtf8LineStrict());
     } catch (InterruptedException e) {
       throw new IOException(e);
     } finally {
@@ -55,7 +65,7 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
   }
 
   @Override public void storeCredentials(T credentials) throws IOException {
-    String credentialsString = formatCredentialsString(credentials);
+    String credentialsString = serviceCredentials.formatCredentialsString(credentials);
 
     Process process =
         new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", apiHost(),
@@ -80,8 +90,4 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
       }
     }
   }
-
-  public abstract T parseCredentialsString(String s);
-
-  public abstract String formatCredentialsString(T credentials);
 }

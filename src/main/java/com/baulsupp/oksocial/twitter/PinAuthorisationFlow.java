@@ -1,10 +1,10 @@
 package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.ConsoleHandler;
+import com.google.common.base.Throwables;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import okhttp3.MediaType;
@@ -17,26 +17,32 @@ public class PinAuthorisationFlow {
   private static final MediaType FORM_URL_ENCODED =
       MediaType.parse("application/x-www-form-urlencoded");
 
-  public static TwitterCredentials authorise(OkHttpClient client, TwitterCredentials unauthed)
-      throws IOException {
-    TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
+  public static TwitterCredentials authorise(OkHttpClient client, TwitterCredentials unauthed) {
+    try {
+      TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
 
-    String pin = promptForPin(requestCredentials);
+      String pin = promptForPin(requestCredentials);
 
-    return generateAccessToken(client, requestCredentials, pin);
+      return generateAccessToken(client, requestCredentials, pin);
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   private static TwitterCredentials generateRequestToken(OkHttpClient client,
       TwitterCredentials unauthed) throws IOException {
-    OkHttpClient client2 = TwitterAuthInterceptor.updateCredentials(client, unauthed);
-
     RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_callback=oob");
     Request request =
         new Request.Builder().url("https://api.twitter.com/oauth/request_token")
             .post(body)
             .build();
 
-    Response response = client2.newCall(request).execute();
+    request = request.newBuilder()
+        .header("Authorization",
+            new TwitterAuthInterceptor(unauthed).generateAuthorization(request))
+        .build();
+
+    Response response = client.newCall(request).execute();
 
     try {
       if (!response.isSuccessful()) {
@@ -63,15 +69,18 @@ public class PinAuthorisationFlow {
 
   private static TwitterCredentials generateAccessToken(OkHttpClient client,
       TwitterCredentials requestCredentials, String pin) throws IOException {
-    OkHttpClient client3 = TwitterAuthInterceptor.updateCredentials(client, requestCredentials);
-
     RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_verifier=" + pin);
     Request request =
         new Request.Builder().url("https://api.twitter.com/oauth/access_token")
             .post(body)
             .build();
 
-    Response response = client3.newCall(request).execute();
+    request = request.newBuilder()
+        .header("Authorization",
+            new TwitterAuthInterceptor(requestCredentials).generateAuthorization(request))
+        .build();
+
+    Response response = client.newCall(request).execute();
 
     try {
       if (!response.isSuccessful()) {
