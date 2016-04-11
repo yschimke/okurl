@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.credentials;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,8 @@ public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
   @Override public T readDefaultCredentials() throws IOException {
     Process process =
         new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
-            "-D", "oauth", "-w")
+            "-D", "oauth credentials", "-w")
+            .redirectError(new File("/dev/null"))
             .start();
 
     try {

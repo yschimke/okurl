@@ -28,7 +28,7 @@ public class TwitterDeflatedResponseInterceptor implements Interceptor {
     return response;
   }
 
-  private ResponseBody inflateBody(ResponseBody origBody) throws IOException {
+  private ResponseBody inflateBody(ResponseBody origBody) {
     Inflater inflater = new Inflater();
     BufferedSource realSource = origBody.source();
     InflaterSource s = new InflaterSource(realSource, inflater);

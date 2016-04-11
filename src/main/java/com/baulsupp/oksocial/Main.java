@@ -30,17 +30,20 @@ import com.baulsupp.oksocial.uber.UberAuthInterceptor;
 import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
 import com.baulsupp.oksocial.uber.UberServerCredentials;
 import com.google.common.collect.Maps;
-import io.airlift.command.Arguments;
-import io.airlift.command.Command;
-import io.airlift.command.Help;
-import io.airlift.command.HelpOption;
-import io.airlift.command.Option;
-import io.airlift.command.SingleCommand;
+import com.moczul.ok2curl.CurlInterceptor;
+import io.airlift.airline.Arguments;
+import io.airlift.airline.Command;
+import io.airlift.airline.Help;
+import io.airlift.airline.HelpOption;
+import io.airlift.airline.Option;
+import io.airlift.airline.SingleCommand;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.net.Proxy;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +52,12 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.MediaType;
@@ -63,7 +67,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
-import okio.Okio;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -123,7 +127,7 @@ public class Main extends HelpOption implements Runnable {
   public boolean version = false;
 
   @Option(name = {"--cache"}, description = "Cache directory")
-  public File cacheDirectory = new File(System.getProperty("user.home"), ".oksocial.cache");
+  public File cacheDirectory = null;
 
   @Option(name = {"--protocols"}, description = "Protocols")
   public String protocols;
@@ -137,6 +141,19 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
 
+  @Option(name = {"--dns"}, description = "IP Preferences", allowedValues = {"system", "ipv4",
+      "ipv6", "ipv4only", "ipv6only"})
+  public String ipmode = "system";
+
+  @Option(name = {"--clientcert"}, description = "Send Client Certificate")
+  public File clientCert = null;
+
+  @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate")
+  public boolean opensc = false;
+
+  @Option(name = {"--socks"}, description = "Use SOCKS proxy")
+  public InetAddress socksProxy;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
 
@@ -149,7 +166,7 @@ public class Main extends HelpOption implements Runnable {
       new UberOSXCredentialsStore();
 
   private CredentialsStore<FacebookCredentials> facebookCredentialsStore =
-          new FacebookOSXCredentialsStore();
+      new FacebookOSXCredentialsStore();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -161,10 +178,12 @@ public class Main extends HelpOption implements Runnable {
     if (showHelpIfRequested()) {
       return;
     }
+
     if (authorize == null && urls.isEmpty()) {
       Help.help(this.commandMetadata);
       return;
     }
+
     if (version) {
       System.out.println(NAME + " " + versionString());
       System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
@@ -179,8 +198,13 @@ public class Main extends HelpOption implements Runnable {
           new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
     }
 
-    client = createClient();
-    logger.log(Level.FINE, client.toString());
+    try {
+      client = createClient();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
     try {
       if (authorize != null) {
         authorizeApi();
@@ -220,13 +244,13 @@ public class Main extends HelpOption implements Runnable {
     m.put("uberapi", "https://api.uber.com%s");
 
     // TODO make this configurable only, possibly without the cute basename and system property
-//    File aliasFile = new File(System.getenv("HOME"), ".oksocial.alias");
-//
-//    if (aliasFile.isFile()) {
-//      String content = Okio.buffer(Okio.source(aliasFile)).readString(Charset.defaultCharset());
-//
-//
-//    }
+    //    File aliasFile = new File(System.getenv("HOME"), ".oksocial.alias");
+    //
+    //    if (aliasFile.isFile()) {
+    //      String content = Okio.buffer(Okio.source(aliasFile)).readString(Charset.defaultCharset());
+    //
+    //
+    //    }
 
     return m;
   }
@@ -273,7 +297,7 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private OkHttpClient createClient() {
+  private OkHttpClient createClient() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder.followSslRedirects(followRedirects);
     if (connectTimeout != DEFAULT_TIMEOUT) {
@@ -282,14 +306,55 @@ public class Main extends HelpOption implements Runnable {
     if (readTimeout != DEFAULT_TIMEOUT) {
       builder.readTimeout(readTimeout, SECONDS);
     }
+
+    X509TrustManager trustManager = null;
+    KeyManager[] keyManagers = null;
+
     if (allowInsecure) {
-      builder.sslSocketFactory(createInsecureSslSocketFactory());
-      builder.hostnameVerifier(createInsecureHostnameVerifier());
+      trustManager = new InsecureTrustManager();
+      builder.hostnameVerifier(new InsecureHostnameVerifier());
     }
 
-    builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    if (clientCert != null) {
+      char[] password = System.console().readPassword("keystore password: ");
+      keyManagers =
+          createLocalKeyManagers(clientCert, password);
+    } else if (opensc) {
+      char[] password = System.console().readPassword("smartcard password: ");
+      keyManagers = OpenSCUtil.getKeyManagers(password);
+    }
+
+    builder.dns(DnsSelector.byName(ipmode));
+
+    if (keyManagers != null || trustManager != null) {
+      if (trustManager == null) {
+        TrustManagerFactory trustManagerFactory =
+            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init((KeyStore) null);
+        trustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
+      }
+
+      builder.sslSocketFactory(
+          createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
+          trustManager);
+    }
+
+    if (cacheDirectory != null) {
+      builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    }
 
     configureApiInterceptors(builder);
+
+    if (debug) {
+      HttpLoggingInterceptor logging =
+          new HttpLoggingInterceptor();
+      logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      builder.networkInterceptors().add(logging);
+    }
+
+    if (socksProxy != null) {
+      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+    }
 
     List<Protocol> requestProtocols = buildProtocols();
     if (requestProtocols != null) {
@@ -321,7 +386,7 @@ public class Main extends HelpOption implements Runnable {
       builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
 
       if (curl) {
-        builder.networkInterceptors().add(new CurlInterceptor());
+        builder.networkInterceptors().add(new CurlInterceptor(System.err::println));
       }
     } catch (IOException e) {
       throw new IllegalStateException("Unable to read twitter credentials", e);
@@ -381,7 +446,7 @@ public class Main extends HelpOption implements Runnable {
     return RequestBody.create(MediaType.parse(mimeType), bodyData);
   }
 
-  Request createRequest(String url) {
+  private Request createRequest(String url) {
     Request.Builder request = new Request.Builder();
 
     request.url(url);
@@ -401,35 +466,23 @@ public class Main extends HelpOption implements Runnable {
     return request.build();
   }
 
-  private static SSLSocketFactory createInsecureSslSocketFactory() {
-    try {
-      SSLContext context = SSLContext.getInstance("TLS");
-      TrustManager permissive = new X509TrustManager() {
-        @Override public void checkClientTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
-        }
+  private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
+      TrustManager[] trustManagers) throws NoSuchAlgorithmException, KeyManagementException {
+    SSLContext context = SSLContext.getInstance("TLS");
 
-        @Override public void checkServerTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
-        }
+    context.init(keyManagers, trustManagers, null);
 
-        @Override public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-      };
-      context.init(null, new TrustManager[] {permissive}, null);
-      return context.getSocketFactory();
-    } catch (Exception e) {
-      throw new AssertionError(e);
-    }
+    return context.getSocketFactory();
   }
 
-  private static HostnameVerifier createInsecureHostnameVerifier() {
-    return new HostnameVerifier() {
-      @Override public boolean verify(String s, SSLSession sslSession) {
-        return true;
-      }
-    };
+  private static KeyManager[] createLocalKeyManagers(File keystore, char[] password)
+      throws Exception {
+    KeyStore keystore_client = KeyStore.getInstance("JKS");
+    keystore_client.load(new FileInputStream(keystore), password);
+    KeyManagerFactory kmf =
+        KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    kmf.init(keystore_client, password);
+    return kmf.getKeyManagers();
   }
 
   private void configureLogging() {

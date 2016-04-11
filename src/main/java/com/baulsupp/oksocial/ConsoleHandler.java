@@ -36,7 +36,7 @@ public class ConsoleHandler implements OutputHandler {
       MediaType contentType = response.body().contentType();
 
       // TODO OSX only
-      if (openMedia && Util.isOSX() && contentType.type().equals("image")) {
+      if (openMedia && Util.isOSX() && contentType != null && "image".equals(contentType.type())) {
         openPreview(source);
       } else {
         writeToConsole(source);
