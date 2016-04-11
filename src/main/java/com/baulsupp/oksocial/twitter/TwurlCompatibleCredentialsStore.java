@@ -16,7 +16,7 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
     nativeStore = Util.isOSX() ? new OSXCredentialsStore<>(new TwitterOSXCredentials()) : null;
   }
 
-  @Override public TwitterCredentials readDefaultCredentials() throws IOException {
+  @Override public TwitterCredentials readDefaultCredentials() {
     TwitterCredentials credentials = null;
 
     if (nativeStore != null) {
@@ -34,7 +34,7 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
     return credentials;
   }
 
-  @Override public void storeCredentials(TwitterCredentials credentials) throws IOException {
+  @Override public void storeCredentials(TwitterCredentials credentials) {
     if (nativeStore != null) {
       nativeStore.storeCredentials(credentials);
     }
