@@ -133,7 +133,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
 
-  @Option(name = {"--dns"}, description = "IP Preferences", allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
+  @Option(name = {"--dns"}, description = "IP Preferences", allowedValues = {"system", "ipv4",
+      "ipv6", "ipv4only", "ipv6only"})
   public String ipmode = "system";
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
@@ -278,7 +279,9 @@ public class Main extends HelpOption implements Runnable {
         trustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
       }
 
-      builder.sslSocketFactory(createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}), trustManager);
+      builder.sslSocketFactory(
+          createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
+          trustManager);
     }
 
     if (cacheDirectory != null) {
