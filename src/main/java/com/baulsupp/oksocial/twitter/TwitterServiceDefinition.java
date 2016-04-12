@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.twitter;
 
-import com.baulsupp.oksocial.credentials.ServiceCredentials;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import java.util.List;
 
-public class TwitterOSXCredentials implements ServiceCredentials<TwitterCredentials> {
+public class TwitterServiceDefinition implements ServiceDefinition<TwitterCredentials> {
   @Override public String apiHost() {
     return "api.twitter.com";
   }

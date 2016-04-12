@@ -2,8 +2,9 @@ package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import com.google.common.base.Joiner;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Sets;
 import com.twitter.joauth.Normalizer;
 import com.twitter.joauth.OAuthParams;
 import com.twitter.joauth.Signer;
@@ -39,10 +40,15 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
       new TwitterCredentials(null, "pKrYKZjbhN7rmtWXenRgr8kHY",
           "FpOK8mUesjggvZ7YprMnhStKmdyVcikNYtjNm1PetymgfE32jJ", null, "");
 
-  private CredentialsStore<TwitterCredentials> credentialsStore = CredentialsStore.create(new TwitterOSXCredentials());
+  private CredentialsStore<TwitterCredentials> credentialsStore = CredentialsStore.create(new TwitterServiceDefinition());
   private TwitterCredentials credentials = null;
 
   public TwitterAuthInterceptor() {
+  }
+
+  @Override
+  public Set<String> aliasNames() {
+    return Sets.newHashSet("twitterapi");
   }
 
   public TwitterAuthInterceptor(TwitterCredentials credentials) {

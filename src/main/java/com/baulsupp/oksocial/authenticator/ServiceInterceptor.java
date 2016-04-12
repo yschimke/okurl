@@ -1,20 +1,22 @@
 package com.baulsupp.oksocial.authenticator;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.util.List;
 import okhttp3.Interceptor;
 import okhttp3.Response;
-import sun.misc.Service;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.ServiceLoader;
 
 public class ServiceInterceptor implements Interceptor {
   private List<AuthInterceptor> services;
 
   public ServiceInterceptor() {
-    services = Lists.newArrayList(Service.providers(AuthInterceptor.class));
+    services = Lists.newArrayList(ServiceLoader.load(AuthInterceptor.class).iterator());
   }
 
-  @Override public Response intercept(Chain chain) throws IOException {
+  @Override
+  public Response intercept(Chain chain) throws IOException {
     for (AuthInterceptor interceptor : services) {
       if (interceptor.supportsUrl(chain.request().url())) {
         return interceptor.intercept(chain);

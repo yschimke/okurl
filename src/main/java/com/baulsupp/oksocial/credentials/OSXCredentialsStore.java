@@ -9,22 +9,22 @@ import okio.BufferedSource;
 import okio.Okio;
 
 public class OSXCredentialsStore<T> implements CredentialsStore<T> {
-  private ServiceCredentials<T> serviceCredentials;
+  private ServiceDefinition<T> serviceDefinition;
 
-  public OSXCredentialsStore(ServiceCredentials<T> serviceCredentials) {
-    this.serviceCredentials = serviceCredentials;
+  public OSXCredentialsStore(ServiceDefinition<T> serviceDefinition) {
+    this.serviceDefinition = serviceDefinition;
   }
 
   public String apiHost() {
-    return serviceCredentials.apiHost();
+    return serviceDefinition.apiHost();
   }
 
   public String serviceName() {
-    return serviceCredentials.serviceName();
+    return serviceDefinition.serviceName();
   }
 
   @Override public String credentialsString(T credentials) {
-    return serviceCredentials.formatCredentialsString(credentials);
+    return serviceDefinition.formatCredentialsString(credentials);
   }
 
   @Override public T readDefaultCredentials() {
@@ -60,7 +60,7 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
 
         BufferedSource stdout = Okio.buffer(Okio.source(process.getInputStream()));
 
-        return serviceCredentials.parseCredentialsString(stdout.readUtf8LineStrict());
+        return serviceDefinition.parseCredentialsString(stdout.readUtf8LineStrict());
       } catch (InterruptedException e) {
         throw new IOException(e);
       } finally {
@@ -75,7 +75,7 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
 
   @Override public void storeCredentials(T credentials) {
     try {
-      String credentialsString = serviceCredentials.formatCredentialsString(credentials);
+      String credentialsString = serviceDefinition.formatCredentialsString(credentials);
 
       Process process =
           new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", apiHost(),

@@ -31,7 +31,7 @@ public class DownloadHandler implements OutputHandler {
       String name = segments.get(segments.size() - 1);
       return new File(outputFile, name);
     } else {
-      if (!outputFile.getParentFile().exists()) {
+      if (outputFile.getParentFile() != null && !outputFile.getParentFile().exists()) {
         if (!outputFile.getParentFile().mkdirs()) {
           throw new IOException("unable to create directory " + outputFile);
         }

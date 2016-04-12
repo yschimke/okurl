@@ -19,6 +19,7 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
+import com.google.common.collect.Sets;
 import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
@@ -35,6 +36,7 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -146,6 +148,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--show-credentials"}, description = "Show Credentials")
   public boolean showCredentials = false;
 
+  @Option(name = {"--alias-names"}, description = "Show Alias Names")
+  public boolean aliasNames = false;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
 
@@ -189,6 +194,20 @@ public class Main extends HelpOption implements Runnable {
       if (showCredentials) {
         for (AuthInterceptor a : serviceInterceptor.services()) {
           printKnownCredentials(a);
+        }
+
+        return;
+      }
+
+      if (aliasNames) {
+        Set<String> names = Sets.newTreeSet();
+
+        for (AuthInterceptor a : serviceInterceptor.services()) {
+          names.addAll(a.aliasNames());
+        }
+
+        for (String alias: names) {
+          System.out.println(alias);
         }
 
         return;

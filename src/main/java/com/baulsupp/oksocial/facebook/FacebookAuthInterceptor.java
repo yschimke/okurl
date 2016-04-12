@@ -4,6 +4,9 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import java.io.IOException;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -12,11 +15,16 @@ import okhttp3.Response;
 
 public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredentials> {
   private final CredentialsStore<FacebookCredentials> credentialsStore =
-      CredentialsStore.create(new FacebookOSXCredentials());
+      CredentialsStore.create(new FacebookServiceDefinition());
 
   private FacebookCredentials credentials = null;
 
   public FacebookAuthInterceptor() {
+  }
+
+  @Override
+  public Set<String> aliasNames() {
+    return Sets.newHashSet("fbgraph");
   }
 
   @Override public String mapUrl(String alias, String url) {
@@ -65,7 +73,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
     System.err.println("Authorising Facebook API");
     FacebookCredentials newCredentials = LoginAuthFlow.login(client);
     CredentialsStore<FacebookCredentials> facebookCredentialsStore =
-        new OSXCredentialsStore<>(new FacebookOSXCredentials());
+        new OSXCredentialsStore<>(new FacebookServiceDefinition());
     facebookCredentialsStore.storeCredentials(newCredentials);
   }
 }
