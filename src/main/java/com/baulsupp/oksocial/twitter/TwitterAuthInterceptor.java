@@ -69,16 +69,16 @@ public class TwitterAuthInterceptor implements Interceptor {
     return "\"" + str + "\"";
   }
 
-  private long generateTimestamp() {
+  public long generateTimestamp() {
     long timestamp = System.currentTimeMillis();
     return timestamp / 1000;
   }
 
-  private String generateNonce() {
+  public String generateNonce() {
     return Long.toString(Math.abs(secureRandom.nextLong())) + System.currentTimeMillis();
   }
 
-  private String generateAuthorization(Request request)
+  public String generateAuthorization(Request request)
       throws NoSuchAlgorithmException, InvalidKeyException, IOException {
     long timestampSecs = generateTimestamp();
     String nonce = generateNonce();
