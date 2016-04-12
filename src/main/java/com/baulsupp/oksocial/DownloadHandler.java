@@ -31,7 +31,9 @@ public class DownloadHandler implements OutputHandler {
       String name = segments.get(segments.size() - 1);
       return new File(outputFile, name);
     } else {
-      if (!outputFile.getParentFile().exists()) {
+      System.out.println(outputFile);
+
+      if (outputFile.getParentFile() != null && !outputFile.getParentFile().exists()) {
         // TODO better error handling
         outputFile.mkdirs();
       }

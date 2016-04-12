@@ -41,6 +41,13 @@
     </license>
   </licenses>
 
+  <repositories>
+    <repository>
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
