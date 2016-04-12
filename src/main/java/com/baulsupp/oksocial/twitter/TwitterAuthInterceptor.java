@@ -156,7 +156,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
           request.isHttps() ? "https" : "http", request.url().host(), request.url().port(),
           request.method(), request.url().encodedPath(), javaParams, oAuth1Params
       );
-      
+
       log.log(Level.FINE, "normalised " + normalized);
       log.log(Level.FINE, "secret " + credentials.secret);
       log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret);
@@ -182,9 +182,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   private boolean isFormContentType(Request request) {
-    // TODO should we consider case? or parse properly?
-    String contentType = request.header("Content-Type");
-    return contentType != null && contentType.startsWith("application/x-www-form-urlencoded");
+    return request.body().contentType().toString().startsWith("application/x-www-form-urlencoded");
   }
 
   @Override public void authorize(OkHttpClient client) {
