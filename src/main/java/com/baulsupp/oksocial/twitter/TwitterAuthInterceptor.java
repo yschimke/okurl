@@ -88,12 +88,12 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return "\"" + str + "\"";
   }
 
-  private long generateTimestamp() {
+  public long generateTimestamp() {
     long timestamp = System.currentTimeMillis();
     return timestamp / 1000;
   }
 
-  private String generateNonce() {
+  public String generateNonce() {
     return Long.toString(Math.abs(secureRandom.nextLong())) + System.currentTimeMillis();
   }
 
