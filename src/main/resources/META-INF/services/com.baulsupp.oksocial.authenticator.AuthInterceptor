@@ -1,0 +1,3 @@
+com.baulsupp.oksocial.twitter.TwitterAuthInterceptor
+com.baulsupp.oksocial.facebook.FacebookAuthInterceptor
+com.baulsupp.oksocial.uber.UberAuthInterceptor

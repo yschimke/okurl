@@ -2,6 +2,8 @@
 
 set -e
 
+CMD=$(basename $0)
+
 codesha() {
   find pom.xml src -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
 }
@@ -29,5 +31,4 @@ if [ -x /usr/libexec/java_home ]; then
 fi
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_CMD $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* com.baulsupp.oksocial.Main "$@"
-
+$JAVA_CMD $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"

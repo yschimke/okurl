@@ -91,6 +91,16 @@
       <version>6.0.2</version>
     </dependency>
     <dependency>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client-jetty</artifactId>
+      <version>1.21.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>6.1.26</version>
+    </dependency>
+    <dependency>
       <groupId>com.github.mrmike</groupId>
       <artifactId>ok2curl</artifactId>
       <version>0.2.3</version>
@@ -120,7 +130,6 @@
       <artifactId>slf4j-jcl</artifactId>
       <version>1.7.18</version>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

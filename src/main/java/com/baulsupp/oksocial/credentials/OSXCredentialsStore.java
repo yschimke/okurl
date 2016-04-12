@@ -1,79 +1,106 @@
 package com.baulsupp.oksocial.credentials;
 
+import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
 
-public abstract class OSXCredentialsStore<T> implements CredentialsStore<T> {
-  public abstract String apiHost();
+public class OSXCredentialsStore<T> implements CredentialsStore<T> {
+  private ServiceCredentials<T> serviceCredentials;
 
-  public abstract String serviceName();
+  public OSXCredentialsStore(ServiceCredentials<T> serviceCredentials) {
+    this.serviceCredentials = serviceCredentials;
+  }
 
-  @Override public T readDefaultCredentials() throws IOException {
-    Process process =
-        new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
-            "-D", "oauth credentials", "-w")
-            .redirectError(new File("/dev/null"))
-            .start();
+  public String apiHost() {
+    return serviceCredentials.apiHost();
+  }
 
+  public String serviceName() {
+    return serviceCredentials.serviceName();
+  }
+
+  @Override public String credentialsString(T credentials) {
+    return serviceCredentials.formatCredentialsString(credentials);
+  }
+
+  @Override public T readDefaultCredentials() {
     try {
-      process.getOutputStream().close();
-      // may timeout if password is somehow longer than the pipe can hold
-      if (!process.waitFor(10, TimeUnit.SECONDS)) {
-        process.destroyForcibly();
-        throw new IOException("timeout calling /usr/bin/security");
-      }
+      Process process =
+          new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", apiHost(),
+              "-D", "oauth", "-w")
+              .redirectError(new File("/dev/null"))
+              .start();
 
-      if (process.exitValue() == 44) {
-        return null;
-      }
+      try {
+        process.getOutputStream().close();
+        // may timeout if password is somehow longer than the pipe can hold
+        if (!process.waitFor(10, TimeUnit.SECONDS)) {
+          process.destroyForcibly();
+          throw new IOException("timeout calling /usr/bin/security");
+        }
 
-      if (process.exitValue() != 0) {
-        throw new IOException("/usr/bin/security exited with return code " + process.exitValue());
-      }
+        if (process.exitValue() == 44) {
+          return null;
+        }
 
-      BufferedSource stdout = Okio.buffer(Okio.source(process.getInputStream()));
+        BufferedSource stderr = Okio.buffer(Okio.source(process.getErrorStream()));
+        String errorLog = stderr.readString(Charset.defaultCharset());
 
-      return parseCredentialsString(stdout.readUtf8LineStrict());
-    } catch (InterruptedException e) {
-      throw new IOException(e);
-    } finally {
-      if (process.isAlive()) {
-        process.destroyForcibly();
+        if (errorLog != null) {
+          System.err.print(errorLog);
+        }
+
+        if (process.exitValue() != 0) {
+          throw new IOException("/usr/bin/security exited with return code " + process.exitValue());
+        }
+
+        BufferedSource stdout = Okio.buffer(Okio.source(process.getInputStream()));
+
+        return serviceCredentials.parseCredentialsString(stdout.readUtf8LineStrict());
+      } catch (InterruptedException e) {
+        throw new IOException(e);
+      } finally {
+        if (process.isAlive()) {
+          process.destroyForcibly();
+        }
       }
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
     }
   }
 
-  @Override public void storeCredentials(T credentials) throws IOException {
-    String credentialsString = formatCredentialsString(credentials);
-
-    Process process =
-        new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", apiHost(),
-            "-D", "oauth credentials", "-s", serviceName(), "-U", "-w",
-            credentialsString)
-            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-            .redirectError(ProcessBuilder.Redirect.INHERIT)
-            .start();
-
+  @Override public void storeCredentials(T credentials) {
     try {
-      process.getOutputStream().close();
-      // may timeout if password is somehow longer than the pipe can hold
-      if (!process.waitFor(10, TimeUnit.SECONDS)) {
-        process.destroyForcibly();
-        throw new IOException("timeout calling /usr/bin/security");
+      String credentialsString = serviceCredentials.formatCredentialsString(credentials);
+
+      Process process =
+          new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", apiHost(),
+              "-D", "oauth", "-s", serviceName(), "-U", "-w",
+              credentialsString)
+              .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+              .redirectError(ProcessBuilder.Redirect.INHERIT)
+              .start();
+
+      try {
+        process.getOutputStream().close();
+        // may timeout if password is somehow longer than the pipe can hold
+        if (!process.waitFor(10, TimeUnit.SECONDS)) {
+          process.destroyForcibly();
+          throw new IOException("timeout calling /usr/bin/security");
+        }
+      } catch (InterruptedException e) {
+        throw new IOException(e);
+      } finally {
+        if (process.isAlive()) {
+          process.destroyForcibly();
+        }
       }
-    } catch (InterruptedException e) {
-      throw new IOException(e);
-    } finally {
-      if (process.isAlive()) {
-        process.destroyForcibly();
-      }
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
     }
   }
-
-  public abstract T parseCredentialsString(String s);
-
-  public abstract String formatCredentialsString(T credentials);
 }

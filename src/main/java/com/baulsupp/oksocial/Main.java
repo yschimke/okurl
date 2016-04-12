@@ -15,16 +15,10 @@
  */
 package com.baulsupp.oksocial;
 
-import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.twitter.PinAuthorisationFlow;
-import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
-import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
-import com.baulsupp.oksocial.twitter.TwurlCompatibleCredentialsStore;
-import com.baulsupp.oksocial.uber.UberAuthInterceptor;
-import com.baulsupp.oksocial.uber.UberOSXCredentialsStore;
-import com.baulsupp.oksocial.uber.UberServerCredentials;
 import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
@@ -54,6 +48,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -67,6 +62,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
+  private static Logger logger = Logger.getLogger(Main.class.getName());
+
   static final String NAME = "oksocial";
   static final int DEFAULT_TIMEOUT = -1;
 
@@ -127,8 +124,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"-o", "--output"}, description = "Output file/directory")
   public File outputDirectory;
 
-  @Option(name = {"--authorize"}, description = "Authorize API (twitter, uber)")
-  public String authorize;
+  @Option(name = {"--authorize"}, description = "Authorize API")
+  public boolean authorize;
 
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
@@ -146,16 +143,15 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
   public InetAddress socksProxy;
 
+  @Option(name = {"--show-credentials"}, description = "Show Credentials")
+  public boolean showCredentials = false;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   public List<String> urls = new ArrayList<>();
 
   private OkHttpClient client;
 
-  private CredentialsStore<TwitterCredentials> twitterCredentialsStore =
-      new TwurlCompatibleCredentialsStore();
-
-  private CredentialsStore<UberServerCredentials> uberCredentialsStore =
-      new UberOSXCredentialsStore();
+  private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -165,11 +161,6 @@ public class Main extends HelpOption implements Runnable {
     configureLogging();
 
     if (showHelpIfRequested()) {
-      return;
-    }
-
-    if (authorize == null && urls.isEmpty()) {
-      Help.help(this.commandMetadata);
       return;
     }
 
@@ -195,17 +186,51 @@ public class Main extends HelpOption implements Runnable {
     }
 
     try {
-      if (authorize != null) {
-        authorizeApi();
+      if (showCredentials) {
+        for (AuthInterceptor a : serviceInterceptor.services()) {
+          printKnownCredentials(a);
+        }
+
+        return;
+      }
+
+      if (authorize) {
+        if (urls.size() > 1) {
+          System.err.println("authorize requires a single url");
+          return;
+        }
+
+        String url;
+
+        if (urls.isEmpty()) {
+          url = mapAlias("/");
+        } else {
+          url = mapAlias(urls.get(0));
+        }
+
+        if (url.equals("/")) {
+          Help.help(this.commandMetadata);
+          return;
+        }
+
+        authorizeApi(HttpUrl.parse(url));
+
+        return;
       }
 
       for (String url : urls) {
+        logger.log(Level.FINE, "url " + url);
+
         if (urls.size() > 1) {
           System.err.println(url);
         }
 
         try {
+          url = mapAlias(url);
+
           Request request = createRequest(url);
+
+          logger.log(Level.FINE, "Request " + request);
 
           Response response = client.newCall(request).execute();
 
@@ -219,27 +244,39 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private void authorizeApi() {
-    try {
-      if ("twitter".equals(authorize)) {
-        System.err.println("Authorising Twitter API");
-        TwitterCredentials newCredentials =
-            PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);
+  private <T> void printKnownCredentials(AuthInterceptor<T> a) {
+    T credentials = a.credentials();
+    String credentialsString =
+        credentials != null ? a.credentialsStore().credentialsString(credentials) : "None";
+    System.out.println(a.credentialsStore().apiHost() + " " + credentialsString);
+  }
 
-        twitterCredentialsStore.storeCredentials(newCredentials);
-        client = TwitterAuthInterceptor.updateCredentials(client, newCredentials);
-      } else if ("uber".equals(authorize)) {
-        char[] password = System.console().readPassword("Uber Server Token: ");
+  private String mapAlias(String url) {
+    String alias = System.getProperty("command.name", "oksocial");
 
-        if (password != null) {
-          UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
-          uberCredentialsStore.storeCredentials(newCredentials);
-          client = UberAuthInterceptor.updateCredentials(client, newCredentials);
-        }
+    for (AuthInterceptor a : serviceInterceptor.services()) {
+      String newUrl = a.mapUrl(alias, url);
+      if (newUrl != null) {
+        return newUrl;
       }
-    } catch (IOException e) {
-      e.printStackTrace();
     }
+
+    return url;
+  }
+
+  private void authorizeApi(HttpUrl url) {
+    for (AuthInterceptor a : serviceInterceptor.services()) {
+      if (a.supportsUrl(url)) {
+        OkHttpClient.Builder b = client.newBuilder();
+        b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
+        OkHttpClient client2 = b.build();
+
+        a.authorize(client2);
+        return;
+      }
+    }
+
+    throw new IllegalStateException("no auth found");
   }
 
   private OkHttpClient createClient() throws Exception {
@@ -310,26 +347,14 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
-    try {
-      builder.networkInterceptors().add(new TwitterCachingInterceptor());
+    builder.addNetworkInterceptor(new TwitterCachingInterceptor());
 
-      TwitterCredentials twitterCredentials = twitterCredentialsStore.readDefaultCredentials();
-      if (twitterCredentials != null) {
-        builder.networkInterceptors().add(new TwitterAuthInterceptor(twitterCredentials));
-      }
+    builder.addNetworkInterceptor(serviceInterceptor);
 
-      UberServerCredentials uberCredentials = uberCredentialsStore.readDefaultCredentials();
-      if (uberCredentials != null) {
-        builder.networkInterceptors().add(new UberAuthInterceptor(uberCredentials));
-      }
+    builder.addNetworkInterceptor(new TwitterDeflatedResponseInterceptor());
 
-      builder.networkInterceptors().add(new TwitterDeflatedResponseInterceptor());
-
-      if (curl) {
-        builder.networkInterceptors().add(new CurlInterceptor(System.err::println));
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to read twitter credentials", e);
+    if (curl) {
+      builder.addNetworkInterceptor(new CurlInterceptor(System.err::println));
     }
   }
 

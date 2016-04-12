@@ -1,9 +1,8 @@
 package com.baulsupp.oksocial.uber;
 
-import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
+import com.baulsupp.oksocial.credentials.ServiceCredentials;
 
-public class UberOSXCredentialsStore extends OSXCredentialsStore<UberServerCredentials> {
-
+public class UberOSXCredentials implements ServiceCredentials<UberServerCredentials> {
   @Override public String apiHost() {
     return "api.uber.com";
   }
