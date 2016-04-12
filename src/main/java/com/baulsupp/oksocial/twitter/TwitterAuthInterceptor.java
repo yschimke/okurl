@@ -19,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -29,6 +31,8 @@ import okhttp3.Response;
 import okio.Buffer;
 
 public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
+  private static final Logger log = Logger.getLogger(TwitterAuthInterceptor.class.getName());
+
   private final SecureRandom secureRandom = new SecureRandom();
 
   public static final TwitterCredentials TEST_CREDENTIALS =
@@ -152,6 +156,10 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
           request.isHttps() ? "https" : "http", request.url().host(), request.url().port(),
           request.method(), request.url().encodedPath(), javaParams, oAuth1Params
       );
+      
+      log.log(Level.FINE, "normalised " + normalized);
+      log.log(Level.FINE, "secret " + credentials.secret);
+      log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret);
 
       String signature =
           signer.getString(normalized, credentials.secret, credentials.consumerSecret);
