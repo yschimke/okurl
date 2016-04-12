@@ -3,9 +3,8 @@ package com.baulsupp.oksocial.twitter;
 import com.baulsupp.oksocial.Util;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
-import com.baulsupp.oksocial.credentials.ServiceCredentials;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import java.io.File;
-import java.io.IOException;
 
 public class TwurlCompatibleCredentialsStore implements CredentialsStore<TwitterCredentials> {
   private TwurlCredentialsStore twurlStore =
@@ -13,10 +12,10 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
 
   private OSXCredentialsStore<TwitterCredentials> nativeStore = null;
 
-  private ServiceCredentials<TwitterCredentials> serviceCredentials = new TwitterOSXCredentials();
+  private ServiceDefinition<TwitterCredentials> serviceDefinition = new TwitterServiceDefinition();
 
   public TwurlCompatibleCredentialsStore() {
-    nativeStore = Util.isOSX() ? new OSXCredentialsStore<>(new TwitterOSXCredentials()) : null;
+    nativeStore = Util.isOSX() ? new OSXCredentialsStore<>(new TwitterServiceDefinition()) : null;
   }
 
   @Override public TwitterCredentials readDefaultCredentials() {
@@ -38,15 +37,15 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
   }
 
   @Override public String credentialsString(TwitterCredentials credentials) {
-    return serviceCredentials.formatCredentialsString(credentials);
+    return serviceDefinition.formatCredentialsString(credentials);
   }
 
   @Override public String apiHost() {
-    return serviceCredentials.apiHost();
+    return serviceDefinition.apiHost();
   }
 
   @Override public String serviceName() {
-    return serviceCredentials.serviceName();
+    return serviceDefinition.serviceName();
   }
 
   @Override public void storeCredentials(TwitterCredentials credentials) {

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.credentials.ServiceCredentials;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -12,7 +12,7 @@ import java.io.IOException;
 public class TwurlCredentialsStore implements CredentialsStore<TwitterCredentials> {
   private final File file;
 
-  private ServiceCredentials<TwitterCredentials> serviceCredentials = new TwitterOSXCredentials();
+  private ServiceDefinition<TwitterCredentials> serviceDefinition = new TwitterServiceDefinition();
 
   public TwurlCredentialsStore(File file) {
     this.file = file;
@@ -35,15 +35,15 @@ public class TwurlCredentialsStore implements CredentialsStore<TwitterCredential
   }
 
   @Override public String credentialsString(TwitterCredentials credentials) {
-    return serviceCredentials.formatCredentialsString(credentials);
+    return serviceDefinition.formatCredentialsString(credentials);
   }
 
   @Override public String apiHost() {
-    return serviceCredentials.apiHost();
+    return serviceDefinition.apiHost();
   }
 
   @Override public String serviceName() {
-    return serviceCredentials.serviceName();
+    return serviceDefinition.serviceName();
   }
 
   public TwitterCredentials readDefaultCredentials() {

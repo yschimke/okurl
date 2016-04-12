@@ -10,9 +10,9 @@ public interface CredentialsStore<T> {
 
   void storeCredentials(T credentials);
 
-  static <R> CredentialsStore<R> create(ServiceCredentials<R> serviceCredentials) {
+  static <R> CredentialsStore<R> create(ServiceDefinition<R> serviceDefinition) {
     // TODO platform support
-    return new OSXCredentialsStore<R>(serviceCredentials);
+    return new OSXCredentialsStore<R>(serviceDefinition);
   }
 
   String credentialsString(T credentials);

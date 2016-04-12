@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.credentials;
 
-public interface ServiceCredentials<T> {
+public interface ServiceDefinition<T> {
   String apiHost();
 
   String serviceName();

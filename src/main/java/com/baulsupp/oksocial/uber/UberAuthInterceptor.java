@@ -4,6 +4,9 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import java.io.IOException;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -11,8 +14,13 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class UberAuthInterceptor implements AuthInterceptor<UberServerCredentials> {
-  private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberOSXCredentials());
+  private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberServiceDefinition());
   private UberServerCredentials credentials = null;
+
+  @Override
+  public Set<String> aliasNames() {
+    return Sets.newHashSet("uberapi");
+  }
 
   @Override public String mapUrl(String alias, String url) {
     switch (alias) {
@@ -61,7 +69,7 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
       UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
 
       CredentialsStore<UberServerCredentials> uberCredentialsStore =
-          new OSXCredentialsStore<>(new UberOSXCredentials());
+          new OSXCredentialsStore<>(new UberServiceDefinition());
 
       uberCredentialsStore.storeCredentials(newCredentials);
     }
