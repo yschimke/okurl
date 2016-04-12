@@ -1,24 +1,33 @@
 package com.baulsupp.oksocial.uber;
 
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import java.io.IOException;
-import java.util.Iterator;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class UberAuthInterceptor implements Interceptor {
-  private UberServerCredentials serverCredentials;
+public class UberAuthInterceptor implements AuthInterceptor<UberServerCredentials> {
+  private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberOSXCredentials());
+  private UberServerCredentials credentials = null;
 
-  public UberAuthInterceptor(UberServerCredentials serverCredentials) {
-    this.serverCredentials = serverCredentials;
+  @Override public String mapUrl(String alias, String url) {
+    switch (alias) {
+      case "uberapi":
+        return "https://api.uber.com" + url;
+      default:
+        return null;
+    }
   }
 
-  @Override public Response intercept(Chain chain) throws IOException {
+  @Override public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    if (requiresServerAuth(request)) {
-      String token = serverCredentials.serverToken;
+    if (credentials() != null) {
+      String token = credentials().serverToken;
 
       request =
           request.newBuilder().addHeader("Authorization", "Token " + token).build();
@@ -27,29 +36,34 @@ public class UberAuthInterceptor implements Interceptor {
     return chain.proceed(request);
   }
 
-  public boolean requiresServerAuth(Request request) {
-    String host = request.url().host();
+  public UberServerCredentials credentials() {
+    if (credentials == null) {
+      credentials = credentialsStore.readDefaultCredentials();
+    }
+
+    return credentials;
+  }
+
+  @Override public CredentialsStore<UberServerCredentials> credentialsStore() {
+    return credentialsStore;
+  }
+
+  public boolean supportsUrl(HttpUrl url) {
+    String host = url.host();
 
     return UberUtil.API_HOSTS.contains(host);
   }
 
-  public static void remove(OkHttpClient.Builder builder) {
-    Iterator<Interceptor> i = builder.networkInterceptors().iterator();
-    while (i.hasNext()) {
-      Interceptor interceptor = i.next();
+  @Override public void authorize(OkHttpClient client) {
+    char[] password = System.console().readPassword("Uber Server Token: ");
 
-      if (interceptor instanceof UberAuthInterceptor) {
-        i.remove();
-      }
+    if (password != null) {
+      UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
+
+      CredentialsStore<UberServerCredentials> uberCredentialsStore =
+          new OSXCredentialsStore<>(new UberOSXCredentials());
+
+      uberCredentialsStore.storeCredentials(newCredentials);
     }
-  }
-
-  public static OkHttpClient updateCredentials(OkHttpClient client,
-      UberServerCredentials newCredentials) {
-    OkHttpClient.Builder builder = client.newBuilder();
-
-    remove(builder);
-    builder.networkInterceptors().add(new UberAuthInterceptor(newCredentials));
-    return builder.build();
   }
 }

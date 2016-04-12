@@ -25,17 +25,16 @@ public class DownloadHandler implements OutputHandler {
     }
   }
 
-  public File getOutputFile(Response response) {
+  public File getOutputFile(Response response) throws IOException {
     if (outputFile.isDirectory()) {
       List<String> segments = response.request().url().pathSegments();
       String name = segments.get(segments.size() - 1);
       return new File(outputFile, name);
     } else {
-      System.out.println(outputFile);
-
       if (outputFile.getParentFile() != null && !outputFile.getParentFile().exists()) {
-        // TODO better error handling
-        outputFile.mkdirs();
+        if (!outputFile.getParentFile().mkdirs()) {
+          throw new IOException("unable to create directory " + outputFile);
+        }
       }
       return outputFile;
     }
