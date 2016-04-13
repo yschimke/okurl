@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.twitter;
 
-import java.io.IOException;
-import java.util.zip.Inflater;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -9,8 +7,12 @@ import okio.BufferedSource;
 import okio.InflaterSource;
 import okio.Okio;
 
+import java.io.IOException;
+import java.util.zip.Inflater;
+
 public class TwitterDeflatedResponseInterceptor implements Interceptor {
-  @Override public Response intercept(Chain chain) throws IOException {
+  @Override
+  public Response intercept(Chain chain) throws IOException {
     Response response = chain.proceed(chain.request());
 
     if ("deflate".equals(response.header("content-encoding"))) {

@@ -11,7 +11,7 @@ codesha() {
 SHA=$(codesha)
 
 if [ ! -f "target/cached-$SHA.jar" ]; then
-  mvn -DskipTests clean package dependency:copy-dependencies
+  mvn -s ~/.m2/settings.xml.off -DskipTests clean package dependency:copy-dependencies
   mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
 fi
 

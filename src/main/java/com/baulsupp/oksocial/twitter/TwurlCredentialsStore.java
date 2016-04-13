@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Throwables;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -34,16 +35,9 @@ public class TwurlCredentialsStore implements CredentialsStore<TwitterCredential
     }
   }
 
-  @Override public String credentialsString(TwitterCredentials credentials) {
-    return serviceDefinition.formatCredentialsString(credentials);
-  }
-
-  @Override public String apiHost() {
-    return serviceDefinition.apiHost();
-  }
-
-  @Override public String serviceName() {
-    return serviceDefinition.serviceName();
+  @Override
+  public ServiceDefinition<TwitterCredentials> getServiceDefinition() {
+    return serviceDefinition;
   }
 
   public TwitterCredentials readDefaultCredentials() {
@@ -70,7 +64,8 @@ public class TwurlCredentialsStore implements CredentialsStore<TwitterCredential
     }
   }
 
-  @Override public void storeCredentials(TwitterCredentials credentials) {
+  @Override
+  public void storeCredentials(TwitterCredentials credentials) {
     throw new UnsupportedOperationException();
   }
 }

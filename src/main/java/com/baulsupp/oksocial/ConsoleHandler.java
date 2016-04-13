@@ -1,8 +1,5 @@
 package com.baulsupp.oksocial;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -10,6 +7,10 @@ import okhttp3.internal.http.StatusLine;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 public class ConsoleHandler implements OutputHandler {
   private final boolean showHeaders;
@@ -20,7 +21,8 @@ public class ConsoleHandler implements OutputHandler {
     this.openMedia = openMedia;
   }
 
-  @Override public void showOutput(Response response) throws IOException {
+  @Override
+  public void showOutput(Response response) throws IOException {
     try {
       if (showHeaders) {
         System.out.println(StatusLine.get(response));

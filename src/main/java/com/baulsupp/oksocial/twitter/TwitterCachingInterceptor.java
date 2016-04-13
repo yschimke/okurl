@@ -1,15 +1,17 @@
 package com.baulsupp.oksocial.twitter;
 
 import com.google.common.collect.Sets;
-import java.io.IOException;
-import java.util.Set;
 import okhttp3.Interceptor;
 import okhttp3.Response;
+
+import java.io.IOException;
+import java.util.Set;
 
 public class TwitterCachingInterceptor implements Interceptor {
   private static final Set<String> permanentHosts = Sets.newHashSet("pbs.twimg.com");
 
-  @Override public Response intercept(Chain chain) throws IOException {
+  @Override
+  public Response intercept(Chain chain) throws IOException {
     Response originalResponse = chain.proceed(chain.request());
 
     String host = chain.request().url().host();

@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.uber;
 
 import com.google.common.collect.Sets;
+
 import java.util.Collections;
 import java.util.Set;
 

@@ -2,6 +2,8 @@ package com.baulsupp.oksocial;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import okhttp3.Dns;
+
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -9,7 +11,6 @@ import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import okhttp3.Dns;
 
 import static java.util.stream.Collectors.toList;
 
@@ -54,7 +55,8 @@ public class DnsSelector implements Dns {
     return new DnsSelector(selectedMode);
   }
 
-  @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+  @Override
+  public List<InetAddress> lookup(String hostname) throws UnknownHostException {
     List<InetAddress> addresses = overrides.get(hostname.toLowerCase());
 
     if (addresses != null) {

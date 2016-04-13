@@ -3,15 +3,11 @@ package com.baulsupp.oksocial.facebook;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
+import com.google.common.collect.Sets;
+import okhttp3.*;
+
 import java.io.IOException;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredentials> {
   private final CredentialsStore<FacebookCredentials> credentialsStore =
@@ -27,7 +23,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
     return Sets.newHashSet("fbgraph");
   }
 
-  @Override public String mapUrl(String alias, String url) {
+  @Override
+  public String mapUrl(String alias, String url) {
     switch (alias) {
       case "fbgraph":
         return "https://graph.facebook.com" + url;
@@ -44,11 +41,13 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
     return credentials;
   }
 
-  @Override public CredentialsStore credentialsStore() {
+  @Override
+  public CredentialsStore credentialsStore() {
     return credentialsStore;
   }
 
-  @Override public Response intercept(Interceptor.Chain chain) throws IOException {
+  @Override
+  public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
     if (credentials() != null) {
@@ -69,7 +68,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
     return FacebookUtil.API_HOSTS.contains(host);
   }
 
-  @Override public void authorize(OkHttpClient client) {
+  @Override
+  public void authorize(OkHttpClient client) {
     System.err.println("Authorising Facebook API");
     FacebookCredentials newCredentials = LoginAuthFlow.login(client);
     CredentialsStore<FacebookCredentials> facebookCredentialsStore =

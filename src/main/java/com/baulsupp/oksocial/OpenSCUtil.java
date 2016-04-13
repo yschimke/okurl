@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -7,8 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.Provider;
 import java.security.Security;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
 
 public class OpenSCUtil {
   public static KeyManager[] getKeyManagers(char[] password) throws Exception {

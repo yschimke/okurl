@@ -11,25 +11,15 @@ import com.twitter.joauth.Signer;
 import com.twitter.joauth.UrlCodec;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
+import okhttp3.*;
+import okio.Buffer;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okio.Buffer;
 
 public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
   private static final Logger log = Logger.getLogger(TwitterAuthInterceptor.class.getName());
@@ -55,7 +45,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     this.credentials = credentials;
   }
 
-  @Override public String mapUrl(String alias, String url) {
+  @Override
+  public String mapUrl(String alias, String url) {
     switch (alias) {
       case "twitterapi":
         return "https://api.twitter.com" + url;
@@ -82,7 +73,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return TwitterUtil.TWITTER_API_HOSTS.contains(host);
   }
 
-  @Override public Response intercept(Interceptor.Chain chain) throws IOException {
+  @Override
+  public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
     if (credentials() != null) {
@@ -191,7 +183,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return request.body().contentType().toString().startsWith("application/x-www-form-urlencoded");
   }
 
-  @Override public void authorize(OkHttpClient client) {
+  @Override
+  public void authorize(OkHttpClient client) {
     System.err.println("Authorising Twitter API");
     TwitterCredentials newCredentials =
         PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);

@@ -3,11 +3,13 @@ package com.baulsupp.oksocial.facebook;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 
 public class FacebookServiceDefinition implements ServiceDefinition<FacebookCredentials> {
-  @Override public String apiHost() {
+  @Override
+  public String apiHost() {
     return "graph.facebook.com";
   }
 
-  @Override public String serviceName() {
+  @Override
+  public String serviceName() {
     return "Facebook API";
   }
 

@@ -11,7 +11,7 @@ public class TwitterCredentials {
   }
 
   public TwitterCredentials(String username, String consumerKey, String consumerSecret,
-      String token, String secret) {
+                            String token, String secret) {
     this.username = username;
     this.consumerKey = consumerKey;
     this.consumerSecret = consumerSecret;
@@ -19,7 +19,8 @@ public class TwitterCredentials {
     this.secret = secret;
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "TwitterCredentials{"
         + "username='"
         + username
