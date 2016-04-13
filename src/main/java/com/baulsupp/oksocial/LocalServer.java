@@ -16,48 +16,63 @@ package com.baulsupp.oksocial;
 
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.util.Throwables;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.AbstractHandler;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.AbstractHandler;
 
 /**
  * OAuth 2.0 verification code receiver that runs a Jetty server on a free port, waiting for a
  * redirect with the verification code.
- *
+ * <p>
  * <p> Implementation is thread-safe. </p>
  *
  * @author Yaniv Inbar
  * @since 1.11
  */
 public final class LocalServer implements VerificationCodeReceiver {
-  /** Server or {@code null} before {@link #getRedirectUri()}. */
+  /**
+   * Server or {@code null} before {@link #getRedirectUri()}.
+   */
   private Server server;
 
-  /** Verification code or {@code null} for none. */
+  /**
+   * Verification code or {@code null} for none.
+   */
   String code;
 
-  /** Error code or {@code null} for none. */
+  /**
+   * Error code or {@code null} for none.
+   */
   String error;
 
-  /** Lock on the code and error. */
+  /**
+   * Lock on the code and error.
+   */
   final Lock lock = new ReentrantLock();
 
-  /** Condition for receiving an authorization response. */
+  /**
+   * Condition for receiving an authorization response.
+   */
   final Condition gotAuthorizationResponse = lock.newCondition();
 
-  /** Port to use or {@code -1} to select an unused port in {@link #getRedirectUri()}. */
+  /**
+   * Port to use or {@code -1} to select an unused port in {@link #getRedirectUri()}.
+   */
   private int port;
 
-  /** Host name to use. */
+  /**
+   * Host name to use.
+   */
   private final String host;
 
   public LocalServer() {

@@ -43,7 +43,7 @@ public class TwitterAuthInterceptorTest {
     assertEquals(
         "OAuth oauth_consumer_key=\"pKrYKZjbhN7rmtWXenRgr8kHY\", "
             + "oauth_nonce=\"67822045175727268931460435281112\", "
-            + "oauth_signature=\"c8fLuVd%2FkkePEmMg%2Bo5k4jNESMQ%3D\", "
+            + "oauth_signature=\"XTw%2F%2B9bYqVNSTYQS3vz3SXsP8tU%3D\", "
             + "oauth_signature_method=\"HMAC-SHA1\", "
             + "oauth_timestamp=\"1460432867\", oauth_version=\"1.0\"",
         header);

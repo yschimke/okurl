@@ -3,15 +3,11 @@ package com.baulsupp.oksocial.uber;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
+import com.google.common.collect.Sets;
+import okhttp3.*;
+
 import java.io.IOException;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class UberAuthInterceptor implements AuthInterceptor<UberServerCredentials> {
   private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberServiceDefinition());
@@ -22,7 +18,8 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
     return Sets.newHashSet("uberapi");
   }
 
-  @Override public String mapUrl(String alias, String url) {
+  @Override
+  public String mapUrl(String alias, String url) {
     switch (alias) {
       case "uberapi":
         return "https://api.uber.com" + url;
@@ -31,7 +28,8 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
     }
   }
 
-  @Override public Response intercept(Interceptor.Chain chain) throws IOException {
+  @Override
+  public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
     if (credentials() != null) {
@@ -52,7 +50,8 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
     return credentials;
   }
 
-  @Override public CredentialsStore<UberServerCredentials> credentialsStore() {
+  @Override
+  public CredentialsStore<UberServerCredentials> credentialsStore() {
     return credentialsStore;
   }
 
@@ -62,7 +61,8 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
     return UberUtil.API_HOSTS.contains(host);
   }
 
-  @Override public void authorize(OkHttpClient client) {
+  @Override
+  public void authorize(OkHttpClient client) {
     char[] password = System.console().readPassword("Uber Server Token: ");
 
     if (password != null) {

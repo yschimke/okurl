@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.Util;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+
 import java.io.File;
 
 public class TwurlCompatibleCredentialsStore implements CredentialsStore<TwitterCredentials> {
@@ -18,7 +19,8 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
     nativeStore = Util.isOSX() ? new OSXCredentialsStore<>(new TwitterServiceDefinition()) : null;
   }
 
-  @Override public TwitterCredentials readDefaultCredentials() {
+  @Override
+  public TwitterCredentials readDefaultCredentials() {
     TwitterCredentials credentials = null;
 
     if (nativeStore != null) {
@@ -36,19 +38,13 @@ public class TwurlCompatibleCredentialsStore implements CredentialsStore<Twitter
     return credentials;
   }
 
-  @Override public String credentialsString(TwitterCredentials credentials) {
-    return serviceDefinition.formatCredentialsString(credentials);
+  @Override
+  public ServiceDefinition<TwitterCredentials> getServiceDefinition() {
+    return serviceDefinition;
   }
 
-  @Override public String apiHost() {
-    return serviceDefinition.apiHost();
-  }
-
-  @Override public String serviceName() {
-    return serviceDefinition.serviceName();
-  }
-
-  @Override public void storeCredentials(TwitterCredentials credentials) {
+  @Override
+  public void storeCredentials(TwitterCredentials credentials) {
     if (nativeStore != null) {
       nativeStore.storeCredentials(credentials);
     }

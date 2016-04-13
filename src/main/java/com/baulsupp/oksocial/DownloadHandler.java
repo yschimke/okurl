@@ -1,12 +1,13 @@
 package com.baulsupp.oksocial;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import okhttp3.Response;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class DownloadHandler implements OutputHandler {
   private File outputFile;
@@ -15,7 +16,8 @@ public class DownloadHandler implements OutputHandler {
     this.outputFile = outputFile;
   }
 
-  @Override public void showOutput(Response response) throws IOException {
+  @Override
+  public void showOutput(Response response) throws IOException {
     try {
       BufferedSource source = response.body().source();
 

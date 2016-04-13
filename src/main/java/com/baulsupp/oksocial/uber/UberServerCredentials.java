@@ -10,7 +10,8 @@ public class UberServerCredentials {
     this.serverToken = serverToken;
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "UberServerCredentials{"
         + "serverToken='"
         + serverToken

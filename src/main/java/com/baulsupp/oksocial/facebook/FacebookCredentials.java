@@ -10,7 +10,8 @@ public class FacebookCredentials {
     this.accessToken = accessToken;
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "FacebookCredentials{"
         + "accessToken='"
         + accessToken
