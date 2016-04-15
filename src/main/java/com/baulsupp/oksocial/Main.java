@@ -42,6 +42,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.*;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
@@ -175,16 +176,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (aliasNames) {
-      Set<String> names = Sets.newTreeSet();
-
-      for (AuthInterceptor a : serviceInterceptor.services()) {
-        names.addAll(a.aliasNames());
-      }
-
-      for (String alias : names) {
-        System.out.println(alias);
-      }
-
+      printAliasNames();
       return;
     }
 
@@ -195,16 +187,29 @@ public class Main extends HelpOption implements Runnable {
         OkHttpClient client = null;
 
         try {
-          client = createClient();
+          OkHttpClient.Builder clientBuilder = createClientBuilder();
 
-          for (String url : urls) {
-            logger.log(Level.FINE, "url " + url);
+          List<Request> requests;
+          AuthInterceptor auth = mapAlias(getAlias());
+
+          Request.Builder requestBuilder = createRequestBuilder();
+
+          if (auth != null) {
+            requests = auth.buildRequests(getAlias(), clientBuilder, requestBuilder, urls);
+          } else {
+            requests = urls.stream().map(url -> requestBuilder.url(url).build()).collect(toList());
+          }
+
+          client = clientBuilder.build();
+
+          for (Request request : requests) {
+            logger.log(Level.FINE, "url " + request.url());
 
             if (urls.size() > 1) {
-              System.err.println(url);
+              System.err.println(request.url());
             }
 
-            makeRequest(outputHandler, client, url);
+            makeRequest(outputHandler, client, request);
           }
         } finally {
           if (client != null) {
@@ -218,17 +223,20 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private void makeRequest(OutputHandler outputHandler, OkHttpClient client, String url) {
+  private void printAliasNames() {
+    Set<String> names = Sets.newTreeSet();
+
+    for (AuthInterceptor a : serviceInterceptor.services()) {
+      names.addAll(a.aliasNames());
+    }
+
+    for (String alias : names) {
+      System.out.println(alias);
+    }
+  }
+
+  private void makeRequest(OutputHandler outputHandler, OkHttpClient client, Request request) {
     try {
-      String alias = getAlias();
-      AuthInterceptor auth = mapAlias(alias);
-
-      if (auth != null) {
-        url = auth.mapUrl(alias, url);
-      }
-
-      Request request = createRequest(url);
-
       logger.log(Level.FINE, "Request " + request);
 
       Response response = client.newCall(request).execute();
@@ -277,7 +285,7 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private <T> void authRequest(AuthInterceptor<T> auth) throws Exception {
-    OkHttpClient client = createClient();
+    OkHttpClient client = createClientBuilder().build();
 
     try {
       OkHttpClient.Builder b = client.newBuilder();
@@ -314,7 +322,7 @@ public class Main extends HelpOption implements Runnable {
     return System.getProperty("command.name", "oksocial");
   }
 
-  private OkHttpClient createClient() throws Exception {
+  private OkHttpClient.Builder createClientBuilder() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder.followSslRedirects(followRedirects);
     if (connectTimeout != DEFAULT_TIMEOUT) {
@@ -378,7 +386,7 @@ public class Main extends HelpOption implements Runnable {
       builder.protocols(requestProtocols);
     }
 
-    return builder.build();
+    return builder;
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
@@ -446,10 +454,9 @@ public class Main extends HelpOption implements Runnable {
     return RequestBody.create(MediaType.parse(mimeType), bodyData);
   }
 
-  private Request createRequest(String url) {
+  private Request.Builder createRequestBuilder() {
     Request.Builder request = new Request.Builder();
 
-    request.url(url);
     request.method(getRequestMethod(), getRequestBody());
 
     if (headers != null) {
@@ -463,7 +470,7 @@ public class Main extends HelpOption implements Runnable {
     }
     request.header("User-Agent", userAgent);
 
-    return request.build();
+    return request;
   }
 
   private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
