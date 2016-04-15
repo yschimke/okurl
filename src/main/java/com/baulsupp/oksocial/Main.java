@@ -242,6 +242,10 @@ public class Main extends HelpOption implements Runnable {
   private void authorize() throws Exception {
     AuthInterceptor<?> auth = mapAlias(getAlias());
 
+    if (auth == null && !urls.isEmpty()) {
+      auth = mapAlias(urls.get(0));
+    }
+
     if (auth == null) {
       if (urls.size() > 1) {
         throw new RuntimeException("authorize expecting a single url");
@@ -253,10 +257,6 @@ public class Main extends HelpOption implements Runnable {
         if (a.supportsUrl(parsedUrl)) {
           auth = a;
         }
-      }
-    } else {
-      if (urls.size() > 0) {
-        throw new RuntimeException("authorize not expecting a url");
       }
     }
 
