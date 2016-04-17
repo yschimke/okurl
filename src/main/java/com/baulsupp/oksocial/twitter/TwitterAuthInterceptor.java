@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
   private static final Logger log = Logger.getLogger(TwitterAuthInterceptor.class.getName());
 
+  public static final String NAME = "twitter";
+
   private final SecureRandom secureRandom = new SecureRandom();
 
   public static final TwitterCredentials TEST_CREDENTIALS =
@@ -36,23 +38,12 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   public TwitterAuthInterceptor() {
   }
 
-  @Override
-  public Set<String> aliasNames() {
-    return Sets.newHashSet("twitterapi");
+  @Override public String name() {
+    return NAME;
   }
 
   public TwitterAuthInterceptor(TwitterCredentials credentials) {
     this.credentials = credentials;
-  }
-
-  @Override
-  public String mapUrl(String alias, String url) {
-    switch (alias) {
-      case "twitterapi":
-        return "https://api.twitter.com" + url;
-      default:
-        return null;
-    }
   }
 
   public TwitterCredentials credentials() {
