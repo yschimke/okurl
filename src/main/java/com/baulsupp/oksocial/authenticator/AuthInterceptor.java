@@ -12,9 +12,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 
 public interface AuthInterceptor<T> extends Interceptor {
-  String mapUrl(String alias, String url);
-
-  Set<String> aliasNames();
+  String name();
 
   boolean supportsUrl(HttpUrl url);
 
@@ -23,8 +21,4 @@ public interface AuthInterceptor<T> extends Interceptor {
   CredentialsStore<T> credentialsStore();
 
   T credentials();
-
-  default List<Request> buildRequests(String alias, OkHttpClient.Builder clientBuilder, Request.Builder requestBuilder, List<String> urls) {
-    return urls.stream().map(url -> requestBuilder.url(mapUrl(alias, url)).build()).collect(toList());
-  }
 }

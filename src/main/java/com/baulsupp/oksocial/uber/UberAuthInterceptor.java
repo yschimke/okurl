@@ -13,19 +13,10 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
   private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberServiceDefinition());
   private UberServerCredentials credentials = null;
 
-  @Override
-  public Set<String> aliasNames() {
-    return Sets.newHashSet("uberapi");
-  }
+  public static final String NAME = "uber";
 
-  @Override
-  public String mapUrl(String alias, String url) {
-    switch (alias) {
-      case "uberapi":
-        return "https://api.uber.com" + url;
-      default:
-        return null;
-    }
+  @Override public String name() {
+    return NAME;
   }
 
   @Override

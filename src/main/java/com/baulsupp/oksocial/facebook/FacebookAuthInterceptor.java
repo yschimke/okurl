@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.Set;
 
 public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredentials> {
+  public static final String NAME = "facebook";
+
   private final CredentialsStore<FacebookCredentials> credentialsStore =
       CredentialsStore.create(new FacebookServiceDefinition());
 
@@ -18,19 +20,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
   public FacebookAuthInterceptor() {
   }
 
-  @Override
-  public Set<String> aliasNames() {
-    return Sets.newHashSet("fbgraph");
-  }
-
-  @Override
-  public String mapUrl(String alias, String url) {
-    switch (alias) {
-      case "fbgraph":
-        return "https://graph.facebook.com" + url;
-      default:
-        return null;
-    }
+  @Override public String name() {
+    return NAME;
   }
 
   public FacebookCredentials credentials() {

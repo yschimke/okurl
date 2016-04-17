@@ -17,17 +17,19 @@ package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
+import com.baulsupp.oksocial.commands.CommandRegisty;
+import com.baulsupp.oksocial.commands.OksocialCommand;
+import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
 import com.google.common.collect.Sets;
 import com.moczul.ok2curl.CurlInterceptor;
-import io.airlift.airline.*;
-import okhttp3.*;
-import okhttp3.internal.framed.Http2;
-import okhttp3.logging.HttpLoggingInterceptor;
-
-import javax.net.ssl.*;
+import io.airlift.airline.Arguments;
+import io.airlift.airline.Command;
+import io.airlift.airline.HelpOption;
+import io.airlift.airline.Option;
+import io.airlift.airline.SingleCommand;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,12 +39,32 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.stream.Collectors;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import okhttp3.Cache;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.internal.framed.Http2;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Collectors.toList;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
@@ -141,6 +163,8 @@ public class Main extends HelpOption implements Runnable {
 
   private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
+  private CommandRegisty commandRegisty = new CommandRegisty();
+
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
   }
@@ -184,51 +208,57 @@ public class Main extends HelpOption implements Runnable {
       if (authorize) {
         authorize();
       } else {
-        OkHttpClient client = null;
-
-        try {
-          OkHttpClient.Builder clientBuilder = createClientBuilder();
-
-          List<Request> requests;
-          AuthInterceptor auth = mapAlias(getAlias());
-
-          Request.Builder requestBuilder = createRequestBuilder();
-
-          if (auth != null) {
-            requests = auth.buildRequests(getAlias(), clientBuilder, requestBuilder, urls);
-          } else {
-            requests = urls.stream().map(url -> requestBuilder.url(url).build()).collect(toList());
-          }
-
-          client = clientBuilder.build();
-
-          for (Request request : requests) {
-            logger.log(Level.FINE, "url " + request.url());
-
-            if (urls.size() > 1) {
-              System.err.println(request.url());
-            }
-
-            makeRequest(outputHandler, client, request);
-          }
-        } finally {
-          if (client != null) {
-            client.connectionPool().evictAll();
-          }
-        }
+        executeRequests(outputHandler);
       }
+    } catch (UsageException e) {
+      System.err.println(e.getMessage());
+      return;
     } catch (Exception e) {
       e.printStackTrace();
       return;
     }
   }
 
-  private void printAliasNames() {
-    Set<String> names = Sets.newTreeSet();
+  private void executeRequests(OutputHandler outputHandler) throws Exception {
+    OkHttpClient client = null;
 
-    for (AuthInterceptor a : serviceInterceptor.services()) {
-      names.addAll(a.aliasNames());
+    try {
+      OkHttpClient.Builder clientBuilder = createClientBuilder();
+
+      ShellCommand command = getShellCommand();
+
+      Request.Builder requestBuilder = createRequestBuilder();
+
+      List<Request> requests = command.buildRequests(clientBuilder, requestBuilder, urls);
+
+      if (requests.isEmpty()) {
+        throw new UsageException("no urls specified");
+      }
+
+      client = clientBuilder.build();
+
+      for (Request request : requests) {
+        logger.log(Level.FINE, "url " + request.url());
+
+        if (urls.size() > 1) {
+          System.err.println(request.url());
+        }
+
+        makeRequest(outputHandler, client, request);
+      }
+    } finally {
+      if (client != null) {
+        client.connectionPool().evictAll();
+      }
     }
+  }
+
+  private ShellCommand getShellCommand() {
+    return commandRegisty.getCommandByName(getCommandName()).orElse(new OksocialCommand());
+  }
+
+  private void printAliasNames() {
+    Set<String> names = Sets.newTreeSet(commandRegisty.names());
 
     for (String alias : names) {
       System.out.println(alias);
@@ -248,34 +278,31 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void authorize() throws Exception {
-    AuthInterceptor<?> auth = mapAlias(getAlias());
+    ShellCommand command = getShellCommand();
 
-    if (auth == null && !urls.isEmpty()) {
-      auth = mapAlias(urls.get(0));
-    }
+    Optional<AuthInterceptor<?>> auth =
+        command.authenticator().flatMap(authName -> serviceInterceptor.getByName(authName));
 
-    if (auth == null) {
-      if (urls.size() > 1) {
-        throw new RuntimeException("authorize expecting a single url");
-      }
+    if (!auth.isPresent() && !urls.isEmpty()) {
+      auth = serviceInterceptor.getByName(urls.get(0));
 
-      HttpUrl parsedUrl = HttpUrl.parse(urls.get(0));
-
-      for (AuthInterceptor a : serviceInterceptor.services()) {
-        if (a.supportsUrl(parsedUrl)) {
-          auth = a;
-        }
+      if (!auth.isPresent()) {
+        auth = serviceInterceptor.getByUrl(urls.get(0));
       }
     }
 
-    if (auth == null) {
-      throw new RuntimeException("unable to find authenticator");
+    if (!auth.isPresent()) {
+      throw new UsageException(
+          "unable to find authenticator. Specify name from " + serviceInterceptor.names()
+              .stream()
+              .collect(
+                  Collectors.joining(", ")));
     }
 
     if (token == null) {
-      authRequest(auth);
+      authRequest(auth.get());
     } else {
-      storeCredentials(auth);
+      storeCredentials(auth.get());
     }
   }
 
@@ -308,17 +335,7 @@ public class Main extends HelpOption implements Runnable {
     System.out.println(sd.apiHost() + " " + credentialsString);
   }
 
-  private AuthInterceptor mapAlias(String alias) {
-    for (AuthInterceptor a : serviceInterceptor.services()) {
-      if (a.aliasNames().contains(alias)) {
-        return a;
-      }
-    }
-
-    return null;
-  }
-
-  private String getAlias() {
+  private String getCommandName() {
     return System.getProperty("command.name", "oksocial");
   }
 
@@ -360,7 +377,7 @@ public class Main extends HelpOption implements Runnable {
       }
 
       builder.sslSocketFactory(
-          createSslSocketFactory(keyManagers, new TrustManager[]{trustManager}),
+          createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
           trustManager);
     }
 
@@ -474,7 +491,7 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
-                                                         TrustManager[] trustManagers) throws NoSuchAlgorithmException, KeyManagementException {
+      TrustManager[] trustManagers) throws NoSuchAlgorithmException, KeyManagementException {
     SSLContext context = SSLContext.getInstance("TLS");
 
     context.init(keyManagers, trustManagers, null);
