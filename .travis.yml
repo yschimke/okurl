@@ -5,3 +5,11 @@ jdk:
 
 notifications:
   email: false
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+      - oracle-java9-installer
