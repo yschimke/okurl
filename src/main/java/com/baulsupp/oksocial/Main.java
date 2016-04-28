@@ -17,7 +17,8 @@ package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
-import com.baulsupp.oksocial.commands.CommandRegisty;
+import com.baulsupp.oksocial.commands.CommandRegistry;
+import com.baulsupp.oksocial.commands.JRubyCommand;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -34,6 +35,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Proxy;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -163,7 +167,7 @@ public class Main extends HelpOption implements Runnable {
 
   private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
-  private CommandRegisty commandRegisty = new CommandRegisty();
+  private CommandRegistry commandRegisty = new CommandRegistry();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -253,8 +257,24 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private ShellCommand getShellCommand() {
-    return commandRegisty.getCommandByName(getCommandName()).orElse(new OksocialCommand());
+  private ShellCommand getShellCommand()
+      throws Exception {
+    String commandName = getCommandName();
+
+    if (commandName.equals("oksocial-command")) {
+      String script = this.urls.remove(0);
+
+      return commandFromScript(script);
+    } else {
+      return commandRegisty.getCommandByName(commandName).orElse(new OksocialCommand());
+    }
+  }
+
+  private ShellCommand commandFromScript(String script)
+      throws Exception {
+    Path scriptPath = FileSystems.getDefault().getPath(script);
+
+    return JRubyCommand.load(scriptPath);
   }
 
   private void printAliasNames() {
