@@ -1,4 +1,4 @@
-package okhttp.twitter;
+package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterCredentials;
