@@ -6,10 +6,10 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
-public class CommandRegisty {
+public class CommandRegistry {
   private List<ShellCommand> commands;
 
-  public CommandRegisty() {
+  public CommandRegistry() {
     commands = Lists.newArrayList(ServiceLoader.load(ShellCommand.class).iterator());
   }
 

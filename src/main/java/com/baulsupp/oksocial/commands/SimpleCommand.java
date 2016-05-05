@@ -11,7 +11,7 @@ public class SimpleCommand implements ShellCommand {
   private String prefix;
   private String authName;
 
-  protected SimpleCommand(String name, String prefix, String authName) {
+  public SimpleCommand(String name, String prefix, String authName) {
     this.name = name;
     this.prefix = prefix;
     this.authName = authName;
