@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.LocalServer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.repackaged.com.google.common.base.Throwables;
+import com.google.common.base.Throwables;
 import com.google.common.base.Charsets;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
