@@ -244,7 +244,7 @@ public class Main extends HelpOption implements Runnable {
       for (Request request : requests) {
         logger.log(Level.FINE, "url " + request.url());
 
-        if (urls.size() > 1) {
+        if (requests.size() > 1) {
           System.err.println(request.url());
         }
 
