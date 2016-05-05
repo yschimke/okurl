@@ -1,5 +1,6 @@
-package com.baulsupp.oksocial;
+package com.baulsupp.oksocial.util;
 
+import com.baulsupp.oksocial.Main;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial;
+package com.baulsupp.oksocial.util;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;

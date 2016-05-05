@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baulsupp.oksocial;
+package com.baulsupp.oksocial.authenticator;
 
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.util.Throwables;

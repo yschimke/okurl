@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial;
 
+import com.baulsupp.oksocial.util.Util;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;

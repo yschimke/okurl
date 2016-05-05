@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.facebook;
 
 import com.baulsupp.oksocial.ConsoleHandler;
-import com.baulsupp.oksocial.LocalServer;
+import com.baulsupp.oksocial.authenticator.LocalServer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
