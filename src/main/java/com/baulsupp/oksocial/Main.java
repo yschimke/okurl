@@ -22,6 +22,8 @@ import com.baulsupp.oksocial.commands.JRubyCommand;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.dns.DnsOverride;
+import com.baulsupp.oksocial.dns.DnsSelector;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
 import com.google.common.collect.Sets;
@@ -36,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Proxy;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -59,6 +60,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
+import okhttp3.Dns;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -143,9 +145,12 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
 
-  @Option(name = {"--dns"}, description = "IP Preferences", allowedValues = {"system", "ipv4",
-      "ipv6", "ipv4only", "ipv6only"})
+  @Option(name = {"--dns"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
+      allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
   public String ipmode = "system";
+
+  @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
+  public String resolve = null;
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
@@ -386,7 +391,11 @@ public class Main extends HelpOption implements Runnable {
       keyManagers = OpenSCUtil.getKeyManagers(password);
     }
 
-    builder.dns(DnsSelector.byName(ipmode));
+    Dns dns = DnsSelector.byName(ipmode);
+    if (resolve != null) {
+      dns = DnsOverride.build(dns, resolve);
+    }
+    builder.dns(dns);
 
     if (keyManagers != null || trustManager != null) {
       if (trustManager == null) {

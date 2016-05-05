@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial;
+package com.baulsupp.oksocial.dns;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
