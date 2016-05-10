@@ -18,7 +18,7 @@ package com.baulsupp.oksocial;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
-import com.baulsupp.oksocial.commands.JRubyCommand;
+import com.baulsupp.oksocial.commands.JavascriptCommand;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -284,7 +284,7 @@ public class Main extends HelpOption implements Runnable {
       throws Exception {
     Path scriptPath = FileSystems.getDefault().getPath(script);
 
-    return JRubyCommand.load(scriptPath);
+    return new JavascriptCommand(scriptPath);
   }
 
   private void printAliasNames() {
