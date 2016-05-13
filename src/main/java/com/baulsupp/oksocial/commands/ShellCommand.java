@@ -10,7 +10,7 @@ public interface ShellCommand {
   String name();
 
   List<Request> buildRequests(OkHttpClient.Builder clientBuilder,
-      Request.Builder requestBuilder, List<String> urls);
+      Request.Builder requestBuilder, List<String> urls) throws Exception;
 
   default Optional<String> authenticator() {
     return Optional.empty();
