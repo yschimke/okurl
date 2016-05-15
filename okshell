@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+CMD=$(basename $0)
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+codesha() {
+  find pom.xml src -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
+}
+
+SHA=$(codesha)
+
+if [ ! -f "target/cached-$SHA.jar" ]; then
+  mvn -DskipTests clean package dependency:copy-dependencies
+  mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
+fi
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 9)
+
+MAIN_JAR=$(ls "target/cached-$SHA.jar")
+$JAVA_HOME/bin/jjs -classpath $MAIN_JAR:$(ls target/dependency/*.jar | tr '\n' ':') -scripting "$@"

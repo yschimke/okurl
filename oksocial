@@ -11,24 +11,28 @@ codesha() {
 SHA=$(codesha)
 
 if [ ! -f "target/cached-$SHA.jar" ]; then
-  mvn -DskipTests clean package dependency:copy-dependencies
+  JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn -DskipTests clean package dependency:copy-dependencies
   mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
 fi
 
 JAVA_CMD=java
+ALPN=
 BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
 #DEBUG="-Djavax.net.debug=ssl:handshake -Djava.security.debug=sunpkcs11"
 
-if [ -x /usr/libexec/java_home ]; then
+JAVA_HOME=$(/usr/libexec/java_home -v 9)
+
+if [ $? -ne 0 ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
   if [ $? -eq 0 ]; then
-    JAVA_CMD="$JAVA_HOME/bin/java"
     ALPN=$(ls target/alpn/alpn-boot-*.jar)
     BCP="-Xbootclasspath/p:$ALPN"
   fi
 fi
+
+JAVA_CMD="$JAVA_HOME/bin/java"
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
 $JAVA_CMD $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"

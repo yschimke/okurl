@@ -18,7 +18,6 @@ package com.baulsupp.oksocial;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
-import com.baulsupp.oksocial.commands.JavascriptCommand;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -42,8 +41,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Proxy;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -271,20 +268,7 @@ public class Main extends HelpOption implements Runnable {
       throws Exception {
     String commandName = getCommandName();
 
-    if (commandName.equals("oksocial-command")) {
-      String script = this.urls.remove(0);
-
-      return commandFromScript(script);
-    } else {
-      return commandRegisty.getCommandByName(commandName).orElse(new OksocialCommand());
-    }
-  }
-
-  private ShellCommand commandFromScript(String script)
-      throws Exception {
-    Path scriptPath = FileSystems.getDefault().getPath(script);
-
-    return new JavascriptCommand(scriptPath);
+    return commandRegisty.getCommandByName(commandName).orElse(new OksocialCommand());
   }
 
   private void printAliasNames() {
@@ -369,7 +353,7 @@ public class Main extends HelpOption implements Runnable {
     return System.getProperty("command.name", "oksocial");
   }
 
-  private OkHttpClient.Builder createClientBuilder() throws Exception {
+  public OkHttpClient.Builder createClientBuilder() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder.followSslRedirects(followRedirects);
     if (connectTimeout != DEFAULT_TIMEOUT) {
@@ -505,7 +489,7 @@ public class Main extends HelpOption implements Runnable {
     return RequestBody.create(MediaType.parse(mimeType), bodyData);
   }
 
-  private Request.Builder createRequestBuilder() {
+  public Request.Builder createRequestBuilder() {
     Request.Builder request = new Request.Builder();
 
     request.method(getRequestMethod(), getRequestBody());
