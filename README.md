@@ -2,6 +2,8 @@
 
 A curl like client based on OkHttp
 
+Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
+
 ## Features
 
 - Login (token generation) support and automatic authentication for
