@@ -1,0 +1,3 @@
+#!/usr/bin/env ./okapi
+
+"https://graph.facebook.com" + item

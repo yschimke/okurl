@@ -15,7 +15,8 @@ public class ServiceInterceptor implements Interceptor {
   private List<AuthInterceptor<?>> services = new ArrayList<>();
 
   public ServiceInterceptor() {
-    ServiceLoader.load(AuthInterceptor.class).iterator().forEachRemaining(services::add);
+    ServiceLoader.load(AuthInterceptor.class, AuthInterceptor.class.getClassLoader())
+        .iterator().forEachRemaining(services::add);
   }
 
   @Override
