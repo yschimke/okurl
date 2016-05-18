@@ -1,6 +1,10 @@
 package com.baulsupp.oksocial;
 
+import com.baulsupp.oksocial.location.Location;
 import com.baulsupp.oksocial.util.Util;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -8,10 +12,8 @@ import okhttp3.internal.http.StatusLine;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 public class ConsoleHandler implements OutputHandler {
   private final boolean showHeaders;
@@ -50,73 +52,27 @@ public class ConsoleHandler implements OutputHandler {
   }
 
   public static void openPreview(BufferedSource source) throws IOException {
-    ProcessBuilder pb =
-        new ProcessBuilder("open", "-f", "-a", "/Applications/Preview.app")
-            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-            .redirectError(ProcessBuilder.Redirect.INHERIT);
-
-    Process process = pb.start();
 
     try {
-      OutputStream processStdin = process.getOutputStream();
-
-      Sink out = Okio.sink(processStdin);
-
-      writeToSink(source, out);
-
-      processStdin.close();
-
-      try {
-        boolean completed = process.waitFor(5, TimeUnit.SECONDS);
-
-        if (!completed) {
-          throw new IOException("preview failed to launch in 5 seconds");
-        }
-
-        int result = process.exitValue();
-        if (result != 0) {
-          System.err.println("preview returned " + result);
-        }
-      } catch (InterruptedException e) {
-        throw new IOException(e);
-      }
-    } finally {
-      if (process.isAlive()) {
-        process.destroyForcibly();
-      }
+      new ProcessExecutor().command("open", "-f", "-a", "/Applications/Preview.app")
+          .timeout(5, TimeUnit.SECONDS)
+          .redirectOutput(Slf4jStream.ofCaller().asInfo())
+          .redirectInput(source.inputStream())
+          .execute();
+    } catch (InterruptedException | TimeoutException e) {
+      throw new IOException(e);
     }
   }
 
   public static void openLink(String url) throws IOException {
     if (Util.isOSX()) {
-      ProcessBuilder pb =
-          new ProcessBuilder("open", url).redirectInput(ProcessBuilder.Redirect.INHERIT)
-              .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-              .redirectError(ProcessBuilder.Redirect.INHERIT);
-      Process process = pb.start();
-
       try {
-        OutputStream processStdin = process.getOutputStream();
-        processStdin.close();
-
-        try {
-          boolean completed = process.waitFor(5, TimeUnit.SECONDS);
-
-          if (!completed) {
-            throw new IOException("preview failed to launch in 5 seconds");
-          }
-
-          int result = process.exitValue();
-          if (result != 0) {
-            System.err.println("preview returned " + result);
-          }
-        } catch (InterruptedException e) {
-          throw new IOException(e);
-        }
-      } finally {
-        if (process.isAlive()) {
-          process.destroyForcibly();
-        }
+        new ProcessExecutor().command("open", url)
+            .timeout(5, TimeUnit.SECONDS)
+            .redirectOutput(Slf4jStream.ofCaller().asInfo())
+            .execute();
+      } catch (InterruptedException | TimeoutException e) {
+        throw new IOException(e);
       }
     } else {
       System.err.println(url);
@@ -126,7 +82,6 @@ public class ConsoleHandler implements OutputHandler {
   /**
    * Stream the response to the System.out as it is returned from the server.
    */
-
   private static void writeToConsole(BufferedSource source) throws IOException {
     // TODO support a nice hex mode for binary files
 
