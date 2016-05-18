@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.location;
 
 import com.baulsupp.oksocial.util.Util;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -45,9 +44,5 @@ public class Location {
     Location l = new Location(latitude, longitude);
 
     return Optional.of(l);
-  }
-
-  public static void main(String[] args) throws IOException {
-    System.out.println(Location.read());
   }
 }
