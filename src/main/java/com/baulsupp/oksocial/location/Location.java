@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.location;
 import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 /**
@@ -26,7 +27,7 @@ public class Location {
       try {
         String line = new ProcessExecutor().command("/Applications/CoreLocationCLI", "-format",
             "%latitude,%longitude", "-once", "yes")
-            .readOutput(true).execute().outputUTF8();
+            .readOutput(true).timeout(5, TimeUnit.SECONDS).execute().outputUTF8();
 
         String[] parts = line.trim().split(",");
 
