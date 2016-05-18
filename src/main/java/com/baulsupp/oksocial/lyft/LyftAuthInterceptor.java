@@ -57,15 +57,14 @@ public class LyftAuthInterceptor implements AuthInterceptor<LyftServerCredential
 
   @Override
   public void authorize(OkHttpClient client) {
-    char[] password = System.console().readPassword("Lyft Server Token: ");
-
-    if (password != null) {
-      LyftServerCredentials newCredentials = new LyftServerCredentials(new String(password));
-
-      CredentialsStore<LyftServerCredentials> LyftCredentialsStore =
+    try {
+      System.err.println("Authorising Lyft API");
+      LyftServerCredentials newCredentials = LyftAuthFlow.login(client);
+      CredentialsStore<LyftServerCredentials> lyftCredentialsStore =
           new OSXCredentialsStore<>(new LyftServiceDefinition());
-
-      LyftCredentialsStore.storeCredentials(newCredentials);
+      lyftCredentialsStore.storeCredentials(newCredentials);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 }
