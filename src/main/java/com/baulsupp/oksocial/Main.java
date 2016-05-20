@@ -16,6 +16,7 @@
 package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.OksocialCommand;
@@ -206,9 +207,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (showCredentials) {
-      for (AuthInterceptor a : serviceInterceptor.services()) {
-        printKnownCredentials(a);
-      }
+      PrintCredentials.printKnownCredentials(serviceInterceptor.services());
 
       return;
     }
@@ -342,14 +341,6 @@ public class Main extends HelpOption implements Runnable {
         client.connectionPool().evictAll();
       }
     }
-  }
-
-  private <T> void printKnownCredentials(AuthInterceptor<T> a) {
-    T credentials = a.credentials();
-    ServiceDefinition<T> sd = a.credentialsStore().getServiceDefinition();
-    String credentialsString =
-        credentials != null ? sd.formatCredentialsString(credentials) : "None";
-    System.out.println(sd.apiHost() + " " + credentialsString);
   }
 
   private String getCommandName() {
