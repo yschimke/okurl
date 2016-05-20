@@ -16,25 +16,22 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.util.Throwables;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.AbstractHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.AbstractHandler;
 
 /**
  * OAuth 2.0 verification code receiver that runs a Jetty server on a free port, waiting for a
- * redirect with the verification code.
- * <p>
- * <p> Implementation is thread-safe. </p>
+ * redirect with the verification code. <p> <p> Implementation is thread-safe. </p>
  *
  * @author Yaniv Inbar
  * @since 1.11

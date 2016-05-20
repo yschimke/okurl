@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Response;
-import org.apache.http.auth.AUTH;
 
 public class ServiceInterceptor implements Interceptor {
   private List<AuthInterceptor<?>> services = new ArrayList<>();

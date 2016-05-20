@@ -4,13 +4,12 @@ import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.LocalServer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
+import java.io.IOException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import java.io.IOException;
 
 public class LoginAuthFlow {
 

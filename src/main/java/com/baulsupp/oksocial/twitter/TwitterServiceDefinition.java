@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.twitter;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-
 import java.util.List;
 
 public class TwitterServiceDefinition implements ServiceDefinition<TwitterCredentials> {

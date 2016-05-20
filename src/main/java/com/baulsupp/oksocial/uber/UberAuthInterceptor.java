@@ -3,14 +3,16 @@ package com.baulsupp.oksocial.uber;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
-import com.google.common.collect.Sets;
-import okhttp3.*;
-
 import java.io.IOException;
-import java.util.Set;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class UberAuthInterceptor implements AuthInterceptor<UberServerCredentials> {
-  private final CredentialsStore<UberServerCredentials> credentialsStore = CredentialsStore.create(new UberServiceDefinition());
+  private final CredentialsStore<UberServerCredentials> credentialsStore =
+      CredentialsStore.create(new UberServiceDefinition());
   private UberServerCredentials credentials = null;
 
   public static final String NAME = "uber";

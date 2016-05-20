@@ -4,11 +4,14 @@ import com.baulsupp.oksocial.ConsoleHandler;
 import com.google.common.base.Throwables;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
-import okhttp3.*;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class PinAuthorisationFlow {
   private static final MediaType FORM_URL_ENCODED =
@@ -27,7 +30,7 @@ public class PinAuthorisationFlow {
   }
 
   private static TwitterCredentials generateRequestToken(OkHttpClient client,
-                                                         TwitterCredentials unauthed) throws IOException {
+      TwitterCredentials unauthed) throws IOException {
     RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_callback=oob");
     Request request =
         new Request.Builder().url("https://api.twitter.com/oauth/request_token")
@@ -65,7 +68,7 @@ public class PinAuthorisationFlow {
   }
 
   private static TwitterCredentials generateAccessToken(OkHttpClient client,
-                                                        TwitterCredentials requestCredentials, String pin) throws IOException {
+      TwitterCredentials requestCredentials, String pin) throws IOException {
     RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_verifier=" + pin);
     Request request =
         new Request.Builder().url("https://api.twitter.com/oauth/access_token")

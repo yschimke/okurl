@@ -1,11 +1,10 @@
 package com.baulsupp.oksocial.twitter;
 
 import com.google.common.collect.Sets;
-import okhttp3.Interceptor;
-import okhttp3.Response;
-
 import java.io.IOException;
 import java.util.Set;
+import okhttp3.Interceptor;
+import okhttp3.Response;
 
 public class TwitterCachingInterceptor implements Interceptor {
   private static final Set<String> permanentHosts = Sets.newHashSet("pbs.twimg.com");

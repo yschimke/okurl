@@ -1,10 +1,9 @@
 package com.baulsupp.oksocial.twitter;
 
-import com.baulsupp.oksocial.util.Util;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
-
+import com.baulsupp.oksocial.util.Util;
 import java.io.File;
 
 public class TwurlCompatibleCredentialsStore implements CredentialsStore<TwitterCredentials> {
