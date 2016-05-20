@@ -1,0 +1,3 @@
+#!/usr/bin/env okapi -m
+
+"https://api.twitter.com/1.1/search/tweets.json?q=" + arguments[0] + "&count=" + arguments[1]
