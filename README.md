@@ -1,6 +1,6 @@
 # OkHttp Social Client
 
-A curl like client based on OkHttp
+A curl like client based on OkHttp with tight integration for Mac OSX
 
 ```
 $ brew install yschimke/tap/oksocial
