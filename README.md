@@ -15,6 +15,11 @@ $ tweetsearch twitterapi | jq .statuses[].text | head -1
 
 # Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
 
+## Requirements
+
+- Java 8+
+- Mac OSX (untested elsewhere)
+
 ## Features
 
 - Login (token generation) support and automatic authentication for
