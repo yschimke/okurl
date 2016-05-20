@@ -81,6 +81,9 @@ public class Main extends HelpOption implements Runnable {
   static final String NAME = "oksocial";
   static final int DEFAULT_TIMEOUT = -1;
 
+  // store active logger to avoid GC
+  private Logger activeLogger;
+
   static Main fromArgs(String... args) {
     return SingleCommand.singleCommand(Main.class).parse(args);
   }
@@ -531,11 +534,12 @@ public class Main extends HelpOption implements Runnable {
     if (debug) {
       ConsoleHandler handler = new ConsoleHandler();
       handler.setLevel(Level.ALL);
-      Logger.getLogger("").addHandler(handler);
-      Logger.getLogger("").setLevel(Level.ALL);
+      activeLogger = Logger.getLogger("");
+      activeLogger.addHandler(handler);
+      activeLogger.setLevel(Level.ALL);
     } else if (showHttp2Frames) {
-      Logger logger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
-      logger.setLevel(Level.FINE);
+      activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
+      activeLogger.setLevel(Level.FINE);
       ConsoleHandler handler = new ConsoleHandler();
       handler.setLevel(Level.FINE);
       handler.setFormatter(new SimpleFormatter() {
@@ -544,7 +548,7 @@ public class Main extends HelpOption implements Runnable {
           return String.format("%s%n", record.getMessage());
         }
       });
-      logger.addHandler(handler);
+      activeLogger.addHandler(handler);
     }
   }
 }
