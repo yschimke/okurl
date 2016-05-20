@@ -21,7 +21,6 @@ import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
-import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.dns.DnsOverride;
 import com.baulsupp.oksocial.dns.DnsSelector;
 import com.baulsupp.oksocial.twitter.TwitterCachingInterceptor;
@@ -80,12 +79,12 @@ public class Main extends HelpOption implements Runnable {
   private static Logger logger = Logger.getLogger(Main.class.getName());
 
   static final String NAME = "oksocial";
-  static final int DEFAULT_TIMEOUT = -1;
+  private static final int DEFAULT_TIMEOUT = -1;
 
   // store active logger to avoid GC
   private Logger activeLogger;
 
-  static Main fromArgs(String... args) {
+  private static Main fromArgs(String... args) {
     return SingleCommand.singleCommand(Main.class).parse(args);
   }
 
@@ -94,87 +93,87 @@ public class Main extends HelpOption implements Runnable {
   }
 
   @Option(name = {"-X", "--request"}, description = "Specify request command to use")
-  public String method;
+  private String method;
 
   @Option(name = {"-d", "--data"}, description = "HTTP POST data")
-  public String data;
+  private String data;
 
   @Option(name = {"-H", "--header"}, description = "Custom header to pass to server")
-  public List<String> headers;
+  private List<String> headers;
 
   @Option(name = {"-A", "--user-agent"}, description = "User-Agent to send to server")
-  public String userAgent = NAME + "/" + versionString();
+  private String userAgent = NAME + "/" + versionString();
 
   @Option(name = "--connect-timeout", description = "Maximum time allowed for connection (seconds)")
-  public int connectTimeout = DEFAULT_TIMEOUT;
+  private int connectTimeout = DEFAULT_TIMEOUT;
 
   @Option(name = "--read-timeout", description = "Maximum time allowed for reading data (seconds)")
-  public int readTimeout = DEFAULT_TIMEOUT;
+  private int readTimeout = DEFAULT_TIMEOUT;
 
   @Option(name = {"-L", "--location"}, description = "Follow redirects")
-  public boolean followRedirects = false;
+  private boolean followRedirects = false;
 
   @Option(name = {"-k", "--insecure"},
       description = "Allow connections to SSL sites without certs")
-  public boolean allowInsecure = false;
+  private boolean allowInsecure = false;
 
   @Option(name = {"-i", "--include"}, description = "Include protocol headers in the output")
-  public boolean showHeaders = false;
+  private boolean showHeaders = false;
 
   @Option(name = "--frames", description = "Log HTTP/2 frames to STDERR")
-  public boolean showHttp2Frames = false;
+  private boolean showHttp2Frames = false;
 
   @Option(name = "--debug", description = "Debug")
-  public boolean debug = false;
+  private boolean debug = false;
 
   @Option(name = {"-e", "--referer"}, description = "Referer URL")
-  public String referer;
+  private String referer;
 
   @Option(name = {"-V", "--version"}, description = "Show version number and quit")
-  public boolean version = false;
+  private boolean version = false;
 
   @Option(name = {"--cache"}, description = "Cache directory")
-  public File cacheDirectory = null;
+  private File cacheDirectory = null;
 
   @Option(name = {"--protocols"}, description = "Protocols")
-  public String protocols;
+  private String protocols;
 
   @Option(name = {"-o", "--output"}, description = "Output file/directory")
-  public File outputDirectory;
+  private File outputDirectory;
 
   @Option(name = {"--authorize"}, description = "Authorize API")
-  public boolean authorize;
+  private boolean authorize;
 
   @Option(name = {"--token"}, description = "Use existing Token for authorization")
-  public String token;
+  private String token;
 
   @Option(name = {"--curl"}, description = "Show curl commands")
-  public boolean curl = false;
+  private boolean curl = false;
 
   @Option(name = {"--dns"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
       allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
-  public String ipmode = "system";
+  private String ipmode = "system";
 
   @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
-  public String resolve = null;
+  private String resolve = null;
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
-  public File clientCert = null;
+  private File clientCert = null;
 
   @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate")
-  public boolean opensc = false;
+  private boolean opensc = false;
 
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
-  public InetAddress socksProxy;
+  private InetAddress socksProxy;
 
   @Option(name = {"--show-credentials"}, description = "Show Credentials")
-  public boolean showCredentials = false;
+  private boolean showCredentials = false;
 
   @Option(name = {"--alias-names"}, description = "Show Alias Names")
-  public boolean aliasNames = false;
+  private boolean aliasNames = false;
 
   @Arguments(title = "urls", description = "Remote resource URLs")
-  public List<String> urls = new ArrayList<>();
+  private List<String> urls = new ArrayList<>();
 
   private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
@@ -225,10 +224,8 @@ public class Main extends HelpOption implements Runnable {
       }
     } catch (UsageException e) {
       System.err.println(e.getMessage());
-      return;
     } catch (Exception e) {
       e.printStackTrace();
-      return;
     }
   }
 
@@ -276,9 +273,7 @@ public class Main extends HelpOption implements Runnable {
   private void printAliasNames() {
     Set<String> names = Sets.newTreeSet(commandRegisty.names());
 
-    for (String alias : names) {
-      System.out.println(alias);
-    }
+    names.forEach(System.out::println);
   }
 
   private void makeRequest(OutputHandler outputHandler, OkHttpClient client, Request request) {
@@ -313,12 +308,12 @@ public class Main extends HelpOption implements Runnable {
               .stream()
               .collect(
                   Collectors.joining(", ")));
-    }
-
-    if (token == null) {
-      authRequest(auth.get());
     } else {
-      storeCredentials(auth.get());
+      if (token == null) {
+        authRequest(auth.get());
+      } else {
+        storeCredentials(auth.get());
+      }
     }
   }
 
@@ -337,9 +332,7 @@ public class Main extends HelpOption implements Runnable {
 
       auth.authorize(client);
     } finally {
-      if (client != null) {
-        client.connectionPool().evictAll();
-      }
+      client.connectionPool().evictAll();
     }
   }
 
