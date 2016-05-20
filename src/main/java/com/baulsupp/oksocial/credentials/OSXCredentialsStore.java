@@ -1,13 +1,12 @@
 package com.baulsupp.oksocial.credentials;
 
 import com.google.common.base.Throwables;
-import okio.BufferedSource;
-import okio.Okio;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
+import okio.BufferedSource;
+import okio.Okio;
 
 public class OSXCredentialsStore<T> implements CredentialsStore<T> {
   private ServiceDefinition<T> serviceDefinition;
@@ -24,7 +23,8 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
   public T readDefaultCredentials() {
     try {
       Process process =
-          new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a", serviceDefinition.apiHost(),
+          new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a",
+              serviceDefinition.apiHost(),
               "-D", "oauth", "-w")
               .redirectError(new File("/dev/null"))
               .start();
@@ -73,7 +73,8 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
       String credentialsString = serviceDefinition.formatCredentialsString(credentials);
 
       Process process =
-          new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a", serviceDefinition.apiHost(),
+          new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a",
+              serviceDefinition.apiHost(),
               "-D", "oauth", "-s", serviceDefinition.serviceName(), "-U", "-w",
               credentialsString)
               .redirectOutput(ProcessBuilder.Redirect.INHERIT)

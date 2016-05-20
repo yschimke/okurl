@@ -13,7 +13,8 @@ import okhttp3.Response;
  * https://developer.lyft.com/docs/authentication
  */
 public class LyftAuthInterceptor implements AuthInterceptor<LyftServerCredentials> {
-  private final CredentialsStore<LyftServerCredentials> credentialsStore = CredentialsStore.create(new LyftServiceDefinition());
+  private final CredentialsStore<LyftServerCredentials> credentialsStore =
+      CredentialsStore.create(new LyftServiceDefinition());
   private LyftServerCredentials credentials = null;
 
   public static final String NAME = "lyft";

@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial;
 
-import com.baulsupp.oksocial.location.Location;
 import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

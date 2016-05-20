@@ -2,8 +2,6 @@ package com.baulsupp.oksocial.dns;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import okhttp3.Dns;
-
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -11,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import okhttp3.Dns;
 
 import static java.util.stream.Collectors.toList;
 
