@@ -37,13 +37,13 @@ public class TwitterAuthInterceptorTest {
         new Request.Builder().url("https://api.twitter.com/oauth/request_token").post(body).build();
     String header =
         new FixedTimeTwitterAuthInterceptor(
-            TwitterAuthInterceptor.TEST_CREDENTIALS).generateAuthorization(
+            TwitterAuthInterceptor.readClientCredentials()).generateAuthorization(
             request);
 
     assertEquals(
-        "OAuth oauth_consumer_key=\"pKrYKZjbhN7rmtWXenRgr8kHY\", "
+        "OAuth oauth_consumer_key=\"xxxxxxxxxxxxxxxxxxxxxxxxx\", "
             + "oauth_nonce=\"67822045175727268931460435281112\", "
-            + "oauth_signature=\"XTw%2F%2B9bYqVNSTYQS3vz3SXsP8tU%3D\", "
+            + "oauth_signature=\"g6jUnrM1E6NldgYQugt%2Frh8Fq%2Fw%3D\", "
             + "oauth_signature_method=\"HMAC-SHA1\", "
             + "oauth_timestamp=\"1460432867\", oauth_version=\"1.0\"",
         header);
