@@ -13,7 +13,7 @@ $ tweetsearch twitterapi | jq .statuses[].text | head -1
 "And now for a test / API integration / For Twitter streaming! #haiku #twitterAPI"
 ``` 
 
-** Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information **
+# Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
 
 ## Features
 
