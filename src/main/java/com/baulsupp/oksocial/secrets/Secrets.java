@@ -1,7 +1,10 @@
 package com.baulsupp.oksocial.secrets;
 
-import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,15 +20,28 @@ public class Secrets {
   }
 
   public Optional<String> get(String key) {
-    return Optional.ofNullable(secrets.get(key));
+    return Optional.ofNullable(secrets.get(key)).filter(s -> !s.isEmpty());
   }
 
   public static Secrets loadSecrets() {
     Properties p = new Properties();
+
     try {
-      p.load(Secrets.class.getResourceAsStream("/oksocial-secrets.properties"));
+      Path configFile =
+          FileSystems.getDefault().getPath(System.getenv("HOME"), ".oksocial-secrets.properties");
+
+      InputStream is;
+      if (Files.exists(configFile)) {
+        is = Files.newInputStream(configFile);
+      } else {
+        is = Secrets.class.getResourceAsStream("/oksocial-secrets.properties");
+      }
+
+      if (is != null) {
+        p.load(is);
+      }
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      e.printStackTrace();
     }
 
     Secrets secrets = new Secrets(new HashMap(p));
