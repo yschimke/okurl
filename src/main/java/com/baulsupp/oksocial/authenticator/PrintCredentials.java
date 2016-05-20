@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 
+// TODO verify credentials against live service and show username/client type etc
 public class PrintCredentials {
   public static <T> void printKnownCredentials(AuthInterceptor<T> a) {
     T credentials = a.credentials();
