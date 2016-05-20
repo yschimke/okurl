@@ -93,3 +93,7 @@ buildNumber.properties
 
 ### Bazel ###
 /bazel-*
+
+
+### Project Specific Files ###
+src/main/resources/oksocial-secrets.properties

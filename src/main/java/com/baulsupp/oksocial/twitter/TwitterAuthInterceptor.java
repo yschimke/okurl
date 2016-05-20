@@ -2,24 +2,34 @@ package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.secrets.Secrets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
 import com.twitter.joauth.Normalizer;
 import com.twitter.joauth.OAuthParams;
 import com.twitter.joauth.Signer;
 import com.twitter.joauth.UrlCodec;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
-import okhttp3.*;
-import okio.Buffer;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.Buffer;
 
 public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
   private static final Logger log = Logger.getLogger(TwitterAuthInterceptor.class.getName());
@@ -28,11 +38,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
 
   private final SecureRandom secureRandom = new SecureRandom();
 
-  public static final TwitterCredentials TEST_CREDENTIALS =
-      new TwitterCredentials(null, "pKrYKZjbhN7rmtWXenRgr8kHY",
-          "FpOK8mUesjggvZ7YprMnhStKmdyVcikNYtjNm1PetymgfE32jJ", null, "");
-
-  private CredentialsStore<TwitterCredentials> credentialsStore = CredentialsStore.create(new TwitterServiceDefinition());
+  private CredentialsStore<TwitterCredentials> credentialsStore =
+      CredentialsStore.create(new TwitterServiceDefinition());
   private TwitterCredentials credentials = null;
 
   public TwitterAuthInterceptor() {
@@ -178,11 +185,18 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   public void authorize(OkHttpClient client) {
     System.err.println("Authorising Twitter API");
     TwitterCredentials newCredentials =
-        PinAuthorisationFlow.authorise(client, TwitterAuthInterceptor.TEST_CREDENTIALS);
+        PinAuthorisationFlow.authorise(client, readClientCredentials());
 
     CredentialsStore<TwitterCredentials> twitterCredentialsStore =
         new TwurlCompatibleCredentialsStore();
 
     twitterCredentialsStore.storeCredentials(newCredentials);
+  }
+
+  public static TwitterCredentials readClientCredentials() {
+    String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", false);
+    String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", true);
+
+    return new TwitterCredentials(null, consumerKey, consumerSecret, null, "");
   }
 }

@@ -14,12 +14,9 @@ import java.io.IOException;
 
 public class LoginAuthFlow {
 
-  public static FacebookCredentials login(OkHttpClient client) {
+  public static FacebookCredentials login(OkHttpClient client, String clientId, String clientSecret,
+      String scopes) {
     try {
-      String clientId = System.console().readLine("Facebook Client Id: ");
-      String clientSecret = new String(System.console().readPassword("Facebook Client Secret: "));
-      String scopes = System.console().readLine("Scopes: ");
-
       LocalServer s = new LocalServer("localhost", 3000);
 
       try {

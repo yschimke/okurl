@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.facebook;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
+import com.baulsupp.oksocial.secrets.Secrets;
 import com.google.common.collect.Sets;
 import okhttp3.*;
 
@@ -62,7 +63,12 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
   @Override
   public void authorize(OkHttpClient client) {
     System.err.println("Authorising Facebook API");
-    FacebookCredentials newCredentials = LoginAuthFlow.login(client);
+
+    String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", false);
+    String clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", true);
+    String scopes = Secrets.prompt("Scopes", "facebook.scopes", false);
+
+    FacebookCredentials newCredentials = LoginAuthFlow.login(client, clientId, clientSecret, scopes);
     CredentialsStore<FacebookCredentials> facebookCredentialsStore =
         new OSXCredentialsStore<>(new FacebookServiceDefinition());
     facebookCredentialsStore.storeCredentials(newCredentials);
