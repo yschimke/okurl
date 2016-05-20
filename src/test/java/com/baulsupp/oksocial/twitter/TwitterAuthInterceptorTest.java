@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.twitter;
 
-import com.baulsupp.oksocial.twitter.TwitterAuthInterceptor;
-import com.baulsupp.oksocial.twitter.TwitterCredentials;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -35,10 +33,12 @@ public class TwitterAuthInterceptorTest {
         "oauth_callback=oob");
     Request request =
         new Request.Builder().url("https://api.twitter.com/oauth/request_token").post(body).build();
+
+    TwitterCredentials credentials = new TwitterCredentials(null, "xxxxxxxxxxxxxxxxxxxxxxxxx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", null, "");
+
     String header =
-        new FixedTimeTwitterAuthInterceptor(
-            TwitterAuthInterceptor.readClientCredentials()).generateAuthorization(
-            request);
+        new FixedTimeTwitterAuthInterceptor(credentials).generateAuthorization(request);
 
     assertEquals(
         "OAuth oauth_consumer_key=\"xxxxxxxxxxxxxxxxxxxxxxxxx\", "
