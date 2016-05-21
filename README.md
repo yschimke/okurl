@@ -1,8 +1,24 @@
 # OkHttp Social Client
 
-A curl like client based on OkHttp
+A curl like client based on OkHttp with tight integration for Mac OSX
 
-Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
+```
+$ brew install yschimke/tap/oksocial
+
+$ oksocial --authorize twitter
+
+$ twitterapi '/1.1/statuses/show.json?id=733545978398040064'
+...
+$ tweetsearch twitterapi | jq .statuses[].text | head -1
+"And now for a test / API integration / For Twitter streaming! #haiku #twitterAPI"
+``` 
+
+# Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
+
+## Requirements
+
+- Java 8+
+- Mac OSX (untested elsewhere)
 
 ## Features
 

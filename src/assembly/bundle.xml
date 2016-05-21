@@ -21,9 +21,12 @@
     <fileSet>
       <directory>src/main/scripts</directory>
       <outputDirectory>bin</outputDirectory>
-      <includes>
-        <include>oksocial</include>
-      </includes>
+      <lineEnding>unix</lineEnding>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>commands</directory>
+      <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
     </fileSet>

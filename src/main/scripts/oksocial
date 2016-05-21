@@ -2,19 +2,20 @@
 
 CMD=$(basename $0)
 
-JAVA_CMD=java
 INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+JAVA_CMD=java
 if [ -x /usr/libexec/java_home ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
-
+  
   if [ $? -ne 0 ]; then
     JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-    ALPN=$(ls target/alpn/alpn-boot-*.jar)
+
+    ALPN=$(ls $INSTALLDIR/alpn/alpn-boot-*.jar)
     BCP="-Xbootclasspath/p:$ALPN"
   fi
   
   JAVA_CMD=$JAVA_HOME/bin/java
 fi
 
-$JAVA_HOME/bin/java $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
+$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\* -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
