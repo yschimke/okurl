@@ -1,9 +1,5 @@
 #!/bin/sh
 
-set -e
-
-CMD=$(basename $0)
-
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 codesha() {
@@ -13,11 +9,20 @@ codesha() {
 SHA=$(codesha)
 
 if [ ! -f "target/cached-$SHA.jar" ]; then
-  mvn -DskipTests clean package dependency:copy-dependencies
+  mvn -DskipTests clean package dependency:copy-dependencies || exit
   mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
 fi
 
-export JAVA_HOME=$(/usr/libexec/java_home -v 9)
+BCP=
+
+JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
+
+if [ $? -ne 0 ]; then
+  JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+  ALPN=$(ls target/alpn/alpn-boot-*.jar)
+  BCP="-J-Xbootclasspath/p:$ALPN"
+fi
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_HOME/bin/jjs -classpath $MAIN_JAR:$(ls target/dependency/*.jar | tr '\n' ':') -scripting "$@"
+$JAVA_HOME/bin/jjs $BCP -classpath $MAIN_JAR:$(ls target/dependency/*.jar | tr '\n' ':') -scripting "$@"

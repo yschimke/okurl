@@ -1,8 +1,8 @@
 #!/bin/sh
 
-set -e
+CMD=$(basename "$0")
 
-CMD=$(basename $0)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 codesha() {
   find pom.xml src -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
@@ -11,17 +11,15 @@ codesha() {
 SHA=$(codesha)
 
 if [ ! -f "target/cached-$SHA.jar" ]; then
-  JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn -DskipTests clean package dependency:copy-dependencies
+  mvn -DskipTests clean package dependency:copy-dependencies || exit
   mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
 fi
 
-JAVA_CMD=java
-ALPN=
 BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
 #DEBUG="-Djavax.net.debug=ssl:handshake -Djava.security.debug=sunpkcs11"
 
-JAVA_HOME=$(/usr/libexec/java_home -v 9)
+JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
 
 if [ $? -ne 0 ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
@@ -35,4 +33,4 @@ fi
 JAVA_CMD="$JAVA_HOME/bin/java"
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_CMD $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
+$JAVA_HOME/bin/java $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
