@@ -7,8 +7,8 @@ if [ -x /usr/libexec/java_home ]; then
 
   if [ $? -ne 0 ]; then
     JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-    ALPN=$(ls target/alpn/alpn-boot-*.jar)
-    BCP="-Xbootclasspath/p:$ALPN"
+    ALPN=$(ls $INSTALLDIR/alpn/alpn-boot-*.jar)
+    BCP="-J-Xbootclasspath/p:$ALPN"
   fi
 fi
 
