@@ -28,8 +28,10 @@ import com.baulsupp.oksocial.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.InetAddress;
 import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
+import com.baulsupp.oksocial.util.OkHttpResponseFuture;
 import com.baulsupp.oksocial.util.OpenSCUtil;
 import com.baulsupp.oksocial.util.Util;
+import com.google.api.client.util.Lists;
 import com.google.common.collect.Sets;
 import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
@@ -48,6 +50,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -62,6 +66,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
+import okhttp3.Call;
 import okhttp3.Dns;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -177,11 +182,13 @@ public class Main extends HelpOption implements Runnable {
 
   private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
-  private CommandRegistry commandRegisty = new CommandRegistry();
+  private CommandRegistry commandRegistry = new CommandRegistry();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
   }
+
+  private List<OkHttpClient> clients = Lists.newArrayList();
 
   @Override
   public void run() {
@@ -226,66 +233,98 @@ public class Main extends HelpOption implements Runnable {
       System.err.println(e.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
+      clients.forEach(client -> {
+        client.dispatcher().executorService().shutdown();
+        client.connectionPool().evictAll();
+      });
     }
   }
 
   private void executeRequests(OutputHandler outputHandler) throws Exception {
-    OkHttpClient client = null;
+    OkHttpClient.Builder clientBuilder = createClientBuilder();
 
-    try {
-      OkHttpClient.Builder clientBuilder = createClientBuilder();
+    ShellCommand command = getShellCommand();
 
-      ShellCommand command = getShellCommand();
+    Request.Builder requestBuilder = createRequestBuilder();
 
-      Request.Builder requestBuilder = createRequestBuilder();
+    List<Request> requests = command.buildRequests(clientBuilder, requestBuilder, urls);
 
-      List<Request> requests = command.buildRequests(clientBuilder, requestBuilder, urls);
+    if (requests.isEmpty()) {
+      throw new UsageException("no urls specified");
+    }
 
-      if (requests.isEmpty()) {
-        throw new UsageException("no urls specified");
-      }
+    OkHttpClient client = build(clientBuilder);
 
-      client = clientBuilder.build();
+    List<Future<Response>> responseFutures = enqueueRequests(requests, client);
+    processResponses(outputHandler, responseFutures);
+  }
 
-      for (Request request : requests) {
-        logger.log(Level.FINE, "url " + request.url());
+  private void processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
+      throws IOException, InterruptedException {
+    // TODO allow setting failure/cancel strategy
+    boolean failed = false;
+    for (Future<Response> responseFuture : responseFutures) {
+      if (failed) {
+        responseFuture.cancel(true);
+      } else {
+        try {
+          outputHandler.showOutput(responseFuture.get());
+        } catch (ExecutionException ee) {
+          ee.getCause().printStackTrace();
 
-        if (requests.size() > 1) {
-          System.err.println(request.url());
+          failed = true;
         }
-
-        makeRequest(outputHandler, client, request);
-      }
-    } finally {
-      if (client != null) {
-        client.connectionPool().evictAll();
       }
     }
+  }
+
+  private List<Future<Response>> enqueueRequests(List<Request> requests, OkHttpClient client) {
+    List<Future<Response>> responseFutures = Lists.newArrayList();
+
+    for (Request request : requests) {
+      logger.log(Level.FINE, "url " + request.url());
+
+      if (requests.size() > 1) {
+        System.err.println(request.url());
+      }
+
+      responseFutures.add(makeRequest(client, request));
+    }
+    return responseFutures;
+  }
+
+  private OkHttpClient build(OkHttpClient.Builder clientBuilder) {
+    OkHttpClient client = clientBuilder.build();
+
+    clients.add(client);
+
+    return client;
   }
 
   private ShellCommand getShellCommand()
       throws Exception {
     String commandName = getCommandName();
 
-    return commandRegisty.getCommandByName(commandName).orElse(new OksocialCommand());
+    return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
   }
 
   private void printAliasNames() {
-    Set<String> names = Sets.newTreeSet(commandRegisty.names());
+    Set<String> names = Sets.newTreeSet(commandRegistry.names());
 
     names.forEach(System.out::println);
   }
 
-  private void makeRequest(OutputHandler outputHandler, OkHttpClient client, Request request) {
-    try {
-      logger.log(Level.FINE, "Request " + request);
+  private Future<Response> makeRequest(OkHttpClient client, Request request) {
+    logger.log(Level.FINE, "Request " + request);
 
-      Response response = client.newCall(request).execute();
+    Call call = client.newCall(request);
 
-      outputHandler.showOutput(response);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    OkHttpResponseFuture result = new OkHttpResponseFuture(call);
+
+    call.enqueue(result);
+
+    return result.future;
   }
 
   private void authorize() throws Exception {
@@ -323,17 +362,13 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private <T> void authRequest(AuthInterceptor<T> auth) throws Exception {
-    OkHttpClient client = createClientBuilder().build();
+    OkHttpClient client = build(createClientBuilder());
 
-    try {
-      OkHttpClient.Builder b = client.newBuilder();
-      b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
-      client = b.build();
+    OkHttpClient.Builder b = client.newBuilder();
+    b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
+    client = build(b);
 
-      auth.authorize(client);
-    } finally {
-      client.connectionPool().evictAll();
-    }
+    auth.authorize(client);
   }
 
   private String getCommandName() {
