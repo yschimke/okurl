@@ -68,7 +68,8 @@ public class LoginAuthFlow {
 
     try {
       if (!response.isSuccessful()) {
-        throw new IllegalStateException("unable to request token");
+        throw new IllegalStateException(
+            "unable to request token " + response.code() + ": " + response.message());
       }
 
       return response.body().source().readString(Charsets.UTF_8);

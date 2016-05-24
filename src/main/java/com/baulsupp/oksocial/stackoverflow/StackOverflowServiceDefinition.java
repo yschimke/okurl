@@ -5,12 +5,12 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 public class StackOverflowServiceDefinition implements ServiceDefinition<StackOverflowCredentials> {
   @Override
   public String apiHost() {
-    return "stackoverflow.com";
+    return "api.stackexchange.com";
   }
 
   @Override
   public String serviceName() {
-    return "StackOverflow API";
+    return "StackExchange API";
   }
 
   public StackOverflowCredentials parseCredentialsString(String s) {

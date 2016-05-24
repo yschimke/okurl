@@ -3,9 +3,7 @@ package com.baulsupp.oksocial.stackoverflow;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
-import com.baulsupp.oksocial.facebook.*;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.google.api.client.util.Sets;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -63,15 +61,15 @@ public class StackOverflowAuthInterceptor implements AuthInterceptor<StackOverfl
   public void authorize(OkHttpClient client) {
     System.err.println("Authorising StackExchange API");
 
-    String clientId = Secrets.prompt("Facebook Client Id", "stackexchange.clientId", false);
-    String clientSecret = Secrets.prompt("Facebook Client Secret", "stackexchange.clientSecret", true);
+    String clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", false);
+    String clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", true);
     Set<String> scopes = new HashSet<>(
         Arrays.asList(Secrets.prompt("Scopes", "stackexchange.scopes", false).split(",")));
 
-    FacebookCredentials newCredentials =
-        com.baulsupp.oksocial.facebook.LoginAuthFlow.login(client, clientId, clientSecret, scopes);
-    CredentialsStore<FacebookCredentials> facebookCredentialsStore =
-        new OSXCredentialsStore<>(new FacebookServiceDefinition());
-    facebookCredentialsStore.storeCredentials(newCredentials);
+    StackOverflowCredentials newCredentials =
+        LoginAuthFlow.login(client, clientId, clientSecret, scopes);
+    CredentialsStore<StackOverflowCredentials> stackOverflowCredentialsStore =
+        new OSXCredentialsStore<>(new StackOverflowServiceDefinition());
+    stackOverflowCredentialsStore.storeCredentials(newCredentials);
   }
 }
