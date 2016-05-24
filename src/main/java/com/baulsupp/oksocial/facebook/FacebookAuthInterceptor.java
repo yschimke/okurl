@@ -5,6 +5,9 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -67,7 +70,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
 
     String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", false);
     String clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", true);
-    String scopes = Secrets.prompt("Scopes", "facebook.scopes", false);
+    Set<String> scopes = new HashSet<>(
+        Arrays.asList(Secrets.prompt("Scopes", "facebook.scopes", false).split(",")));
 
     FacebookCredentials newCredentials =
         LoginAuthFlow.login(client, clientId, clientSecret, scopes);

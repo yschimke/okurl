@@ -1,9 +1,7 @@
-package com.baulsupp.oksocial.facebook;
+package com.baulsupp.oksocial.stackoverflow;
 
 import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.LocalServer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import java.io.IOException;
@@ -15,7 +13,7 @@ import okhttp3.Response;
 
 public class LoginAuthFlow {
 
-  public static FacebookCredentials login(OkHttpClient client, String clientId, String clientSecret,
+  public static StackOverflowCredentials login(OkHttpClient client, String clientId, String clientSecret,
       Set<String> scopes) {
     try {
       LocalServer s = new LocalServer("localhost", 3000);
@@ -23,7 +21,7 @@ public class LoginAuthFlow {
       try {
         String serverUri = s.getRedirectUri();
 
-        String loginUrl = "https://www.facebook.com/dialog/oauth"
+        String loginUrl = "https://stackexchange.com/oauth"
             + "?client_id=" + clientId
             + "&redirect_uri=" + serverUri
             + "&scope=" + scopes.stream().collect(Collectors.joining(","));
@@ -32,28 +30,17 @@ public class LoginAuthFlow {
 
         String code = s.waitForCode();
 
-        String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
+        String tokenUrl = "https://stackexchange.com/oauth/access_token"
             + "?client_id=" + clientId
             + "&redirect_uri=" + serverUri
             + "&client_secret=" + clientSecret
             + "&code=" + code;
 
-        String shortTokenJson = makeRequest(client, tokenUrl);
+        String longTokenBody = makeRequest(client, tokenUrl);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode tree = mapper.readTree(shortTokenJson);
+        throw new RuntimeException(longTokenBody);
 
-        String shortToken = tree.get("access_token").asText();
-
-        String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
-            + "?grant_type=fb_exchange_token"
-            + "&client_id=" + clientId
-            + "&client_secret=" + clientSecret
-            + "&fb_exchange_token=" + shortToken;
-
-        String longTokenBody = makeRequest(client, exchangeUrl);
-
-        return new FacebookCredentials(parseExchangeRequest(longTokenBody));
+        //return new FacebookCredentials(parseExchangeRequest(longTokenBody));
       } finally {
         s.stop();
       }
