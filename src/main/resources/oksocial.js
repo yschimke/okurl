@@ -12,3 +12,16 @@ var location = function() {
   var a = Java.type("com.baulsupp.oksocial.location.Location");
   return a.read().get();
 }
+
+var readParam = Java.type("com.baulsupp.oksocial.jjs.OkShell").readParam;
+
+var UsageException = Java.type("com.baulsupp.oksocial.UsageException");
+
+var usage = function(error) {
+  throw new UsageException("usage: ossgql 'query' ['args']");
+}
+
+var FormBuilder = Java.type("okhttp3.FormBody.Builder");
+
+var requestBuilder = okshell.requestBuilder;
+

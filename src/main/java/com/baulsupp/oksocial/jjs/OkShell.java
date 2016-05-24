@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
 
 public class OkShell {
   public final OkHttpClient client;
-  private final Request.Builder requestBuilder;
+  public final Request.Builder requestBuilder;
   private final ScriptEngine engine;
 
   private OkShell() throws Exception {
