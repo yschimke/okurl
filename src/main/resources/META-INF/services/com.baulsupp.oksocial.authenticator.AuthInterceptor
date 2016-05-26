@@ -2,4 +2,4 @@ com.baulsupp.oksocial.twitter.TwitterAuthInterceptor
 com.baulsupp.oksocial.facebook.FacebookAuthInterceptor
 com.baulsupp.oksocial.uber.UberAuthInterceptor
 com.baulsupp.oksocial.lyft.LyftAuthInterceptor
-com.baulsupp.oksocial.stackoverflow.StackOverflowAuthInterceptor
+com.baulsupp.oksocial.stackexchange.StackExchangeAuthInterceptor

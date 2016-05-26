@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.stackoverflow;
+package com.baulsupp.oksocial.stackexchange;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
@@ -13,10 +13,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class StackOverflowAuthInterceptor implements AuthInterceptor<StackOverflowCredentials> {
-  private final CredentialsStore<StackOverflowCredentials> credentialsStore =
-      CredentialsStore.create(new StackOverflowServiceDefinition());
-  private StackOverflowCredentials credentials = null;
+public class StackExchangeAuthInterceptor implements AuthInterceptor<StackExchangeCredentials> {
+  private final CredentialsStore<StackExchangeCredentials> credentialsStore =
+      CredentialsStore.create(new StackExchangeServiceDefinition());
+  private StackExchangeCredentials credentials = null;
 
   public static final String NAME = "stackexchange";
 
@@ -38,7 +38,7 @@ public class StackOverflowAuthInterceptor implements AuthInterceptor<StackOverfl
     return chain.proceed(request);
   }
 
-  public StackOverflowCredentials credentials() {
+  public StackExchangeCredentials credentials() {
     if (credentials == null) {
       credentials = credentialsStore.readDefaultCredentials();
     }
@@ -47,14 +47,14 @@ public class StackOverflowAuthInterceptor implements AuthInterceptor<StackOverfl
   }
 
   @Override
-  public CredentialsStore<StackOverflowCredentials> credentialsStore() {
+  public CredentialsStore<StackExchangeCredentials> credentialsStore() {
     return credentialsStore;
   }
 
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return StackOverflowUtil.API_HOSTS.contains(host);
+    return StackExchangeUtil.API_HOSTS.contains(host);
   }
 
   @Override
@@ -66,10 +66,10 @@ public class StackOverflowAuthInterceptor implements AuthInterceptor<StackOverfl
     Set<String> scopes = new HashSet<>(
         Arrays.asList(Secrets.prompt("Scopes", "stackexchange.scopes", false).split(",")));
 
-    StackOverflowCredentials newCredentials =
+    StackExchangeCredentials newCredentials =
         LoginAuthFlow.login(client, clientId, clientSecret, scopes);
-    CredentialsStore<StackOverflowCredentials> stackOverflowCredentialsStore =
-        new OSXCredentialsStore<>(new StackOverflowServiceDefinition());
+    CredentialsStore<StackExchangeCredentials> stackOverflowCredentialsStore =
+        new OSXCredentialsStore<>(new StackExchangeServiceDefinition());
     stackOverflowCredentialsStore.storeCredentials(newCredentials);
   }
 }

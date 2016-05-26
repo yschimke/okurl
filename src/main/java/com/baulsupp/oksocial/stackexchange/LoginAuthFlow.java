@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.stackoverflow;
+package com.baulsupp.oksocial.stackexchange;
 
 import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.LocalServer;
@@ -15,7 +15,7 @@ import okhttp3.Response;
 
 public class LoginAuthFlow {
 
-  public static StackOverflowCredentials login(OkHttpClient client, String clientId,
+  public static StackExchangeCredentials login(OkHttpClient client, String clientId,
       String clientSecret,
       Set<String> scopes) {
     try {
@@ -46,7 +46,7 @@ public class LoginAuthFlow {
 
         String longTokenBody = makeRequest(client, request);
 
-        return new StackOverflowCredentials(parseExchangeRequest(longTokenBody));
+        return new StackExchangeCredentials(parseExchangeRequest(longTokenBody));
       } finally {
         s.stop();
       }

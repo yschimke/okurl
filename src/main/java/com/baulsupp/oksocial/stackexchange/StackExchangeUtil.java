@@ -1,11 +1,11 @@
-package com.baulsupp.oksocial.stackoverflow;
+package com.baulsupp.oksocial.stackexchange;
 
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 
-public class StackOverflowUtil {
-  private StackOverflowUtil() {
+public class StackExchangeUtil {
+  private StackExchangeUtil() {
   }
 
   public static final Set<String> API_HOSTS =
