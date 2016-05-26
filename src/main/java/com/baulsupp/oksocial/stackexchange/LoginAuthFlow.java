@@ -1,21 +1,22 @@
-package com.baulsupp.oksocial.facebook;
+package com.baulsupp.oksocial.stackexchange;
 
 import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.LocalServer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginAuthFlow {
 
-  public static FacebookCredentials login(OkHttpClient client, String clientId, String clientSecret,
+  public static StackExchangeCredentials login(OkHttpClient client, String clientId,
+      String clientSecret,
       Set<String> scopes) {
     try {
       LocalServer s = new LocalServer("localhost", 3000);
@@ -23,7 +24,7 @@ public class LoginAuthFlow {
       try {
         String serverUri = s.getRedirectUri();
 
-        String loginUrl = "https://www.facebook.com/dialog/oauth"
+        String loginUrl = "https://stackexchange.com/oauth"
             + "?client_id=" + clientId
             + "&redirect_uri=" + serverUri
             + "&scope=" + scopes.stream().collect(Collectors.joining(","));
@@ -32,28 +33,20 @@ public class LoginAuthFlow {
 
         String code = s.waitForCode();
 
-        String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
-            + "?client_id=" + clientId
-            + "&redirect_uri=" + serverUri
-            + "&client_secret=" + clientSecret
-            + "&code=" + code;
+        System.out.println(code);
 
-        String shortTokenJson = makeRequest(client, tokenUrl);
+        String tokenUrl = "https://stackexchange.com/oauth/access_token";
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode tree = mapper.readTree(shortTokenJson);
+        RequestBody body =
+            new FormBody.Builder().add("client_id", clientId).add("redirect_uri", serverUri)
+                .add("client_secret", clientSecret).add("code", code).build();
+        Request request = new Request.Builder().url(tokenUrl).method("POST", body).build();
 
-        String shortToken = tree.get("access_token").asText();
+        System.out.println(tokenUrl);
 
-        String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
-            + "?grant_type=fb_exchange_token"
-            + "&client_id=" + clientId
-            + "&client_secret=" + clientSecret
-            + "&fb_exchange_token=" + shortToken;
+        String longTokenBody = makeRequest(client, request);
 
-        String longTokenBody = makeRequest(client, exchangeUrl);
-
-        return new FacebookCredentials(parseExchangeRequest(longTokenBody));
+        return new StackExchangeCredentials(parseExchangeRequest(longTokenBody));
       } finally {
         s.stop();
       }
@@ -62,8 +55,7 @@ public class LoginAuthFlow {
     }
   }
 
-  private static String makeRequest(OkHttpClient client, String exchangeUri) throws IOException {
-    Request request = new Request.Builder().url(exchangeUri).build();
+  private static String makeRequest(OkHttpClient client, Request request) throws IOException {
     Response response = client.newCall(request).execute();
 
     try {
