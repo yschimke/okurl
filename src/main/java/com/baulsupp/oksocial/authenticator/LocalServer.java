@@ -31,7 +31,7 @@ import org.mortbay.jetty.handler.AbstractHandler;
 
 /**
  * OAuth 2.0 verification code receiver that runs a Jetty server on a free port, waiting for a
- * redirect with the verification code. <p> <p> Implementation is thread-safe. </p>
+ * redirect with the verification code. <p> Implementation is thread-safe. </p>
  *
  * @author Yaniv Inbar
  * @since 1.11
