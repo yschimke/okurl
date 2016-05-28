@@ -3,9 +3,10 @@ package com.baulsupp.oksocial.twitter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.facebook.FacebookUtil;
 import com.baulsupp.oksocial.secrets.Secrets;
 import com.baulsupp.oksocial.util.JsonUtil;
+import com.baulsupp.oksocial.util.ResponseFutureCallback;
+import com.baulsupp.oksocial.util.Util;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.twitter.joauth.Normalizer;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.FormBody;
@@ -204,19 +207,30 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return new TwitterCredentials(null, consumerKey, consumerSecret, null, "");
   }
 
-  @Override public Optional<ValidatedCredentials> validate(OkHttpClient client,
+  @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
+    Request request =
+        TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder);
+    ResponseFutureCallback callback = new ResponseFutureCallback();
+    client.newCall(request).enqueue(callback);
 
+    return callback.future.thenCompose(response -> {
+      try {
 
-    Request request = TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder);
-    Response response = client.newCall(request).execute();
+        if (response.code() != 200) {
+          return Util.failedFuture(new IOException(
+              "verify failed with " + response.code() + ": " + response.body().string()));
+        }
 
-    try {
-      Map<String, Object> map = JsonUtil.map(response.body().string());
+        Map<String, Object> map = JsonUtil.map(response.body().string());
 
-      return Optional.of(new ValidatedCredentials(String.valueOf(map.get("name")), null));
-    } finally {
-      response.body().close();
-    }
+        return CompletableFuture.completedFuture(
+            Optional.of(new ValidatedCredentials(String.valueOf(map.get("name")), null)));
+      } catch (IOException e) {
+        return Util.failedFuture(e);
+      } finally {
+        response.body().close();
+      }
+    });
   }
 }

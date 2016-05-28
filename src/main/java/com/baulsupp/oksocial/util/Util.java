@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 public final class Util {
@@ -34,5 +36,11 @@ public final class Util {
     } else {
       return callable.get();
     }
+  }
+
+  public static <T> CompletableFuture<T> failedFuture(Exception e) {
+    CompletableFuture<T> f = new CompletableFuture<>();
+    f.completeExceptionally(e);
+    return f;
   }
 }

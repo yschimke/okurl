@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.authenticator;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -17,9 +18,12 @@ public class PrintCredentials {
 
     Optional<ValidatedCredentials> validated = null;
     try {
-      validated = a.validate(client, requestBuilder);
-    } catch (IOException e) {
+      validated = a.validate(client, requestBuilder).get();
+    } catch (IOException | InterruptedException e) {
       System.err.println(e.toString());
+      validated = Optional.empty();
+    } catch (ExecutionException e) {
+      System.err.println(e.getCause().toString());
       validated = Optional.empty();
     }
 

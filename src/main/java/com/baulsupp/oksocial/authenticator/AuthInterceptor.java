@@ -3,6 +3,8 @@ package com.baulsupp.oksocial.authenticator;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -19,8 +21,8 @@ public interface AuthInterceptor<T> extends Interceptor {
 
   T credentials();
 
-  default Optional<ValidatedCredentials> validate(OkHttpClient client,
+  default Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
-    return Optional.empty();
+    return CompletableFuture.completedFuture(Optional.empty());
   };
 }
