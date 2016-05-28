@@ -62,7 +62,8 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<StackExchan
     System.err.println("Authorising StackExchange API");
 
     String clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", false);
-    String clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", true);
+    String clientSecret =
+        Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", true);
     Set<String> scopes = new HashSet<>(
         Arrays.asList(Secrets.prompt("Scopes", "stackexchange.scopes", false).split(",")));
 

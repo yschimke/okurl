@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 public final class Util {

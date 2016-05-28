@@ -24,5 +24,7 @@ public interface AuthInterceptor<T> extends Interceptor {
   default Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
     return CompletableFuture.completedFuture(Optional.empty());
-  };
+  }
+
+  ;
 }
