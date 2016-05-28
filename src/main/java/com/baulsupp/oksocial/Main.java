@@ -47,6 +47,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -67,6 +68,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
+import okhttp3.ConnectionSpec;
 import okhttp3.Dns;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -198,32 +200,35 @@ public class Main extends HelpOption implements Runnable {
       return;
     }
 
-    if (version) {
-      System.out.println(NAME + " " + versionString());
-      System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
-      return;
-    }
-
-    OutputHandler outputHandler;
-    if (outputDirectory != null) {
-      outputHandler = new DownloadHandler(outputDirectory);
-    } else {
-      outputHandler =
-          new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
-    }
-
-    if (showCredentials) {
-      PrintCredentials.printKnownCredentials(serviceInterceptor.services());
-
-      return;
-    }
-
-    if (aliasNames) {
-      printAliasNames();
-      return;
-    }
-
     try {
+
+      if (version) {
+        System.out.println(NAME + " " + versionString());
+        System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
+        return;
+      }
+
+      OutputHandler outputHandler;
+      if (outputDirectory != null) {
+        outputHandler = new DownloadHandler(outputDirectory);
+      } else {
+        outputHandler =
+            new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
+      }
+
+      if (showCredentials) {
+        PrintCredentials.printKnownCredentials(build(createClientBuilder()),
+            createRequestBuilder(),
+            serviceInterceptor.services());
+
+        return;
+      }
+
+      if (aliasNames) {
+        printAliasNames();
+        return;
+      }
+
       if (authorize) {
         authorize();
       } else {

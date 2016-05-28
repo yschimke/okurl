@@ -1,8 +1,11 @@
 package com.baulsupp.oksocial.twitter;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.facebook.FacebookUtil;
 import com.baulsupp.oksocial.secrets.Secrets;
+import com.baulsupp.oksocial.util.JsonUtil;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.twitter.joauth.Normalizer;
@@ -19,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -198,5 +202,21 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", true);
 
     return new TwitterCredentials(null, consumerKey, consumerSecret, null, "");
+  }
+
+  @Override public Optional<ValidatedCredentials> validate(OkHttpClient client,
+      Request.Builder requestBuilder) throws IOException {
+
+
+    Request request = TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder);
+    Response response = client.newCall(request).execute();
+
+    try {
+      Map<String, Object> map = JsonUtil.map(response.body().string());
+
+      return Optional.of(new ValidatedCredentials(String.valueOf(map.get("name")), null));
+    } finally {
+      response.body().close();
+    }
   }
 }

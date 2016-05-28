@@ -1,12 +1,16 @@
 package com.baulsupp.oksocial.facebook;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
+import com.baulsupp.oksocial.util.JsonUtil;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -78,5 +82,19 @@ public class FacebookAuthInterceptor implements AuthInterceptor<FacebookCredenti
     CredentialsStore<FacebookCredentials> facebookCredentialsStore =
         new OSXCredentialsStore<>(new FacebookServiceDefinition());
     facebookCredentialsStore.storeCredentials(newCredentials);
+  }
+
+  @Override public Optional<ValidatedCredentials> validate(OkHttpClient client,
+      Request.Builder requestBuilder) throws IOException {
+    Request request = FacebookUtil.apiRequest("/me", requestBuilder);
+    Response response = client.newCall(request).execute();
+
+    try {
+      Map<String, Object> map = JsonUtil.map(response.body().string());
+
+      return Optional.of(new ValidatedCredentials(String.valueOf(map.get("name")), null));
+    } finally {
+      response.body().close();
+    }
   }
 }
