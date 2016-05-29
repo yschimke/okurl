@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.location;
 
+import com.baulsupp.oksocial.UsageException;
 import com.baulsupp.oksocial.util.Util;
+import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -9,6 +11,8 @@ import org.zeroturnaround.exec.ProcessExecutor;
  * https://github.com/fulldecent/corelocationcli
  */
 public class Location {
+  public static final String LOCATION_APP = "/Applications/CoreLocationCLI";
+
   public final double latitude;
   public final double longitude;
 
@@ -23,8 +27,12 @@ public class Location {
 
   public static Optional<Location> read() {
     if (Util.isOSX()) {
+      if (!new File(LOCATION_APP).exists()) {
+        throw new UsageException("Missing " + LOCATION_APP);
+      }
+
       try {
-        String line = new ProcessExecutor().command("/Applications/CoreLocationCLI", "-format",
+        String line = new ProcessExecutor().command(LOCATION_APP, "-format",
             "%latitude,%longitude", "-once", "yes")
             .readOutput(true).timeout(5, TimeUnit.SECONDS).execute().outputUTF8();
 
