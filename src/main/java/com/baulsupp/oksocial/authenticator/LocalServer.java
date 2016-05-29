@@ -37,6 +37,7 @@ import org.mortbay.jetty.handler.AbstractHandler;
  * @since 1.11
  */
 public final class LocalServer implements VerificationCodeReceiver {
+  private final String field;
   /**
    * Server or {@code null} before {@link #getRedirectUri()}.
    */
@@ -76,15 +77,16 @@ public final class LocalServer implements VerificationCodeReceiver {
     this("localhost", -1);
   }
 
-  /**
-   * Constructor.
-   *
-   * @param host Host name to use
-   * @param port Port to use or {@code -1} to select an unused port
-   */
   public LocalServer(String host, int port) {
     this.host = host;
     this.port = port;
+    this.field = "code";
+  }
+
+  public LocalServer(String host, int port, String field) {
+    this.host = host;
+    this.port = port;
+    this.field = field;
   }
 
   @Override
@@ -179,7 +181,7 @@ public final class LocalServer implements VerificationCodeReceiver {
       lock.lock();
       try {
         error = request.getParameter("error");
-        code = request.getParameter("code");
+        code = request.getParameter(field);
         gotAuthorizationResponse.signal();
       } finally {
         lock.unlock();

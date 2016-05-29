@@ -74,7 +74,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override
-  public void authorize(OkHttpClient client) {
+  public void authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising Facebook API");
 
     String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", false);
@@ -83,7 +83,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Arrays.asList(Secrets.prompt("Scopes", "facebook.scopes", false).split(",")));
 
     Oauth2Token newCredentials =
-        LoginAuthFlow.login(client, clientId, clientSecret, scopes);
+        FacebookAuthFlow.login(client, clientId, clientSecret, scopes);
     CredentialsStore<Oauth2Token> facebookCredentialsStore =
         new OSXCredentialsStore<>(new FacebookServiceDefinition());
     facebookCredentialsStore.storeCredentials(newCredentials);

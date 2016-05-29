@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.services.stackexchange;
+package com.baulsupp.oksocial.services.squareup;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
@@ -14,12 +14,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token> {
+public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new StackExchangeServiceDefinition());
+      CredentialsStore.create(new SquareUpServiceDefinition());
   private Oauth2Token credentials = null;
 
-  public static final String NAME = "stackexchange";
+  public static final String NAME = "squareup";
 
   @Override public String name() {
     return NAME;
@@ -33,7 +33,7 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
       String token = credentials().accessToken;
 
       request =
-          request.newBuilder().addHeader("Authorization", "Token " + token).build();
+          request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
     }
 
     return chain.proceed(request);
@@ -55,23 +55,22 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return StackExchangeUtil.API_HOSTS.contains(host);
+    return SquareUpUtil.API_HOSTS.contains(host);
   }
 
   @Override
   public void authorize(OkHttpClient client) throws IOException {
-    System.err.println("Authorising StackExchange API");
+    System.err.println("Authorising SquareUp API");
 
-    String clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", false);
-    String clientSecret =
-        Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", true);
+    String clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", false);
+    String clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", true);
     Set<String> scopes = new HashSet<>(
-        Arrays.asList(Secrets.prompt("Scopes", "stackexchange.scopes", false).split(",")));
+        Arrays.asList(Secrets.prompt("Scopes", "squareup.scopes", false).split(",")));
 
     Oauth2Token newCredentials =
-        StackExchangeAuthFlow.login(client, clientId, clientSecret, scopes);
+        SquareUpAuthFlow.login(client, clientId, clientSecret, scopes);
     CredentialsStore<Oauth2Token> stackOverflowCredentialsStore =
-        new OSXCredentialsStore<>(new StackExchangeServiceDefinition());
+        new OSXCredentialsStore<>(new SquareUpServiceDefinition());
     stackOverflowCredentialsStore.storeCredentials(newCredentials);
   }
 }

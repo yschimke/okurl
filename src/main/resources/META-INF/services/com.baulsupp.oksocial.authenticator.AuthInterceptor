@@ -3,3 +3,4 @@ com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
 com.baulsupp.oksocial.services.uber.UberAuthInterceptor
 com.baulsupp.oksocial.services.lyft.LyftAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor
+com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor

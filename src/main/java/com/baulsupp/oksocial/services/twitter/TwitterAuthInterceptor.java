@@ -189,7 +189,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public void authorize(OkHttpClient client) {
+  public void authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising Twitter API");
     TwitterCredentials newCredentials =
         PinAuthorisationFlow.authorise(client, readClientCredentials());
