@@ -11,7 +11,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
  * https://github.com/fulldecent/corelocationcli
  */
 public class Location {
-  public static final String LOCATION_APP = "/Applications/CoreLocationCLI";
+  public static final String LOCATION_APP = "/usr/local/bin/CoreLocationCLI";
 
   public final double latitude;
   public final double longitude;
