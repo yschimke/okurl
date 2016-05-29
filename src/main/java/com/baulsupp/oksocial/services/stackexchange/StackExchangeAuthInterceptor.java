@@ -6,8 +6,6 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -62,11 +60,12 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
   public void authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising StackExchange API");
 
-    String clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", false);
+    String clientId =
+        Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false);
     String clientSecret =
-        Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", true);
-    Set<String> scopes = new HashSet<>(
-        Arrays.asList(Secrets.prompt("Scopes", "stackexchange.scopes", false).split(",")));
+        Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", "", true);
+    Set<String> scopes =
+        Secrets.promptArray("Scopes", "stackexchange.scopes", StackExchangeUtil.SCOPES);
 
     Oauth2Token newCredentials =
         StackExchangeAuthFlow.login(client, clientId, clientSecret, scopes);

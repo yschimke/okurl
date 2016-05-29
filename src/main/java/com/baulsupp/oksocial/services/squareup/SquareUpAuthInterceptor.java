@@ -6,8 +6,6 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -62,10 +60,11 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public void authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising SquareUp API");
 
-    String clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", false);
-    String clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", true);
-    Set<String> scopes = new HashSet<>(
-        Arrays.asList(Secrets.prompt("Scopes", "squareup.scopes", false).split(",")));
+    String clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false);
+    String clientSecret =
+        Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "", true);
+    Set<String> scopes =
+        Secrets.promptArray("Scopes", "squareup.scopes", SquareUpUtil.ALL_PERMISSIONS);
 
     Oauth2Token newCredentials =
         SquareUpAuthFlow.login(client, clientId, clientSecret, scopes);

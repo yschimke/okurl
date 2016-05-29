@@ -201,8 +201,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   public static TwitterCredentials readClientCredentials() {
-    String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", false);
-    String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", true);
+    String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false);
+    String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true);
 
     return new TwitterCredentials(null, consumerKey, consumerSecret, null, "");
   }

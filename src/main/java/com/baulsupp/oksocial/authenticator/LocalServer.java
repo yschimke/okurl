@@ -19,9 +19,8 @@ import com.google.api.client.util.Throwables;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.mortbay.jetty.Connector;
@@ -54,14 +53,9 @@ public final class LocalServer implements VerificationCodeReceiver {
   String error;
 
   /**
-   * Lock on the code and error.
-   */
-  final Lock lock = new ReentrantLock();
-
-  /**
    * Condition for receiving an authorization response.
    */
-  final Condition gotAuthorizationResponse = lock.newCondition();
+  final CountDownLatch gotAuthorizationResponse = new CountDownLatch(1);
 
   /**
    * Port to use or {@code -1} to select an unused port in {@link #getRedirectUri()}.
@@ -110,17 +104,16 @@ public final class LocalServer implements VerificationCodeReceiver {
 
   @Override
   public String waitForCode() throws IOException {
-    lock.lock();
     try {
       while (code == null && error == null) {
-        gotAuthorizationResponse.awaitUninterruptibly();
+        gotAuthorizationResponse.await(1, TimeUnit.MINUTES);
       }
       if (error != null) {
         throw new IOException("User authorization failed (" + error + ")");
       }
       return code;
-    } finally {
-      lock.unlock();
+    } catch (InterruptedException e) {
+      throw new IOException(e);
     }
   }
 
@@ -178,14 +171,9 @@ public final class LocalServer implements VerificationCodeReceiver {
       writeLandingHtml(response);
       response.flushBuffer();
       ((Request) request).setHandled(true);
-      lock.lock();
-      try {
-        error = request.getParameter("error");
-        code = request.getParameter(field);
-        gotAuthorizationResponse.signal();
-      } finally {
-        lock.unlock();
-      }
+      error = request.getParameter("error");
+      code = request.getParameter(field);
+      gotAuthorizationResponse.countDown();
     }
 
     private void writeLandingHtml(HttpServletResponse response) throws IOException {
