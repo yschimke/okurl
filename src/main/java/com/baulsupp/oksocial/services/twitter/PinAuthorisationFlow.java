@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.services.twitter;
 
 import com.baulsupp.oksocial.ConsoleHandler;
-import com.google.common.base.Throwables;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;
@@ -17,16 +16,13 @@ public class PinAuthorisationFlow {
   private static final MediaType FORM_URL_ENCODED =
       MediaType.parse("application/x-www-form-urlencoded");
 
-  public static TwitterCredentials authorise(OkHttpClient client, TwitterCredentials unauthed) {
-    try {
-      TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
+  public static TwitterCredentials authorise(OkHttpClient client, TwitterCredentials unauthed)
+      throws IOException {
+    TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
 
-      String pin = promptForPin(requestCredentials);
+    String pin = promptForPin(requestCredentials);
 
-      return generateAccessToken(client, requestCredentials, pin);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
+    return generateAccessToken(client, requestCredentials, pin);
   }
 
   private static TwitterCredentials generateRequestToken(OkHttpClient client,

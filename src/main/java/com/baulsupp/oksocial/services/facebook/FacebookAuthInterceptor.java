@@ -11,7 +11,6 @@ import com.baulsupp.oksocial.util.ResponseFutureCallback;
 import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -74,16 +73,21 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override
-  public void authorize(OkHttpClient client) {
+  public void authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising Facebook API");
 
-    String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", false);
-    String clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", true);
-    Set<String> scopes = new HashSet<>(
-        Arrays.asList(Secrets.prompt("Scopes", "facebook.scopes", false).split(",")));
+    String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false);
+    String clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true);
+    Set<String> scopes =
+        Secrets.promptArray("Scopes", "facebook.scopes", Arrays.asList("public_profile", "user_friends", "email"));
+
+    if (scopes.contains("all")) {
+      scopes.remove("all");
+      scopes.addAll(FacebookUtil.ALL_PERMISSIONS);
+    }
 
     Oauth2Token newCredentials =
-        LoginAuthFlow.login(client, clientId, clientSecret, scopes);
+        FacebookAuthFlow.login(client, clientId, clientSecret, scopes);
     CredentialsStore<Oauth2Token> facebookCredentialsStore =
         new OSXCredentialsStore<>(new FacebookServiceDefinition());
     facebookCredentialsStore.storeCredentials(newCredentials);

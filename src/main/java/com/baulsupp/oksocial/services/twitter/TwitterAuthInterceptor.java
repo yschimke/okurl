@@ -189,7 +189,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public void authorize(OkHttpClient client) {
+  public void authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising Twitter API");
     TwitterCredentials newCredentials =
         PinAuthorisationFlow.authorise(client, readClientCredentials());
@@ -201,8 +201,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   public static TwitterCredentials readClientCredentials() {
-    String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", false);
-    String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", true);
+    String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false);
+    String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true);
 
     return new TwitterCredentials(null, consumerKey, consumerSecret, null, "");
   }

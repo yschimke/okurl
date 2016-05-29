@@ -15,7 +15,7 @@ public interface AuthInterceptor<T> extends Interceptor {
 
   boolean supportsUrl(HttpUrl url);
 
-  void authorize(OkHttpClient client);
+  void authorize(OkHttpClient client) throws IOException;
 
   CredentialsStore<T> credentialsStore();
 
@@ -25,6 +25,4 @@ public interface AuthInterceptor<T> extends Interceptor {
       Request.Builder requestBuilder) throws IOException {
     return CompletableFuture.completedFuture(Optional.empty());
   }
-
-  ;
 }

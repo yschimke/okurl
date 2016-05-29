@@ -5,10 +5,18 @@ import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
+
+import static com.baulsupp.oksocial.util.Util.or;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 
 public class Secrets {
   private static Secrets instance;
@@ -20,7 +28,7 @@ public class Secrets {
   }
 
   public Optional<String> get(String key) {
-    return Optional.ofNullable(secrets.get(key)).filter(s -> !s.isEmpty());
+    return ofNullable(secrets.get(key)).filter(s -> !s.isEmpty());
   }
 
   public static Secrets loadSecrets() {
@@ -57,10 +65,10 @@ public class Secrets {
     return instance.get(key);
   }
 
-  public static String prompt(String name, String key, boolean password) {
-    Optional<String> defaultValue = getDefined(key);
+  public static String prompt(String name, String key, String defaultValue, boolean password) {
+    Optional<String> defaulted = or(getDefined(key), () -> ofNullable(defaultValue));
 
-    String prompt = name + defaultDisplay(defaultValue, password) + ": ";
+    String prompt = name + defaultDisplay(defaulted, password) + ": ";
 
     String value = "";
 
@@ -73,10 +81,16 @@ public class Secrets {
     }
 
     if (value.isEmpty()) {
-      value = defaultValue.orElse("");
+      value = defaulted.orElse("");
     }
 
     return value;
+  }
+
+  public static Set<String> promptArray(String name, String key, Collection<String> defaults) {
+    String valueString =
+        prompt(name, key, defaults.stream().collect(joining(",")), false);
+    return newHashSet(asList(valueString.split(",")));
   }
 
   private static String defaultDisplay(Optional<String> defaultValue, boolean password) {
