@@ -40,7 +40,7 @@ public class ConsoleHandler implements OutputHandler {
       MediaType contentType = response.body().contentType();
 
       // TODO OSX only
-      if (openMedia && Util.isOSX() && contentType != null && "image".equals(contentType.type())) {
+      if (openMedia && Util.isOSX() && contentType != null && isMediaType(contentType)) {
         openPreview(source);
       } else {
         writeToConsole(source);
@@ -48,6 +48,10 @@ public class ConsoleHandler implements OutputHandler {
     } finally {
       response.body().close();
     }
+  }
+
+  private boolean isMediaType(MediaType contentType) {
+    return "image".equals(contentType.type()) || "pdf".equals(contentType.subtype());
   }
 
   public static void openPreview(BufferedSource source) throws IOException {
