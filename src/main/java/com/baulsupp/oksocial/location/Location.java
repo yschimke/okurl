@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.location;
 
-import com.baulsupp.oksocial.UsageException;
+import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import java.io.File;
 import java.util.Optional;

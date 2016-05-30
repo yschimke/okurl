@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.twitter;
 
-import com.baulsupp.oksocial.ConsoleHandler;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;

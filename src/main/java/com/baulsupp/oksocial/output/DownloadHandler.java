@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial;
+package com.baulsupp.oksocial.output;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,37 +17,36 @@ public class DownloadHandler implements OutputHandler {
 
   @Override
   public void showOutput(Response response) throws IOException {
-    try {
-      BufferedSource source = response.body().source();
+    BufferedSource source = response.body().source();
 
-      writeToSink(source, getOutputFile(response));
-    } finally {
-      response.body().close();
+    try (Sink outputSink = getOutputSink(response)) {
+      writeToSink(source, outputSink);
     }
   }
 
-  public File getOutputFile(Response response) throws IOException {
-    if (outputFile.isDirectory()) {
+  public Sink getOutputSink(Response response) throws IOException {
+    if (outputFile.getPath().equals("-")) {
+      return Okio.sink(System.out);
+    } else if (outputFile.isDirectory()) {
       List<String> segments = response.request().url().pathSegments();
       String name = segments.get(segments.size() - 1);
-      return new File(outputFile, name);
+      File responseOutputFile = new File(outputFile, name);
+      System.err.println("Saving " + responseOutputFile);
+      return Okio.sink(responseOutputFile);
     } else {
       if (outputFile.getParentFile() != null && !outputFile.getParentFile().exists()) {
         if (!outputFile.getParentFile().mkdirs()) {
           throw new IOException("unable to create directory " + outputFile);
         }
       }
-      return outputFile;
+      return Okio.sink(outputFile);
     }
   }
 
-  private static void writeToSink(BufferedSource source, File thisOutputFile) throws IOException {
-    System.err.println("Saving " + thisOutputFile);
-    Sink out = Okio.sink(thisOutputFile);
+  public static void writeToSink(BufferedSource source, Sink out) throws IOException {
     while (!source.exhausted()) {
       out.write(source.buffer(), source.buffer().size());
       out.flush();
     }
-    out.close();
   }
 }

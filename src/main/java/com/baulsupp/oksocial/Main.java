@@ -23,6 +23,8 @@ import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.dns.DnsOverride;
 import com.baulsupp.oksocial.dns.DnsSelector;
+import com.baulsupp.oksocial.output.DownloadHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.InetAddress;
@@ -30,6 +32,7 @@ import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
 import com.baulsupp.oksocial.util.OkHttpResponseFuture;
 import com.baulsupp.oksocial.util.OpenSCUtil;
+import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import com.google.api.client.util.Lists;
 import com.google.common.collect.Sets;
@@ -210,8 +213,7 @@ public class Main extends HelpOption implements Runnable {
       if (outputDirectory != null) {
         outputHandler = new DownloadHandler(outputDirectory);
       } else {
-        outputHandler =
-            new com.baulsupp.oksocial.ConsoleHandler(showHeaders, true);
+        outputHandler = new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
       }
 
       if (showCredentials) {
@@ -271,8 +273,8 @@ public class Main extends HelpOption implements Runnable {
       if (failed) {
         responseFuture.cancel(true);
       } else {
-        try {
-          outputHandler.showOutput(responseFuture.get());
+        try (Response response = responseFuture.get()) {
+          outputHandler.showOutput(response);
         } catch (ExecutionException ee) {
           ee.getCause().printStackTrace();
 

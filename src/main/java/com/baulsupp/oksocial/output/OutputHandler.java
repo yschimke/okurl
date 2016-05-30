@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial;
+package com.baulsupp.oksocial.output;
 
 import java.io.IOException;
 import okhttp3.Response;
