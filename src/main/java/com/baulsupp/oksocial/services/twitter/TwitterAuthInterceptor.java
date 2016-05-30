@@ -193,6 +193,10 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
+    if (!readCredentials().isPresent()) {
+      return CompletableFuture.completedFuture(Optional.empty());
+    }
+
     Request request =
         TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder);
     ResponseFutureCallback callback = new ResponseFutureCallback();

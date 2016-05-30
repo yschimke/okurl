@@ -21,7 +21,7 @@ public class PreferencesCredentialsStore<T> implements CredentialsStore<T> {
   }
 
   private String tokenKey() {
-    return serviceDefinition.serviceName() + ".token";
+    return serviceDefinition.apiHost() + ".token";
   }
 
   @Override public void storeCredentials(T credentials) {

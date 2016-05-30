@@ -84,6 +84,10 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
+    if (!readCredentials().isPresent()) {
+      return CompletableFuture.completedFuture(Optional.empty());
+    }
+
     Request request =
         FacebookUtil.apiRequest("/me", requestBuilder);
     ResponseFutureCallback callback = new ResponseFutureCallback();
