@@ -46,26 +46,13 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   private final SecureRandom secureRandom = new SecureRandom();
 
   private CredentialsStore<TwitterCredentials> credentialsStore =
-      CredentialsStore.create(new TwitterServiceDefinition());
-  private TwitterCredentials credentials = null;
+      new TwurlCompatibleCredentialsStore();
 
   public TwitterAuthInterceptor() {
   }
 
   @Override public String name() {
     return NAME;
-  }
-
-  public TwitterAuthInterceptor(TwitterCredentials credentials) {
-    this.credentials = credentials;
-  }
-
-  public TwitterCredentials credentials() {
-    if (credentials == null) {
-      credentials = credentialsStore.readDefaultCredentials();
-    }
-
-    return credentials;
   }
 
   public CredentialsStore<TwitterCredentials> credentialsStore() {
@@ -82,10 +69,10 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    if (credentials() != null) {
-      String authHeader = generateAuthorization(request);
-      request =
-          request.newBuilder().addHeader("Authorization", authHeader).build();
+    Optional<TwitterCredentials> credentials = readCredentials();
+    if (credentials.isPresent()) {
+      String authHeader = generateAuthorization(request, credentials.get());
+      request = request.newBuilder().addHeader("Authorization", authHeader).build();
     }
 
     return chain.proceed(request);
@@ -104,7 +91,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return Long.toString(Math.abs(secureRandom.nextLong())) + System.currentTimeMillis();
   }
 
-  public String generateAuthorization(Request request) {
+  public String generateAuthorization(Request request, TwitterCredentials credentials) {
     try {
       long timestampSecs = generateTimestamp();
       String nonce = generateNonce();
@@ -194,10 +181,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     TwitterCredentials newCredentials =
         PinAuthorisationFlow.authorise(client, readClientCredentials());
 
-    CredentialsStore<TwitterCredentials> twitterCredentialsStore =
-        new TwurlCompatibleCredentialsStore();
-
-    twitterCredentialsStore.storeCredentials(newCredentials);
+    credentialsStore.storeCredentials(newCredentials);
   }
 
   public static TwitterCredentials readClientCredentials() {

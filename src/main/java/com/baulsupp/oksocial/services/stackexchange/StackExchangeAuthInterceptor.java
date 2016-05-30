@@ -3,9 +3,9 @@ package com.baulsupp.oksocial.services.stackexchange;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -15,7 +15,6 @@ import okhttp3.Response;
 public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
       CredentialsStore.create(new StackExchangeServiceDefinition());
-  private Oauth2Token credentials = null;
 
   public static final String NAME = "stackexchange";
 
@@ -27,22 +26,15 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
   public Response intercept(Chain chain) throws IOException {
     Request request = chain.request();
 
-    if (credentials() != null) {
-      String token = credentials().accessToken;
+    Optional<Oauth2Token> credentials = readCredentials();
+    if (credentials.isPresent()) {
+      String token = readCredentials().get().accessToken;
 
       request =
           request.newBuilder().addHeader("Authorization", "Token " + token).build();
     }
 
     return chain.proceed(request);
-  }
-
-  public Oauth2Token credentials() {
-    if (credentials == null) {
-      credentials = credentialsStore.readDefaultCredentials();
-    }
-
-    return credentials;
   }
 
   @Override
@@ -69,8 +61,6 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
 
     Oauth2Token newCredentials =
         StackExchangeAuthFlow.login(client, clientId, clientSecret, scopes);
-    CredentialsStore<Oauth2Token> stackOverflowCredentialsStore =
-        new OSXCredentialsStore<>(new StackExchangeServiceDefinition());
-    stackOverflowCredentialsStore.storeCredentials(newCredentials);
+    credentialsStore.storeCredentials(newCredentials);
   }
 }

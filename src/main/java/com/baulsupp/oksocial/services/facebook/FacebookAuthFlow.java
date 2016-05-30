@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.facebook;
 
-import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.LocalServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

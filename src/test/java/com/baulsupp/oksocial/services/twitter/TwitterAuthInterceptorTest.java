@@ -12,11 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 public class TwitterAuthInterceptorTest {
   class FixedTimeTwitterAuthInterceptor extends TwitterAuthInterceptor {
-    public FixedTimeTwitterAuthInterceptor(
-        TwitterCredentials credentials) {
-      super(credentials);
-    }
-
     @Override public long generateTimestamp() {
       return 1460432867L;
     }
@@ -38,7 +33,7 @@ public class TwitterAuthInterceptorTest {
         "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", null, "");
 
     String header =
-        new FixedTimeTwitterAuthInterceptor(credentials).generateAuthorization(request);
+        new FixedTimeTwitterAuthInterceptor().generateAuthorization(request, credentials);
 
     assertEquals(
         "OAuth oauth_consumer_key=\"xxxxxxxxxxxxxxxxxxxxxxxxx\", "

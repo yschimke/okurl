@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Throwables;
 import java.io.File;
-import java.io.IOException;
+import java.util.Optional;
 
 public class TwurlCredentialsStore implements CredentialsStore<TwitterCredentials> {
   private final File file;
@@ -39,27 +39,16 @@ public class TwurlCredentialsStore implements CredentialsStore<TwitterCredential
     return serviceDefinition;
   }
 
-  public TwitterCredentials readDefaultCredentials() {
+  public Optional<TwitterCredentials> readDefaultCredentials() {
     TwurlRc twurlRc = readTwurlRc();
 
     if (twurlRc != null) {
       String username = twurlRc.defaultProfile().get(0);
       String consumerKey = twurlRc.defaultProfile().get(1);
 
-      return twurlRc.readCredentials(username, consumerKey);
+      return Optional.ofNullable(twurlRc.readCredentials(username, consumerKey));
     } else {
-      return null;
-    }
-  }
-
-  public TwitterCredentials readCredentials(String username, String consumerKey)
-      throws IOException {
-    TwurlRc twurlRc = readTwurlRc();
-
-    if (twurlRc != null) {
-      return twurlRc.readCredentials(username, consumerKey);
-    } else {
-      return null;
+      return Optional.empty();
     }
   }
 

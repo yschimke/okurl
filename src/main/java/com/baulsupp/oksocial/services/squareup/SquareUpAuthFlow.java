@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.squareup;
 
-import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.LocalServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.util.JsonUtil;
 import java.io.IOException;
 import java.util.HashMap;

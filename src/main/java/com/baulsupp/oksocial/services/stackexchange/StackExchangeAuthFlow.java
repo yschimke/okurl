@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.stackexchange;
 
-import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.LocalServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
