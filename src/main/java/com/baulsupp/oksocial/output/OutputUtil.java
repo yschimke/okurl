@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.output;
 
 import okhttp3.MediaType;
+import okio.Okio;
+import okio.Sink;
 
 public class OutputUtil {
   public static String getExtension(MediaType mediaType) {
@@ -20,5 +22,9 @@ public class OutputUtil {
     }
 
     return ".data";
+  }
+
+  public static Sink systemOut() {
+    return Okio.sink(System.out);
   }
 }

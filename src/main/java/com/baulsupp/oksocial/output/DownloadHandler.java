@@ -8,6 +8,8 @@ import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
 
+import static com.baulsupp.oksocial.output.OutputUtil.systemOut;
+
 public class DownloadHandler implements OutputHandler {
   private File outputFile;
 
@@ -26,7 +28,7 @@ public class DownloadHandler implements OutputHandler {
 
   public Sink getOutputSink(Response response) throws IOException {
     if (outputFile.getPath().equals("-")) {
-      return Okio.sink(System.out);
+      return systemOut();
     } else if (outputFile.isDirectory()) {
       List<String> segments = response.request().url().pathSegments();
       String name = segments.get(segments.size() - 1);

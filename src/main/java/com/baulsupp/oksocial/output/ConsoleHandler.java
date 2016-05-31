@@ -3,7 +3,9 @@ package com.baulsupp.oksocial.output;
 import com.baulsupp.oksocial.util.Util;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +21,8 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
+import static com.baulsupp.oksocial.output.DownloadHandler.writeToSink;
+import static com.baulsupp.oksocial.output.OutputUtil.systemOut;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static okio.Okio.buffer;
@@ -48,9 +52,8 @@ public class ConsoleHandler implements OutputHandler {
       openPreview(response);
     } else {
       // TODO support a nice hex mode for binary files
-      writeToConsole(response.body().source());
-      // TODO is this always needed?
-      System.out.println();
+      writeToSink(response.body().source(), systemOut());
+      System.out.println("");
     }
   }
 
@@ -58,7 +61,6 @@ public class ConsoleHandler implements OutputHandler {
     return "image".equals(contentType.type()) || "pdf".equals(contentType.subtype());
   }
 
-  // TODO mplayer -really-quiet -vo caca ~/Movies/*
   public static void openPreview(Response response) throws IOException {
     if (Util.isOSX()) {
       streamToCommand(response.body().source(),
@@ -68,6 +70,7 @@ public class ConsoleHandler implements OutputHandler {
 
       Desktop.getDesktop().open(tempFile);
     } else {
+      // TODO mplayer -really-quiet -vo caca ~/Movies/*
       File tempFile = writeToFile(response);
 
       try (BufferedSource fileSource = buffer(source(tempFile))) {
@@ -79,10 +82,9 @@ public class ConsoleHandler implements OutputHandler {
   private static File writeToFile(Response response) throws IOException {
     File tempFile =
         File.createTempFile("oksocial", OutputUtil.getExtension(response.body().contentType()));
-    tempFile.deleteOnExit();
 
     try (Sink out = Okio.sink(tempFile)) {
-      DownloadHandler.writeToSink(response.body().source(), out);
+      writeToSink(response.body().source(), out);
     }
     return tempFile;
   }
@@ -91,10 +93,10 @@ public class ConsoleHandler implements OutputHandler {
       throws IOException {
     try {
       ProcessResult pr = new ProcessExecutor().command(command)
+          .redirectOutput(System.out)
           .timeout(5, TimeUnit.SECONDS)
           .redirectInput(source.inputStream())
           .redirectError(Slf4jStream.ofCaller().asInfo())
-          .redirectOutput(System.out)
           .execute();
 
       if (pr.getExitValue() != 0) {
@@ -111,15 +113,6 @@ public class ConsoleHandler implements OutputHandler {
       Desktop.getDesktop().browse(URI.create(url));
     } else {
       System.err.println(url);
-    }
-  }
-
-  /**
-   * Stream the response to the System.out as it is returned from the server.
-   */
-  public static void writeToConsole(BufferedSource source) throws IOException {
-    try (Sink out = Okio.sink(System.out)) {
-      DownloadHandler.writeToSink(source, out);
     }
   }
 }
