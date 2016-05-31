@@ -29,6 +29,11 @@ public final class Util {
     return osName.contains("OS X");
   }
 
+  public static boolean isLinux() {
+    String osName = System.getProperty("os.name");
+    return osName.contains("Linux");
+  }
+
   public static <T> Optional<T> or(Optional<T> option, Supplier<Optional<T>> callable) {
     if (option.isPresent()) {
       return option;

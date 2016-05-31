@@ -4,6 +4,7 @@ import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
@@ -20,7 +21,7 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
   }
 
   @Override
-  public T readDefaultCredentials() {
+  public Optional<T> readDefaultCredentials() {
     try {
       Process process =
           new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a",
@@ -38,7 +39,7 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
         }
 
         if (process.exitValue() == 44) {
-          return null;
+          return Optional.empty();
         }
 
         BufferedSource stderr = Okio.buffer(Okio.source(process.getErrorStream()));
@@ -54,7 +55,8 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
 
         BufferedSource stdout = Okio.buffer(Okio.source(process.getInputStream()));
 
-        return serviceDefinition.parseCredentialsString(stdout.readUtf8LineStrict());
+        return Optional.ofNullable(
+            serviceDefinition.parseCredentialsString(stdout.readUtf8LineStrict()));
       } catch (InterruptedException e) {
         throw new IOException(e);
       } finally {

@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.dns;
 
-import com.baulsupp.oksocial.UsageException;
+import com.baulsupp.oksocial.util.UsageException;
 import com.google.common.collect.Maps;
 import java.net.InetAddress;
 import java.net.UnknownHostException;

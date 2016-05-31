@@ -1,12 +1,13 @@
 package com.baulsupp.oksocial.services.facebook;
 
-import com.baulsupp.oksocial.ConsoleHandler;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.LocalServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Set;
 import java.util.stream.Collectors;
 import okhttp3.OkHttpClient;
@@ -23,7 +24,8 @@ public class FacebookAuthFlow {
       String loginUrl = "https://www.facebook.com/dialog/oauth"
           + "?client_id=" + clientId
           + "&redirect_uri=" + serverUri
-          + "&scope=" + scopes.stream().collect(Collectors.joining(","));
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
+          "UTF-8");
 
       ConsoleHandler.openLink(loginUrl);
 

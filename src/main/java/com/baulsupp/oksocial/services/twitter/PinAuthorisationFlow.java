@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.twitter;
 
-import com.baulsupp.oksocial.ConsoleHandler;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class PinAuthorisationFlow {
 
     request = request.newBuilder()
         .header("Authorization",
-            new TwitterAuthInterceptor(unauthed).generateAuthorization(request))
+            new TwitterAuthInterceptor().generateAuthorization(request, unauthed))
         .build();
 
     Response response = client.newCall(request).execute();
@@ -73,7 +73,7 @@ public class PinAuthorisationFlow {
 
     request = request.newBuilder()
         .header("Authorization",
-            new TwitterAuthInterceptor(requestCredentials).generateAuthorization(request))
+            new TwitterAuthInterceptor().generateAuthorization(request, requestCredentials))
         .build();
 
     Response response = client.newCall(request).execute();

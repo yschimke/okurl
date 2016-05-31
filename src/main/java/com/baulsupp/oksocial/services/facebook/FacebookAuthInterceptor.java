@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import com.baulsupp.oksocial.util.JsonUtil;
 import com.baulsupp.oksocial.util.ResponseFutureCallback;
@@ -28,21 +27,11 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
       CredentialsStore.create(new FacebookServiceDefinition());
 
-  private Oauth2Token credentials = null;
-
   public FacebookAuthInterceptor() {
   }
 
   @Override public String name() {
     return NAME;
-  }
-
-  public Oauth2Token credentials() {
-    if (credentials == null) {
-      credentials = credentialsStore.readDefaultCredentials();
-    }
-
-    return credentials;
   }
 
   @Override
@@ -54,8 +43,9 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    if (credentials() != null) {
-      String token = credentials().accessToken;
+    Optional<Oauth2Token> credentials = readCredentials();
+    if (credentials.isPresent()) {
+      String token = readCredentials().get().accessToken;
 
       HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
 
@@ -79,7 +69,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false);
     String clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true);
     Set<String> scopes =
-        Secrets.promptArray("Scopes", "facebook.scopes", Arrays.asList("public_profile", "user_friends", "email"));
+        Secrets.promptArray("Scopes", "facebook.scopes",
+            Arrays.asList("public_profile", "user_friends", "email"));
 
     if (scopes.contains("all")) {
       scopes.remove("all");
@@ -88,13 +79,15 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
     Oauth2Token newCredentials =
         FacebookAuthFlow.login(client, clientId, clientSecret, scopes);
-    CredentialsStore<Oauth2Token> facebookCredentialsStore =
-        new OSXCredentialsStore<>(new FacebookServiceDefinition());
-    facebookCredentialsStore.storeCredentials(newCredentials);
+    credentialsStore.storeCredentials(newCredentials);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
+    if (!readCredentials().isPresent()) {
+      return CompletableFuture.completedFuture(Optional.empty());
+    }
+
     Request request =
         FacebookUtil.apiRequest("/me", requestBuilder);
     ResponseFutureCallback callback = new ResponseFutureCallback();

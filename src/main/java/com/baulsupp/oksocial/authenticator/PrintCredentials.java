@@ -10,11 +10,10 @@ import okhttp3.Request;
 public class PrintCredentials {
   public static <T> void printKnownCredentials(OkHttpClient client, Request.Builder requestBuilder,
       AuthInterceptor<T> a) {
-    T credentials = a.credentials();
+    Optional<T> credentials = a.readCredentials();
     ServiceDefinition<T> sd = a.credentialsStore().getServiceDefinition();
 
-    Optional<String> credentialsString =
-        Optional.ofNullable(a.credentials()).map(s -> sd.formatCredentialsString(credentials));
+    Optional<String> credentialsString = credentials.map(sd::formatCredentialsString);
 
     Optional<ValidatedCredentials> validated = null;
     try {
