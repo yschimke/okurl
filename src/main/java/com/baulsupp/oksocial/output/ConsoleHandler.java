@@ -3,11 +3,10 @@ package com.baulsupp.oksocial.output;
 import com.baulsupp.oksocial.util.Util;
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import okhttp3.Headers;
@@ -25,8 +24,6 @@ import static com.baulsupp.oksocial.output.DownloadHandler.writeToSink;
 import static com.baulsupp.oksocial.output.OutputUtil.systemOut;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
-import static okio.Okio.buffer;
-import static okio.Okio.source;
 
 public class ConsoleHandler implements OutputHandler {
   private final boolean showHeaders;
@@ -63,7 +60,7 @@ public class ConsoleHandler implements OutputHandler {
 
   public static void openPreview(Response response) throws IOException {
     if (Util.isOSX()) {
-      streamToCommand(response.body().source(),
+      streamToCommand(Optional.of(response.body().source()),
           asList("open", "-f", "-a", "/Applications/Preview.app"));
     } else if (Desktop.isDesktopSupported()) {
       File tempFile = writeToFile(response);
@@ -73,9 +70,13 @@ public class ConsoleHandler implements OutputHandler {
       // TODO mplayer -really-quiet -vo caca ~/Movies/*
       File tempFile = writeToFile(response);
 
-      try (BufferedSource fileSource = buffer(source(tempFile))) {
-        streamToCommand(fileSource, asList("img2txt", "-f", "utf8", tempFile.getPath()));
+      String columns = System.getenv("COLUMNS");
+      if (columns == null) {
+        columns = "80";
       }
+
+      streamToCommand(Optional.empty(),
+          asList("img2txt", "-W", columns, "-f", "utf8", tempFile.getPath()));
     }
   }
 
@@ -89,15 +90,19 @@ public class ConsoleHandler implements OutputHandler {
     return tempFile;
   }
 
-  public static void streamToCommand(BufferedSource source, List<String> command)
+  public static void streamToCommand(Optional<BufferedSource> source, List<String> command)
       throws IOException {
     try {
-      ProcessResult pr = new ProcessExecutor().command(command)
+      ProcessExecutor pe = new ProcessExecutor().command(command)
           .redirectOutput(System.out)
           .timeout(5, TimeUnit.SECONDS)
-          .redirectInput(source.inputStream())
-          .redirectError(Slf4jStream.ofCaller().asInfo())
-          .execute();
+          .redirectError(Slf4jStream.ofCaller().asInfo());
+
+      if (source.isPresent()) {
+        pe.redirectInput(source.get().inputStream());
+      }
+
+      ProcessResult pr = pe.execute();
 
       if (pr.getExitValue() != 0) {
         throw new IOException(
