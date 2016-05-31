@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.util.JsonUtil;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +28,10 @@ public class SquareUpAuthFlow {
 
       String loginUrl = "https://connect.squareup.com/oauth2/authorize"
           + "?client_id=" + clientId
-          + "&redirect_uri=" + serverUri
+          + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
           + "&response_type=code"
-          + "&scope=" + scopes.stream().collect(Collectors.joining(" "));
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")),
+          "UTF-8");
 
       ConsoleHandler.openLink(loginUrl);
 
