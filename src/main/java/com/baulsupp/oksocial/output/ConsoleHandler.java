@@ -21,7 +21,12 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import static com.baulsupp.oksocial.output.DownloadHandler.writeToSink;
+import static com.baulsupp.oksocial.output.OutputUtil.isJson;
+import static com.baulsupp.oksocial.output.OutputUtil.isMedia;
+import static com.baulsupp.oksocial.output.OutputUtil.isMediaType;
 import static com.baulsupp.oksocial.output.OutputUtil.systemOut;
+import static com.baulsupp.oksocial.util.CommandUtil.isInstalled;
+import static com.baulsupp.oksocial.util.CommandUtil.isTerminal;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
@@ -45,17 +50,30 @@ public class ConsoleHandler implements OutputHandler {
 
     MediaType contentType = response.body().contentType();
 
-    if (contentType != null && isMediaType(contentType)) {
-      openPreview(response);
-    } else {
-      // TODO support a nice hex mode for binary files
-      writeToSink(response.body().source(), systemOut());
-      System.out.println("");
+    if (contentType != null) {
+      if (isMedia(contentType)) {
+        openPreview(response);
+        return;
+      } else if (isInstalled("jq") && (isJson(contentType) || isKnownJsonApi(response))) {
+        prettyPrintJson(response);
+        return;
+      }
     }
+
+    // TODO support a nice hex mode for binary files
+    writeToSink(response.body().source(), systemOut());
+    System.out.println("");
   }
 
-  private boolean isMediaType(MediaType contentType) {
-    return "image".equals(contentType.type()) || "pdf".equals(contentType.subtype());
+  private boolean isKnownJsonApi(Response response) {
+    // TODO move to authenticators
+    return response.request().url().host().equals("graph.facebook.com") && isMediaType(
+        response.body().contentType(), "text/javascript");
+  }
+
+  private void prettyPrintJson(Response response) throws IOException {
+    List<String> command = isTerminal() ? asList("jq", "-C", ".") : asList("jq", ".");
+    streamToCommand(Optional.of(response.body().source()), command);
   }
 
   public static void openPreview(Response response) throws IOException {
@@ -66,7 +84,7 @@ public class ConsoleHandler implements OutputHandler {
       File tempFile = writeToFile(response);
 
       Desktop.getDesktop().open(tempFile);
-    } else {
+    } else if (isInstalled("img2txt")) {
       // TODO mplayer -really-quiet -vo caca ~/Movies/*
       File tempFile = writeToFile(response);
 
@@ -77,6 +95,11 @@ public class ConsoleHandler implements OutputHandler {
 
       streamToCommand(Optional.empty(),
           asList("img2txt", "-W", columns, "-f", "utf8", tempFile.getPath()));
+    } else {
+      System.err.println("Falling back to console output, use -r to avoid warning");
+
+      writeToSink(response.body().source(), systemOut());
+      System.out.println("");
     }
   }
 

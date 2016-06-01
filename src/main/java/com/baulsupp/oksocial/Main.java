@@ -180,6 +180,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--alias-names"}, description = "Show Alias Names")
   private boolean aliasNames = false;
 
+  @Option(name = {"-r", "--raw"}, description = "Raw Output")
+  private boolean rawOutput = false;
+
   @Arguments(title = "urls", description = "Remote resource URLs")
   private List<String> urls = new ArrayList<>();
 
@@ -212,6 +215,8 @@ public class Main extends HelpOption implements Runnable {
       OutputHandler outputHandler;
       if (outputDirectory != null) {
         outputHandler = new DownloadHandler(outputDirectory);
+      } else if (rawOutput) {
+        outputHandler = new DownloadHandler(new File("-"));
       } else {
         outputHandler = new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
       }

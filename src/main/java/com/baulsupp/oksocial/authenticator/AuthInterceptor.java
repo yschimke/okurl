@@ -21,7 +21,7 @@ public interface AuthInterceptor<T> extends Interceptor {
 
   default Optional<T> readCredentials() {
     return credentialsStore().readDefaultCredentials();
-  };
+  }
 
   default Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
