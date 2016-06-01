@@ -21,13 +21,18 @@ public class DownloadHandler implements OutputHandler {
   public void showOutput(Response response) throws IOException {
     BufferedSource source = response.body().source();
 
-    try (Sink outputSink = getOutputSink(response)) {
+    Sink outputSink = getOutputSink(response);
+    try {
       writeToSink(source, outputSink);
+    } finally {
+      if (!isStdout()) {
+        outputSink.close();
+      }
     }
   }
 
   public Sink getOutputSink(Response response) throws IOException {
-    if (outputFile.getPath().equals("-")) {
+    if (isStdout()) {
       return systemOut();
     } else if (outputFile.isDirectory()) {
       List<String> segments = response.request().url().pathSegments();
@@ -43,6 +48,10 @@ public class DownloadHandler implements OutputHandler {
       }
       return Okio.sink(outputFile);
     }
+  }
+
+  private boolean isStdout() {
+    return outputFile.getPath().equals("-");
   }
 
   public static void writeToSink(BufferedSource source, Sink out) throws IOException {

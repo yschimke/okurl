@@ -17,7 +17,8 @@ public class PreferencesCredentialsStore<T> implements CredentialsStore<T> {
 
   @Override public Optional<T> readDefaultCredentials() {
     String credentialsString = userNode.get(tokenKey(), null);
-    return Optional.ofNullable(credentialsString).map(s -> serviceDefinition.parseCredentialsString(s));
+    return Optional.ofNullable(credentialsString)
+        .map(s -> serviceDefinition.parseCredentialsString(s));
   }
 
   private String tokenKey() {
