@@ -43,7 +43,7 @@ public class OutputUtil {
   public static boolean isMediaType(MediaType mediaType, String... types) {
     String mts = mediaTypeString(mediaType);
 
-    for (String type: types) {
+    for (String type : types) {
       if (mts.equals(type)) {
         return true;
       }

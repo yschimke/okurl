@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.services.foursquare;
+package com.baulsupp.oksocial.services.imgur;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
@@ -9,8 +9,6 @@ import com.baulsupp.oksocial.util.JsonUtil;
 import com.baulsupp.oksocial.util.ResponseFutureCallback;
 import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -20,11 +18,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
+public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new FourSquareServiceDefinition());
+      CredentialsStore.create(new ImgurServiceDefinition());
 
-  public static final String NAME = "4sq";
+  public static final String NAME = "imgur";
 
   @Override public String name() {
     return NAME;
@@ -38,13 +36,8 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     if (credentials.isPresent()) {
       String token = readCredentials().get().accessToken;
 
-      HttpUrl.Builder urlBuilder = request.url().newBuilder();
-      urlBuilder.addQueryParameter("oauth_token", token);
-      if (request.url().queryParameter("v") == null) {
-        urlBuilder.addQueryParameter("v", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
-      }
-
-      request = request.newBuilder().url(urlBuilder.build()).build();
+      request =
+          request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
     }
 
     return chain.proceed(request);
@@ -58,19 +51,19 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return FourSquareUtil.API_HOSTS.contains(host);
+    return ImgurUtil.API_HOSTS.contains(host);
   }
 
   @Override
   public void authorize(OkHttpClient client) throws IOException {
-    System.err.println("Authorising FourSquare API");
+    System.err.println("Authorising Imgur API");
 
-    String clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false);
+    String clientId =
+        Secrets.prompt("Imgur Client Id", "imgur.clientId", "", false);
     String clientSecret =
-        Secrets.prompt("FourSquare Application Secret", "4sq.clientSecret", "", true);
+        Secrets.prompt("Imgur Client Secret", "imgur.clientSecret", "", true);
 
-    Oauth2Token newCredentials =
-        FourSquareAuthFlow.login(client, clientId, clientSecret);
+    Oauth2Token newCredentials = ImgurAuthFlow.login(client, clientId, clientSecret);
     credentialsStore.storeCredentials(newCredentials);
   }
 
@@ -81,7 +74,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     }
 
     Request request =
-        FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder);
+        ImgurUtil.apiRequest("/3/account/me", requestBuilder);
     ResponseFutureCallback callback = new ResponseFutureCallback();
     client.newCall(request).enqueue(callback);
 
@@ -94,12 +87,10 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
               "verify failed with " + response.code() + ": " + map.get("error")));
         }
 
-        Map<String, Object> user =
-            (Map<String, Object>) ((Map<String, Object>) map.get("response")).get("user");
+        Map<String, Object> data = (Map<String, Object>) map.get("data");
 
-        String name = user.get("firstName") + " " + user.get("lastName");
-
-        return CompletableFuture.completedFuture(Optional.of(new ValidatedCredentials(name, null)));
+        return CompletableFuture.completedFuture(
+            Optional.of(new ValidatedCredentials((String) data.get("url"), null)));
       } catch (IOException e) {
         return Util.failedFuture(e);
       } finally {

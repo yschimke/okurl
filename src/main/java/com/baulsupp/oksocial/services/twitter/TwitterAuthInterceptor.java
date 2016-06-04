@@ -217,7 +217,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
       } catch (IOException e) {
         return Util.failedFuture(e);
       } finally {
-        response.body().close();
+        response.close();
       }
     });
   }

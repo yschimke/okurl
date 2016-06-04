@@ -107,7 +107,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       } catch (IOException e) {
         return Util.failedFuture(e);
       } finally {
-        response.body().close();
+        response.close();
       }
     });
   }
