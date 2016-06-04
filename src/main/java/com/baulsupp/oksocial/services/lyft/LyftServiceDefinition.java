@@ -1,8 +1,9 @@
 package com.baulsupp.oksocial.services.lyft;
 
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 
-public class LyftServiceDefinition implements ServiceDefinition<LyftServerCredentials> {
+public class LyftServiceDefinition implements ServiceDefinition<Oauth2Token> {
   @Override
   public String apiHost() {
     return "api.lyft.com";
@@ -13,11 +14,11 @@ public class LyftServiceDefinition implements ServiceDefinition<LyftServerCreden
     return "Lyft API";
   }
 
-  public LyftServerCredentials parseCredentialsString(String s) {
-    return new LyftServerCredentials(s);
+  public Oauth2Token parseCredentialsString(String s) {
+    return new Oauth2Token(s);
   }
 
-  public String formatCredentialsString(LyftServerCredentials credentials) {
-    return credentials.serverToken;
+  public String formatCredentialsString(Oauth2Token credentials) {
+    return credentials.accessToken;
   }
 }
