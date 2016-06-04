@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.squareup;
 
 import com.baulsupp.oksocial.authenticator.AuthUtil;
-import com.baulsupp.oksocial.authenticator.LocalServer;
+import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.util.JsonUtil;
@@ -21,39 +21,33 @@ public class SquareUpAuthFlow {
   public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret,
       Set<String> scopes)
       throws IOException {
-    LocalServer s = new LocalServer("localhost", 3000);
+    SimpleWebServer s = new SimpleWebServer();
 
-    try {
-      String serverUri = s.getRedirectUri();
+    String serverUri = s.getRedirectUri();
 
-      String loginUrl = "https://connect.squareup.com/oauth2/authorize"
-          + "?client_id=" + clientId
-          + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
-          + "&response_type=code"
-          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")),
-          "UTF-8");
+    String loginUrl = "https://connect.squareup.com/oauth2/authorize"
+        + "?client_id=" + clientId
+        + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
+        + "&response_type=code"
+        + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")),
+        "UTF-8");
 
-      ConsoleHandler.openLink(loginUrl);
+    ConsoleHandler.openLink(loginUrl);
 
-      String code = s.waitForCode();
+    String code = s.waitForCode();
 
-      String tokenUrl = "https://connect.squareup.com/oauth2/token";
-      Map<String, String> map = new HashMap<>();
-      map.put("client_id", clientId);
-      map.put("client_secret", clientSecret);
-      map.put("code", code);
-      map.put("redirect_uri", serverUri);
-      String body = JsonUtil.toJson(map);
+    String tokenUrl = "https://connect.squareup.com/oauth2/token";
+    Map<String, String> map = new HashMap<>();
+    map.put("client_id", clientId);
+    map.put("client_secret", clientSecret);
+    map.put("code", code);
+    map.put("redirect_uri", serverUri);
+    String body = JsonUtil.toJson(map);
 
-      RequestBody reqBody = RequestBody.create(MediaType.parse("application/json"), body);
-      Request request = new Request.Builder().url(tokenUrl).post(reqBody).build();
-      String response = AuthUtil.makeSimpleRequest(client, request);
+    RequestBody reqBody = RequestBody.create(MediaType.parse("application/json"), body);
+    Request request = new Request.Builder().url(tokenUrl).post(reqBody).build();
+    Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
 
-      Map<String, Object> responseMap = JsonUtil.map(response);
-
-      return new Oauth2Token((String) responseMap.get("access_token"));
-    } finally {
-      s.stop();
-    }
+    return new Oauth2Token((String) responseMap.get("access_token"));
   }
 }

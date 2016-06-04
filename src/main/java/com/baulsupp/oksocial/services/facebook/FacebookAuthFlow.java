@@ -1,61 +1,56 @@
 package com.baulsupp.oksocial.services.facebook;
 
 import com.baulsupp.oksocial.authenticator.AuthUtil;
-import com.baulsupp.oksocial.authenticator.LocalServer;
+import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.ConsoleHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import okhttp3.OkHttpClient;
+
+import static com.baulsupp.oksocial.authenticator.AuthUtil.makeSimpleGetRequest;
 
 public class FacebookAuthFlow {
 
   public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret,
       Set<String> scopes) throws IOException {
-    LocalServer s = new LocalServer("localhost", 3000);
+    SimpleWebServer s = new SimpleWebServer();
 
-    try {
-      String serverUri = s.getRedirectUri();
+    String serverUri = s.getRedirectUri();
 
-      String loginUrl = "https://www.facebook.com/dialog/oauth"
-          + "?client_id=" + clientId
-          + "&redirect_uri=" + serverUri
-          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
-          "UTF-8");
+    String loginUrl = "https://www.facebook.com/dialog/oauth"
+        + "?client_id=" + clientId
+        + "&redirect_uri=" + serverUri
+        + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
+        "UTF-8");
 
-      ConsoleHandler.openLink(loginUrl);
+    ConsoleHandler.openLink(loginUrl);
 
-      String code = s.waitForCode();
+    String code = s.waitForCode();
 
-      String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
-          + "?client_id=" + clientId
-          + "&redirect_uri=" + serverUri
-          + "&client_secret=" + clientSecret
-          + "&code=" + code;
+    String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
+        + "?client_id=" + clientId
+        + "&redirect_uri=" + serverUri
+        + "&client_secret=" + clientSecret
+        + "&code=" + code;
 
-      String shortTokenJson = AuthUtil.makeSimpleGetRequest(client, tokenUrl);
+    Map<String, Object> map =
+        AuthUtil.makeJsonMapRequest(client, AuthUtil.uriGetRequest(tokenUrl));
 
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode tree = mapper.readTree(shortTokenJson);
+    String shortToken = (String) map.get("access_token");
 
-      String shortToken = tree.get("access_token").asText();
+    String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
+        + "?grant_type=fb_exchange_token"
+        + "&client_id=" + clientId
+        + "&client_secret=" + clientSecret
+        + "&fb_exchange_token=" + shortToken;
 
-      String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
-          + "?grant_type=fb_exchange_token"
-          + "&client_id=" + clientId
-          + "&client_secret=" + clientSecret
-          + "&fb_exchange_token=" + shortToken;
+    String longTokenBody = makeSimpleGetRequest(client, exchangeUrl);
 
-      String longTokenBody = AuthUtil.makeSimpleGetRequest(client, exchangeUrl);
-
-      return new Oauth2Token(parseExchangeRequest(longTokenBody));
-    } finally {
-      s.stop();
-    }
+    return new Oauth2Token(parseExchangeRequest(longTokenBody));
   }
 
   private static String parseExchangeRequest(String body) {

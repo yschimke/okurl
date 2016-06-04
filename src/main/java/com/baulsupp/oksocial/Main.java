@@ -34,7 +34,7 @@ import com.baulsupp.oksocial.util.OkHttpResponseFuture;
 import com.baulsupp.oksocial.util.OpenSCUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
-import com.google.api.client.util.Lists;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
@@ -79,6 +79,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.eclipse.jetty.util.log.JavaUtilLog;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 

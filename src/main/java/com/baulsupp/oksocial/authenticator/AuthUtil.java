@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.util.JsonUtil;
 import java.io.IOException;
+import java.util.Map;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -27,5 +29,10 @@ public class AuthUtil {
 
   public static Request uriGetRequest(String uri) {
     return new Request.Builder().url(uri).build();
+  }
+
+  public static Map<String, Object> makeJsonMapRequest(OkHttpClient client, Request request)
+      throws IOException {
+    return JsonUtil.map(makeSimpleRequest(client, request));
   }
 }

@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.commands.ShellCommand;
-import com.google.api.client.util.Lists;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
