@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.authenticator;
 
-import com.baulsupp.oksocial.output.ConsoleHandler;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -16,8 +15,6 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.log.JavaUtilLog;
-import org.eclipse.jetty.util.log.Logger;
 
 public class SimpleWebServer extends AbstractHandler {
   private int port = 3000;
@@ -26,67 +23,7 @@ public class SimpleWebServer extends AbstractHandler {
 
   public SimpleWebServer() throws IOException {
     org.eclipse.jetty.util.log.Log.initialized();
-    org.eclipse.jetty.util.log.Log.setLog(new Logger() {
-      @Override public String getName() {
-        return "nolog";
-      }
-
-      @Override public void warn(String s, Object... objects) {
-
-      }
-
-      @Override public void warn(Throwable throwable) {
-
-      }
-
-      @Override public void warn(String s, Throwable throwable) {
-
-      }
-
-      @Override public void info(String s, Object... objects) {
-
-      }
-
-      @Override public void info(Throwable throwable) {
-
-      }
-
-      @Override public void info(String s, Throwable throwable) {
-
-      }
-
-      @Override public boolean isDebugEnabled() {
-        return false;
-      }
-
-      @Override public void setDebugEnabled(boolean b) {
-
-      }
-
-      @Override public void debug(String s, Object... objects) {
-
-      }
-
-      @Override public void debug(String s, long l) {
-
-      }
-
-      @Override public void debug(Throwable throwable) {
-
-      }
-
-      @Override public void debug(String s, Throwable throwable) {
-
-      }
-
-      @Override public Logger getLogger(String s) {
-        return this;
-      }
-
-      @Override public void ignore(Throwable throwable) {
-
-      }
-    });
+    org.eclipse.jetty.util.log.Log.setLog(new NullLogger());
 
     server = new Server(port);
     try {
@@ -183,10 +120,4 @@ public class SimpleWebServer extends AbstractHandler {
 
     return response;
   }
-
-  //public static void main(String[] args) throws Exception {
-  //  SimpleWebServer s = new SimpleWebServer();
-  //  ConsoleHandler.openLink(s.getRedirectUri() + "?code=asdjksd");
-  //  System.out.println(s.waitForCode());
-  //}
 }
