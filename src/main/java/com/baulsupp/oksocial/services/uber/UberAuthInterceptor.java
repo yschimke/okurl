@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.services.uber;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.Optional;
 import okhttp3.HttpUrl;
@@ -47,12 +48,11 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
 
   @Override
   public void authorize(OkHttpClient client) {
-    char[] password = System.console().readPassword("Uber Server Token: ");
+    String serverToken =
+        Secrets.prompt("Uber Server Token", "uber.serverToken", "", true);
 
-    if (password != null) {
-      UberServerCredentials newCredentials = new UberServerCredentials(new String(password));
+    UberServerCredentials newCredentials = new UberServerCredentials(serverToken);
 
-      credentialsStore.storeCredentials(newCredentials);
-    }
+    credentialsStore.storeCredentials(newCredentials);
   }
 }
