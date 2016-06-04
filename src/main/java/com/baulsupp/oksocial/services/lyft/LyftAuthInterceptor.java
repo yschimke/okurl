@@ -5,8 +5,6 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.facebook.FacebookUtil;
-import com.baulsupp.oksocial.services.stackexchange.StackExchangeUtil;
 import com.baulsupp.oksocial.util.JsonUtil;
 import com.baulsupp.oksocial.util.ResponseFutureCallback;
 import com.baulsupp.oksocial.util.Util;
@@ -96,11 +94,11 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         }
 
         return CompletableFuture.completedFuture(
-            Optional.of(new ValidatedCredentials(String.valueOf(map.get("id")), null)));
+            Optional.of(new ValidatedCredentials((String) map.get("id"), null)));
       } catch (IOException e) {
         return Util.failedFuture(e);
       } finally {
-        response.body().close();
+        response.close();
       }
     });
   }

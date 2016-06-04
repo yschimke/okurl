@@ -79,7 +79,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.eclipse.jetty.util.log.JavaUtilLog;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
