@@ -62,6 +62,8 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override
   public void authorize(OkHttpClient client) throws IOException {
+    System.err.println("Authorising Lyft API");
+
     String clientId =
         Secrets.prompt("Lyft Client Id", "lyft.clientId", "", false);
     String clientSecret =
@@ -69,7 +71,6 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     Set<String> scopes =
         Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES);
 
-    System.err.println("Authorising Lyft API");
     Oauth2Token newCredentials = LyftAuthFlow.login(client, clientId, clientSecret, scopes);
     credentialsStore.storeCredentials(newCredentials);
   }
