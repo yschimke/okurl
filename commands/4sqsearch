@@ -1,0 +1,13 @@
+#!/usr/bin/env okshell
+
+load("classpath:oksocial.js");
+var loc = location();
+
+var a = query("https://api.foursquare.com/v2/venues/explore?ll=${loc.latitude},${loc.longitude}&radius=5000&query=${arguments[0]}&openNow=true")
+
+a.response.groups[0].items.map(function(venue) {
+   var name = venue.venue.name;
+   name += "                    ".substring(0, Math.max(0, 20 - name.length()));
+   name = name.substring(0, Math.min(20, name.length));
+   print(name + "\t" + venue.venue.contact.phone + "\t" + venue.venue.rating + "\t" + (venue.venue.location.distance / 1000) + " km" + "\t" + venue.venue.location.formattedAddress);
+});
