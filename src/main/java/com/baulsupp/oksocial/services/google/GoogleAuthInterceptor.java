@@ -73,33 +73,5 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     credentialsStore.storeCredentials(newCredentials);
   }
 
-  @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
-      Request.Builder requestBuilder) throws IOException {
-    if (!readCredentials().isPresent()) {
-      return CompletableFuture.completedFuture(Optional.empty());
-    }
-
-    Request request =
-        GoogleUtil.apiRequest("/v1/profile", requestBuilder);
-    ResponseFutureCallback callback = new ResponseFutureCallback();
-    client.newCall(request).enqueue(callback);
-
-    return callback.future.thenCompose(response -> {
-      try {
-        Map<String, Object> map = JsonUtil.map(response.body().string());
-
-        if (response.code() != 200) {
-          return Util.failedFuture(new IOException(
-              "verify failed with " + response.code() + ": " + map.get("error")));
-        }
-
-        return CompletableFuture.completedFuture(
-            Optional.of(new ValidatedCredentials((String) map.get("id"), null)));
-      } catch (IOException e) {
-        return Util.failedFuture(e);
-      } finally {
-        response.close();
-      }
-    });
-  }
+  // https://www.googleapis.com/oauth2/v3/userinfo
 }

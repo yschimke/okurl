@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import okhttp3.Credentials;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,24 +24,26 @@ public class GoogleAuthFlow {
     String scopesString =
         URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")), "UTF-8");
 
-    String loginUrl = "https://api.google.com/oauth/authorize"
-        + "?client_id=" + clientId
+    String redirectUri = s.getRedirectUri();
+
+    String loginUrl = "https://accounts.google.com/o/oauth2/v2/auth"
+        + "?client_id=" + URLEncoder.encode(clientId, "UTF-8")
         + "&response_type=code"
         + "&scope=" + scopesString
-        + "&state=x";
+        + "&state=x"
+        + "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8");
+
+    System.out.println(loginUrl);
 
     ConsoleHandler.openLink(loginUrl);
 
     String code = s.waitForCode();
 
-    RequestBody body = RequestBody.create(MediaType.parse("application/json"),
-        "{\"grant_type\": \"authorization_code\", \"code\": \"" + code + "\"}");
-    String basic = Credentials.basic(clientId, clientSecret);
-    Request request =
-        new Request.Builder().url("https://api.google.com/oauth/token")
-            .post(body)
-            .header("Authorization", basic)
-            .build();
+    String tokenUrl = "https://www.googleapis.com/oauth2/v4/token";
+    RequestBody body =
+        new FormBody.Builder().add("client_id", clientId).add("redirect_uri", redirectUri)
+            .add("client_secret", clientSecret).add("code", code).add("grant_type", "authorization_code").build();
+    Request request = new Request.Builder().url(tokenUrl).method("POST", body).build();
 
     Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
 

@@ -8,18 +8,14 @@ import java.util.Set;
 import okhttp3.Request;
 
 public class GoogleUtil {
-  public static final Collection<String> SCOPES = Arrays.asList("public",
-      "rides.read",
-      "offline",
-      "rides.request",
-      "profile");
+  public static final Collection<String> SCOPES = Arrays.asList("profile", "email");
 
   private GoogleUtil() {
   }
 
   public static final Set<String> API_HOSTS =
       Collections.unmodifiableSet(Sets.newHashSet(
-          "api.google.com")
+          "api.google.com", "www.googleapis.com")
       );
 
   public static Request apiRequest(String s, Request.Builder requestBuilder) {
