@@ -1,15 +1,12 @@
 package com.baulsupp.oksocial.services.google;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.util.JsonUtil;
-import com.baulsupp.oksocial.util.ResponseFutureCallback;
-import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -73,5 +70,14 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     credentialsStore.storeCredentials(newCredentials);
   }
 
-  // https://www.googleapis.com/oauth2/v3/userinfo
+  @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
+      Request.Builder requestBuilder) throws IOException {
+    if (!readCredentials().isPresent()) {
+      return CompletableFuture.completedFuture(Optional.empty());
+    } else {
+      return new JsonCredentialsValidator(
+          requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
+          map -> (String) map.get("name")).validate(client);
+    }
+  }
 }

@@ -9,9 +9,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import okhttp3.Credentials;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -33,16 +31,18 @@ public class GoogleAuthFlow {
         + "&state=x"
         + "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8");
 
-    System.out.println(loginUrl);
-
     ConsoleHandler.openLink(loginUrl);
 
     String code = s.waitForCode();
 
     String tokenUrl = "https://www.googleapis.com/oauth2/v4/token";
     RequestBody body =
-        new FormBody.Builder().add("client_id", clientId).add("redirect_uri", redirectUri)
-            .add("client_secret", clientSecret).add("code", code).add("grant_type", "authorization_code").build();
+        new FormBody.Builder().add("client_id", clientId)
+            .add("redirect_uri", redirectUri)
+            .add("client_secret", clientSecret)
+            .add("code", code)
+            .add("grant_type", "authorization_code")
+            .build();
     Request request = new Request.Builder().url(tokenUrl).method("POST", body).build();
 
     Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);

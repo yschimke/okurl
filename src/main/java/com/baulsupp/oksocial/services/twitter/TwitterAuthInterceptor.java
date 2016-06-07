@@ -1,12 +1,10 @@
 package com.baulsupp.oksocial.services.twitter;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.util.JsonUtil;
-import com.baulsupp.oksocial.util.ResponseFutureCallback;
-import com.baulsupp.oksocial.util.Util;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.twitter.joauth.Normalizer;
@@ -195,30 +193,10 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
       Request.Builder requestBuilder) throws IOException {
     if (!readCredentials().isPresent()) {
       return CompletableFuture.completedFuture(Optional.empty());
+    } else {
+      return new JsonCredentialsValidator(
+          TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
+          map -> (String) map.get("name")).validate(client);
     }
-
-    Request request =
-        TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder);
-    ResponseFutureCallback callback = new ResponseFutureCallback();
-    client.newCall(request).enqueue(callback);
-
-    return callback.future.thenCompose(response -> {
-      try {
-
-        if (response.code() != 200) {
-          return Util.failedFuture(new IOException(
-              "verify failed with " + response.code() + ": " + response.body().string()));
-        }
-
-        Map<String, Object> map = JsonUtil.map(response.body().string());
-
-        return CompletableFuture.completedFuture(
-            Optional.of(new ValidatedCredentials(String.valueOf(map.get("name")), null)));
-      } catch (IOException e) {
-        return Util.failedFuture(e);
-      } finally {
-        response.close();
-      }
-    });
   }
 }

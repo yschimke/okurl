@@ -1,16 +1,13 @@
 package com.baulsupp.oksocial.services.facebook;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.util.JsonUtil;
-import com.baulsupp.oksocial.util.ResponseFutureCallback;
-import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +17,8 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest;
 
 public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public static final String NAME = "facebook";
@@ -86,29 +85,9 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Request.Builder requestBuilder) throws IOException {
     if (!readCredentials().isPresent()) {
       return CompletableFuture.completedFuture(Optional.empty());
+    } else {
+      return new JsonCredentialsValidator(apiRequest("/me", requestBuilder),
+          map -> (String) map.get("name")).validate(client);
     }
-
-    Request request =
-        FacebookUtil.apiRequest("/me", requestBuilder);
-    ResponseFutureCallback callback = new ResponseFutureCallback();
-    client.newCall(request).enqueue(callback);
-
-    return callback.future.thenCompose(response -> {
-      try {
-        Map<String, Object> map = JsonUtil.map(response.body().string());
-
-        if (response.code() != 200) {
-          return Util.failedFuture(new IOException(
-              "verify failed with " + response.code() + ": " + map.get("error")));
-        }
-
-        return CompletableFuture.completedFuture(
-            Optional.of(new ValidatedCredentials(String.valueOf(map.get("name")), null)));
-      } catch (IOException e) {
-        return Util.failedFuture(e);
-      } finally {
-        response.close();
-      }
-    });
   }
 }

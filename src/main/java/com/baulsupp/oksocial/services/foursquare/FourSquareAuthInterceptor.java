@@ -1,13 +1,11 @@
 package com.baulsupp.oksocial.services.foursquare;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.util.JsonUtil;
-import com.baulsupp.oksocial.util.ResponseFutureCallback;
-import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -78,33 +76,17 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Request.Builder requestBuilder) throws IOException {
     if (!readCredentials().isPresent()) {
       return CompletableFuture.completedFuture(Optional.empty());
+    } else {
+      return new JsonCredentialsValidator(
+          FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
+          map -> getName(map)).validate(client);
     }
+  }
 
-    Request request =
-        FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder);
-    ResponseFutureCallback callback = new ResponseFutureCallback();
-    client.newCall(request).enqueue(callback);
+  private String getName(Map<String, Object> map) {
+    Map<String, Object> user =
+        (Map<String, Object>) ((Map<String, Object>) map.get("response")).get("user");
 
-    return callback.future.thenCompose(response -> {
-      try {
-        Map<String, Object> map = JsonUtil.map(response.body().string());
-
-        if (response.code() != 200) {
-          return Util.failedFuture(new IOException(
-              "verify failed with " + response.code() + ": " + map.get("error")));
-        }
-
-        Map<String, Object> user =
-            (Map<String, Object>) ((Map<String, Object>) map.get("response")).get("user");
-
-        String name = user.get("firstName") + " " + user.get("lastName");
-
-        return CompletableFuture.completedFuture(Optional.of(new ValidatedCredentials(name, null)));
-      } catch (IOException e) {
-        return Util.failedFuture(e);
-      } finally {
-        response.close();
-      }
-    });
+    return user.get("firstName") + " " + user.get("lastName");
   }
 }
