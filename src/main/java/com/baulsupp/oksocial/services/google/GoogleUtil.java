@@ -15,7 +15,7 @@ public class GoogleUtil {
 
   public static final Set<String> API_HOSTS =
       Collections.unmodifiableSet(Sets.newHashSet(
-          "api.google.com", "www.googleapis.com")
+          "api.google.com", "googleapis.com")
       );
 
   public static Request apiRequest(String s, Request.Builder requestBuilder) {

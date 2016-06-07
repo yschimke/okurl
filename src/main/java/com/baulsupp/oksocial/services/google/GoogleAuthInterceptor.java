@@ -52,7 +52,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
-    return GoogleUtil.API_HOSTS.contains(host);
+    return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com");
   }
 
   @Override
