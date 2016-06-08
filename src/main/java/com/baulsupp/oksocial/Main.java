@@ -522,22 +522,22 @@ public class Main extends HelpOption implements Runnable {
   }
 
   public Request.Builder createRequestBuilder() {
-    Request.Builder request = new Request.Builder();
+    Request.Builder requestBuilder = new Request.Builder();
 
-    request.method(getRequestMethod(), getRequestBody());
+    requestBuilder.method(getRequestMethod(), getRequestBody());
 
     if (headers != null) {
       for (String header : headers) {
         String[] parts = header.split(":", 2);
-        request.header(parts[0], parts[1]);
+        requestBuilder.header(parts[0], parts[1]);
       }
     }
     if (referer != null) {
-      request.header("Referer", referer);
+      requestBuilder.header("Referer", referer);
     }
-    request.header("User-Agent", userAgent);
+    requestBuilder.header("User-Agent", userAgent);
 
-    return request;
+    return requestBuilder;
   }
 
   private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,

@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.services.uber;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
@@ -11,8 +12,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class UberAuthInterceptor implements AuthInterceptor<UberServerCredentials> {
-  private final CredentialsStore<UberServerCredentials> credentialsStore =
+public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
+  private final CredentialsStore<Oauth2Token> credentialsStore =
       CredentialsStore.create(new UberServiceDefinition());
   public static final String NAME = "uber";
 
@@ -24,9 +25,9 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
-    Optional<UberServerCredentials> credentials = readCredentials();
+    Optional<Oauth2Token> credentials = readCredentials();
     if (credentials.isPresent()) {
-      String token = readCredentials().get().serverToken;
+      String token = readCredentials().get().accessToken;
 
       request =
           request.newBuilder().addHeader("Authorization", "Token " + token).build();
@@ -36,7 +37,7 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
   }
 
   @Override
-  public CredentialsStore<UberServerCredentials> credentialsStore() {
+  public CredentialsStore<Oauth2Token> credentialsStore() {
     return credentialsStore;
   }
 
@@ -51,7 +52,7 @@ public class UberAuthInterceptor implements AuthInterceptor<UberServerCredential
     String serverToken =
         Secrets.prompt("Uber Server Token", "uber.serverToken", "", true);
 
-    UberServerCredentials newCredentials = new UberServerCredentials(serverToken);
+    Oauth2Token newCredentials = new Oauth2Token(serverToken);
 
     credentialsStore.storeCredentials(newCredentials);
   }

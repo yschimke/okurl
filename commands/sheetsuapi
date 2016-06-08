@@ -1,0 +1,19 @@
+#!/usr/bin/env okapi -m
+
+var sheet = arguments[0];
+
+var request = requestBuilder
+  .url("https://sheetsu.com/apis/v1.0/" + sheet)
+  .build();
+
+if (request.body()) {
+  requestBuilder = request.newBuilder();
+
+  var BodyWrapper = Java.type("com.baulsupp.oksocial.util.WrappedRequestBody");
+  var body = new BodyWrapper(request.body(), "application/json");
+
+  request = requestBuilder.method(request.method(), body).build();
+}
+
+request
+
