@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.services.squareup;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
@@ -14,7 +15,7 @@ import okhttp3.Response;
 
 public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new SquareUpServiceDefinition());
+      CredentialsStore.create(new Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API"));
 
   public static final String NAME = "squareup";
 

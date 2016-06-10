@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.lyft;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
@@ -21,7 +22,7 @@ import okhttp3.Response;
  */
 public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new LyftServiceDefinition());
+      CredentialsStore.create(new Oauth2ServiceDefinition("api.lyft.com", "Lyft API"));
 
   public static final String NAME = "lyft";
 

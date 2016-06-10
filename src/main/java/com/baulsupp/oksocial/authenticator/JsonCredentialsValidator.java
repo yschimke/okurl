@@ -6,7 +6,6 @@ import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import okhttp3.OkHttpClient;
@@ -19,7 +18,8 @@ public class JsonCredentialsValidator {
   private Request request;
   private final Function<Map<String, Object>, String> extractor;
 
-  public JsonCredentialsValidator(Request request, Function<Map<String, Object>, String> extractor) {
+  public JsonCredentialsValidator(Request request,
+      Function<Map<String, Object>, String> extractor) {
     this.request = request;
     this.extractor = extractor;
   }

@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.jjs;
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.util.FileContent;
 import com.google.common.base.Throwables;
-import java.io.File;
 import java.io.IOException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -11,7 +10,6 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.io.FileUtils;
 
 public class OkShell {
   public final OkHttpClient client;
