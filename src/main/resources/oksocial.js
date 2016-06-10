@@ -18,7 +18,7 @@ var readParam = Java.type("com.baulsupp.oksocial.jjs.OkShell").readParam;
 var UsageException = Java.type("com.baulsupp.oksocial.util.UsageException");
 
 var usage = function(error) {
-  throw new UsageException("usage: ossgql 'query' ['args']");
+  throw new UsageException(error);
 }
 
 var FormBuilder = Java.type("okhttp3.FormBody.Builder");

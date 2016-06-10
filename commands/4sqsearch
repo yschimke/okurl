@@ -3,6 +3,10 @@
 load("classpath:oksocial.js");
 var loc = location();
 
+if (arguments.length < 1) {
+  usage("usage: 4sqsearch searchterm");
+}
+
 var a = query("https://api.foursquare.com/v2/venues/explore?ll=${loc.latitude},${loc.longitude}&radius=5000&query=${arguments[0]}&openNow=true")
 
 a.response.groups[0].items.map(function(venue) {
