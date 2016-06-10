@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.foursquare;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
@@ -20,7 +21,7 @@ import okhttp3.Response;
 
 public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new FourSquareServiceDefinition());
+      CredentialsStore.create(new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API"));
 
   public static final String NAME = "4sq";
 

@@ -37,6 +37,7 @@ public class ImgurAuthFlow {
 
     Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
 
-    return new Oauth2Token((String) responseMap.get("access_token"));
+    return new Oauth2Token((String) responseMap.get("access_token"),
+        (String) responseMap.get("refresh_token"));
   }
 }

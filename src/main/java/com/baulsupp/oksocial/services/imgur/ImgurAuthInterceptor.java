@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.imgur;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
@@ -20,7 +21,7 @@ import static com.baulsupp.oksocial.services.imgur.ImgurUtil.apiRequest;
 
 public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new ImgurServiceDefinition());
+      CredentialsStore.create(new Oauth2ServiceDefinition("api.imgur.com", "Imgur API"));
 
   public static final String NAME = "imgur";
 
