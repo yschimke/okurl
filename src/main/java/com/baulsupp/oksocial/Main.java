@@ -27,6 +27,7 @@ import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
+import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddress;
 import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
@@ -500,11 +501,10 @@ public class Main extends HelpOption implements Runnable {
     return "GET";
   }
 
-  private RequestBody getRequestBody() {
+  private RequestBody getRequestBody() throws IOException {
     if (data == null) {
       return null;
     }
-    String bodyData = data;
 
     String mimeType = "application/x-www-form-urlencoded";
     if (headers != null) {
@@ -518,10 +518,10 @@ public class Main extends HelpOption implements Runnable {
       }
     }
 
-    return RequestBody.create(MediaType.parse(mimeType), bodyData);
+    return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
   }
 
-  public Request.Builder createRequestBuilder() {
+  public Request.Builder createRequestBuilder() throws IOException {
     Request.Builder requestBuilder = new Request.Builder();
 
     requestBuilder.method(getRequestMethod(), getRequestBody());

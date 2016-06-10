@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.Main;
+import com.baulsupp.oksocial.util.FileContent;
 import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.IOException;
@@ -79,10 +80,6 @@ public class OkShell {
   }
 
   public static String readParam(String param) throws IOException {
-    if (param.startsWith("@")) {
-      return FileUtils.readFileToString(new File(param.substring(1)));
-    } else {
-      return param;
-    }
+    return FileContent.readParamString(param);
   }
 }
