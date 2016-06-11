@@ -17,6 +17,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+
 /**
  * https://developer.lyft.com/docs/authentication
  */
@@ -77,8 +79,8 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       return CompletableFuture.completedFuture(Optional.empty());
     } else {
       return new JsonCredentialsValidator(
-          LyftUtil.apiRequest("/v1/profile", requestBuilder),
-          map -> (String) map.get("id")).validate(client);
+          LyftUtil.apiRequest("/v1/profile", requestBuilder), fieldExtractor("id")).validate(
+          client);
     }
   }
 }

@@ -17,6 +17,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+
 /**
  * https://developer.google.com/docs/authentication
  */
@@ -78,7 +80,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     } else {
       return new JsonCredentialsValidator(
           requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
-          map -> (String) map.get("name")).validate(client);
+          fieldExtractor("name")).validate(client);
     }
   }
 }

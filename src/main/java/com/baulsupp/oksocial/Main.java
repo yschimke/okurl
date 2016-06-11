@@ -81,7 +81,9 @@ import okhttp3.Response;
 import okhttp3.internal.framed.Http2;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
@@ -184,8 +186,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"-r", "--raw"}, description = "Raw Output")
   private boolean rawOutput = false;
 
-  @Arguments(title = "urls", description = "Remote resource URLs")
-  private List<String> urls = new ArrayList<>();
+  @Arguments(title = "arguments", description = "Remote resource URLs")
+  private List<String> arguments = new ArrayList<>();
 
   private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
@@ -223,9 +225,17 @@ public class Main extends HelpOption implements Runnable {
       }
 
       if (showCredentials) {
+        Iterable<AuthInterceptor<?>> services = serviceInterceptor.services();
+
+        if (!arguments.isEmpty()) {
+          services = arguments.stream().flatMap(a ->
+              optionalStream(findAuthInterceptor(a))).collect(
+              toList());
+        }
+
         PrintCredentials.printKnownCredentials(build(createClientBuilder()),
             createRequestBuilder(),
-            serviceInterceptor.services());
+            services);
 
         return;
       }
@@ -259,7 +269,7 @@ public class Main extends HelpOption implements Runnable {
 
     Request.Builder requestBuilder = createRequestBuilder();
 
-    List<Request> requests = command.buildRequests(clientBuilder, requestBuilder, urls);
+    List<Request> requests = command.buildRequests(clientBuilder, requestBuilder, arguments);
 
     if (requests.isEmpty()) {
       throw new UsageException("no urls specified");
@@ -344,12 +354,8 @@ public class Main extends HelpOption implements Runnable {
     Optional<AuthInterceptor<?>> auth =
         command.authenticator().flatMap(authName -> serviceInterceptor.getByName(authName));
 
-    if (!auth.isPresent() && !urls.isEmpty()) {
-      auth = serviceInterceptor.getByName(urls.get(0));
-
-      if (!auth.isPresent()) {
-        auth = serviceInterceptor.getByUrl(urls.get(0));
-      }
+    if (!auth.isPresent() && !arguments.isEmpty()) {
+      auth = findAuthInterceptor(arguments.get(0));
     }
 
     if (!auth.isPresent()) {
@@ -365,6 +371,16 @@ public class Main extends HelpOption implements Runnable {
         storeCredentials(auth.get());
       }
     }
+  }
+
+  private Optional<AuthInterceptor<?>> findAuthInterceptor(String name) {
+    Optional<AuthInterceptor<?>> auth = serviceInterceptor.getByName(name);
+
+    if (!auth.isPresent()) {
+      auth = serviceInterceptor.getByUrl(name);
+    }
+
+    return auth;
   }
 
   private <T> void storeCredentials(AuthInterceptor<T> auth) {

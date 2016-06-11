@@ -15,7 +15,8 @@ import okhttp3.Response;
 
 public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new Oauth2ServiceDefinition("api.stackexchange.com", "StackExchange API"));
+      CredentialsStore.create(
+          new Oauth2ServiceDefinition("api.stackexchange.com", "StackExchange API"));
 
   public static final String NAME = "stackexchange";
 

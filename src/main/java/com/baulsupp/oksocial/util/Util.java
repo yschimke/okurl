@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public final class Util {
   private Util() {
@@ -46,5 +47,9 @@ public final class Util {
     CompletableFuture<T> f = new CompletableFuture<>();
     f.completeExceptionally(e);
     return f;
+  }
+
+  public static <T> Stream<T> optionalStream(Optional<T> ai) {
+    return ai.isPresent() ? Stream.of(ai.get()) : Stream.empty();
   }
 }

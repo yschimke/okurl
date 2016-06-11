@@ -9,9 +9,9 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -20,6 +20,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest;
+import static java.util.Optional.empty;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public static final String NAME = "facebook";
@@ -82,13 +84,17 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     credentialsStore.storeCredentials(newCredentials);
   }
 
+  private String extract(Map<String, Object> map) {
+    return "" + map.get("name") + " (" + map.get("id") + ")";
+  }
+
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder) throws IOException {
     if (!readCredentials().isPresent()) {
-      return CompletableFuture.completedFuture(Optional.empty());
+      return completedFuture(empty());
     } else {
-      return new JsonCredentialsValidator(apiRequest("/me", requestBuilder),
-          map -> (String) map.get("name")).validate(client);
+      return new JsonCredentialsValidator(apiRequest("/me", requestBuilder), this::extract,
+          apiRequest("/app", requestBuilder), this::extract).validate(client);
     }
   }
 }
