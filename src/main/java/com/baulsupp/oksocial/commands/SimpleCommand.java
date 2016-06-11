@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.commands;
 
+import com.baulsupp.oksocial.util.UsageException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,8 +28,12 @@ public class SimpleCommand implements ShellCommand {
 
   @Override public List<Request> buildRequests(OkHttpClient.Builder clientBuilder,
       Request.Builder requestBuilder, List<String> urls) {
-    return urls.stream().map(u -> requestBuilder.url(mapUrl(u)).build()).collect(
-        Collectors.toList());
+    try {
+      return urls.stream().map(u -> requestBuilder.url(mapUrl(u)).build()).collect(
+          Collectors.toList());
+    } catch (IllegalArgumentException iae) {
+      throw new UsageException(iae.getMessage());
+    }
   }
 
   @Override public Optional<String> authenticator() {
