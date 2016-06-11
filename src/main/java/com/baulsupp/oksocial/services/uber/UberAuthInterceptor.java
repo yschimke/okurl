@@ -7,8 +7,6 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.lyft.LyftAuthFlow;
-import com.baulsupp.oksocial.services.lyft.LyftUtil;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
