@@ -104,90 +104,90 @@ public class Main extends HelpOption implements Runnable {
   }
 
   @Option(name = {"-X", "--request"}, description = "Specify request command to use")
-  private String method;
+  public String method;
 
   @Option(name = {"-d", "--data"}, description = "HTTP POST data")
-  private String data;
+  public String data;
 
   @Option(name = {"-H", "--header"}, description = "Custom header to pass to server")
-  private List<String> headers;
+  public List<String> headers;
 
   @Option(name = {"-A", "--user-agent"}, description = "User-Agent to send to server")
-  private String userAgent = NAME + "/" + versionString();
+  public String userAgent = NAME + "/" + versionString();
 
   @Option(name = "--connect-timeout", description = "Maximum time allowed for connection (seconds)")
-  private int connectTimeout = DEFAULT_TIMEOUT;
+  public int connectTimeout = DEFAULT_TIMEOUT;
 
   @Option(name = "--read-timeout", description = "Maximum time allowed for reading data (seconds)")
-  private int readTimeout = DEFAULT_TIMEOUT;
+  public int readTimeout = DEFAULT_TIMEOUT;
 
   @Option(name = {"-L", "--location"}, description = "Follow redirects")
-  private boolean followRedirects = false;
+  public boolean followRedirects = false;
 
   @Option(name = {"-k", "--insecure"},
       description = "Allow connections to SSL sites without certs")
-  private boolean allowInsecure = false;
+  public boolean allowInsecure = false;
 
   @Option(name = {"-i", "--include"}, description = "Include protocol headers in the output")
-  private boolean showHeaders = false;
+  public boolean showHeaders = false;
 
   @Option(name = "--frames", description = "Log HTTP/2 frames to STDERR")
-  private boolean showHttp2Frames = false;
+  public boolean showHttp2Frames = false;
 
   @Option(name = "--debug", description = "Debug")
-  private boolean debug = false;
+  public boolean debug = false;
 
   @Option(name = {"-e", "--referer"}, description = "Referer URL")
-  private String referer;
+  public String referer;
 
   @Option(name = {"-V", "--version"}, description = "Show version number and quit")
-  private boolean version = false;
+  public boolean version = false;
 
   @Option(name = {"--cache"}, description = "Cache directory")
-  private File cacheDirectory = null;
+  public File cacheDirectory = null;
 
   @Option(name = {"--protocols"}, description = "Protocols")
-  private String protocols;
+  public String protocols;
 
   @Option(name = {"-o", "--output"}, description = "Output file/directory")
-  private File outputDirectory;
+  public File outputDirectory;
 
   @Option(name = {"--authorize"}, description = "Authorize API")
-  private boolean authorize;
+  public boolean authorize;
 
   @Option(name = {"--token"}, description = "Use existing Token for authorization")
-  private String token;
+  public String token;
 
   @Option(name = {"--curl"}, description = "Show curl commands")
-  private boolean curl = false;
+  public boolean curl = false;
 
   @Option(name = {"--dns"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
       allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
-  private String ipmode = "system";
+  public String ipmode = "system";
 
   @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
-  private String resolve = null;
+  public String resolve = null;
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
-  private File clientCert = null;
+  public File clientCert = null;
 
   @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate")
-  private boolean opensc = false;
+  public boolean opensc = false;
 
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
-  private InetAddress socksProxy;
+  public InetAddress socksProxy;
 
   @Option(name = {"--show-credentials"}, description = "Show Credentials")
-  private boolean showCredentials = false;
+  public boolean showCredentials = false;
 
   @Option(name = {"--alias-names"}, description = "Show Alias Names")
-  private boolean aliasNames = false;
+  public boolean aliasNames = false;
 
   @Option(name = {"-r", "--raw"}, description = "Raw Output")
-  private boolean rawOutput = false;
+  public boolean rawOutput = false;
 
   @Arguments(title = "arguments", description = "Remote resource URLs")
-  private List<String> arguments = new ArrayList<>();
+  public List<String> arguments = new ArrayList<>();
 
   private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
 
