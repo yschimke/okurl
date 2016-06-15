@@ -5,7 +5,7 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
-import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,16 +20,12 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest;
-import static java.util.Optional.empty;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   public static final String NAME = "facebook";
 
-  private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(new Oauth2ServiceDefinition("graph.facebook.com", "Facebook API"));
-
-  public FacebookAuthInterceptor() {
+  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+    return new Oauth2ServiceDefinition("graph.facebook.com", "Facebook API");
   }
 
   @Override public String name() {
@@ -37,17 +33,12 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override
-  public CredentialsStore credentialsStore() {
-    return credentialsStore;
-  }
-
-  @Override
-  public Response intercept(Interceptor.Chain chain) throws IOException {
+  public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+      throws IOException {
     Request request = chain.request();
 
-    Optional<Oauth2Token> credentials = readCredentials();
     if (credentials.isPresent()) {
-      String token = readCredentials().get().accessToken;
+      String token = credentials.get().accessToken;
 
       HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
 
@@ -65,7 +56,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override
-  public void authorize(OkHttpClient client) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising Facebook API");
 
     String clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false);
@@ -79,9 +70,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       scopes.addAll(FacebookUtil.ALL_PERMISSIONS);
     }
 
-    Oauth2Token newCredentials =
-        FacebookAuthFlow.login(client, clientId, clientSecret, scopes);
-    credentialsStore.storeCredentials(newCredentials);
+    return FacebookAuthFlow.login(client, clientId, clientSecret, scopes);
   }
 
   private String extract(Map<String, Object> map) {
@@ -89,12 +78,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
-      Request.Builder requestBuilder) throws IOException {
-    if (!readCredentials().isPresent()) {
-      return completedFuture(empty());
-    } else {
-      return new JsonCredentialsValidator(apiRequest("/me", requestBuilder), this::extract,
-          apiRequest("/app", requestBuilder), this::extract).validate(client);
-    }
+      Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
+    return new JsonCredentialsValidator(apiRequest("/me", requestBuilder), this::extract,
+        apiRequest("/app", requestBuilder), this::extract).validate(client);
   }
 }

@@ -13,7 +13,7 @@ public class TwurlCredentialsStoreTest {
         new File(TwurlCredentialsStoreTest.class.getResource("/single_twurlrc.yaml").getFile());
     TwurlCredentialsStore store = new TwurlCredentialsStore(file);
 
-    TwitterCredentials credentials = store.readDefaultCredentials().get();
+    TwitterCredentials credentials = store.readCredentials().get();
 
     assertEquals("PROFILE", credentials.username);
     assertEquals("CONSUMER_KEY", credentials.consumerKey);

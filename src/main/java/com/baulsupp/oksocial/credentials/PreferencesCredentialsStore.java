@@ -3,30 +3,25 @@ package com.baulsupp.oksocial.credentials;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
-public class PreferencesCredentialsStore<T> implements CredentialsStore<T> {
-  private ServiceDefinition<T> serviceDefinition;
+public class PreferencesCredentialsStore implements CredentialsStore {
   private Preferences userNode = Preferences.userNodeForPackage(this.getClass());
 
-  public PreferencesCredentialsStore(ServiceDefinition<T> serviceDefinition) {
-    this.serviceDefinition = serviceDefinition;
+  public PreferencesCredentialsStore() {
   }
 
-  public ServiceDefinition<T> getServiceDefinition() {
-    return serviceDefinition;
-  }
-
-  @Override public Optional<T> readDefaultCredentials() {
-    String credentialsString = userNode.get(tokenKey(), null);
+  @Override public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
+    String credentialsString = userNode.get(tokenKey(serviceDefinition.apiHost()), null);
     return Optional.ofNullable(credentialsString)
         .map(s -> serviceDefinition.parseCredentialsString(s));
   }
 
-  private String tokenKey() {
-    return serviceDefinition.apiHost() + ".token";
+  private String tokenKey(String name) {
+    return name + ".token";
   }
 
-  @Override public void storeCredentials(T credentials) {
+  @Override
+  public <T> void storeCredentials(T credentials, ServiceDefinition<T> serviceDefinition) {
     String credentialsString = serviceDefinition.formatCredentialsString(credentials);
-    userNode.put(tokenKey(), credentialsString);
+    userNode.put(tokenKey(serviceDefinition.apiHost()), credentialsString);
   }
 }

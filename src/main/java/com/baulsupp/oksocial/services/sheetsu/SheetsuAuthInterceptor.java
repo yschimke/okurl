@@ -2,32 +2,35 @@ package com.baulsupp.oksocial.services.sheetsu;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
-import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.Optional;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials> {
-  private final CredentialsStore<BasicCredentials> credentialsStore =
-      CredentialsStore.create(new SheetsuServiceDefinition());
   public static final String NAME = "sheetsu";
 
   @Override public String name() {
     return NAME;
   }
 
+  @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
+    return new SheetsuServiceDefinition();
+  }
+
   @Override
-  public Response intercept(Chain chain) throws IOException {
+  public Response intercept(Interceptor.Chain chain, Optional<BasicCredentials> credentials)
+      throws IOException {
     Request request = chain.request();
 
-    Optional<BasicCredentials> credentials = readCredentials();
     if (credentials.isPresent()) {
-      BasicCredentials token = readCredentials().get();
+      BasicCredentials token = credentials.get();
 
       request =
           request.newBuilder()
@@ -38,11 +41,6 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
     return chain.proceed(request);
   }
 
-  @Override
-  public CredentialsStore<BasicCredentials> credentialsStore() {
-    return credentialsStore;
-  }
-
   public boolean supportsUrl(HttpUrl url) {
     String host = url.host();
 
@@ -50,14 +48,12 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
   }
 
   @Override
-  public void authorize(OkHttpClient client) {
+  public BasicCredentials authorize(OkHttpClient client) {
     String user =
         Secrets.prompt("Sheetsu API Key", "sheetsu.apiKey", "", false);
     String password =
         Secrets.prompt("Sheetsu API Password", "sheetsu.apiSecret", "", true);
 
-    BasicCredentials newCredentials = new BasicCredentials(user, password);
-
-    credentialsStore.storeCredentials(newCredentials);
+    return new BasicCredentials(user, password);
   }
 }

@@ -3,18 +3,16 @@ package com.baulsupp.oksocial.credentials;
 import com.baulsupp.oksocial.util.Util;
 import java.util.Optional;
 
-public interface CredentialsStore<T> {
-  Optional<T> readDefaultCredentials();
+public interface CredentialsStore {
+  <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition);
 
-  void storeCredentials(T credentials);
+  <T> void storeCredentials(T credentials, ServiceDefinition<T> serviceDefinition);
 
-  static <R> CredentialsStore<R> create(ServiceDefinition<R> serviceDefinition) {
+  static CredentialsStore create() {
     if (Util.isOSX()) {
-      return new OSXCredentialsStore<R>(serviceDefinition);
+      return new OSXCredentialsStore();
     } else {
-      return new PreferencesCredentialsStore<R>(serviceDefinition);
+      return new PreferencesCredentialsStore();
     }
   }
-
-  ServiceDefinition<T> getServiceDefinition();
 }

@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,11 @@ import okhttp3.Interceptor;
 import okhttp3.Response;
 
 public class ServiceInterceptor implements Interceptor {
+  private final CredentialsStore credentialsStore;
   private List<AuthInterceptor<?>> services = new ArrayList<>();
 
-  public ServiceInterceptor() {
+  public ServiceInterceptor(CredentialsStore credentialsStore) {
+    this.credentialsStore = credentialsStore;
     ServiceLoader.load(AuthInterceptor.class, AuthInterceptor.class.getClassLoader())
         .iterator().forEachRemaining(services::add);
   }
@@ -22,11 +25,18 @@ public class ServiceInterceptor implements Interceptor {
   public Response intercept(Chain chain) throws IOException {
     for (AuthInterceptor interceptor : services) {
       if (interceptor.supportsUrl(chain.request().url())) {
-        return interceptor.intercept(chain);
+        return intercept(interceptor, chain);
       }
     }
 
     return chain.proceed(chain.request());
+  }
+
+  private <T> Response intercept(AuthInterceptor<T> interceptor, Chain chain) throws IOException {
+    Optional<T> credentials =
+        credentialsStore.readDefaultCredentials(interceptor.serviceDefinition());
+
+    return interceptor.intercept(chain, credentials);
   }
 
   public Iterable<AuthInterceptor<?>> services() {
