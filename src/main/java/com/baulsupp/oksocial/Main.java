@@ -21,6 +21,7 @@ import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
@@ -197,17 +198,19 @@ public class Main extends HelpOption implements Runnable {
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
-  private ServiceInterceptor serviceInterceptor = new ServiceInterceptor();
+  private ServiceInterceptor serviceInterceptor = null;
 
   private CommandRegistry commandRegistry = new CommandRegistry();
-
-  private String versionString() {
-    return Util.versionString("/oksocial-version.properties");
-  }
 
   private List<OkHttpClient> clients = Lists.newArrayList();
 
   public OutputHandler outputHandler = null;
+
+  public CredentialsStore credentialsStore = null;
+
+  private String versionString() {
+    return Util.versionString("/oksocial-version.properties");
+  }
 
   @Override
   public void run() {
@@ -223,6 +226,12 @@ public class Main extends HelpOption implements Runnable {
         System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
         return;
       }
+
+      if (credentialsStore == null) {
+        credentialsStore = CredentialsStore.create();
+      }
+
+      serviceInterceptor = new ServiceInterceptor(credentialsStore);
 
       if (outputHandler == null) {
         if (outputDirectory != null) {
@@ -243,9 +252,9 @@ public class Main extends HelpOption implements Runnable {
               toList());
         }
 
-        PrintCredentials.printKnownCredentials(build(createClientBuilder()),
-            createRequestBuilder(),
-            services);
+        PrintCredentials printCredentials =
+            new PrintCredentials(build(createClientBuilder()), credentialsStore);
+        printCredentials.printKnownCredentials(createRequestBuilder(), services);
 
         return;
       }
@@ -392,8 +401,8 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private <T> void storeCredentials(AuthInterceptor<T> auth) {
-    T credentials = auth.credentialsStore().getServiceDefinition().parseCredentialsString(token);
-    auth.credentialsStore().storeCredentials(credentials);
+    T credentials = auth.serviceDefinition().parseCredentialsString(token);
+    credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
   }
 
   private <T> void authRequest(AuthInterceptor<T> auth) throws Exception {
@@ -403,7 +412,9 @@ public class Main extends HelpOption implements Runnable {
     b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
     client = build(b);
 
-    auth.authorize(client);
+    T credentials = auth.authorize(client);
+
+    credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
   }
 
   private String getCommandName() {

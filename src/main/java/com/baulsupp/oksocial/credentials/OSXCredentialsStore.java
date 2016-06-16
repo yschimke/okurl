@@ -9,19 +9,12 @@ import java.util.concurrent.TimeUnit;
 import okio.BufferedSource;
 import okio.Okio;
 
-public class OSXCredentialsStore<T> implements CredentialsStore<T> {
-  private ServiceDefinition<T> serviceDefinition;
-
-  public OSXCredentialsStore(ServiceDefinition<T> serviceDefinition) {
-    this.serviceDefinition = serviceDefinition;
-  }
-
-  public ServiceDefinition<T> getServiceDefinition() {
-    return serviceDefinition;
+public class OSXCredentialsStore implements CredentialsStore {
+  public OSXCredentialsStore() {
   }
 
   @Override
-  public Optional<T> readDefaultCredentials() {
+  public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
     try {
       Process process =
           new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a",
@@ -70,7 +63,7 @@ public class OSXCredentialsStore<T> implements CredentialsStore<T> {
   }
 
   @Override
-  public void storeCredentials(T credentials) {
+  public <T> void storeCredentials(T credentials, ServiceDefinition<T> serviceDefinition) {
     try {
       String credentialsString = serviceDefinition.formatCredentialsString(credentials);
 

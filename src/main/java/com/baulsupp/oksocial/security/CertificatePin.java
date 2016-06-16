@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.security;
 
-import java.util.Arrays;
 import java.util.List;
 import okhttp3.CertificatePinner;
 

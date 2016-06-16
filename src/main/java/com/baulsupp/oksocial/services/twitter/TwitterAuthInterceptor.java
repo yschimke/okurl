@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.services.twitter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
-import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +42,6 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
 
   private final SecureRandom secureRandom = new SecureRandom();
 
-  private CredentialsStore<TwitterCredentials> credentialsStore =
-      new TwurlCompatibleCredentialsStore();
-
   public TwitterAuthInterceptor() {
   }
 
@@ -53,8 +49,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return NAME;
   }
 
-  public CredentialsStore<TwitterCredentials> credentialsStore() {
-    return credentialsStore;
+  @Override public ServiceDefinition<TwitterCredentials> serviceDefinition() {
+    return new TwitterServiceDefinition();
   }
 
   public boolean supportsUrl(HttpUrl url) {
@@ -64,10 +60,10 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public Response intercept(Interceptor.Chain chain) throws IOException {
+  public Response intercept(Interceptor.Chain chain, Optional<TwitterCredentials> credentials)
+      throws IOException {
     Request request = chain.request();
 
-    Optional<TwitterCredentials> credentials = readCredentials();
     if (credentials.isPresent()) {
       String authHeader = generateAuthorization(request, credentials.get());
       request = request.newBuilder().addHeader("Authorization", authHeader).build();
@@ -174,12 +170,9 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public void authorize(OkHttpClient client) throws IOException {
+  public TwitterCredentials authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising Twitter API");
-    TwitterCredentials newCredentials =
-        PinAuthorisationFlow.authorise(client, readClientCredentials());
-
-    credentialsStore.storeCredentials(newCredentials);
+    return PinAuthorisationFlow.authorise(client, readClientCredentials());
   }
 
   public static TwitterCredentials readClientCredentials() {
@@ -190,13 +183,9 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
-      Request.Builder requestBuilder) throws IOException {
-    if (!readCredentials().isPresent()) {
-      return CompletableFuture.completedFuture(Optional.empty());
-    } else {
-      return new JsonCredentialsValidator(
-          TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
-          map -> (String) map.get("name")).validate(client);
-    }
+      Request.Builder requestBuilder, TwitterCredentials credentials) throws IOException {
+    return new JsonCredentialsValidator(
+        TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
+        map -> (String) map.get("name")).validate(client);
   }
 }

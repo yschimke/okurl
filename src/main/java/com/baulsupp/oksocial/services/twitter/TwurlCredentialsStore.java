@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.twitter;
 
-import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -9,10 +8,11 @@ import com.google.common.base.Throwables;
 import java.io.File;
 import java.util.Optional;
 
-public class TwurlCredentialsStore implements CredentialsStore<TwitterCredentials> {
-  private final File file;
+public class TwurlCredentialsStore {
+  public static TwurlCredentialsStore TWURL_STORE =
+      new TwurlCredentialsStore(new File(System.getProperty("user.home"), ".twurlrc"));
 
-  private ServiceDefinition<TwitterCredentials> serviceDefinition = new TwitterServiceDefinition();
+  private final File file;
 
   public TwurlCredentialsStore(File file) {
     this.file = file;
@@ -34,12 +34,7 @@ public class TwurlCredentialsStore implements CredentialsStore<TwitterCredential
     }
   }
 
-  @Override
-  public ServiceDefinition<TwitterCredentials> getServiceDefinition() {
-    return serviceDefinition;
-  }
-
-  public Optional<TwitterCredentials> readDefaultCredentials() {
+  public Optional<TwitterCredentials> readCredentials() {
     TwurlRc twurlRc = readTwurlRc();
 
     if (twurlRc != null) {
@@ -50,10 +45,5 @@ public class TwurlCredentialsStore implements CredentialsStore<TwitterCredential
     } else {
       return Optional.empty();
     }
-  }
-
-  @Override
-  public void storeCredentials(TwitterCredentials credentials) {
-    throw new UnsupportedOperationException();
   }
 }

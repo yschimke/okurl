@@ -3,45 +3,41 @@ package com.baulsupp.oksocial.services.stackexchange;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
-import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  private final CredentialsStore<Oauth2Token> credentialsStore =
-      CredentialsStore.create(
-          new Oauth2ServiceDefinition("api.stackexchange.com", "StackExchange API"));
-
   public static final String NAME = "stackexchange";
 
   @Override public String name() {
     return NAME;
   }
 
+  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+    return new Oauth2ServiceDefinition("api.stackexchange.com", "StackExchange API");
+  }
+
   @Override
-  public Response intercept(Chain chain) throws IOException {
+  public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+      throws IOException {
     Request request = chain.request();
 
-    Optional<Oauth2Token> credentials = readCredentials();
     if (credentials.isPresent()) {
-      String token = readCredentials().get().accessToken;
+      String token = credentials.get().accessToken;
 
       request =
           request.newBuilder().addHeader("Authorization", "Token " + token).build();
     }
 
     return chain.proceed(request);
-  }
-
-  @Override
-  public CredentialsStore<Oauth2Token> credentialsStore() {
-    return credentialsStore;
   }
 
   public boolean supportsUrl(HttpUrl url) {
@@ -51,7 +47,7 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
   }
 
   @Override
-  public void authorize(OkHttpClient client) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client) throws IOException {
     System.err.println("Authorising StackExchange API");
 
     String clientId =
@@ -61,8 +57,6 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
     Set<String> scopes =
         Secrets.promptArray("Scopes", "stackexchange.scopes", StackExchangeUtil.SCOPES);
 
-    Oauth2Token newCredentials =
-        StackExchangeAuthFlow.login(client, clientId, clientSecret, scopes);
-    credentialsStore.storeCredentials(newCredentials);
+    return StackExchangeAuthFlow.login(client, clientId, clientSecret, scopes);
   }
 }
