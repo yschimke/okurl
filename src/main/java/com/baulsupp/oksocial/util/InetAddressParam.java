@@ -1,12 +1,11 @@
 package com.baulsupp.oksocial.util;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
-public class InetAddress {
-  public SocketAddress address;
+public class InetAddressParam {
+  public InetSocketAddress address;
 
-  public InetAddress(String hostAndPort) {
+  public InetAddressParam(String hostAndPort) {
     String[] parts = hostAndPort.split(":");
     this.address = InetSocketAddress.createUnresolved(parts[0], Integer.parseInt(parts[1]));
   }
