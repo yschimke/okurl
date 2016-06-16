@@ -1,5 +1,7 @@
 # OkHttp Social Client
 
+[![Build Status](https://travis-ci.org/yschimke/oksocial.svg?branch=master)](https://travis-ci.org/yschimke/oksocial)
+
 A curl like client based on OkHttp with tight integration for Mac OSX
 
 ```
