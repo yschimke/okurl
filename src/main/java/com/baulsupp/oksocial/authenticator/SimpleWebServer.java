@@ -120,4 +120,8 @@ public class SimpleWebServer extends AbstractHandler {
 
     return response;
   }
+
+  public static void main(String[] args) throws IOException {
+    new SimpleWebServer().waitForCode();
+  }
 }

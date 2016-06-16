@@ -23,12 +23,13 @@ import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.dns.DnsOverride;
 import com.baulsupp.oksocial.dns.DnsSelector;
+import com.baulsupp.oksocial.dns.InterfaceSocketFactory;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
-import com.baulsupp.oksocial.util.InetAddress;
+import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
 import com.baulsupp.oksocial.util.OkHttpResponseFuture;
@@ -168,6 +169,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
   public String resolve = null;
 
+  @Option(name = {"--networkInterface"}, description = "Specific Local Network Interface")
+  public String networkInterface = null;
+
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
 
@@ -175,7 +179,7 @@ public class Main extends HelpOption implements Runnable {
   public boolean opensc = false;
 
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
-  public InetAddress socksProxy;
+  public InetAddressParam socksProxy;
 
   @Option(name = {"--show-credentials"}, description = "Show Credentials")
   public boolean showCredentials = false;
@@ -434,6 +438,10 @@ public class Main extends HelpOption implements Runnable {
       dns = DnsOverride.build(dns, resolve);
     }
     builder.dns(dns);
+
+    if (networkInterface != null) {
+      builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
+    }
 
     if (keyManagers != null || trustManager != null) {
       if (trustManager == null) {
