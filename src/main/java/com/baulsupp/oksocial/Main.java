@@ -22,6 +22,9 @@ import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore;
+import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
+import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
@@ -64,7 +67,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.stream.Collectors;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -86,6 +88,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
@@ -195,6 +198,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"-r", "--raw"}, description = "Raw Output")
   public boolean rawOutput = false;
 
+  @Option(name = {"-s", "--set"}, description = "Token Set e.g. work")
+  public String tokenSet = null;
+
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
@@ -228,34 +234,17 @@ public class Main extends HelpOption implements Runnable {
       }
 
       if (credentialsStore == null) {
-        credentialsStore = CredentialsStore.create();
+        credentialsStore = createCredentialsStore();
       }
 
       serviceInterceptor = new ServiceInterceptor(credentialsStore);
 
       if (outputHandler == null) {
-        if (outputDirectory != null) {
-          outputHandler = new DownloadHandler(outputDirectory);
-        } else if (rawOutput) {
-          outputHandler = new DownloadHandler(new File("-"));
-        } else {
-          outputHandler = new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
-        }
+        outputHandler = buildHandler();
       }
 
       if (showCredentials) {
-        Iterable<AuthInterceptor<?>> services = serviceInterceptor.services();
-
-        if (!arguments.isEmpty()) {
-          services = arguments.stream().flatMap(a ->
-              optionalStream(findAuthInterceptor(a))).collect(
-              toList());
-        }
-
-        PrintCredentials printCredentials =
-            new PrintCredentials(build(createClientBuilder()), credentialsStore);
-        printCredentials.printKnownCredentials(createRequestBuilder(), services);
-
+        showCredentials();
         return;
       }
 
@@ -266,17 +255,56 @@ public class Main extends HelpOption implements Runnable {
 
       if (authorize) {
         authorize();
-      } else {
-        executeRequests(outputHandler);
+        return;
       }
+
+      executeRequests(outputHandler);
     } catch (Exception e) {
       outputHandler.showError(e);
     } finally {
-      clients.forEach(client -> {
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-      });
-      clients.clear();
+      closeClients();
+    }
+  }
+
+  private CredentialsStore createCredentialsStore() {
+    if (token != null && !authorize) {
+      return new FixedTokenCredentialsStore(token);
+    } else if (Util.isOSX()) {
+      return new OSXCredentialsStore(Optional.ofNullable(tokenSet));
+    } else {
+      return new PreferencesCredentialsStore(Optional.ofNullable(tokenSet));
+    }
+  }
+
+  private void closeClients() {
+    clients.forEach(client -> {
+      client.dispatcher().executorService().shutdown();
+      client.connectionPool().evictAll();
+    });
+    clients.clear();
+  }
+
+  private void showCredentials() throws Exception {
+    Iterable<AuthInterceptor<?>> services = serviceInterceptor.services();
+
+    if (!arguments.isEmpty()) {
+      services = arguments.stream().flatMap(a ->
+          optionalStream(findAuthInterceptor(a))).collect(
+          toList());
+    }
+
+    PrintCredentials printCredentials =
+        new PrintCredentials(build(createClientBuilder()), credentialsStore);
+    printCredentials.printKnownCredentials(createRequestBuilder(), services);
+  }
+
+  private OutputHandler buildHandler() {
+    if (outputDirectory != null) {
+      return new DownloadHandler(outputDirectory);
+    } else if (rawOutput) {
+      return new DownloadHandler(new File("-"));
+    } else {
+      return new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
     }
   }
 
@@ -377,16 +405,14 @@ public class Main extends HelpOption implements Runnable {
 
     if (!auth.isPresent()) {
       throw new UsageException(
-          "unable to find authenticator. Specify name from " + serviceInterceptor.names()
-              .stream()
-              .collect(
-                  Collectors.joining(", ")));
+          "unable to find authenticator. Specify name from " +
+              serviceInterceptor.names().stream().collect(joining(", ")));
+    }
+
+    if (token != null) {
+      storeCredentials(auth.get());
     } else {
-      if (token == null) {
-        authRequest(auth.get());
-      } else {
-        storeCredentials(auth.get());
-      }
+      authRequest(auth.get());
     }
   }
 

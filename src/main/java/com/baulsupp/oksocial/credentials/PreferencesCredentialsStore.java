@@ -4,9 +4,11 @@ import java.util.Optional;
 import java.util.prefs.Preferences;
 
 public class PreferencesCredentialsStore implements CredentialsStore {
+  private final Optional<String> tokenSet;
   private Preferences userNode = Preferences.userNodeForPackage(this.getClass());
 
-  public PreferencesCredentialsStore() {
+  public PreferencesCredentialsStore(Optional<String> tokenSet) {
+    this.tokenSet = tokenSet;
   }
 
   @Override public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
@@ -16,7 +18,7 @@ public class PreferencesCredentialsStore implements CredentialsStore {
   }
 
   private String tokenKey(String name) {
-    return name + ".token";
+    return name + ".token" + tokenSet.map(s -> "." + s).orElse("");
   }
 
   @Override

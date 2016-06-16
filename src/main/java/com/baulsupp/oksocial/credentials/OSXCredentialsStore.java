@@ -10,7 +10,10 @@ import okio.BufferedSource;
 import okio.Okio;
 
 public class OSXCredentialsStore implements CredentialsStore {
-  public OSXCredentialsStore() {
+  private final Optional<String> tokenSet;
+
+  public OSXCredentialsStore(Optional<String> tokenSet) {
+    this.tokenSet = tokenSet;
   }
 
   @Override
@@ -19,7 +22,7 @@ public class OSXCredentialsStore implements CredentialsStore {
       Process process =
           new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a",
               serviceDefinition.apiHost(),
-              "-D", "oauth", "-w")
+              "-D", tokenKey(), "-w")
               .redirectError(new File("/dev/null"))
               .start();
 
@@ -70,7 +73,7 @@ public class OSXCredentialsStore implements CredentialsStore {
       Process process =
           new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a",
               serviceDefinition.apiHost(),
-              "-D", "oauth", "-s", serviceDefinition.serviceName(), "-U", "-w",
+              "-D", tokenKey(), "-s", serviceDefinition.serviceName(), "-U", "-w",
               credentialsString)
               .redirectOutput(ProcessBuilder.Redirect.INHERIT)
               .redirectError(ProcessBuilder.Redirect.INHERIT)
@@ -93,5 +96,9 @@ public class OSXCredentialsStore implements CredentialsStore {
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  private String tokenKey() {
+    return "oauth" + tokenSet.map(s -> "." + s).orElse("");
   }
 }

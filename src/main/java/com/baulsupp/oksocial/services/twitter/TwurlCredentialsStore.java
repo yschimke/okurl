@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.twitter;
 
-import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
