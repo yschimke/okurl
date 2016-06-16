@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.output;
 
+import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import java.awt.Desktop;
 import java.io.File;
@@ -35,6 +36,14 @@ public class ConsoleHandler implements OutputHandler {
 
   public ConsoleHandler(boolean showHeaders) {
     this.showHeaders = showHeaders;
+  }
+
+  @Override public void showError(Throwable e) {
+    if (e instanceof UsageException) {
+      System.err.println(e.getMessage());
+    } else {
+      e.printStackTrace();
+    }
   }
 
   @Override

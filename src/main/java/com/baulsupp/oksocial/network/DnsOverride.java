@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.dns;
+package com.baulsupp.oksocial.network;
 
 import com.baulsupp.oksocial.util.UsageException;
 import com.google.common.collect.Maps;

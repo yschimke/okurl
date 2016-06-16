@@ -21,11 +21,12 @@ import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
-import com.baulsupp.oksocial.dns.DnsOverride;
-import com.baulsupp.oksocial.dns.DnsSelector;
-import com.baulsupp.oksocial.dns.InterfaceSocketFactory;
+import com.baulsupp.oksocial.network.DnsOverride;
+import com.baulsupp.oksocial.network.DnsSelector;
+import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.security.CertificatePin;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
@@ -169,6 +170,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
   public String resolve = null;
 
+  @Option(name = {"--certificatePin"}, description = "Specific Local Network Interface")
+  public List<CertificatePin> certificatePins = null;
+
   @Option(name = {"--networkInterface"}, description = "Specific Local Network Interface")
   public String networkInterface = null;
 
@@ -203,6 +207,8 @@ public class Main extends HelpOption implements Runnable {
 
   private List<OkHttpClient> clients = Lists.newArrayList();
 
+  public OutputHandler outputHandler = null;
+
   @Override
   public void run() {
     configureLogging();
@@ -212,20 +218,20 @@ public class Main extends HelpOption implements Runnable {
     }
 
     try {
-
       if (version) {
         System.out.println(NAME + " " + versionString());
         System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
         return;
       }
 
-      OutputHandler outputHandler;
-      if (outputDirectory != null) {
-        outputHandler = new DownloadHandler(outputDirectory);
-      } else if (rawOutput) {
-        outputHandler = new DownloadHandler(new File("-"));
-      } else {
-        outputHandler = new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
+      if (outputHandler == null) {
+        if (outputDirectory != null) {
+          outputHandler = new DownloadHandler(outputDirectory);
+        } else if (rawOutput) {
+          outputHandler = new DownloadHandler(new File("-"));
+        } else {
+          outputHandler = new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
+        }
       }
 
       if (showCredentials) {
@@ -254,15 +260,14 @@ public class Main extends HelpOption implements Runnable {
       } else {
         executeRequests(outputHandler);
       }
-    } catch (UsageException e) {
-      System.err.println(e.getMessage());
     } catch (Exception e) {
-      e.printStackTrace();
+      outputHandler.showError(e);
     } finally {
       clients.forEach(client -> {
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
       });
+      clients.clear();
     }
   }
 
@@ -287,7 +292,6 @@ public class Main extends HelpOption implements Runnable {
 
   private void processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
       throws IOException, InterruptedException {
-    // TODO allow setting failure/cancel strategy
     boolean failed = false;
     for (Future<Response> responseFuture : responseFutures) {
       if (failed) {
@@ -296,8 +300,8 @@ public class Main extends HelpOption implements Runnable {
         try (Response response = responseFuture.get()) {
           outputHandler.showOutput(response);
         } catch (ExecutionException ee) {
-          ee.getCause().printStackTrace();
-
+          // TODO allow setting failure/cancel strategy
+          outputHandler.showError(ee.getCause());
           failed = true;
         }
       }
@@ -443,7 +447,7 @@ public class Main extends HelpOption implements Runnable {
       builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
     }
 
-    if (keyManagers != null || trustManager != null) {
+    if (keyManagers != null || trustManager != null || certificatePins != null) {
       if (trustManager == null) {
         TrustManagerFactory trustManagerFactory =
             TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -454,6 +458,10 @@ public class Main extends HelpOption implements Runnable {
       builder.sslSocketFactory(
           createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
           trustManager);
+
+      if (certificatePins != null) {
+        builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
+      }
     }
 
     if (cacheDirectory != null) {
