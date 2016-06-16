@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.dns;
+package com.baulsupp.oksocial.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
