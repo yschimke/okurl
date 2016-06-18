@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
@@ -14,12 +15,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials> {
-  public static final String NAME = "sheetsu";
-
-  @Override public String name() {
-    return NAME;
-  }
-
   @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
     return new SheetsuServiceDefinition();
   }
@@ -48,7 +43,7 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
   }
 
   @Override
-  public BasicCredentials authorize(OkHttpClient client) {
+  public BasicCredentials authorize(OkHttpClient client, List<String> authArguments) {
     String user =
         Secrets.prompt("Sheetsu API Key", "sheetsu.apiKey", "", false);
     String password =

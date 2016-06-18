@@ -6,14 +6,16 @@ import com.google.common.base.Splitter;
 import java.util.List;
 
 public class TwitterServiceDefinition implements ServiceDefinition<TwitterCredentials> {
-  @Override
-  public String apiHost() {
+  @Override public String apiHost() {
     return "api.twitter.com";
   }
 
-  @Override
-  public String serviceName() {
+  @Override public String serviceName() {
     return "Twitter API";
+  }
+
+  @Override public String shortName() {
+    return "twitter";
   }
 
   public TwitterCredentials parseCredentialsString(String s) {

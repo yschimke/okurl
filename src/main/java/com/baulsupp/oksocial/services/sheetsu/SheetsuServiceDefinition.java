@@ -14,6 +14,10 @@ public class SheetsuServiceDefinition implements ServiceDefinition<BasicCredenti
     return "Sheetsu API";
   }
 
+  @Override public String shortName() {
+    return "sheetsu";
+  }
+
   public BasicCredentials parseCredentialsString(String s) {
     String[] parts = s.split(":", 2);
     return new BasicCredentials(parts[0], parts[1]);

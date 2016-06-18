@@ -396,11 +396,15 @@ public class Main extends HelpOption implements Runnable {
   private void authorize() throws Exception {
     ShellCommand command = getShellCommand();
 
+    List<String> authArguments = Lists.newArrayList(arguments);
+
     Optional<AuthInterceptor<?>> auth =
         command.authenticator().flatMap(authName -> serviceInterceptor.getByName(authName));
 
-    if (!auth.isPresent() && !arguments.isEmpty()) {
-      auth = findAuthInterceptor(arguments.get(0));
+    if (!auth.isPresent() && !authArguments.isEmpty()) {
+      String name = authArguments.remove(0);
+
+      auth = findAuthInterceptor(name);
     }
 
     if (!auth.isPresent()) {
@@ -412,7 +416,7 @@ public class Main extends HelpOption implements Runnable {
     if (token != null) {
       storeCredentials(auth.get());
     } else {
-      authRequest(auth.get());
+      authRequest(auth.get(), authArguments);
     }
   }
 
@@ -431,14 +435,15 @@ public class Main extends HelpOption implements Runnable {
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
   }
 
-  private <T> void authRequest(AuthInterceptor<T> auth) throws Exception {
+  private <T> void authRequest(AuthInterceptor<T> auth, List<String> authArguments)
+      throws Exception {
     OkHttpClient client = build(createClientBuilder());
 
     OkHttpClient.Builder b = client.newBuilder();
     b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
     client = build(b);
 
-    T credentials = auth.authorize(client);
+    T credentials = auth.authorize(client, authArguments);
 
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
   }

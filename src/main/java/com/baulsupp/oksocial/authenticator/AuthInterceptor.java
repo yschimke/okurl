@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -12,13 +13,15 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public interface AuthInterceptor<T> {
-  String name();
+  default String name() {
+    return serviceDefinition().shortName();
+  }
 
   boolean supportsUrl(HttpUrl url);
 
   Response intercept(Interceptor.Chain chain, Optional<T> credentials) throws IOException;
 
-  T authorize(OkHttpClient client) throws IOException;
+  T authorize(OkHttpClient client, List<String> authArguments) throws IOException;
 
   ServiceDefinition<T> serviceDefinition();
 
