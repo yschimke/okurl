@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,8 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return chain.proceed(chain.request());
   }
 
-  @Override public Oauth2Token authorize(OkHttpClient client, List<String> authArguments)
+  @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+      List<String> authArguments)
       throws IOException {
     if (authArguments.isEmpty()) {
       return new Oauth2Token("testToken");

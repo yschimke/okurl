@@ -15,29 +15,30 @@ public class FourSquareAuthFlow {
 
   public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret)
       throws IOException {
-    SimpleWebServer s = new SimpleWebServer();
+    try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
-    String serverUri = s.getRedirectUri();
+      String serverUri = s.getRedirectUri();
 
-    String loginUrl = "https://foursquare.com/oauth2/authenticate"
-        + "?client_id=" + clientId
-        + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
-        + "&response_type=code";
+      String loginUrl = "https://foursquare.com/oauth2/authenticate"
+          + "?client_id=" + clientId
+          + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
+          + "&response_type=code";
 
-    ConsoleHandler.openLink(loginUrl);
+      new ConsoleHandler(false).openLink(loginUrl);
 
-    String code = s.waitForCode();
+      String code = s.waitForCode();
 
-    String tokenUrl = "https://foursquare.com/oauth2/access_token"
-        + "?client_id=" + clientId
-        + "&client_secret=" + clientSecret
-        + "&grant_type=authorization_code"
-        + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
-        + "&code=" + code;
+      String tokenUrl = "https://foursquare.com/oauth2/access_token"
+          + "?client_id=" + clientId
+          + "&client_secret=" + clientSecret
+          + "&grant_type=authorization_code"
+          + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
+          + "&code=" + code;
 
-    Map<String, Object> responseMap =
-        makeJsonMapRequest(client, uriGetRequest(tokenUrl));
+      Map<String, Object> responseMap =
+          makeJsonMapRequest(client, uriGetRequest(tokenUrl));
 
-    return new Oauth2Token((String) responseMap.get("access_token"));
+      return new Oauth2Token((String) responseMap.get("access_token"));
+    }
   }
 }

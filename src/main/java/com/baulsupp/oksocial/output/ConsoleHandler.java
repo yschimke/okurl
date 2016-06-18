@@ -145,7 +145,7 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
-  public static void openLink(String url) throws IOException {
+  @Override public void openLink(String url) throws IOException {
     if (Desktop.isDesktopSupported()) {
       Desktop.getDesktop().browse(URI.create(url));
     } else {

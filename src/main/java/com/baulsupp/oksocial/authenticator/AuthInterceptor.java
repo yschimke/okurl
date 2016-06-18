@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,8 @@ public interface AuthInterceptor<T> {
 
   Response intercept(Interceptor.Chain chain, Optional<T> credentials) throws IOException;
 
-  T authorize(OkHttpClient client, List<String> authArguments) throws IOException;
+  T authorize(OkHttpClient client, OutputHandler outputHandler, List<String> authArguments)
+      throws IOException;
 
   ServiceDefinition<T> serviceDefinition();
 

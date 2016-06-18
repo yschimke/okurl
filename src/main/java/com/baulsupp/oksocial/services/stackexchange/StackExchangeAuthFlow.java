@@ -18,30 +18,31 @@ public class StackExchangeAuthFlow {
 
   public static Oauth2Token login(OkHttpClient client, String clientId,
       String clientSecret, Set<String> scopes) throws IOException {
-    SimpleWebServer s = new SimpleWebServer();
+    try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
-    String serverUri = s.getRedirectUri();
+      String serverUri = s.getRedirectUri();
 
-    String loginUrl = "https://stackexchange.com/oauth"
-        + "?client_id=" + clientId
-        + "&redirect_uri=" + serverUri
-        + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
-        "UTF-8");
+      String loginUrl = "https://stackexchange.com/oauth"
+          + "?client_id=" + clientId
+          + "&redirect_uri=" + serverUri
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
+          "UTF-8");
 
-    ConsoleHandler.openLink(loginUrl);
+      new ConsoleHandler(false).openLink(loginUrl);
 
-    String code = s.waitForCode();
+      String code = s.waitForCode();
 
-    String tokenUrl = "https://stackexchange.com/oauth/access_token";
+      String tokenUrl = "https://stackexchange.com/oauth/access_token";
 
-    RequestBody body =
-        new FormBody.Builder().add("client_id", clientId).add("redirect_uri", serverUri)
-            .add("client_secret", clientSecret).add("code", code).build();
-    Request request = new Request.Builder().url(tokenUrl).method("POST", body).build();
+      RequestBody body =
+          new FormBody.Builder().add("client_id", clientId).add("redirect_uri", serverUri)
+              .add("client_secret", clientSecret).add("code", code).build();
+      Request request = new Request.Builder().url(tokenUrl).method("POST", body).build();
 
-    String longTokenBody = makeSimpleRequest(client, request);
+      String longTokenBody = makeSimpleRequest(client, request);
 
-    return new Oauth2Token(parseExchangeRequest(longTokenBody));
+      return new Oauth2Token(parseExchangeRequest(longTokenBody));
+    }
   }
 
   private static String parseExchangeRequest(String body) {
