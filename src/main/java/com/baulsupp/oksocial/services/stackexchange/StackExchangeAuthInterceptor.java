@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import okhttp3.HttpUrl;
@@ -15,14 +16,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  public static final String NAME = "stackexchange";
-
-  @Override public String name() {
-    return NAME;
-  }
-
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.stackexchange.com", "StackExchange API");
+    return new Oauth2ServiceDefinition("api.stackexchange.com", "StackExchange API",
+        "stackexchange");
   }
 
   @Override
@@ -41,13 +37,11 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
   }
 
   public boolean supportsUrl(HttpUrl url) {
-    String host = url.host();
-
-    return StackExchangeUtil.API_HOSTS.contains(host);
+    return StackExchangeUtil.API_HOSTS.contains(url.host());
   }
 
   @Override
-  public Oauth2Token authorize(OkHttpClient client) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client, List<String> authArguments) throws IOException {
     System.err.println("Authorising StackExchange API");
 
     String clientId =

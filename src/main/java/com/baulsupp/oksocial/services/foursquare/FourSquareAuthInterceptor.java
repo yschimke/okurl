@@ -10,6 +10,7 @@ import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Future;
@@ -20,14 +21,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  public static final String NAME = "4sq";
-
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API");
-  }
-
-  @Override public String name() {
-    return NAME;
+    return new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq");
   }
 
   @Override
@@ -51,13 +46,11 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   public boolean supportsUrl(HttpUrl url) {
-    String host = url.host();
-
-    return FourSquareUtil.API_HOSTS.contains(host);
+    return FourSquareUtil.API_HOSTS.contains(url.host());
   }
 
   @Override
-  public Oauth2Token authorize(OkHttpClient client) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client, List<String> authArguments) throws IOException {
     System.err.println("Authorising FourSquare API");
 
     String clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false);

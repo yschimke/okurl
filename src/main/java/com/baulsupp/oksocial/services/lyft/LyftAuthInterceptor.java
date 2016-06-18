@@ -8,6 +8,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -23,14 +24,8 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  * https://developer.lyft.com/docs/authentication
  */
 public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  public static final String NAME = "lyft";
-
-  @Override public String name() {
-    return NAME;
-  }
-
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.lyft.com", "Lyft API");
+    return new Oauth2ServiceDefinition("api.lyft.com", "Lyft API", "lyft");
   }
 
   @Override
@@ -49,13 +44,11 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   public boolean supportsUrl(HttpUrl url) {
-    String host = url.host();
-
-    return LyftUtil.API_HOSTS.contains(host);
+    return LyftUtil.API_HOSTS.contains(url.host());
   }
 
   @Override
-  public Oauth2Token authorize(OkHttpClient client) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client, List<String> authArguments) throws IOException {
     System.err.println("Authorising Lyft API");
 
     String clientId =

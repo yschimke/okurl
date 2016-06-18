@@ -8,4 +8,6 @@ public interface ServiceDefinition<T> {
   T parseCredentialsString(String s);
 
   String formatCredentialsString(T credentials);
+
+  String shortName();
 }

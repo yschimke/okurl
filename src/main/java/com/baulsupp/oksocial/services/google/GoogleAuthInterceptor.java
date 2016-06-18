@@ -8,6 +8,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -23,14 +24,8 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  * https://developer.google.com/docs/authentication
  */
 public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  public static final String NAME = "google";
-
-  @Override public String name() {
-    return NAME;
-  }
-
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.google.com", "Google API");
+    return new Oauth2ServiceDefinition("api.google.com", "Google API", "google");
   }
 
   @Override
@@ -55,7 +50,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override
-  public Oauth2Token authorize(OkHttpClient client) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client, List<String> authArguments) throws IOException {
     System.err.println("Authorising Google API");
 
     String clientId =

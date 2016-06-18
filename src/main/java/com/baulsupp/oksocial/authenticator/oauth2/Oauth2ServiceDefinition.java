@@ -5,10 +5,16 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 public class Oauth2ServiceDefinition implements ServiceDefinition<Oauth2Token> {
   private String apiHost;
   private String serviceName;
+  private final String shortName;
 
-  public Oauth2ServiceDefinition(String apiHost, String serviceName) {
+  public Oauth2ServiceDefinition(String apiHost, String serviceName, String shortName) {
     this.apiHost = apiHost;
     this.serviceName = serviceName;
+    this.shortName = shortName;
+  }
+
+  @Override public String shortName() {
+    return shortName;
   }
 
   @Override

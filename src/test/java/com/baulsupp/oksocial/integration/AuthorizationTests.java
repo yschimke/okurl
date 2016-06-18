@@ -18,10 +18,37 @@ public class AuthorizationTests {
   @Test public void setToken() throws Exception {
     main.authorize = true;
     main.token = "abc";
-    main.arguments = Lists.newArrayList("imgur");
+    main.arguments = Lists.newArrayList("test");
 
     main.run();
 
-    assertEquals("abc", credentialsStore.tokens.get("api.imgur.com"));
+    assertEquals("abc", credentialsStore.tokens.get("localhost"));
+  }
+
+  @Test public void authorize() throws Exception {
+    main.authorize = true;
+    main.arguments = Lists.newArrayList("test");
+
+    main.run();
+
+    assertEquals("testToken", credentialsStore.tokens.get("localhost"));
+  }
+
+  @Test public void authorizeByHost() throws Exception {
+    main.authorize = true;
+    main.arguments = Lists.newArrayList("https://localhost/test");
+
+    main.run();
+
+    assertEquals("testToken", credentialsStore.tokens.get("localhost"));
+  }
+
+  @Test public void authorizeWithArgs() throws Exception {
+    main.authorize = true;
+    main.arguments = Lists.newArrayList("test", "TOKENARG");
+
+    main.run();
+
+    assertEquals("TOKENARG", credentialsStore.tokens.get("localhost"));
   }
 }

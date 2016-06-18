@@ -38,25 +38,14 @@ import okio.Buffer;
 public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
   private static final Logger log = Logger.getLogger(TwitterAuthInterceptor.class.getName());
 
-  public static final String NAME = "twitter";
-
   private final SecureRandom secureRandom = new SecureRandom();
-
-  public TwitterAuthInterceptor() {
-  }
-
-  @Override public String name() {
-    return NAME;
-  }
 
   @Override public ServiceDefinition<TwitterCredentials> serviceDefinition() {
     return new TwitterServiceDefinition();
   }
 
   public boolean supportsUrl(HttpUrl url) {
-    String host = url.host();
-
-    return TwitterUtil.TWITTER_API_HOSTS.contains(host);
+    return TwitterUtil.TWITTER_API_HOSTS.contains(url.host());
   }
 
   @Override
@@ -170,7 +159,8 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public TwitterCredentials authorize(OkHttpClient client) throws IOException {
+  public TwitterCredentials authorize(OkHttpClient client, List<String> authArguments)
+      throws IOException {
     System.err.println("Authorising Twitter API");
     return PinAuthorisationFlow.authorise(client, readClientCredentials());
   }
