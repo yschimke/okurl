@@ -18,33 +18,34 @@ import okhttp3.RequestBody;
 public class LyftAuthFlow {
   public static Oauth2Token login(OkHttpClient client, String clientId,
       String clientSecret, Set<String> scopes) throws IOException {
-    SimpleWebServer s = new SimpleWebServer();
+    try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
-    String scopesString =
-        URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")), "UTF-8");
+      String scopesString =
+          URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")), "UTF-8");
 
-    String loginUrl = "https://api.lyft.com/oauth/authorize"
-        + "?client_id=" + clientId
-        + "&response_type=code"
-        + "&scope=" + scopesString
-        + "&state=x";
+      String loginUrl = "https://api.lyft.com/oauth/authorize"
+          + "?client_id=" + clientId
+          + "&response_type=code"
+          + "&scope=" + scopesString
+          + "&state=x";
 
-    ConsoleHandler.openLink(loginUrl);
+      new ConsoleHandler(false).openLink(loginUrl);
 
-    String code = s.waitForCode();
+      String code = s.waitForCode();
 
-    RequestBody body = RequestBody.create(MediaType.parse("application/json"),
-        "{\"grant_type\": \"authorization_code\", \"code\": \"" + code + "\"}");
-    String basic = Credentials.basic(clientId, clientSecret);
-    Request request =
-        new Request.Builder().url("https://api.lyft.com/oauth/token")
-            .post(body)
-            .header("Authorization", basic)
-            .build();
+      RequestBody body = RequestBody.create(MediaType.parse("application/json"),
+          "{\"grant_type\": \"authorization_code\", \"code\": \"" + code + "\"}");
+      String basic = Credentials.basic(clientId, clientSecret);
+      Request request =
+          new Request.Builder().url("https://api.lyft.com/oauth/token")
+              .post(body)
+              .header("Authorization", basic)
+              .build();
 
-    Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
+      Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
 
-    return new Oauth2Token((String) responseMap.get("access_token"),
-        (String) responseMap.get("refresh_token"));
+      return new Oauth2Token((String) responseMap.get("access_token"),
+          (String) responseMap.get("refresh_token"));
+    }
   }
 }

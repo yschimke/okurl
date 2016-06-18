@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +45,8 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override
-  public Oauth2Token authorize(OkHttpClient client, List<String> authArguments) throws IOException {
+  public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+      List<String> authArguments) throws IOException {
     System.err.println("Authorising Uber API");
 
     String clientId =

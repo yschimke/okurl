@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.sheetsu;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +44,8 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
   }
 
   @Override
-  public BasicCredentials authorize(OkHttpClient client, List<String> authArguments) {
+  public BasicCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
+      List<String> authArguments) {
     String user =
         Secrets.prompt("Sheetsu API Key", "sheetsu.apiKey", "", false);
     String password =

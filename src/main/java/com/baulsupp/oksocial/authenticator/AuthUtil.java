@@ -9,17 +9,19 @@ import okhttp3.Response;
 
 public class AuthUtil {
   public static String makeSimpleRequest(OkHttpClient client, Request request) throws IOException {
-    Response response = client.newCall(request).execute();
-
-    try {
+    try (Response response = client.newCall(request).execute()) {
       if (!response.isSuccessful()) {
+        String message = response.body().string();
+
+        if (message.length() == 0) {
+          message = response.message();
+        }
+
         throw new IllegalStateException(
-            "failed request " + response.code() + ": " + response.message());
+            "failed request " + response.code() + ": " + message);
       }
 
       return response.body().string();
-    } finally {
-      response.body().close();
     }
   }
 

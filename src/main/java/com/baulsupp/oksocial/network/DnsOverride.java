@@ -31,16 +31,18 @@ public class DnsOverride implements Dns {
     return dns.lookup(s);
   }
 
-  public static DnsOverride build(Dns dns, String resolveString) {
+  public static DnsOverride build(Dns dns, List<String> resolveStrings) {
     DnsOverride dnsOverride = new DnsOverride(dns);
 
-    String[] parts = resolveString.split(":");
+    for (String resolveString : resolveStrings) {
+      String[] parts = resolveString.split(":");
 
-    if (parts.length != 2) {
-      throw new UsageException("Invalid resolve string '" + resolveString + "'");
+      if (parts.length != 2) {
+        throw new UsageException("Invalid resolve string '" + resolveString + "'");
+      }
+
+      dnsOverride.put(parts[0], parts[1]);
     }
-
-    dnsOverride.put(parts[0], parts[1]);
 
     return dnsOverride;
   }

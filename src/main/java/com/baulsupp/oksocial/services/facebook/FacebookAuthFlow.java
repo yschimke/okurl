@@ -17,40 +17,41 @@ public class FacebookAuthFlow {
 
   public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret,
       Set<String> scopes) throws IOException {
-    SimpleWebServer s = new SimpleWebServer();
+    try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
-    String serverUri = s.getRedirectUri();
+      String serverUri = s.getRedirectUri();
 
-    String loginUrl = "https://www.facebook.com/dialog/oauth"
-        + "?client_id=" + clientId
-        + "&redirect_uri=" + serverUri
-        + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
-        "UTF-8");
+      String loginUrl = "https://www.facebook.com/dialog/oauth"
+          + "?client_id=" + clientId
+          + "&redirect_uri=" + serverUri
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
+          "UTF-8");
 
-    ConsoleHandler.openLink(loginUrl);
+      new ConsoleHandler(false).openLink(loginUrl);
 
-    String code = s.waitForCode();
+      String code = s.waitForCode();
 
-    String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
-        + "?client_id=" + clientId
-        + "&redirect_uri=" + serverUri
-        + "&client_secret=" + clientSecret
-        + "&code=" + code;
+      String tokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
+          + "?client_id=" + clientId
+          + "&redirect_uri=" + serverUri
+          + "&client_secret=" + clientSecret
+          + "&code=" + code;
 
-    Map<String, Object> map =
-        AuthUtil.makeJsonMapRequest(client, AuthUtil.uriGetRequest(tokenUrl));
+      Map<String, Object> map =
+          AuthUtil.makeJsonMapRequest(client, AuthUtil.uriGetRequest(tokenUrl));
 
-    String shortToken = (String) map.get("access_token");
+      String shortToken = (String) map.get("access_token");
 
-    String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
-        + "?grant_type=fb_exchange_token"
-        + "&client_id=" + clientId
-        + "&client_secret=" + clientSecret
-        + "&fb_exchange_token=" + shortToken;
+      String exchangeUrl = "https://graph.facebook.com/oauth/access_token"
+          + "?grant_type=fb_exchange_token"
+          + "&client_id=" + clientId
+          + "&client_secret=" + clientSecret
+          + "&fb_exchange_token=" + shortToken;
 
-    String longTokenBody = makeSimpleGetRequest(client, exchangeUrl);
+      String longTokenBody = makeSimpleGetRequest(client, exchangeUrl);
 
-    return new Oauth2Token(parseExchangeRequest(longTokenBody));
+      return new Oauth2Token(parseExchangeRequest(longTokenBody));
+    }
   }
 
   private static String parseExchangeRequest(String body) {

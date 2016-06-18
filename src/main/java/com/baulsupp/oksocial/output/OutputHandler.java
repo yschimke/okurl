@@ -10,5 +10,7 @@ public interface OutputHandler {
     e.printStackTrace();
   }
 
-  ;
+  default void openLink(String url) throws IOException {
+    System.err.println(url);
+  }
 }

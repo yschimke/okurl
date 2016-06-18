@@ -14,6 +14,7 @@ public class TwitterTests {
   {
     main.outputHandler = output;
     main.credentialsStore = credentialsStore;
+    main.resolve = Lists.newArrayList();
   }
 
   @Test public void setToken() throws Throwable {

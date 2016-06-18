@@ -172,7 +172,7 @@ public class Main extends HelpOption implements Runnable {
   public String ipmode = "system";
 
   @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
-  public String resolve = null;
+  public List<String> resolve = null;
 
   @Option(name = {"--certificatePin"}, description = "Specific Local Network Interface")
   public List<CertificatePin> certificatePins = null;
@@ -443,9 +443,11 @@ public class Main extends HelpOption implements Runnable {
     b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
     client = build(b);
 
-    T credentials = auth.authorize(client, authArguments);
+    T credentials = auth.authorize(client, outputHandler, authArguments);
 
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
+
+    // TODO validate credentials
   }
 
   private String getCommandName() {

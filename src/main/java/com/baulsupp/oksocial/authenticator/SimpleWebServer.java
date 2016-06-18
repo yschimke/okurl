@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.output.ConsoleHandler;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -7,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,13 +18,16 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
 
-public class SimpleWebServer extends AbstractHandler {
+public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
   private int port = 3000;
-  private CompletableFuture<String> f = new CompletableFuture<String>();
+  private CompletableFuture<T> f = new CompletableFuture<>();
   private Server server;
+  private Function<HttpServletRequest, T> codeReader;
 
-  public SimpleWebServer() throws IOException {
+  public SimpleWebServer(Function<HttpServletRequest, T> codeReader) throws IOException {
+    this.codeReader = codeReader;
     org.eclipse.jetty.util.log.Log.initialized();
     org.eclipse.jetty.util.log.Log.setLog(new NullLogger());
 
@@ -40,7 +46,7 @@ public class SimpleWebServer extends AbstractHandler {
     return "http://localhost:" + port + "/callback";
   }
 
-  public String waitForCode() throws IOException {
+  public T waitForCode() throws IOException {
     try {
       return f.get(60, TimeUnit.SECONDS);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -59,17 +65,22 @@ public class SimpleWebServer extends AbstractHandler {
     PrintWriter out = response.getWriter();
 
     String error = request.getParameter("error");
-    String code = request.getParameter("code");
 
     if (error != null) {
       out.println(generateFailBody(request, error));
-      f.completeExceptionally(new IOException(error));
     } else {
       out.println(generateSuccessBody(request));
-      f.complete(code);
     }
     out.flush();
     out.close();
+
+    // return response before continuing
+
+    if (error != null) {
+      f.completeExceptionally(new IOException(error));
+    } else {
+      f.complete(codeReader.apply(request));
+    }
 
     baseRequest.setHandled(true);
 
@@ -121,7 +132,15 @@ public class SimpleWebServer extends AbstractHandler {
     return response;
   }
 
+  public static SimpleWebServer<String> forCode() throws IOException {
+    return new SimpleWebServer<>(r -> r.getParameter("code"));
+  }
+
   public static void main(String[] args) throws IOException {
-    new SimpleWebServer().waitForCode();
+    SimpleWebServer.forCode().waitForCode();
+  }
+
+  @Override public void close() {
+    shutdown();
   }
 }

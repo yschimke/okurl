@@ -4,10 +4,11 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlCredentialsStore;
+import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlrcImport;
 import com.baulsupp.oksocial.util.UsageException;
-import java.io.File;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -43,27 +44,20 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public TwitterCredentials authorize(OkHttpClient client, List<String> authArguments)
+  public TwitterCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
+      List<String> authArguments)
       throws IOException {
     System.err.println("Authorising Twitter API");
 
     if (!authArguments.isEmpty() && authArguments.get(0).equals("--twurlrc")) {
-      TwurlCredentialsStore twurlStore;
+      return TwurlrcImport.authorize(authArguments);
+    }
 
-      if (authArguments.size() > 1) {
-        twurlStore = new TwurlCredentialsStore(new File(authArguments.get(1)));
-      } else {
-        twurlStore = TwurlCredentialsStore.TWURL_STORE;
-      }
+    if (authArguments.equals(Lists.newArrayList("--pin"))) {
+      String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false);
+      String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true);
 
-      Optional<TwitterCredentials> credentials =
-          twurlStore.readCredentials();
-
-      if (!credentials.isPresent()) {
-        throw new UsageException("No credentials found in " + twurlStore.getFile());
-      }
-
-      return credentials.get();
+      return new PinAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret);
     }
 
     if (!authArguments.isEmpty()) {
@@ -75,7 +69,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     String consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false);
     String consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true);
 
-    return PinAuthorisationFlow.authorise(client, consumerKey, consumerSecret);
+    return new WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
