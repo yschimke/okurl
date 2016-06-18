@@ -16,15 +16,6 @@ public class PinAuthorisationFlow {
   private static final MediaType FORM_URL_ENCODED =
       MediaType.parse("application/x-www-form-urlencoded");
 
-  public static TwitterCredentials authorise(OkHttpClient client, TwitterCredentials unauthed)
-      throws IOException {
-    TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
-
-    String pin = promptForPin(requestCredentials);
-
-    return generateAccessToken(client, requestCredentials, pin);
-  }
-
   private static TwitterCredentials generateRequestToken(OkHttpClient client,
       TwitterCredentials unauthed) throws IOException {
     RequestBody body = RequestBody.create(FORM_URL_ENCODED, "oauth_callback=oob");
@@ -35,7 +26,7 @@ public class PinAuthorisationFlow {
 
     request = request.newBuilder()
         .header("Authorization",
-            new TwitterAuthInterceptor().generateAuthorization(request, unauthed))
+            new Signature().generateAuthorization(request, unauthed))
         .build();
 
     Response response = client.newCall(request).execute();
@@ -73,7 +64,7 @@ public class PinAuthorisationFlow {
 
     request = request.newBuilder()
         .header("Authorization",
-            new TwitterAuthInterceptor().generateAuthorization(request, requestCredentials))
+            new Signature().generateAuthorization(request, requestCredentials))
         .build();
 
     Response response = client.newCall(request).execute();
@@ -102,5 +93,18 @@ public class PinAuthorisationFlow {
     bodyParser.parse(tokenDetails, Collections.singletonList(handler));
 
     return handler.toMap();
+  }
+
+  public static TwitterCredentials authorise(OkHttpClient client, String consumerKey,
+      String consumerSecret)
+      throws IOException {
+    TwitterCredentials unauthed =
+        new TwitterCredentials(null, consumerKey, consumerSecret, null, "");
+
+    TwitterCredentials requestCredentials = generateRequestToken(client, unauthed);
+
+    String pin = promptForPin(requestCredentials);
+
+    return generateAccessToken(client, requestCredentials, pin);
   }
 }
