@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TwitterAuthInterceptorTest {
-  class FixedTimeTwitterAuthInterceptor extends TwitterAuthInterceptor {
+public class SignatureTest {
+  class FixedTimeTwitterAuthInterceptor extends Signature {
     @Override public long generateTimestamp() {
       return 1460432867L;
     }

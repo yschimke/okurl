@@ -1,5 +1,6 @@
-package com.baulsupp.oksocial.services.twitter;
+package com.baulsupp.oksocial.services.twitter.twurlrc;
 
+import com.baulsupp.oksocial.services.twitter.TwitterCredentials;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -44,5 +45,9 @@ public class TwurlCredentialsStore {
     } else {
       return Optional.empty();
     }
+  }
+
+  public File getFile() {
+    return file;
   }
 }

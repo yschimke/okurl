@@ -1,5 +1,6 @@
-package com.baulsupp.oksocial.services.twitter;
+package com.baulsupp.oksocial.services.twitter.twurlrc;
 
+import com.baulsupp.oksocial.services.twitter.TwitterCredentials;
 import java.util.List;
 import java.util.Map;
 
