@@ -22,7 +22,7 @@ public class LoggingUtil {
         activeLogger = Logger.getLogger("");
         activeLogger.addHandler(handler);
         activeLogger.setLevel(Level.ALL);
-      } else if (showHttp2Frames) {
+      } else {
         activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
         activeLogger.setLevel(Level.FINE);
         handler.setLevel(Level.FINE);
