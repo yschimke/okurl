@@ -37,9 +37,10 @@ import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
+import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.OkHttpResponseFuture;
-import com.baulsupp.oksocial.util.OneLineLogFormat;
 import com.baulsupp.oksocial.util.OpenSCUtil;
+import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import com.google.common.collect.Lists;
@@ -63,12 +64,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -81,11 +78,9 @@ import okhttp3.Call;
 import okhttp3.Dns;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.framed.Http2;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.util.Util.optionalStream;
@@ -124,10 +119,10 @@ public class Main extends HelpOption implements Runnable {
   public String userAgent = NAME + "/" + versionString();
 
   @Option(name = "--connect-timeout", description = "Maximum time allowed for connection (seconds)")
-  public int connectTimeout = DEFAULT_TIMEOUT;
+  public Integer connectTimeout;
 
   @Option(name = "--read-timeout", description = "Maximum time allowed for reading data (seconds)")
-  public int readTimeout = DEFAULT_TIMEOUT;
+  public Integer readTimeout;
 
   @Option(name = {"-L", "--location"}, description = "Follow redirects")
   public boolean followRedirects = false;
@@ -222,7 +217,7 @@ public class Main extends HelpOption implements Runnable {
 
   @Override
   public void run() {
-    configureLogging();
+    LoggingUtil.configureLogging(debug, showHttp2Frames);
 
     if (showHelpIfRequested()) {
       return;
@@ -459,10 +454,10 @@ public class Main extends HelpOption implements Runnable {
   public OkHttpClient.Builder createClientBuilder() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder.followSslRedirects(followRedirects);
-    if (connectTimeout != DEFAULT_TIMEOUT) {
+    if (connectTimeout != null) {
       builder.connectTimeout(connectTimeout, SECONDS);
     }
-    if (readTimeout != DEFAULT_TIMEOUT) {
+    if (readTimeout != null) {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
@@ -517,9 +512,9 @@ public class Main extends HelpOption implements Runnable {
     configureApiInterceptors(builder);
 
     if (debug) {
-      HttpLoggingInterceptor logging =
-          new HttpLoggingInterceptor();
-      logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      HttpLoggingInterceptor logging = new HttpLoggingInterceptor(s -> {
+        logger.info(s);
+      });
       builder.networkInterceptors().add(logging);
     }
 
@@ -527,9 +522,8 @@ public class Main extends HelpOption implements Runnable {
       builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
     }
 
-    List<Protocol> requestProtocols = buildProtocols();
-    if (requestProtocols != null) {
-      builder.protocols(requestProtocols);
+    if (protocols != null) {
+      builder.protocols(ProtocolUtil.parseProtocolList(protocols));
     }
 
     return builder;
@@ -544,28 +538,6 @@ public class Main extends HelpOption implements Runnable {
 
     if (curl) {
       builder.addNetworkInterceptor(new CurlInterceptor(System.err::println));
-    }
-  }
-
-  private List<Protocol> buildProtocols() {
-    if (protocols != null) {
-      List<Protocol> protocolValues = new ArrayList<>();
-
-      try {
-        for (String protocol : protocols.split(",")) {
-          protocolValues.add(Protocol.get(protocol));
-        }
-      } catch (IOException e) {
-        throw new IllegalArgumentException(e);
-      }
-
-      if (!protocolValues.contains(Protocol.HTTP_1_1)) {
-        protocolValues.add(Protocol.HTTP_1_1);
-      }
-
-      return protocolValues;
-    } else {
-      return null;
     }
   }
 
@@ -635,31 +607,5 @@ public class Main extends HelpOption implements Runnable {
         KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
     kmf.init(keystore_client, password);
     return kmf.getKeyManagers();
-  }
-
-  private void configureLogging() {
-    if (debug || showHttp2Frames) {
-      LogManager.getLogManager().reset();
-      ConsoleHandler handler = new ConsoleHandler();
-
-      if (debug) {
-        handler.setLevel(Level.ALL);
-        handler.setFormatter(new OneLineLogFormat());
-        activeLogger = Logger.getLogger("");
-        activeLogger.addHandler(handler);
-        activeLogger.setLevel(Level.ALL);
-      } else if (showHttp2Frames) {
-        activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
-        activeLogger.setLevel(Level.FINE);
-        handler.setLevel(Level.FINE);
-        handler.setFormatter(new SimpleFormatter() {
-          @Override
-          public String format(LogRecord record) {
-            return String.format("%s%n", record.getMessage());
-          }
-        });
-        activeLogger.addHandler(handler);
-      }
-    }
   }
 }

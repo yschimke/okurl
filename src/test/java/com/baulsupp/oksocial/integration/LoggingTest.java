@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import java.util.logging.LogManager;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
+import okhttp3.Protocol;
 import okhttp3.internal.tls.SslClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -30,6 +31,7 @@ public class LoggingTest {
 
   @Test public void logsData() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
+    server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1));
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
     main.allowInsecure = true;
 

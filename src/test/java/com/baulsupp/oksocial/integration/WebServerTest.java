@@ -52,7 +52,7 @@ public class WebServerTest {
     assertEquals(200, output.responses.get(0).code());
   }
 
-  @Test @Ignore public void httpsRequestSecure() throws Exception {
+  @Test public void httpsRequestSecure() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
 

@@ -76,6 +76,7 @@ public class ConsoleHandler implements OutputHandler {
       Handshake handshake = response.handshake();
 
       if (handshake != null) {
+        logger.info("protocol: " + response.protocol());
         logger.info("tls: " + handshake.tlsVersion().toString());
         logger.info("cipher: " + handshake.cipherSuite().toString());
         logger.info("peer: " + handshake.peerPrincipal().toString());
