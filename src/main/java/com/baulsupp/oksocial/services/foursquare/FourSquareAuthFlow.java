@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.services.foursquare;
 
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
-import com.baulsupp.oksocial.output.ConsoleHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -13,7 +13,8 @@ import static com.baulsupp.oksocial.authenticator.AuthUtil.uriGetRequest;
 
 public class FourSquareAuthFlow {
 
-  public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret)
+  public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
+      String clientSecret)
       throws IOException {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
@@ -24,7 +25,7 @@ public class FourSquareAuthFlow {
           + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
           + "&response_type=code";
 
-      new ConsoleHandler(false).openLink(loginUrl);
+      outputHandler.openLink(loginUrl);
 
       String code = s.waitForCode();
 

@@ -60,7 +60,7 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     Set<String> scopes =
         Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES);
 
-    return LyftAuthFlow.login(client, clientId, clientSecret, scopes);
+    return LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,

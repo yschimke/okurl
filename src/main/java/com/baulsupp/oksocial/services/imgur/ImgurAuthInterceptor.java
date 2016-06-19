@@ -55,7 +55,7 @@ public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     String clientSecret =
         Secrets.prompt("Imgur Client Secret", "imgur.clientSecret", "", true);
 
-    return ImgurAuthFlow.login(client, clientId, clientSecret);
+    return ImgurAuthFlow.login(client, outputHandler, clientId, clientSecret);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,

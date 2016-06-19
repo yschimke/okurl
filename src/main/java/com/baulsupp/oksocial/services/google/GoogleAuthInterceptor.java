@@ -62,7 +62,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     Set<String> scopes =
         Secrets.promptArray("Scopes", "google.scopes", GoogleUtil.SCOPES);
 
-    return GoogleAuthFlow.login(client, clientId, clientSecret, scopes);
+    return GoogleAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,

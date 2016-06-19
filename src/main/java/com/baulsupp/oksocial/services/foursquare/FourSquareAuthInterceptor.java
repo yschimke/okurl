@@ -59,7 +59,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     String clientSecret =
         Secrets.prompt("FourSquare Application Secret", "4sq.clientSecret", "", true);
 
-    return FourSquareAuthFlow.login(client, clientId, clientSecret);
+    return FourSquareAuthFlow.login(client, outputHandler, clientId, clientSecret);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,

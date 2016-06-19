@@ -65,7 +65,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       scopes.addAll(FacebookUtil.ALL_PERMISSIONS);
     }
 
-    return FacebookAuthFlow.login(client, clientId, clientSecret, scopes);
+    return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
   private String extract(Map<String, Object> map) {

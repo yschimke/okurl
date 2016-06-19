@@ -51,6 +51,6 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     Set<String> scopes =
         Secrets.promptArray("Scopes", "squareup.scopes", SquareUpUtil.ALL_PERMISSIONS);
 
-    return SquareUpAuthFlow.login(client, clientId, clientSecret, scopes);
+    return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 }

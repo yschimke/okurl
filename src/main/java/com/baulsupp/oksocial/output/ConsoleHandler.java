@@ -6,10 +6,13 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -32,17 +35,28 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
 public class ConsoleHandler implements OutputHandler {
-  private final boolean showHeaders;
+  private static Logger logger = Logger.getLogger(ConsoleHandler.class.getName());
 
-  public ConsoleHandler(boolean showHeaders) {
+  private final boolean showHeaders;
+  private final boolean useLogger;
+
+  public ConsoleHandler(boolean showHeaders, boolean useLogger) {
     this.showHeaders = showHeaders;
+    this.useLogger = useLogger;
   }
 
-  @Override public void showError(Throwable e) {
-    if (e instanceof UsageException) {
-      System.err.println(e.getMessage());
+  @Override public void showError(String message, Throwable e) {
+    if (useLogger) {
+      logger.log(Level.WARNING, message, e);
     } else {
-      e.printStackTrace();
+      if (e instanceof UsageException) {
+        System.err.println(e.getMessage());
+      } else if (e instanceof UnknownHostException && e.getCause() == null) {
+        System.err.println(message + ": " + e.toString());
+      } else {
+        System.err.println(message);
+        e.printStackTrace();
+      }
     }
   }
 

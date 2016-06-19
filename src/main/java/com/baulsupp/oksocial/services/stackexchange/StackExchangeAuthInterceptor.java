@@ -53,6 +53,6 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
     Set<String> scopes =
         Secrets.promptArray("Scopes", "stackexchange.scopes", StackExchangeUtil.SCOPES);
 
-    return StackExchangeAuthFlow.login(client, clientId, clientSecret, scopes);
+    return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 }

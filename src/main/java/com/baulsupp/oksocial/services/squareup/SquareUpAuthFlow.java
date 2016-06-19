@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.services.squareup;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
-import com.baulsupp.oksocial.output.ConsoleHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.util.JsonUtil;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -18,9 +18,8 @@ import okhttp3.RequestBody;
 
 public class SquareUpAuthFlow {
 
-  public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret,
-      Set<String> scopes)
-      throws IOException {
+  public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
+      String clientSecret, Set<String> scopes) throws IOException {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
       String serverUri = s.getRedirectUri();
@@ -32,7 +31,7 @@ public class SquareUpAuthFlow {
           + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")),
           "UTF-8");
 
-      new ConsoleHandler(false).openLink(loginUrl);
+      outputHandler.openLink(loginUrl);
 
       String code = s.waitForCode();
 

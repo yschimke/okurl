@@ -38,6 +38,7 @@ import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
 import com.baulsupp.oksocial.util.OkHttpResponseFuture;
+import com.baulsupp.oksocial.util.OneLineLogFormat;
 import com.baulsupp.oksocial.util.OpenSCUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
@@ -64,6 +65,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -260,7 +262,7 @@ public class Main extends HelpOption implements Runnable {
 
       executeRequests(outputHandler);
     } catch (Exception e) {
-      outputHandler.showError(e);
+      outputHandler.showError("unknown error", e);
     } finally {
       closeClients();
     }
@@ -304,7 +306,7 @@ public class Main extends HelpOption implements Runnable {
     } else if (rawOutput) {
       return new DownloadHandler(new File("-"));
     } else {
-      return new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
+      return new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders, debug);
     }
   }
 
@@ -338,7 +340,7 @@ public class Main extends HelpOption implements Runnable {
           outputHandler.showOutput(response);
         } catch (ExecutionException ee) {
           // TODO allow setting failure/cancel strategy
-          outputHandler.showError(ee.getCause());
+          outputHandler.showError("request failed", ee.getCause());
           failed = true;
         }
       }
@@ -351,7 +353,7 @@ public class Main extends HelpOption implements Runnable {
     for (Request request : requests) {
       logger.log(Level.FINE, "url " + request.url());
 
-      if (requests.size() > 1) {
+      if (requests.size() > 1 && !debug) {
         System.err.println(request.url());
       }
 
@@ -636,24 +638,28 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureLogging() {
-    if (debug) {
+    if (debug || showHttp2Frames) {
+      LogManager.getLogManager().reset();
       ConsoleHandler handler = new ConsoleHandler();
-      handler.setLevel(Level.ALL);
-      activeLogger = Logger.getLogger("");
-      activeLogger.addHandler(handler);
-      activeLogger.setLevel(Level.ALL);
-    } else if (showHttp2Frames) {
-      activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
-      activeLogger.setLevel(Level.FINE);
-      ConsoleHandler handler = new ConsoleHandler();
-      handler.setLevel(Level.FINE);
-      handler.setFormatter(new SimpleFormatter() {
-        @Override
-        public String format(LogRecord record) {
-          return String.format("%s%n", record.getMessage());
-        }
-      });
-      activeLogger.addHandler(handler);
+
+      if (debug) {
+        handler.setLevel(Level.ALL);
+        handler.setFormatter(new OneLineLogFormat());
+        activeLogger = Logger.getLogger("");
+        activeLogger.addHandler(handler);
+        activeLogger.setLevel(Level.ALL);
+      } else if (showHttp2Frames) {
+        activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
+        activeLogger.setLevel(Level.FINE);
+        handler.setLevel(Level.FINE);
+        handler.setFormatter(new SimpleFormatter() {
+          @Override
+          public String format(LogRecord record) {
+            return String.format("%s%n", record.getMessage());
+          }
+        });
+        activeLogger.addHandler(handler);
+      }
     }
   }
 }

@@ -54,7 +54,7 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     String clientSecret =
         Secrets.prompt("Uber Client Secret", "uber.clientSecret", "", true);
 
-    return UberAuthFlow.login(client, clientId, clientSecret);
+    return UberAuthFlow.login(client, outputHandler, clientId, clientSecret);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,

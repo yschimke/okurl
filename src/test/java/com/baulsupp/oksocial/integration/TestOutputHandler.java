@@ -14,7 +14,7 @@ public class TestOutputHandler implements OutputHandler {
     responses.add(response);
   }
 
-  @Override public void showError(Throwable e) {
+  @Override public void showError(String s, Throwable e) {
     failures.add(e);
   }
 }
