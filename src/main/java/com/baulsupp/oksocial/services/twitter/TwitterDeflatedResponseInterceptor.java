@@ -10,8 +10,7 @@ import okio.InflaterSource;
 import okio.Okio;
 
 public class TwitterDeflatedResponseInterceptor implements Interceptor {
-  @Override
-  public Response intercept(Chain chain) throws IOException {
+  @Override public Response intercept(Chain chain) throws IOException {
     Response response = chain.proceed(chain.request());
 
     if ("deflate".equals(response.header("content-encoding"))) {

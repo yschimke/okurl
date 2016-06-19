@@ -21,8 +21,7 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup");
   }
 
-  @Override
-  public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
       throws IOException {
     Request request = chain.request();
 
@@ -40,8 +39,7 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return SquareUpUtil.API_HOSTS.contains(url.host());
   }
 
-  @Override
-  public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+  @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising SquareUp API");
 

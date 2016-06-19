@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.authenticator;
 
-import com.baulsupp.oksocial.output.ConsoleHandler;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +17,6 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
 
 public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
   private int port = 3000;

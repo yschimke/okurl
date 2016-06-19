@@ -19,8 +19,7 @@ public class TwitterCredentials {
     this.secret = secret;
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return "TwitterCredentials{"
         + "username='"
         + username

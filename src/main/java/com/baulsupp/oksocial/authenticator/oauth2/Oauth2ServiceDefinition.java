@@ -17,13 +17,11 @@ public class Oauth2ServiceDefinition implements ServiceDefinition<Oauth2Token> {
     return shortName;
   }
 
-  @Override
-  public String apiHost() {
+  @Override public String apiHost() {
     return apiHost;
   }
 
-  @Override
-  public String serviceName() {
+  @Override public String serviceName() {
     return serviceName;
   }
 

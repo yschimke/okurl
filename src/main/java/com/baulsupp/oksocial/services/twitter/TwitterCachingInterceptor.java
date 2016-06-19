@@ -9,8 +9,7 @@ import okhttp3.Response;
 public class TwitterCachingInterceptor implements Interceptor {
   private static final Set<String> permanentHosts = Sets.newHashSet("pbs.twimg.com");
 
-  @Override
-  public Response intercept(Chain chain) throws IOException {
+  @Override public Response intercept(Chain chain) throws IOException {
     Response originalResponse = chain.proceed(chain.request());
 
     String host = chain.request().url().host();

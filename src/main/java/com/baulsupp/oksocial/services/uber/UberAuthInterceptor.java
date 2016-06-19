@@ -23,8 +23,7 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("api.uber.com", "Uber API", "uber");
   }
 
-  @Override
-  public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
       throws IOException {
     Request request = chain.request();
 
@@ -44,8 +43,7 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return UberUtil.API_HOSTS.contains(host);
   }
 
-  @Override
-  public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+  @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising Uber API");
 

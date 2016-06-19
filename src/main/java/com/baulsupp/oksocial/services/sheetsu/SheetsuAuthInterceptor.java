@@ -43,8 +43,7 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
     return SheetsuUtil.API_HOSTS.contains(host);
   }
 
-  @Override
-  public BasicCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
+  @Override public BasicCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) {
     String user =
         Secrets.prompt("Sheetsu API Key", "sheetsu.apiKey", "", false);

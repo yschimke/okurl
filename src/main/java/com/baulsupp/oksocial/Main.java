@@ -215,8 +215,7 @@ public class Main extends HelpOption implements Runnable {
     return Util.versionString("/oksocial-version.properties");
   }
 
-  @Override
-  public void run() {
+  @Override public void run() {
     LoggingUtil.configureLogging(debug, showHttp2Frames);
 
     if (showHelpIfRequested()) {
@@ -365,8 +364,7 @@ public class Main extends HelpOption implements Runnable {
     return client;
   }
 
-  private ShellCommand getShellCommand()
-      throws Exception {
+  private ShellCommand getShellCommand() throws Exception {
     String commandName = getCommandName();
 
     return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());

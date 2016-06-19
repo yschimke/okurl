@@ -61,8 +61,7 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
-  @Override
-  public void showOutput(Response response) throws IOException {
+  @Override public void showOutput(Response response) throws IOException {
     if (showHeaders) {
       System.out.println(StatusLine.get(response));
       Headers headers = response.headers();

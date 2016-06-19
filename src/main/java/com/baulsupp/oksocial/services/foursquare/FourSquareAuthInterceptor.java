@@ -26,8 +26,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq");
   }
 
-  @Override
-  public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
       throws IOException {
     Request request = chain.request();
 
@@ -50,8 +49,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return FourSquareUtil.API_HOSTS.contains(url.host());
   }
 
-  @Override
-  public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+  @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising FourSquare API");
 

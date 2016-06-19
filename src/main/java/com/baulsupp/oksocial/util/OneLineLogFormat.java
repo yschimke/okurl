@@ -17,8 +17,8 @@ import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 /**
- * Is Java8 Data and Time really this bad, or is writing this on a plane from just javadocs
- * a bad idea?
+ * Is Java8 Data and Time really this bad, or is writing this on a plane from just javadocs a bad
+ * idea?
  *
  * Why so much construction?
  */

@@ -27,8 +27,7 @@ public class LoggingUtil {
         activeLogger.setLevel(Level.FINE);
         handler.setLevel(Level.FINE);
         handler.setFormatter(new SimpleFormatter() {
-          @Override
-          public String format(LogRecord record) {
+          @Override public String format(LogRecord record) {
             return String.format("%s%n", record.getMessage());
           }
         });

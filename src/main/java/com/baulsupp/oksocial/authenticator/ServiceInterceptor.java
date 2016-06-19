@@ -21,8 +21,7 @@ public class ServiceInterceptor implements Interceptor {
         .iterator().forEachRemaining(services::add);
   }
 
-  @Override
-  public Response intercept(Chain chain) throws IOException {
+  @Override public Response intercept(Chain chain) throws IOException {
     for (AuthInterceptor interceptor : services) {
       if (interceptor.supportsUrl(chain.request().url())) {
         return intercept(interceptor, chain);
