@@ -461,6 +461,40 @@ public class Main extends HelpOption implements Runnable {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
+    Dns dns = DnsSelector.byName(ipmode);
+    if (resolve != null) {
+      dns = DnsOverride.build(dns, resolve);
+    }
+    builder.dns(dns);
+
+    if (networkInterface != null) {
+      builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
+    }
+
+    configureTls(builder);
+
+    if (cacheDirectory != null) {
+      builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    }
+
+    configureApiInterceptors(builder);
+
+    if (debug) {
+      builder.networkInterceptors().add(new HttpLoggingInterceptor(s -> logger.info(s)));
+    }
+
+    if (socksProxy != null) {
+      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+    }
+
+    if (protocols != null) {
+      builder.protocols(ProtocolUtil.parseProtocolList(protocols));
+    }
+
+    return builder;
+  }
+
+  private void configureTls(OkHttpClient.Builder builder) throws Exception {
     X509TrustManager trustManager = null;
     KeyManager[] keyManagers = null;
 
@@ -476,16 +510,6 @@ public class Main extends HelpOption implements Runnable {
     } else if (opensc) {
       char[] password = System.console().readPassword("smartcard password: ");
       keyManagers = OpenSCUtil.getKeyManagers(password);
-    }
-
-    Dns dns = DnsSelector.byName(ipmode);
-    if (resolve != null) {
-      dns = DnsOverride.build(dns, resolve);
-    }
-    builder.dns(dns);
-
-    if (networkInterface != null) {
-      builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
     }
 
     if (keyManagers != null || trustManager != null || certificatePins != null) {
@@ -504,29 +528,6 @@ public class Main extends HelpOption implements Runnable {
         builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
       }
     }
-
-    if (cacheDirectory != null) {
-      builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
-    }
-
-    configureApiInterceptors(builder);
-
-    if (debug) {
-      HttpLoggingInterceptor logging = new HttpLoggingInterceptor(s -> {
-        logger.info(s);
-      });
-      builder.networkInterceptors().add(logging);
-    }
-
-    if (socksProxy != null) {
-      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
-    }
-
-    if (protocols != null) {
-      builder.protocols(ProtocolUtil.parseProtocolList(protocols));
-    }
-
-    return builder;
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
