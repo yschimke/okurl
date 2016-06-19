@@ -20,11 +20,8 @@ import static org.junit.Assert.assertTrue;
 public class LoggingTest {
   @Rule public MockWebServer server = new MockWebServer();
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
 
-  {
-    main.outputHandler = output;
-  }
+  private SslClient sslClient = SslClient.localhost();
 
   @AfterClass
   public static void resetLogging() {
@@ -32,14 +29,13 @@ public class LoggingTest {
   }
 
   @Test public void logsData() throws Exception {
+    server.useHttps(sslClient.socketFactory, false);
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
+    main.allowInsecure = true;
 
     main.arguments = Lists.newArrayList(server.url("/").toString());
     main.debug = true;
 
     main.run();
-
-    assertEquals(1, output.responses.size());
-    assertEquals(0, output.failures.size());
   }
 }

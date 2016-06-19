@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import okhttp3.Handshake;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -38,15 +39,15 @@ public class ConsoleHandler implements OutputHandler {
   private static Logger logger = Logger.getLogger(ConsoleHandler.class.getName());
 
   private final boolean showHeaders;
-  private final boolean useLogger;
+  private final boolean debug;
 
-  public ConsoleHandler(boolean showHeaders, boolean useLogger) {
+  public ConsoleHandler(boolean showHeaders, boolean debug) {
     this.showHeaders = showHeaders;
-    this.useLogger = useLogger;
+    this.debug = debug;
   }
 
   @Override public void showError(String message, Throwable e) {
-    if (useLogger) {
+    if (debug) {
       logger.log(Level.WARNING, message, e);
     } else {
       if (e instanceof UsageException) {
@@ -69,6 +70,16 @@ public class ConsoleHandler implements OutputHandler {
         System.out.println(headers.name(i) + ": " + headers.value(i));
       }
       System.out.println();
+    }
+
+    if (debug) {
+      Handshake handshake = response.handshake();
+
+      if (handshake != null) {
+        logger.info("tls: " + handshake.tlsVersion().toString());
+        logger.info("cipher: " + handshake.cipherSuite().toString());
+        logger.info("peer: " + handshake.peerPrincipal().toString());
+      }
     }
 
     MediaType contentType = response.body().contentType();
