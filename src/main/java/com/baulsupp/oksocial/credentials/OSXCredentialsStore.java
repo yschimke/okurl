@@ -16,8 +16,7 @@ public class OSXCredentialsStore implements CredentialsStore {
     this.tokenSet = tokenSet;
   }
 
-  @Override
-  public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
+  @Override public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
     try {
       Process process =
           new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a",

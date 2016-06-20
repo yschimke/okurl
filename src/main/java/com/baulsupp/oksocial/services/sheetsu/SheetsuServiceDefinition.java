@@ -4,13 +4,11 @@ import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 
 public class SheetsuServiceDefinition implements ServiceDefinition<BasicCredentials> {
-  @Override
-  public String apiHost() {
+  @Override public String apiHost() {
     return "sheetsu.com";
   }
 
-  @Override
-  public String serviceName() {
+  @Override public String serviceName() {
     return "Sheetsu API";
   }
 

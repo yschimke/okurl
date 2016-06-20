@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.services.facebook;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
-import com.baulsupp.oksocial.output.ConsoleHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -15,7 +15,8 @@ import static com.baulsupp.oksocial.authenticator.AuthUtil.makeSimpleGetRequest;
 
 public class FacebookAuthFlow {
 
-  public static Oauth2Token login(OkHttpClient client, String clientId, String clientSecret,
+  public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
+      String clientSecret,
       Set<String> scopes) throws IOException {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
@@ -27,7 +28,7 @@ public class FacebookAuthFlow {
           + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
           "UTF-8");
 
-      new ConsoleHandler(false).openLink(loginUrl);
+      outputHandler.openLink(loginUrl);
 
       String code = s.waitForCode();
 

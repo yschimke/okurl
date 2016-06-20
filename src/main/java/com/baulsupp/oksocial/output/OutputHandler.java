@@ -6,7 +6,8 @@ import okhttp3.Response;
 public interface OutputHandler {
   void showOutput(Response response) throws IOException;
 
-  default void showError(Throwable e) {
+  default void showError(String s, Throwable e) {
+    System.err.println(s);
     e.printStackTrace();
   }
 

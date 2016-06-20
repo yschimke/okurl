@@ -16,8 +16,7 @@ public class Oauth2Token {
     this.refreshToken = Optional.ofNullable(refreshToken);
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return "Oauth2Token{"
         + "accessToken='" + accessToken + '\''
         + refreshToken.map(s -> " refreshToken='" + s + '\'').orElse("")

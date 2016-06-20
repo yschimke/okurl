@@ -23,18 +23,15 @@ public class InterfaceSocketFactory extends SocketFactory {
     return s;
   }
 
-  @Override
-  public Socket createSocket(String host, int port) throws IOException {
+  @Override public Socket createSocket(String host, int port) throws IOException {
     return systemFactory.createSocket(host, port, localAddress, 0);
   }
 
-  @Override
-  public Socket createSocket(InetAddress address, int port) throws IOException {
+  @Override public Socket createSocket(InetAddress address, int port) throws IOException {
     return systemFactory.createSocket(address, port, localAddress, 0);
   }
 
-  @Override
-  public Socket createSocket(String host, int port, InetAddress localAddr, int localPort)
+  @Override public Socket createSocket(String host, int port, InetAddress localAddr, int localPort)
       throws IOException {
     return systemFactory.createSocket(host, port, localAddr, localPort);
   }

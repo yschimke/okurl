@@ -12,8 +12,7 @@ public class BasicCredentials {
     this.password = password;
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return "BasicCredentials{"
         + "user='" + user + '\''
         + "password='" + password + '\''

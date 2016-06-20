@@ -54,8 +54,7 @@ public class DnsSelector implements Dns {
     return new DnsSelector(selectedMode);
   }
 
-  @Override
-  public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+  @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
     List<InetAddress> addresses = overrides.get(hostname.toLowerCase());
 
     if (addresses != null) {

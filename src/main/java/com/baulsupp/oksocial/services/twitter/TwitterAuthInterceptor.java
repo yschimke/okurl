@@ -43,8 +43,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
     return chain.proceed(request);
   }
 
-  @Override
-  public TwitterCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
+  @Override public TwitterCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments)
       throws IOException {
     System.err.println("Authorising Twitter API");

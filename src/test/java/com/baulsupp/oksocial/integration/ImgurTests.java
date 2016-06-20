@@ -10,6 +10,7 @@ public class ImgurTests {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
+
   {
     main.outputHandler = output;
     main.credentialsStore = credentialsStore;

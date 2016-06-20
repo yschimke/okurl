@@ -37,8 +37,10 @@ import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
 import com.baulsupp.oksocial.util.InsecureTrustManager;
+import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.OkHttpResponseFuture;
 import com.baulsupp.oksocial.util.OpenSCUtil;
+import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import com.google.common.collect.Lists;
@@ -62,11 +64,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -79,11 +78,9 @@ import okhttp3.Call;
 import okhttp3.Dns;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.framed.Http2;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.util.Util.optionalStream;
@@ -122,10 +119,10 @@ public class Main extends HelpOption implements Runnable {
   public String userAgent = NAME + "/" + versionString();
 
   @Option(name = "--connect-timeout", description = "Maximum time allowed for connection (seconds)")
-  public int connectTimeout = DEFAULT_TIMEOUT;
+  public Integer connectTimeout;
 
   @Option(name = "--read-timeout", description = "Maximum time allowed for reading data (seconds)")
-  public int readTimeout = DEFAULT_TIMEOUT;
+  public Integer readTimeout;
 
   @Option(name = {"-L", "--location"}, description = "Follow redirects")
   public boolean followRedirects = false;
@@ -218,9 +215,12 @@ public class Main extends HelpOption implements Runnable {
     return Util.versionString("/oksocial-version.properties");
   }
 
-  @Override
-  public void run() {
-    configureLogging();
+  @Override public void run() {
+    LoggingUtil.configureLogging(debug, showHttp2Frames);
+
+    if (outputHandler == null) {
+      outputHandler = buildHandler();
+    }
 
     if (showHelpIfRequested()) {
       return;
@@ -229,7 +229,6 @@ public class Main extends HelpOption implements Runnable {
     try {
       if (version) {
         System.out.println(NAME + " " + versionString());
-        System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
         return;
       }
 
@@ -238,10 +237,6 @@ public class Main extends HelpOption implements Runnable {
       }
 
       serviceInterceptor = new ServiceInterceptor(credentialsStore);
-
-      if (outputHandler == null) {
-        outputHandler = buildHandler();
-      }
 
       if (showCredentials) {
         showCredentials();
@@ -260,7 +255,7 @@ public class Main extends HelpOption implements Runnable {
 
       executeRequests(outputHandler);
     } catch (Exception e) {
-      outputHandler.showError(e);
+      outputHandler.showError("unknown error", e);
     } finally {
       closeClients();
     }
@@ -304,7 +299,7 @@ public class Main extends HelpOption implements Runnable {
     } else if (rawOutput) {
       return new DownloadHandler(new File("-"));
     } else {
-      return new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders);
+      return new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders, debug);
     }
   }
 
@@ -338,7 +333,7 @@ public class Main extends HelpOption implements Runnable {
           outputHandler.showOutput(response);
         } catch (ExecutionException ee) {
           // TODO allow setting failure/cancel strategy
-          outputHandler.showError(ee.getCause());
+          outputHandler.showError("request failed", ee.getCause());
           failed = true;
         }
       }
@@ -351,7 +346,7 @@ public class Main extends HelpOption implements Runnable {
     for (Request request : requests) {
       logger.log(Level.FINE, "url " + request.url());
 
-      if (requests.size() > 1) {
+      if (requests.size() > 1 && !debug) {
         System.err.println(request.url());
       }
 
@@ -368,8 +363,7 @@ public class Main extends HelpOption implements Runnable {
     return client;
   }
 
-  private ShellCommand getShellCommand()
-      throws Exception {
+  private ShellCommand getShellCommand() throws Exception {
     String commandName = getCommandName();
 
     return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
@@ -457,13 +451,47 @@ public class Main extends HelpOption implements Runnable {
   public OkHttpClient.Builder createClientBuilder() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder.followSslRedirects(followRedirects);
-    if (connectTimeout != DEFAULT_TIMEOUT) {
+    if (connectTimeout != null) {
       builder.connectTimeout(connectTimeout, SECONDS);
     }
-    if (readTimeout != DEFAULT_TIMEOUT) {
+    if (readTimeout != null) {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
+    Dns dns = DnsSelector.byName(ipmode);
+    if (resolve != null) {
+      dns = DnsOverride.build(dns, resolve);
+    }
+    builder.dns(dns);
+
+    if (networkInterface != null) {
+      builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
+    }
+
+    configureTls(builder);
+
+    if (cacheDirectory != null) {
+      builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
+    }
+
+    configureApiInterceptors(builder);
+
+    if (debug) {
+      builder.networkInterceptors().add(new HttpLoggingInterceptor(s -> logger.info(s)));
+    }
+
+    if (socksProxy != null) {
+      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+    }
+
+    if (protocols != null) {
+      builder.protocols(ProtocolUtil.parseProtocolList(protocols));
+    }
+
+    return builder;
+  }
+
+  private void configureTls(OkHttpClient.Builder builder) throws Exception {
     X509TrustManager trustManager = null;
     KeyManager[] keyManagers = null;
 
@@ -479,16 +507,6 @@ public class Main extends HelpOption implements Runnable {
     } else if (opensc) {
       char[] password = System.console().readPassword("smartcard password: ");
       keyManagers = OpenSCUtil.getKeyManagers(password);
-    }
-
-    Dns dns = DnsSelector.byName(ipmode);
-    if (resolve != null) {
-      dns = DnsOverride.build(dns, resolve);
-    }
-    builder.dns(dns);
-
-    if (networkInterface != null) {
-      builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
     }
 
     if (keyManagers != null || trustManager != null || certificatePins != null) {
@@ -507,30 +525,6 @@ public class Main extends HelpOption implements Runnable {
         builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
       }
     }
-
-    if (cacheDirectory != null) {
-      builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
-    }
-
-    configureApiInterceptors(builder);
-
-    if (debug) {
-      HttpLoggingInterceptor logging =
-          new HttpLoggingInterceptor();
-      logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-      builder.networkInterceptors().add(logging);
-    }
-
-    if (socksProxy != null) {
-      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
-    }
-
-    List<Protocol> requestProtocols = buildProtocols();
-    if (requestProtocols != null) {
-      builder.protocols(requestProtocols);
-    }
-
-    return builder;
   }
 
   private void configureApiInterceptors(OkHttpClient.Builder builder) {
@@ -542,28 +536,6 @@ public class Main extends HelpOption implements Runnable {
 
     if (curl) {
       builder.addNetworkInterceptor(new CurlInterceptor(System.err::println));
-    }
-  }
-
-  private List<Protocol> buildProtocols() {
-    if (protocols != null) {
-      List<Protocol> protocolValues = new ArrayList<>();
-
-      try {
-        for (String protocol : protocols.split(",")) {
-          protocolValues.add(Protocol.get(protocol));
-        }
-      } catch (IOException e) {
-        throw new IllegalArgumentException(e);
-      }
-
-      if (!protocolValues.contains(Protocol.HTTP_1_1)) {
-        protocolValues.add(Protocol.HTTP_1_1);
-      }
-
-      return protocolValues;
-    } else {
-      return null;
     }
   }
 
@@ -633,27 +605,5 @@ public class Main extends HelpOption implements Runnable {
         KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
     kmf.init(keystore_client, password);
     return kmf.getKeyManagers();
-  }
-
-  private void configureLogging() {
-    if (debug) {
-      ConsoleHandler handler = new ConsoleHandler();
-      handler.setLevel(Level.ALL);
-      activeLogger = Logger.getLogger("");
-      activeLogger.addHandler(handler);
-      activeLogger.setLevel(Level.ALL);
-    } else if (showHttp2Frames) {
-      activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
-      activeLogger.setLevel(Level.FINE);
-      ConsoleHandler handler = new ConsoleHandler();
-      handler.setLevel(Level.FINE);
-      handler.setFormatter(new SimpleFormatter() {
-        @Override
-        public String format(LogRecord record) {
-          return String.format("%s%n", record.getMessage());
-        }
-      });
-      activeLogger.addHandler(handler);
-    }
   }
 }

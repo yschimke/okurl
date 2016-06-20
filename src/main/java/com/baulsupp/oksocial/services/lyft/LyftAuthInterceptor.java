@@ -29,8 +29,7 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("api.lyft.com", "Lyft API", "lyft");
   }
 
-  @Override
-  public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
       throws IOException {
     Request request = chain.request();
 
@@ -48,8 +47,7 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return LyftUtil.API_HOSTS.contains(url.host());
   }
 
-  @Override
-  public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+  @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising Lyft API");
 
@@ -60,7 +58,7 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     Set<String> scopes =
         Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES);
 
-    return LyftAuthFlow.login(client, clientId, clientSecret, scopes);
+    return LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
