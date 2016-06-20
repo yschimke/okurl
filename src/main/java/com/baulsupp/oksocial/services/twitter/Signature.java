@@ -10,12 +10,14 @@ import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.FormBody;
@@ -26,19 +28,29 @@ import okio.Buffer;
 public class Signature {
   private static final Logger log = Logger.getLogger(TwitterAuthInterceptor.class.getName());
 
-  private final SecureRandom secureRandom = new SecureRandom();
+  private final Supplier<Long> random;
+  private Clock clock;
+
+  public Signature() {
+    this(Clock.systemDefaultZone(), new SecureRandom()::nextLong);
+  }
+
+  public Signature(Clock clock, Supplier<Long> random) {
+    this.clock = clock;
+    this.random = random;
+  }
 
   private String quoted(String str) {
     return "\"" + str + "\"";
   }
 
   public long generateTimestamp() {
-    long timestamp = System.currentTimeMillis();
+    long timestamp = clock.millis();
     return timestamp / 1000;
   }
 
   public String generateNonce() {
-    return Long.toString(Math.abs(secureRandom.nextLong())) + System.currentTimeMillis();
+    return Long.toString(Math.abs(random.get())) + clock.millis();
   }
 
   public String generateAuthorization(Request request, TwitterCredentials credentials) {
