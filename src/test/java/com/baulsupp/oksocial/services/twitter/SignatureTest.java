@@ -3,6 +3,9 @@ package com.baulsupp.oksocial.services.twitter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -11,19 +14,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class SignatureTest {
-  class FixedTimeTwitterAuthInterceptor extends Signature {
-    @Override public long generateTimestamp() {
-      return 1460432867L;
-    }
-
-    @Override public String generateNonce() {
-      return "67822045175727268931460435281112";
-    }
-  }
-
   @Test
   public void testInitialRequestAuth()
       throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+    Clock clock = Clock.fixed(Instant.ofEpochMilli(1460432867000L), ZoneId.of("UTC"));
+    Signature s = new Signature(clock, () -> 9L);
+
     RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),
         "oauth_callback=oob");
     Request request =
@@ -32,13 +28,12 @@ public class SignatureTest {
     TwitterCredentials credentials = new TwitterCredentials(null, "xxxxxxxxxxxxxxxxxxxxxxxxx",
         "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", null, "");
 
-    String header =
-        new FixedTimeTwitterAuthInterceptor().generateAuthorization(request, credentials);
+    String header = s.generateAuthorization(request, credentials);
 
     assertEquals(
         "OAuth oauth_consumer_key=\"xxxxxxxxxxxxxxxxxxxxxxxxx\", "
-            + "oauth_nonce=\"67822045175727268931460435281112\", "
-            + "oauth_signature=\"g6jUnrM1E6NldgYQugt%2Frh8Fq%2Fw%3D\", "
+            + "oauth_nonce=\"91460432867000\", "
+            + "oauth_signature=\"cL%2Fk1hU9rUo7%2FTIF%2BAwL5bbWhOE%3D\", "
             + "oauth_signature_method=\"HMAC-SHA1\", "
             + "oauth_timestamp=\"1460432867\", oauth_version=\"1.0\"",
         header);
