@@ -11,6 +11,8 @@ import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class LoggingTest {
   @Rule public MockWebServer server = new MockWebServer();
   private Main main = new Main();
@@ -32,5 +34,16 @@ public class LoggingTest {
     main.debug = true;
 
     main.run();
+  }
+
+  @Test public void version() throws Exception {
+    TestOutputHandler output = new TestOutputHandler();
+
+    main.outputHandler = output;
+    main.version = true;
+
+    main.run();
+
+    assertEquals(0, output.failures.size());
   }
 }

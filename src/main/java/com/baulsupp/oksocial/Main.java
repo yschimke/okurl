@@ -218,6 +218,10 @@ public class Main extends HelpOption implements Runnable {
   @Override public void run() {
     LoggingUtil.configureLogging(debug, showHttp2Frames);
 
+    if (outputHandler == null) {
+      outputHandler = buildHandler();
+    }
+
     if (showHelpIfRequested()) {
       return;
     }
@@ -225,7 +229,6 @@ public class Main extends HelpOption implements Runnable {
     try {
       if (version) {
         System.out.println(NAME + " " + versionString());
-        System.out.println("OkHttp " + Util.versionString("/okhttp-version.properties"));
         return;
       }
 
@@ -234,10 +237,6 @@ public class Main extends HelpOption implements Runnable {
       }
 
       serviceInterceptor = new ServiceInterceptor(credentialsStore);
-
-      if (outputHandler == null) {
-        outputHandler = buildHandler();
-      }
 
       if (showCredentials) {
         showCredentials();
