@@ -13,7 +13,8 @@ public class Oauth2Token {
     this.refreshToken = Optional.empty();
   }
 
-  public Oauth2Token(String accessToken, String refreshToken, String clientId, String clientSecret) {
+  public Oauth2Token(String accessToken, String refreshToken, String clientId,
+      String clientSecret) {
     this.accessToken = accessToken;
     this.refreshToken = Optional.ofNullable(refreshToken);
     this.clientId = Optional.ofNullable(clientId);
