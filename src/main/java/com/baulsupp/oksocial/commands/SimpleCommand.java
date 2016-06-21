@@ -26,7 +26,7 @@ public class SimpleCommand implements ShellCommand {
     return prefix + url;
   }
 
-  @Override public List<Request> buildRequests(OkHttpClient.Builder clientBuilder,
+  @Override public List<Request> buildRequests(OkHttpClient clientBuilder,
       Request.Builder requestBuilder, List<String> urls) {
     try {
       return urls.stream().map(u -> requestBuilder.url(mapUrl(u)).build()).collect(

@@ -28,18 +28,16 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook");
   }
 
-  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
       throws IOException {
     Request request = chain.request();
 
-    if (credentials.isPresent()) {
-      String token = credentials.get().accessToken;
+    String token = credentials.accessToken;
 
-      HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
+    HttpUrl newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build();
 
-      request =
-          request.newBuilder().url(newUrl).build();
-    }
+    request =
+        request.newBuilder().url(newUrl).build();
 
     return chain.proceed(request);
   }

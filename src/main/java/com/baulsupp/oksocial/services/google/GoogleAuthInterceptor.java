@@ -29,16 +29,14 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("api.google.com", "Google API", "google");
   }
 
-  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
       throws IOException {
     Request request = chain.request();
 
-    if (credentials.isPresent()) {
-      String token = credentials.get().accessToken;
+    String token = credentials.accessToken;
 
-      request =
-          request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
-    }
+    request =
+        request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
 
     return chain.proceed(request);
   }

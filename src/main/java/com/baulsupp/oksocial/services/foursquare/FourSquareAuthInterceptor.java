@@ -26,21 +26,19 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq");
   }
 
-  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
       throws IOException {
     Request request = chain.request();
 
-    if (credentials.isPresent()) {
-      String token = credentials.get().accessToken;
+    String token = credentials.accessToken;
 
-      HttpUrl.Builder urlBuilder = request.url().newBuilder();
-      urlBuilder.addQueryParameter("oauth_token", token);
-      if (request.url().queryParameter("v") == null) {
-        urlBuilder.addQueryParameter("v", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
-      }
-
-      request = request.newBuilder().url(urlBuilder.build()).build();
+    HttpUrl.Builder urlBuilder = request.url().newBuilder();
+    urlBuilder.addQueryParameter("oauth_token", token);
+    if (request.url().queryParameter("v") == null) {
+      urlBuilder.addQueryParameter("v", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
     }
+
+    request = request.newBuilder().url(urlBuilder.build()).build();
 
     return chain.proceed(request);
   }

@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -22,16 +21,14 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
         "stackexchange");
   }
 
-  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
       throws IOException {
     Request request = chain.request();
 
-    if (credentials.isPresent()) {
-      String token = credentials.get().accessToken;
+    String token = credentials.accessToken;
 
-      request =
-          request.newBuilder().addHeader("Authorization", "Token " + token).build();
-    }
+    request =
+        request.newBuilder().addHeader("Authorization", "Token " + token).build();
 
     return chain.proceed(request);
   }

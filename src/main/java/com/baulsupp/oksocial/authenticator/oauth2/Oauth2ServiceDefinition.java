@@ -28,14 +28,26 @@ public class Oauth2ServiceDefinition implements ServiceDefinition<Oauth2Token> {
   public Oauth2Token parseCredentialsString(String s) {
     String[] parts = s.split(":");
 
-    if (parts.length == 1) {
-      return new Oauth2Token(s);
+    if (parts.length < 4) {
+      return new Oauth2Token(parts[0]);
     } else {
-      return new Oauth2Token(parts[0], parts[1]);
+      return new Oauth2Token(parts[0], parts[1], parts[2], parts[3]);
     }
   }
 
   public String formatCredentialsString(Oauth2Token credentials) {
-    return credentials.accessToken + (credentials.refreshToken.map(s -> ":" + s).orElse(""));
+    if (credentials.refreshToken.isPresent()
+        && credentials.clientId.isPresent()
+        && credentials.clientSecret.isPresent()) {
+      return credentials.accessToken
+          + ":"
+          + credentials.refreshToken.get()
+          + ":"
+          + credentials.clientId.get()
+          + ":"
+          + credentials.clientSecret.get();
+    } else {
+      return credentials.accessToken;
+    }
   }
 }

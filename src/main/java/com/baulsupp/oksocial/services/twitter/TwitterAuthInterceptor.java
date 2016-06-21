@@ -31,14 +31,12 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override
-  public Response intercept(Interceptor.Chain chain, Optional<TwitterCredentials> credentials)
+  public Response intercept(Interceptor.Chain chain, TwitterCredentials credentials)
       throws IOException {
     Request request = chain.request();
 
-    if (credentials.isPresent()) {
-      String authHeader = new Signature().generateAuthorization(request, credentials.get());
-      request = request.newBuilder().addHeader("Authorization", authHeader).build();
-    }
+    String authHeader = new Signature().generateAuthorization(request, credentials);
+    request = request.newBuilder().addHeader("Authorization", authHeader).build();
 
     return chain.proceed(request);
   }

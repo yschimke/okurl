@@ -9,13 +9,16 @@ import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 public class ServiceInterceptor implements Interceptor {
   private final CredentialsStore credentialsStore;
   private List<AuthInterceptor<?>> services = new ArrayList<>();
+  private OkHttpClient authClient = null;
 
-  public ServiceInterceptor(CredentialsStore credentialsStore) {
+  public ServiceInterceptor(OkHttpClient authClient, CredentialsStore credentialsStore) {
+    this.authClient = authClient;
     this.credentialsStore = credentialsStore;
     ServiceLoader.load(AuthInterceptor.class, AuthInterceptor.class.getClassLoader())
         .iterator().forEachRemaining(services::add);
@@ -35,7 +38,23 @@ public class ServiceInterceptor implements Interceptor {
     Optional<T> credentials =
         credentialsStore.readDefaultCredentials(interceptor.serviceDefinition());
 
-    return interceptor.intercept(chain, credentials);
+    if (credentials.isPresent()) {
+      Response result = interceptor.intercept(chain, credentials.get());
+
+      if (result.code() >= 400 && result.code() < 500) {
+        if (interceptor.canRenew(result, credentials.get())) {
+          Optional<T> newCredentials = interceptor.renew(authClient, credentials.get());
+          if (newCredentials.isPresent()) {
+            credentialsStore.storeCredentials(newCredentials.get(),
+                interceptor.serviceDefinition());
+          }
+        }
+      }
+
+      return result;
+    } else {
+      return chain.proceed(chain.request());
+    }
   }
 
   public Iterable<AuthInterceptor<?>> services() {

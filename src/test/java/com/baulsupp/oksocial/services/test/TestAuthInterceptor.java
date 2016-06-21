@@ -7,7 +7,6 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -18,7 +17,7 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return url.host().equals("localhost");
   }
 
-  @Override public Response intercept(Interceptor.Chain chain, Optional<Oauth2Token> credentials)
+  @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
       throws IOException {
     return chain.proceed(chain.request());
   }

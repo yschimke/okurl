@@ -203,9 +203,12 @@ public class Main extends HelpOption implements Runnable {
 
   private ServiceInterceptor serviceInterceptor = null;
 
-  private CommandRegistry commandRegistry = new CommandRegistry();
+  private OkHttpClient authClient = null;
+  private OkHttpClient client = null;
 
   private List<OkHttpClient> clients = Lists.newArrayList();
+
+  private CommandRegistry commandRegistry = new CommandRegistry();
 
   public OutputHandler outputHandler = null;
 
@@ -236,7 +239,13 @@ public class Main extends HelpOption implements Runnable {
         credentialsStore = createCredentialsStore();
       }
 
-      serviceInterceptor = new ServiceInterceptor(credentialsStore);
+      authClient = build(createClientBuilder());
+
+      serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
+
+      OkHttpClient.Builder clientBuilder = authClient.newBuilder();
+      clientBuilder.networkInterceptors().add(0, serviceInterceptor);
+      client = clientBuilder.build();
 
       if (showCredentials) {
         showCredentials();
@@ -289,7 +298,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     PrintCredentials printCredentials =
-        new PrintCredentials(build(createClientBuilder()), credentialsStore);
+        new PrintCredentials(client, credentialsStore);
     printCredentials.printKnownCredentials(createRequestBuilder(), services);
   }
 
@@ -304,19 +313,15 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void executeRequests(OutputHandler outputHandler) throws Exception {
-    OkHttpClient.Builder clientBuilder = createClientBuilder();
-
     ShellCommand command = getShellCommand();
 
     Request.Builder requestBuilder = createRequestBuilder();
 
-    List<Request> requests = command.buildRequests(clientBuilder, requestBuilder, arguments);
+    List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
 
     if (requests.isEmpty()) {
       throw new UsageException("no urls specified");
     }
-
-    OkHttpClient client = build(clientBuilder);
 
     List<Future<Response>> responseFutures = enqueueRequests(requests, client);
     processResponses(outputHandler, responseFutures);
@@ -431,13 +436,11 @@ public class Main extends HelpOption implements Runnable {
 
   private <T> void authRequest(AuthInterceptor<T> auth, List<String> authArguments)
       throws Exception {
-    OkHttpClient client = build(createClientBuilder());
-
     OkHttpClient.Builder b = client.newBuilder();
     b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
-    client = build(b);
+    OkHttpClient authClient = build(b);
 
-    T credentials = auth.authorize(client, outputHandler, authArguments);
+    T credentials = auth.authorize(authClient, outputHandler, authArguments);
 
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
 
@@ -474,7 +477,13 @@ public class Main extends HelpOption implements Runnable {
       builder.cache(new Cache(cacheDirectory, 64 * 1024 * 1024));
     }
 
-    configureApiInterceptors(builder);
+    // TODO move behind AuthInterceptor API
+    builder.addNetworkInterceptor(new TwitterCachingInterceptor());
+    builder.addNetworkInterceptor(new TwitterDeflatedResponseInterceptor());
+
+    if (curl) {
+      builder.addNetworkInterceptor(new CurlInterceptor(System.err::println));
+    }
 
     if (debug) {
       builder.networkInterceptors().add(new HttpLoggingInterceptor(s -> logger.info(s)));
@@ -524,18 +533,6 @@ public class Main extends HelpOption implements Runnable {
       if (certificatePins != null) {
         builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
       }
-    }
-  }
-
-  private void configureApiInterceptors(OkHttpClient.Builder builder) {
-    builder.addNetworkInterceptor(new TwitterCachingInterceptor());
-
-    builder.addNetworkInterceptor(serviceInterceptor);
-
-    builder.addNetworkInterceptor(new TwitterDeflatedResponseInterceptor());
-
-    if (curl) {
-      builder.addNetworkInterceptor(new CurlInterceptor(System.err::println));
     }
   }
 
