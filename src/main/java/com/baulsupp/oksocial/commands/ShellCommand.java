@@ -8,7 +8,7 @@ import okhttp3.Request;
 public interface ShellCommand {
   String name();
 
-  List<Request> buildRequests(OkHttpClient.Builder clientBuilder,
+  List<Request> buildRequests(OkHttpClient clientBuilder,
       Request.Builder requestBuilder, List<String> arguments) throws Exception;
 
   default Optional<String> authenticator() {

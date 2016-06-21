@@ -25,7 +25,7 @@ public class JavascriptApiCommand implements ShellCommand {
     return "okapi";
   }
 
-  @Override public List<Request> buildRequests(OkHttpClient.Builder clientBuilder,
+  @Override public List<Request> buildRequests(OkHttpClient client,
       Request.Builder requestBuilder, List<String> arguments) throws Exception {
     boolean multiple = false;
 
@@ -43,8 +43,8 @@ public class JavascriptApiCommand implements ShellCommand {
 
     engine.eval("param = Java.type(\"com.baulsupp.oksocial.jjs.OkShell\").readParam;");
 
-    engine.put("client", clientBuilder.build());
-    engine.put("clientBuilder", clientBuilder);
+    engine.put("client", client);
+    engine.put("clientBuilder", client.newBuilder());
     engine.put("requestBuilder", requestBuilder);
 
     String lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect(

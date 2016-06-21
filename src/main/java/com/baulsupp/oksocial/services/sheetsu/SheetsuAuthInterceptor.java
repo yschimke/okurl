@@ -7,7 +7,6 @@ import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -21,18 +20,14 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
   }
 
   @Override
-  public Response intercept(Interceptor.Chain chain, Optional<BasicCredentials> credentials)
+  public Response intercept(Interceptor.Chain chain, BasicCredentials credentials)
       throws IOException {
     Request request = chain.request();
 
-    if (credentials.isPresent()) {
-      BasicCredentials token = credentials.get();
-
-      request =
-          request.newBuilder()
-              .addHeader("Authorization", Credentials.basic(token.user, token.password))
-              .build();
-    }
+    request =
+        request.newBuilder()
+            .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+            .build();
 
     return chain.proceed(request);
   }

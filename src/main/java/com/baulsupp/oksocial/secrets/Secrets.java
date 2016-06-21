@@ -34,22 +34,23 @@ public class Secrets {
   public static Secrets loadSecrets() {
     Properties p = new Properties();
 
-    try {
-      Path configFile =
-          FileSystems.getDefault().getPath(System.getenv("HOME"), ".oksocial-secrets.properties");
-
-      InputStream is;
-      if (Files.exists(configFile)) {
-        is = Files.newInputStream(configFile);
-      } else {
-        is = Secrets.class.getResourceAsStream("/oksocial-secrets.properties");
-      }
-
+    try (InputStream is = Secrets.class.getResourceAsStream("/oksocial-secrets.properties")) {
       if (is != null) {
         p.load(is);
       }
     } catch (IOException e) {
       e.printStackTrace();
+    }
+
+    Path configFile =
+        FileSystems.getDefault().getPath(System.getenv("HOME"), ".oksocial-secrets.properties");
+
+    if (Files.exists(configFile)) {
+      try (InputStream is = Files.newInputStream(configFile)) {
+        p.load(is);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     Secrets secrets = new Secrets(new HashMap(p));

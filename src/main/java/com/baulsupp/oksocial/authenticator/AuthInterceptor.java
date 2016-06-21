@@ -20,7 +20,7 @@ public interface AuthInterceptor<T> {
 
   boolean supportsUrl(HttpUrl url);
 
-  Response intercept(Interceptor.Chain chain, Optional<T> credentials) throws IOException;
+  Response intercept(Interceptor.Chain chain, T credentials) throws IOException;
 
   T authorize(OkHttpClient client, OutputHandler outputHandler, List<String> authArguments)
       throws IOException;
@@ -30,5 +30,13 @@ public interface AuthInterceptor<T> {
   default Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, T credentials) throws IOException {
     return CompletableFuture.completedFuture(Optional.empty());
+  }
+
+  default boolean canRenew(Response result, T credentials) {
+    return false;
+  }
+
+  default Optional<T> renew(OkHttpClient client, T credentials) throws IOException {
+    return Optional.empty();
   }
 }
