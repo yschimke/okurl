@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.commands.ShellCommand;
+import com.baulsupp.oksocial.util.UsageException;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import java.nio.charset.StandardCharsets;
@@ -41,7 +42,7 @@ public class JavascriptApiCommand implements ShellCommand {
     ScriptEngine engine =
         engineManager.getEngineByName("nashorn");
 
-    engine.eval("param = Java.type(\"com.baulsupp.oksocial.jjs.OkShell\").readParam;");
+    eval(engine, "param = Java.type(\"com.baulsupp.oksocial.jjs.OkShell\").readParam;");
 
     engine.put("client", client);
     engine.put("clientBuilder", client.newBuilder());
@@ -57,7 +58,7 @@ public class JavascriptApiCommand implements ShellCommand {
 
       engine.put("arguments", argumentsJs);
 
-      Object result = engine.eval(lines);
+      Object result = eval(engine, lines);
 
       return toRequestList(requestBuilder, result);
     } else {
@@ -74,6 +75,14 @@ public class JavascriptApiCommand implements ShellCommand {
     try {
       return engine.eval(script);
     } catch (ScriptException e) {
+      Throwable cause = e.getCause();
+      while (cause != null) {
+        if (cause instanceof UsageException) {
+          throw (UsageException) cause;
+        }
+        cause = cause.getCause();
+      }
+
       throw Throwables.propagate(e);
     }
   }
