@@ -6,5 +6,6 @@ com.baulsupp.oksocial.services.lyft.LyftAuthInterceptor
 com.baulsupp.oksocial.services.sheetsu.SheetsuAuthInterceptor
 com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor
+com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
 com.baulsupp.oksocial.services.twitter.TwitterAuthInterceptor
 com.baulsupp.oksocial.services.uber.UberAuthInterceptor
