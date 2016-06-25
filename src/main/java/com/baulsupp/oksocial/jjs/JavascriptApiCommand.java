@@ -1,5 +1,8 @@
 package com.baulsupp.oksocial.jjs;
 
+import com.baulsupp.oksocial.Main;
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.util.UsageException;
 import com.google.common.base.Throwables;
@@ -10,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -18,12 +23,18 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-public class JavascriptApiCommand implements ShellCommand {
+public class JavascriptApiCommand implements ShellCommand, MainAware {
+  private Main main;
+
   public JavascriptApiCommand() {
   }
 
   @Override public String name() {
     return "okapi";
+  }
+
+  @Override public void setMain(Main main) {
+    this.main = main;
   }
 
   @Override public List<Request> buildRequests(OkHttpClient client,
@@ -47,6 +58,7 @@ public class JavascriptApiCommand implements ShellCommand {
     engine.put("client", client);
     engine.put("clientBuilder", client.newBuilder());
     engine.put("requestBuilder", requestBuilder);
+    engine.put("credentials", (Function<String, Object>) this::credentials);
 
     String lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect(
         Collectors.joining("\n"));
@@ -69,6 +81,21 @@ public class JavascriptApiCommand implements ShellCommand {
         return toRequest(requestBuilder, result);
       }).collect(Collectors.toList());
     }
+  }
+
+  public Object credentials(String name) {
+    if (main != null) {
+      Optional<AuthInterceptor<?>> interceptor = main.interceptorByName(name);
+
+      if (interceptor.isPresent()) {
+        Optional<?> credentials =
+            main.credentialsStore.readDefaultCredentials(interceptor.get().serviceDefinition());
+
+        return credentials.orElse(null);
+      }
+    }
+
+    return null;
   }
 
   public Object eval(ScriptEngine engine, String script) {

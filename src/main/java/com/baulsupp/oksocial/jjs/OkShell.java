@@ -1,9 +1,11 @@
 package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.Main;
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
 import com.google.common.base.Throwables;
 import java.io.IOException;
+import java.util.Optional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import okhttp3.Call;
@@ -15,9 +17,10 @@ public class OkShell {
   public final OkHttpClient client;
   public final Request.Builder requestBuilder;
   private final ScriptEngine engine;
+  private final Main main;
 
   private OkShell() throws Exception {
-    Main main = new Main();
+    main = new Main();
     //main.debug = true;
     client = main.createClientBuilder().build();
     requestBuilder = main.createRequestBuilder();
