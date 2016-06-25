@@ -1,9 +1,11 @@
 package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.Main;
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
 import com.google.common.base.Throwables;
 import java.io.IOException;
+import java.util.Optional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import okhttp3.Call;
@@ -19,8 +21,8 @@ public class OkShell {
 
   private OkShell() throws Exception {
     main = new Main();
-    //main.debug = true;
-    client = main.createClientBuilder().build();
+    main.initialise();
+    client = main.getClient();
     requestBuilder = main.createRequestBuilder();
 
     ScriptEngineManager m = new ScriptEngineManager();
@@ -45,8 +47,12 @@ public class OkShell {
   }
 
   public String query(String url) {
+    return execute(requestBuilder.url(url).build());
+  }
+
+  public String execute(Request request) {
     try {
-      Call call = client.newCall(requestBuilder.url(url).build());
+      Call call = client.newCall(request);
 
       Response response = call.execute();
 
@@ -64,6 +70,21 @@ public class OkShell {
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  public Object credentials(String name) {
+    if (main != null) {
+      Optional<AuthInterceptor<?>> interceptor = main.interceptorByName(name);
+
+      if (interceptor.isPresent()) {
+        Optional<?> credentials =
+            main.credentialsStore.readDefaultCredentials(interceptor.get().serviceDefinition());
+
+        return credentials.orElse(null);
+      }
+    }
+
+    return null;
   }
 
   private void close() {
