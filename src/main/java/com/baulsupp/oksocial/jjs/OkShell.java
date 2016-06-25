@@ -15,9 +15,10 @@ public class OkShell {
   public final OkHttpClient client;
   public final Request.Builder requestBuilder;
   private final ScriptEngine engine;
+  private final Main main;
 
   private OkShell() throws Exception {
-    Main main = new Main();
+    main = new Main();
     //main.debug = true;
     client = main.createClientBuilder().build();
     requestBuilder = main.createRequestBuilder();

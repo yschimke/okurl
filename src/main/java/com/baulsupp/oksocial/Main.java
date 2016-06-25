@@ -19,6 +19,7 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
+import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
@@ -315,6 +316,10 @@ public class Main extends HelpOption implements Runnable {
   private void executeRequests(OutputHandler outputHandler) throws Exception {
     ShellCommand command = getShellCommand();
 
+    if (command instanceof MainAware) {
+      ((MainAware) command).setMain(this);
+    }
+
     Request.Builder requestBuilder = createRequestBuilder();
 
     List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
@@ -398,7 +403,7 @@ public class Main extends HelpOption implements Runnable {
     List<String> authArguments = Lists.newArrayList(arguments);
 
     Optional<AuthInterceptor<?>> auth =
-        command.authenticator().flatMap(authName -> serviceInterceptor.getByName(authName));
+        command.authenticator().flatMap(authName -> interceptorByName(authName));
 
     if (!auth.isPresent() && !authArguments.isEmpty()) {
       String name = authArguments.remove(0);
@@ -419,8 +424,12 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
+  public Optional<AuthInterceptor<?>> interceptorByName(String authName) {
+    return serviceInterceptor.getByName(authName);
+  }
+
   private Optional<AuthInterceptor<?>> findAuthInterceptor(String name) {
-    Optional<AuthInterceptor<?>> auth = serviceInterceptor.getByName(name);
+    Optional<AuthInterceptor<?>> auth = interceptorByName(name);
 
     if (!auth.isPresent()) {
       auth = serviceInterceptor.getByUrl(name);
