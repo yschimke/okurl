@@ -1,0 +1,32 @@
+#!/usr/bin/env okshell
+
+load("classpath:oksocial.js");
+
+if (arguments.length < 2) {
+  usage("usage: twiliosend +1xxxxx message to send");
+}
+
+var account = credentials("twilio");
+
+if (!account) {
+  usage("run 'oksocial --authorize twilio' first");
+}
+
+var a = query("https://api.twilio.com/2010-04-01/Accounts/${account.user}/IncomingPhoneNumbers.json")
+
+var to = arguments[0];
+var message = arguments.slice(1).join(" ");
+var from = a.incoming_phone_numbers[0].phone_number;
+
+var FormBodyBuilder = Java.type("okhttp3.FormBody.Builder");
+var formBodyBuilder = new FormBodyBuilder();
+formBodyBuilder.add("To", to);
+formBodyBuilder.add("Body", message);
+formBodyBuilder.add("From", from);
+
+requestBuilder.url("https://api.twilio.com/2010-04-01/Accounts/${account.user}/Messages.json");
+requestBuilder.method("POST", formBodyBuilder.build());
+
+request = requestBuilder.build();
+
+execute(request);

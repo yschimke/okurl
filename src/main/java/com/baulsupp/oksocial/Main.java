@@ -236,17 +236,7 @@ public class Main extends HelpOption implements Runnable {
         return;
       }
 
-      if (credentialsStore == null) {
-        credentialsStore = createCredentialsStore();
-      }
-
-      authClient = build(createClientBuilder());
-
-      serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
-
-      OkHttpClient.Builder clientBuilder = authClient.newBuilder();
-      clientBuilder.networkInterceptors().add(0, serviceInterceptor);
-      client = clientBuilder.build();
+      initialise();
 
       if (showCredentials) {
         showCredentials();
@@ -269,6 +259,24 @@ public class Main extends HelpOption implements Runnable {
     } finally {
       closeClients();
     }
+  }
+
+  public void initialise() throws Exception {
+    if (credentialsStore == null) {
+      credentialsStore = createCredentialsStore();
+    }
+
+    authClient = build(createClientBuilder());
+
+    serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
+
+    OkHttpClient.Builder clientBuilder = authClient.newBuilder();
+    clientBuilder.networkInterceptors().add(0, serviceInterceptor);
+    client = clientBuilder.build();
+  }
+
+  public OkHttpClient getClient() {
+    return client;
   }
 
   private CredentialsStore createCredentialsStore() {

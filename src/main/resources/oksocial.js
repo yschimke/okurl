@@ -8,12 +8,21 @@ var query = function(url) {
   return JSON.parse(okshell.query(url));
 }
 
+var execute = function(request) {
+  // TODO the response format to decide how to parse
+  return JSON.parse(okshell.execute(request));
+}
+
 var location = function() {
   var a = Java.type("com.baulsupp.oksocial.location.Location");
   return a.read().get();
 }
 
 var readParam = Java.type("com.baulsupp.oksocial.jjs.OkShell").readParam;
+
+var credentials = function(s) {
+  return okshell.credentials(s);
+}
 
 var UsageException = Java.type("com.baulsupp.oksocial.util.UsageException");
 
