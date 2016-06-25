@@ -5,7 +5,7 @@
 
   <groupId>com.baulsupp</groupId>
   <artifactId>oksocial</artifactId>
-  <version>1.0.13-SNAPSHOT</version>
+  <version>1.0.13</version>
   <name>OkHttp Social Authentication</name>
   <description>OkHttp Social Authentication - library and command line</description>
   <url>https://github.com/yschimke/oksocial</url>
@@ -26,7 +26,7 @@
     <url>https://github.com/yschimke/oksocial/</url>
     <connection>scm:git:https://github.com/yschimke/oksocial.git</connection>
     <developerConnection>scm:git:https://github.com/yschimke/oksocial.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>oksocial-1.0.13</tag>
   </scm>
 
   <issueManagement>
