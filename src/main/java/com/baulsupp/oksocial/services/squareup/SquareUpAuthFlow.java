@@ -10,11 +10,12 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+
+import static java.util.stream.Collectors.joining;
 
 public class SquareUpAuthFlow {
 
@@ -28,7 +29,7 @@ public class SquareUpAuthFlow {
           + "?client_id=" + clientId
           + "&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
           + "&response_type=code"
-          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")),
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(joining(" ")),
           "UTF-8");
 
       outputHandler.openLink(loginUrl);

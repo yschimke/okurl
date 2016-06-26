@@ -7,6 +7,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import okhttp3.HttpUrl;
@@ -47,5 +48,9 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Secrets.promptArray("Scopes", "squareup.scopes", SquareUpUtil.ALL_PERMISSIONS);
 
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return SquareUpUtil.API_HOSTS;
   }
 }

@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
@@ -46,5 +47,9 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
         Secrets.prompt("Sheetsu API Password", "sheetsu.apiSecret", "", true);
 
     return new BasicCredentials(user, password);
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return SheetsuUtil.API_HOSTS;
   }
 }

@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +16,8 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+
+import static java.util.stream.Collectors.joining;
 
 public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
   private int port = 3000;
@@ -112,9 +113,8 @@ public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
     String params = request.getParameterMap()
         .entrySet()
         .stream()
-        .map(e -> e.getKey() + " = " + Arrays.asList(e.getValue())
-            .stream()
-            .collect(Collectors.joining(", "))).collect(Collectors.joining("<br/>"));
+        .map(e -> e.getKey() + " = " + Arrays.asList(e.getValue()).stream().collect(joining(", ")))
+        .collect(joining("<br/>"));
     String response = "<html>\n"
         + "<body background=\"http://adsoftheworld.com/sites/default/files/fail_moon_aotw.jpg\">\n"
         + "<h1>Authorization Error!</h1>\n"

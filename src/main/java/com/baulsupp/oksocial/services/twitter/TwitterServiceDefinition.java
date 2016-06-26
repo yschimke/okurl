@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.twitter;
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class TwitterServiceDefinition implements ServiceDefinition<TwitterCredentials> {
   @Override public String apiHost() {
@@ -29,8 +29,12 @@ public class TwitterServiceDefinition implements ServiceDefinition<TwitterCreden
   }
 
   public String formatCredentialsString(TwitterCredentials credentials) {
-    return Joiner.on(",")
-        .join(credentials.username, credentials.consumerKey, credentials.consumerSecret,
-            credentials.token, credentials.secret);
+    return new StringJoiner(",")
+        .add(credentials.username)
+        .add(credentials.consumerKey)
+        .add(credentials.consumerSecret)
+        .add(credentials.token)
+        .add(credentials.secret)
+        .toString();
   }
 }

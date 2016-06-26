@@ -8,6 +8,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,5 +65,9 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
     List<Map<String, Object>> accounts = (List<Map<String, Object>>) map.get("accounts");
 
     return (String) accounts.get(0).get("friendly_name");
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return TwilioUtil.API_HOSTS;
   }
 }

@@ -32,6 +32,7 @@ import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.security.CertificatePin;
+import com.baulsupp.oksocial.services.UrlCompleter;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
@@ -199,6 +200,12 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"-s", "--set"}, description = "Token Set e.g. work")
   public String tokenSet = null;
 
+  @Option(name = {"--serviceNames"}, description = "Service Names")
+  public boolean serviceNames = false;
+
+  @Option(name = {"--urlCompletion"}, description = "URL Completion")
+  public String urlCompletion;
+
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
@@ -245,6 +252,18 @@ public class Main extends HelpOption implements Runnable {
 
       if (aliasNames) {
         printAliasNames();
+        return;
+      }
+
+      if (serviceNames) {
+        System.out.println(serviceInterceptor.names().stream().collect(joining(" ")));
+        return;
+      }
+
+      if (urlCompletion != null) {
+        System.out.println(new UrlCompleter(serviceInterceptor).urlList(urlCompletion)
+            .stream()
+            .collect(joining(" ")));
         return;
       }
 
@@ -421,8 +440,9 @@ public class Main extends HelpOption implements Runnable {
 
     if (!auth.isPresent()) {
       throw new UsageException(
-          "unable to find authenticator. Specify name from " +
-              serviceInterceptor.names().stream().collect(joining(", ")));
+          "unable to find authenticator. Specify name from " + serviceInterceptor.names()
+              .stream()
+              .collect(joining(", ")));
     }
 
     if (token != null) {
