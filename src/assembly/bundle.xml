@@ -31,6 +31,10 @@
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
+      <directory>bash</directory>
+      <outputDirectory>bash</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/alpn</directory>
       <outputDirectory>alpn</outputDirectory>
     </fileSet>
