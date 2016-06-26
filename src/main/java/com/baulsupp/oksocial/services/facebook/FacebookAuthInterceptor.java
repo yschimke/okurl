@@ -10,6 +10,7 @@ import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,5 +73,9 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(apiRequest("/me", requestBuilder), this::extract,
         apiRequest("/app", requestBuilder), this::extract).validate(client);
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return FacebookUtil.API_HOSTS;
   }
 }

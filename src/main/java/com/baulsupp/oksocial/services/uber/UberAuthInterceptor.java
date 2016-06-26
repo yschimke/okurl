@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
@@ -58,5 +59,9 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new JsonCredentialsValidator(
         UberUtil.apiRequest("/v1/me", requestBuilder),
         map -> map.get("first_name") + " " + map.get("last_name")).validate(client);
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return UberUtil.API_HOSTS;
   }
 }

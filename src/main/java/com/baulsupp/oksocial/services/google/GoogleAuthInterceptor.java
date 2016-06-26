@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -66,5 +67,9 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new JsonCredentialsValidator(
         requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
         fieldExtractor("name")).validate(client);
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return GoogleUtil.API_HOSTS;
   }
 }

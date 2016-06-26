@@ -3,6 +3,8 @@ package com.baulsupp.oksocial.authenticator;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,5 +40,9 @@ public interface AuthInterceptor<T> {
 
   default Optional<T> renew(OkHttpClient client, T credentials) throws IOException {
     return Optional.empty();
+  }
+
+  default Collection<? extends String> completions(String url, boolean hosts) {
+    return Collections.emptyList();
   }
 }

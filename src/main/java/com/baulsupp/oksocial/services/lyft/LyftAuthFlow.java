@@ -8,12 +8,13 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+
+import static java.util.stream.Collectors.joining;
 
 public class LyftAuthFlow {
   public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
@@ -21,7 +22,7 @@ public class LyftAuthFlow {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
       String scopesString =
-          URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")), "UTF-8");
+          URLEncoder.encode(scopes.stream().collect(joining(" ")), "UTF-8");
 
       String loginUrl = "https://api.lyft.com/oauth/authorize"
           + "?client_id=" + clientId

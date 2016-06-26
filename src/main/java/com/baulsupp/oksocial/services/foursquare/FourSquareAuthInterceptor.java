@@ -11,6 +11,7 @@ import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,5 +71,9 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         (Map<String, Object>) ((Map<String, Object>) map.get("response")).get("user");
 
     return user.get("firstName") + " " + user.get("lastName");
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return FourSquareUtil.API_HOSTS;
   }
 }

@@ -10,6 +10,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,5 +96,9 @@ public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return Optional.of(new Oauth2Token((String) responseMap.get("access_token"),
         (String) responseMap.get("refresh_token"), credentials.clientId.get(),
         credentials.clientSecret.get()));
+  }
+
+  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+    return ImgurUtil.API_HOSTS;
   }
 }

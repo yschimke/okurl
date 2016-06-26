@@ -23,6 +23,8 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import static java.util.stream.Collectors.joining;
+
 public class JavascriptApiCommand implements ShellCommand, MainAware {
   private Main main;
 
@@ -60,8 +62,7 @@ public class JavascriptApiCommand implements ShellCommand, MainAware {
     engine.put("requestBuilder", requestBuilder);
     engine.put("credentials", (Function<String, Object>) this::credentials);
 
-    String lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect(
-        Collectors.joining("\n"));
+    String lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect(joining("\n"));
 
     if (multiple) {
       // TODO how to do this without engine.eval

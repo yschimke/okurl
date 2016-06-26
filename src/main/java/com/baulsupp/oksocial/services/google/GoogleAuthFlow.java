@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+
+import static java.util.stream.Collectors.joining;
 
 public class GoogleAuthFlow {
   public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
@@ -20,7 +21,7 @@ public class GoogleAuthFlow {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
       String scopesString =
-          URLEncoder.encode(scopes.stream().collect(Collectors.joining(" ")), "UTF-8");
+          URLEncoder.encode(scopes.stream().collect(joining(" ")), "UTF-8");
 
       String redirectUri = s.getRedirectUri();
 

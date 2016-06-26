@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import okhttp3.OkHttpClient;
 
 import static com.baulsupp.oksocial.authenticator.AuthUtil.makeSimpleGetRequest;
+import static java.util.stream.Collectors.joining;
 
 public class FacebookAuthFlow {
 
@@ -25,7 +25,7 @@ public class FacebookAuthFlow {
       String loginUrl = "https://www.facebook.com/dialog/oauth"
           + "?client_id=" + clientId
           + "&redirect_uri=" + serverUri
-          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(joining(",")),
           "UTF-8");
 
       outputHandler.openLink(loginUrl);

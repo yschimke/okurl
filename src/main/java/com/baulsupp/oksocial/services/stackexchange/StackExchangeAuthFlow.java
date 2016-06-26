@@ -6,13 +6,13 @@ import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Set;
-import java.util.stream.Collectors;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
 import static com.baulsupp.oksocial.authenticator.AuthUtil.makeSimpleRequest;
+import static java.util.stream.Collectors.joining;
 
 public class StackExchangeAuthFlow {
 
@@ -25,7 +25,7 @@ public class StackExchangeAuthFlow {
       String loginUrl = "https://stackexchange.com/oauth"
           + "?client_id=" + clientId
           + "&redirect_uri=" + serverUri
-          + "&scope=" + URLEncoder.encode(scopes.stream().collect(Collectors.joining(",")),
+          + "&scope=" + URLEncoder.encode(scopes.stream().collect(joining(",")),
           "UTF-8");
 
       outputHandler.openLink(loginUrl);
