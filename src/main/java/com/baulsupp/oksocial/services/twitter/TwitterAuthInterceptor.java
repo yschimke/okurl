@@ -80,6 +80,6 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
   }
 
   @Override public Collection<? extends String> completions(String url, boolean hosts) {
-    return TwilioUtil.API_HOSTS;
+    return TwitterUtil.TWITTER_API_HOSTS;
   }
 }
