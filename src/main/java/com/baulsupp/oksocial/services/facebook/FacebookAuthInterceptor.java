@@ -43,10 +43,6 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return chain.proceed(request);
   }
 
-  public boolean supportsUrl(HttpUrl url) {
-    return FacebookUtil.API_HOSTS.contains(url.host());
-  }
-
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising Facebook API");
@@ -75,7 +71,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         apiRequest("/app", requestBuilder), this::extract).validate(client);
   }
 
-  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+  @Override public Collection<? extends String> hosts() {
     return FacebookUtil.API_HOSTS;
   }
 }

@@ -14,8 +14,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class SignatureTest {
-  @Test
-  public void testInitialRequestAuth()
+  @Test public void testInitialRequestAuth()
       throws NoSuchAlgorithmException, InvalidKeyException, IOException {
     Clock clock = Clock.fixed(Instant.ofEpochMilli(1460432867000L), ZoneId.of("UTC"));
     Signature s = new Signature(clock, () -> 9L);

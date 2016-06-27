@@ -1,0 +1,15 @@
+https://api.lyft.com/v1/ridetypes
+https://api.lyft.com/v1/eta
+https://api.lyft.com/v1/cost
+https://api.lyft.com/v1/drivers
+https://api.lyft.com/v1/profile
+https://api.lyft.com/v1/rides
+https://api.lyft.com/v1/sandbox/ridetypes
+https://api.lyft.com/v1/sandbox/primetime
+https://api.lyft.com/v1/rides/{id}
+https://api.lyft.com/v1/rides/{id}/cancel
+https://api.lyft.com/v1/rides/{id}/receipt
+https://api.lyft.com/v1/rides/{id}/rating
+https://api.lyft.com/v1/rides/{id}/destination
+https://api.lyft.com/v1/sandbox/rides/{id}
+https://api.lyft.com/v1/sandbox/ridetypes/{ride_type}

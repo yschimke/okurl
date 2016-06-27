@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.services.UrlList;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +21,9 @@ public interface AuthInterceptor<T> {
     return serviceDefinition().shortName();
   }
 
-  boolean supportsUrl(HttpUrl url);
+  default boolean supportsUrl(HttpUrl url) {
+    return hosts().contains(url.host());
+  }
 
   Response intercept(Interceptor.Chain chain, T credentials) throws IOException;
 
@@ -42,7 +45,9 @@ public interface AuthInterceptor<T> {
     return Optional.empty();
   }
 
-  default Collection<? extends String> completions(String url, boolean hosts) {
-    return Collections.emptyList();
+  Collection<? extends String> hosts();
+
+  default List<String> matchingUrls(String prefix, CredentialsStore credentialsStore) throws IOException {
+    return UrlList.fromResource(name()).matchingUrls(prefix);
   }
 }

@@ -6,6 +6,8 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -13,10 +15,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public boolean supportsUrl(HttpUrl url) {
-    return url.host().equals("localhost");
-  }
-
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
       throws IOException {
     return chain.proceed(chain.request());
@@ -34,5 +32,9 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
     return new Oauth2ServiceDefinition("localhost", "Test Service", "test");
+  }
+
+  @Override public Collection<? extends String> hosts() {
+    return Arrays.asList("test.com", "api1.test.com");
   }
 }

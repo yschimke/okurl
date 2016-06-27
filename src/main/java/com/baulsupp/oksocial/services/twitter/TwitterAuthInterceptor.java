@@ -6,7 +6,6 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.twilio.TwilioUtil;
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlrcImport;
 import com.baulsupp.oksocial.util.UsageException;
 import com.google.common.collect.Lists;
@@ -27,10 +26,6 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
 
   @Override public ServiceDefinition<TwitterCredentials> serviceDefinition() {
     return new TwitterServiceDefinition();
-  }
-
-  public boolean supportsUrl(HttpUrl url) {
-    return TwitterUtil.TWITTER_API_HOSTS.contains(url.host());
   }
 
   @Override
@@ -79,7 +74,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
         map -> (String) map.get("name")).validate(client);
   }
 
-  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+  @Override public Collection<? extends String> hosts() {
     return TwitterUtil.TWITTER_API_HOSTS;
   }
 }

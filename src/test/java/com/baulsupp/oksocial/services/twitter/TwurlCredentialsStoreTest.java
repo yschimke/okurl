@@ -8,8 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class TwurlCredentialsStoreTest {
-  @Test
-  public void testReadDefaultCredentials() throws IOException {
+  @Test public void testReadDefaultCredentials() throws IOException {
     File file =
         new File(TwurlCredentialsStoreTest.class.getResource("/single_twurlrc.yaml").getFile());
     TwurlCredentialsStore store = new TwurlCredentialsStore(file);

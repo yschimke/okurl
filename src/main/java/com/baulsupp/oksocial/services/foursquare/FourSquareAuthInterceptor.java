@@ -44,10 +44,6 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return chain.proceed(request);
   }
 
-  public boolean supportsUrl(HttpUrl url) {
-    return FourSquareUtil.API_HOSTS.contains(url.host());
-  }
-
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising FourSquare API");
@@ -73,7 +69,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return user.get("firstName") + " " + user.get("lastName");
   }
 
-  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+  @Override public Collection<? extends String> hosts() {
     return FourSquareUtil.API_HOSTS;
   }
 }

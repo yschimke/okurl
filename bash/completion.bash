@@ -47,8 +47,8 @@ _oksocial_complete()
       return;
   fi
 
-  _oksocial_hosts=${_oksocial_hosts:=$(oksocial --urlCompletion https)}
-  COMPREPLY=( $( compgen -W "$_oksocial_hosts" -- "$cur" ) )
+  _oksocial_hosts=$(oksocial --urlCompletion "$cur")
+  COMPREPLY=( $( compgen -o nospace -W "$_oksocial_hosts" -- "$cur" ) )
 
   __ltrim_colon_completions "$cur"
 }
