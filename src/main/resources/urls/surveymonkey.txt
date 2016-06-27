@@ -1,0 +1,10 @@
+https://api.surveymonkey.net/v2/batch/create_flow
+https://api.surveymonkey.net/v2/surveys/get_survey_details
+https://api.surveymonkey.net/v2/user/get_user_details
+https://api.surveymonkey.net/v2/surveys/get_survey_list
+https://api.surveymonkey.net/v2/batch/send_flow
+https://api.surveymonkey.net/v2/surveys/get_collector_list
+https://api.surveymonkey.net/v2/collectors/create_collector
+https://api.surveymonkey.net/v2/surveys/get_respondent_list
+https://api.surveymonkey.net/v2/surveys/get_responses
+https://api.surveymonkey.net/v2/surveys/get_response_counts
