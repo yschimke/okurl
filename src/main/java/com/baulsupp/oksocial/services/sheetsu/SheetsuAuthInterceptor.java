@@ -33,12 +33,6 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
     return chain.proceed(request);
   }
 
-  public boolean supportsUrl(HttpUrl url) {
-    String host = url.host();
-
-    return SheetsuUtil.API_HOSTS.contains(host);
-  }
-
   @Override public BasicCredentials authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) {
     String user =
@@ -49,7 +43,7 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
     return new BasicCredentials(user, password);
   }
 
-  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+  @Override public Collection<? extends String> hosts() {
     return SheetsuUtil.API_HOSTS;
   }
 }

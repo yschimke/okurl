@@ -47,10 +47,6 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return chain.proceed(request);
   }
 
-  public boolean supportsUrl(HttpUrl url) {
-    return LyftUtil.API_HOSTS.contains(url.host());
-  }
-
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising Lyft API");
@@ -100,7 +96,7 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         credentials.clientSecret.get()));
   }
 
-  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+  @Override public Collection<? extends String> hosts() {
     return LyftUtil.API_HOSTS;
   }
 }

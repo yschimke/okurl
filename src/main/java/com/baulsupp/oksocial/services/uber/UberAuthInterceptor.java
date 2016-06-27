@@ -36,12 +36,6 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return chain.proceed(request);
   }
 
-  public boolean supportsUrl(HttpUrl url) {
-    String host = url.host();
-
-    return UberUtil.API_HOSTS.contains(host);
-  }
-
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
     System.err.println("Authorising Uber API");
@@ -61,7 +55,7 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         map -> map.get("first_name") + " " + map.get("last_name")).validate(client);
   }
 
-  @Override public Collection<? extends String> completions(String url, boolean hosts) {
+  @Override public Collection<? extends String> hosts() {
     return UberUtil.API_HOSTS;
   }
 }

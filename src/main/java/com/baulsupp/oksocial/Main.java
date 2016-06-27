@@ -261,9 +261,8 @@ public class Main extends HelpOption implements Runnable {
       }
 
       if (urlCompletion != null) {
-        System.out.println(new UrlCompleter(serviceInterceptor).urlList(urlCompletion)
-            .stream()
-            .collect(joining(" ")));
+        System.out.println(new UrlCompleter(serviceInterceptor.services(), credentialsStore).urlList(urlCompletion)
+            .stream().collect(joining(" ")));
         return;
       }
 

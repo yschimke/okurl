@@ -11,9 +11,9 @@ public class TwitterUtil {
 
   public static final Set<String> TWITTER_API_HOSTS =
       Collections.unmodifiableSet(Sets.newHashSet(
-          "api.twitter.com", "upload.twitter.com", "stream.twitter.com",
-          "mobile.twitter.com", "syndication.twitter.com", "pbs.twimg.com",
-          "t.co")
+          "api.twitter.com", "upload.twitter.com", "stream.twitter.com", "mobile.twitter.com",
+          "syndication.twitter.com", "pbs.twimg.com", "t.co", "userstream.twitter.com",
+          "sitestream.twitter.com", "search.twitter.com")
       );
 
   public static final Set<String> TWITTER_WEB_HOSTS =
