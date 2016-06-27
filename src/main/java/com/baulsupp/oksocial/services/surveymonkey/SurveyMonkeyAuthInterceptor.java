@@ -51,51 +51,30 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<Oauth2Token>
       List<String> authArguments) throws IOException {
     System.err.println("Authorising SurveyMonkey API");
 
-    String clientId =
-        Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false);
-    String apiKey =
-        Secrets.prompt("SurveyMonkey API Key", "surveymonkey.apiKey", "", false);
-    String secret =
-        Secrets.prompt("SurveyMonkey Secret", "surveymonkey.secret", "", true);
-    Set<String> scopes =
-        Secrets.promptArray("Scopes", "surveymonkey.scopes", SurveyMonkeyUtil.SCOPES);
+    if (true) {
+      String token =
+          Secrets.prompt("SurveyMonkey Access Token", "surveymonkey.accessToken", "", true);
+      return new Oauth2Token(token);
+    } else {
+      // TODO in progress, requires callback
+      String clientId =
+          Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false);
+      String apiKey =
+          Secrets.prompt("SurveyMonkey API Key", "surveymonkey.apiKey", "", false);
+      String secret =
+          Secrets.prompt("SurveyMonkey Secret", "surveymonkey.secret", "", true);
+      Set<String> scopes =
+          Secrets.promptArray("Scopes", "surveymonkey.scopes", SurveyMonkeyUtil.SCOPES);
 
-    return SurveyMonkeyAuthFlow.login(client, outputHandler, clientId, apiKey, secret, scopes);
+      return SurveyMonkeyAuthFlow.login(client, outputHandler, clientId, apiKey, secret, scopes);
+    }
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(
-        SurveyMonkeyUtil.apiRequest("/v1/profile", requestBuilder), fieldExtractor("id")).validate(
+        SurveyMonkeyUtil.apiRequest("/v2/user/get_user_details", requestBuilder), fieldExtractor("id")).validate(
         client);
-  }
-
-  @Override public boolean canRenew(Response result, Oauth2Token credentials) {
-    return result.code() == 401
-        && credentials.refreshToken.isPresent()
-        && credentials.clientId.isPresent()
-        && credentials.clientSecret.isPresent();
-  }
-
-  @Override
-  public Optional<Oauth2Token> renew(OkHttpClient client, Oauth2Token credentials)
-      throws IOException {
-
-    RequestBody body = RequestBody.create(MediaType.parse("application/json"),
-        "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""
-            + credentials.refreshToken.get() + "\"}");
-    String basic = Credentials.basic(credentials.clientId.get(), credentials.clientSecret.get());
-    Request request =
-        new Request.Builder().url("https://api.surveymonkey.com/oauth/token")
-            .post(body)
-            .header("Authorization", basic)
-            .build();
-
-    Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
-
-    return Optional.of(new Oauth2Token((String) responseMap.get("access_token"),
-        (String) responseMap.get("refresh_token"), credentials.clientId.get(),
-        credentials.clientSecret.get()));
   }
 
   @Override public Collection<? extends String> hosts() {
