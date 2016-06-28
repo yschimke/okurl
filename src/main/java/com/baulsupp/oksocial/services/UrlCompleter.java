@@ -8,15 +8,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
 import static java.util.stream.Collectors.toList;
 
 public class UrlCompleter {
   private Iterable<AuthInterceptor<?>> services;
+  private OkHttpClient client;
   private CredentialsStore credentialsStore;
 
-  public UrlCompleter(Iterable<AuthInterceptor<?>> services, CredentialsStore credentialsStore) {
+  public UrlCompleter(Iterable<AuthInterceptor<?>> services, OkHttpClient client,
+      CredentialsStore credentialsStore) {
     this.services = services;
+    this.client = client;
     this.credentialsStore = credentialsStore;
   }
 
@@ -33,7 +37,7 @@ public class UrlCompleter {
 
     for (AuthInterceptor<?> a : services) {
       if (a.supportsUrl(url)) {
-        return a.matchingUrls(prefix, credentialsStore);
+        return a.matchingUrls(prefix, client, credentialsStore);
       }
     }
 

@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import okhttp3.OkHttpClient;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -24,7 +25,7 @@ public class UrlCompleterTest {
     public <T> void storeCredentials(T credentials, ServiceDefinition<T> serviceDefinition) {
     }
   };
-  private UrlCompleter completer = new UrlCompleter(services, credentialsStore);
+  private UrlCompleter completer = new UrlCompleter(services, new OkHttpClient(), credentialsStore);
 
   @Test public void returnsAllUrls() throws IOException {
     assertEquals(Lists.newArrayList("https://api1.test.com/", "https://test.com/"),
