@@ -102,7 +102,6 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
 
       return surveys.stream().map(m -> (String) m.get("id")).collect(toList());
     } catch (IOException ioe) {
-      ioe.printStackTrace();
       return Lists.newArrayList();
     }
   }
