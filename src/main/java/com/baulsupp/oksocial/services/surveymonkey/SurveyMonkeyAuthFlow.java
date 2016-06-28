@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
-import okhttp3.Credentials;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -18,7 +16,8 @@ import okhttp3.RequestBody;
 import static java.util.stream.Collectors.joining;
 
 public class SurveyMonkeyAuthFlow {
-  public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId, String apiKey,
+  public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
+      String apiKey,
       String secret, Set<String> scopes) throws IOException {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
@@ -37,7 +36,11 @@ public class SurveyMonkeyAuthFlow {
 
       String code = s.waitForCode();
 
-      RequestBody body = new FormBody.Builder().add("client_secret", secret).add("code", code).add("redirect_uri", redirectUri).add("grant_type", "authorization_code").build();
+      RequestBody body = new FormBody.Builder().add("client_secret", secret)
+          .add("code", code)
+          .add("redirect_uri", redirectUri)
+          .add("grant_type", "authorization_code")
+          .build();
 
       Request request =
           new Request.Builder().url("https://api.surveymonkey.net/oauth/token")

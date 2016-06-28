@@ -1,15 +1,11 @@
 package com.baulsupp.oksocial.services.surveymonkey;
 
 import com.google.common.collect.Sets;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import okhttp3.Request;
 
 public class SurveyMonkeyUtil {
-  public static final Collection<String> SCOPES = Arrays.asList();
-
   private SurveyMonkeyUtil() {
   }
 
