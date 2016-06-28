@@ -47,7 +47,8 @@ public interface AuthInterceptor<T> {
 
   Collection<? extends String> hosts();
 
-  default List<String> matchingUrls(String prefix, CredentialsStore credentialsStore) throws IOException {
+  default List<String> matchingUrls(String prefix, CredentialsStore credentialsStore)
+      throws IOException {
     return UrlList.fromResource(name()).matchingUrls(prefix);
   }
 }
