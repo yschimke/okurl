@@ -64,7 +64,8 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
     return (String) accounts.get(0).get("friendly_name");
   }
 
-  @Override public List<String> matchingUrls(String prefix, CredentialsStore credentialsStore)
+  @Override public List<String> matchingUrls(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore)
       throws IOException {
     UrlList urls = UrlList.fromResource("twilio");
 
