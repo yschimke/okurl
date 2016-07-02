@@ -54,3 +54,4 @@ _oksocial_complete()
 }
 
 complete -F _oksocial_complete oksocial
+complete -F _oksocial_complete fbapi

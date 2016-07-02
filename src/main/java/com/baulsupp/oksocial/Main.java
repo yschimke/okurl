@@ -26,6 +26,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore;
+import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
@@ -61,6 +62,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -78,6 +80,7 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Dns;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -206,6 +209,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--urlCompletion"}, description = "URL Completion")
   public String urlCompletion;
 
+  public String commandName = System.getProperty("command.name", "oksocial");
+
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
@@ -213,6 +218,8 @@ public class Main extends HelpOption implements Runnable {
 
   private OkHttpClient authClient = null;
   private OkHttpClient client = null;
+
+  private Request.Builder requestBuilder;
 
   private List<OkHttpClient> clients = Lists.newArrayList();
 
@@ -239,7 +246,7 @@ public class Main extends HelpOption implements Runnable {
 
     try {
       if (version) {
-        System.out.println(NAME + " " + versionString());
+        outputHandler.info(NAME + " " + versionString());
         return;
       }
 
@@ -256,14 +263,14 @@ public class Main extends HelpOption implements Runnable {
       }
 
       if (serviceNames) {
-        System.out.println(serviceInterceptor.names().stream().collect(joining(" ")));
+        outputHandler.info(serviceInterceptor.names().stream().collect(joining(" ")));
         return;
       }
 
       if (urlCompletion != null) {
-        System.out.println(
-            new UrlCompleter(serviceInterceptor.services(), client, credentialsStore).urlList(
-                urlCompletion).stream().collect(joining(" ")));
+        List<String> l = urlCompletionList();
+
+        outputHandler.info(l.stream().collect(joining(" ")));
         return;
       }
 
@@ -280,6 +287,49 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
+  private List<String> urlCompletionList() throws Exception {
+    UrlCompleter completer =
+        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore);
+
+    ShellCommand command = getShellCommand();
+
+    int stripPrefix = 0;
+
+    if (command instanceof JavascriptApiCommand) {
+      ArrayList<String> newArguments = Lists.newArrayList(arguments);
+      newArguments.add(urlCompletion);
+
+      List<Request> requests = command.buildRequests(client, requestBuilder, newArguments);
+
+      if (requests.size() > 0) {
+        HttpUrl newUrl = requests.get(0).url();
+
+        // support "" -> http://api.test.com
+        if (urlCompletion.isEmpty() && newUrl.encodedPath().equals("/")) {
+          urlCompletion = "/";
+        }
+
+        String newUrlCompletion = newUrl.toString();
+
+        if (!(newUrlCompletion.endsWith(urlCompletion))) {
+          return Collections.emptyList();
+        }
+
+        stripPrefix = newUrlCompletion.length() - urlCompletion.length();
+        urlCompletion = newUrlCompletion;
+      }
+    }
+
+    List<String> urls = completer.urlList(urlCompletion);
+
+    if (stripPrefix > 0) {
+      final int finalStripPrefix = stripPrefix;
+      urls = urls.stream().map(s -> s.substring(finalStripPrefix)).collect(toList());
+    }
+
+    return urls;
+  }
+
   public void initialise() throws Exception {
     if (credentialsStore == null) {
       credentialsStore = createCredentialsStore();
@@ -292,6 +342,8 @@ public class Main extends HelpOption implements Runnable {
     OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
     client = clientBuilder.build();
+
+    requestBuilder = createRequestBuilder();
   }
 
   public OkHttpClient getClient() {
@@ -347,8 +399,6 @@ public class Main extends HelpOption implements Runnable {
       ((MainAware) command).setMain(this);
     }
 
-    Request.Builder requestBuilder = createRequestBuilder();
-
     List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
 
     if (requests.isEmpty()) {
@@ -401,15 +451,13 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private ShellCommand getShellCommand() throws Exception {
-    String commandName = getCommandName();
-
     return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
   }
 
   private void printAliasNames() {
     Set<String> names = Sets.newTreeSet(commandRegistry.names());
 
-    names.forEach(System.out::println);
+    names.forEach(outputHandler::info);
   }
 
   private Future<Response> makeRequest(OkHttpClient client, Request request) {
@@ -482,10 +530,6 @@ public class Main extends HelpOption implements Runnable {
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
 
     // TODO validate credentials
-  }
-
-  private String getCommandName() {
-    return System.getProperty("command.name", "oksocial");
   }
 
   public OkHttpClient.Builder createClientBuilder() throws Exception {

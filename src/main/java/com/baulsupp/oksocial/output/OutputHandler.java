@@ -14,4 +14,8 @@ public interface OutputHandler {
   default void openLink(String url) throws IOException {
     System.err.println(url);
   }
+
+  default void info(String s) {
+    System.out.println(s);
+  }
 }
