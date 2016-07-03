@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.integration;
+package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
@@ -24,19 +24,10 @@ public class CompletionTests {
 
     assertEquals(1, output.stdout.size());
     assertTrue(output.stdout.get(0).contains("https://api1.test.com/"));
-    assertTrue(output.stdout.get(0).contains("https://test.com/"));
-  }
-
-  @Test public void completeSingle() throws Throwable {
-    main.urlCompletion = "https://api1.test.c";
-
-    main.run();
-
-    assertEquals(Lists.newArrayList("https://api1.test.com/"), output.stdout);
   }
 
   @Test public void completeSingleEndpoint() throws Throwable {
-    main.urlCompletion = "https://api1.test.com/";
+    main.urlCompletion = "https://api1.test.co";
 
     main.run();
 

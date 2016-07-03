@@ -296,6 +296,8 @@ public class Main extends HelpOption implements Runnable {
     int stripPrefix = 0;
 
     if (command instanceof JavascriptApiCommand) {
+      ((JavascriptApiCommand) command).setMain(this);
+
       ArrayList<String> newArguments = Lists.newArrayList(arguments);
       newArguments.add(urlCompletion);
 

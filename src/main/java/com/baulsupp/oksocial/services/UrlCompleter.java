@@ -25,37 +25,16 @@ public class UrlCompleter {
   }
 
   public List<String> urlList(String prefix) throws IOException {
-    if (prefix.matches("https://.*/.*")) {
       return endpointUrls(prefix);
-    } else {
-      return topLevelUrls(prefix);
-    }
   }
 
   private List<String> endpointUrls(String prefix) throws IOException {
-    HttpUrl url = HttpUrl.parse(prefix);
+    List<String> results = Lists.newArrayList();
 
     for (AuthInterceptor<?> a : services) {
-      if (a.supportsUrl(url)) {
-        return a.matchingUrls(prefix, client, credentialsStore);
-      }
+      results.addAll(a.matchingUrls(prefix, client, credentialsStore));
     }
 
-    return Lists.newArrayList();
-  }
-
-  private List<String> topLevelUrls(String prefix) {
-    List<String> list = new ArrayList<>(100);
-
-    for (AuthInterceptor<?> a : services) {
-      list.addAll(a.hosts());
-    }
-
-    list.sort(Comparator.naturalOrder());
-
-    return list.stream()
-        .map(h -> "https://" + h + "/")
-        .filter(u -> u.startsWith(prefix))
-        .collect(toList());
+    return results;
   }
 }

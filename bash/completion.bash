@@ -1,6 +1,6 @@
 function _oksocial_complete ()
 {
-  local cur prev words cword
+  local cur prev words cword _cached
   COMPREPLY=()
 	job="${COMP_WORDS[0]}"
 	cur="${COMP_WORDS[COMP_CWORD]}"
@@ -45,10 +45,29 @@ function _oksocial_complete ()
       return;
   fi
 
-	_get_comp_words_by_ref -n : cur
+  _get_comp_words_by_ref -n : cur
 
-  _oksocial_hosts=$($job --urlCompletion "$cur")
-  COMPREPLY=( $( compgen -o nospace -W "$_oksocial_hosts" -- "$cur" ) )
+  _cached=0
+
+  # something cached even null
+  if [ -n "${_oksocial_paths+xx}" -a "$job" == "$_oksocial_last_job" ]; then
+    # exact match
+    if [ "$cur" == "$_oksocial_last_cur" ]; then
+      _cached=1
+    elif [ "${cur#$_oksocial_last_cur}" != "${cur}" ]; then
+      _cached=2
+    fi
+  fi
+
+  #echo "$_cached '$cur' '$_oksocial_last_cur'" >> /tmp/cached.test
+
+  if [ "$_cached" == "0" ]; then
+    _oksocial_paths=$($job --urlCompletion "$cur")
+    _oksocial_last_job="$job"
+    _oksocial_last_cur="$cur"
+  fi
+
+  COMPREPLY=( $( compgen -o nospace -W "$_oksocial_paths" -- "$cur" ) )
 
   # bash 4
   #compopt -o nospace

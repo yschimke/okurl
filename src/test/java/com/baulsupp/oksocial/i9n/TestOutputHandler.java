@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.integration;
+package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.google.common.collect.Lists;
