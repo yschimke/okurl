@@ -82,7 +82,6 @@ complete -F _oksocial_complete fbapi
 complete -F _oksocial_complete githubapi
 complete -F _oksocial_complete imgurapi
 complete -F _oksocial_complete lyftapi
-complete -F _oksocial_complete sheetsuapi
 complete -F _oksocial_complete squareapi
 complete -F _oksocial_complete stackexchangeapi
 complete -F _oksocial_complete surveymonkeyapi
