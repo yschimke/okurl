@@ -1,0 +1,11 @@
+https://connect.squareup.com/v2/customers
+https://connect.squareup.com/v2/customers/{customer_id}
+https://connect.squareup.com/v2/customers/{customer_id}/cards
+https://connect.squareup.com/v2/customers/{customer_id}/cards/{card_id}
+https://connect.squareup.com/v2/locations
+https://connect.squareup.com/v2/locations/{location_id}/refunds
+https://connect.squareup.com/v2/locations/{location_id}/transactions
+https://connect.squareup.com/v2/locations/{location_id}/transactions/{transaction_id}
+https://connect.squareup.com/v2/locations/{location_id}/transactions/{transaction_id}/capture
+https://connect.squareup.com/v2/locations/{location_id}/transactions/{transaction_id}/refund
+https://connect.squareup.com/v2/locations/{location_id}/transactions/{transaction_id}/void
