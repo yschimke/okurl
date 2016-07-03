@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class AuthorizationTests {
+public class AuthorizationTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();

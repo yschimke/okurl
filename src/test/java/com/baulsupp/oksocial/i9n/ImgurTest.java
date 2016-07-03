@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ImgurTests {
+public class ImgurTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();

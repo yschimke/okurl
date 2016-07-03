@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TwilioTests {
+public class TwilioTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
