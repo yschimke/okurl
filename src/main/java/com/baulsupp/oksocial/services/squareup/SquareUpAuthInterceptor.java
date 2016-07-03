@@ -26,8 +26,11 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
     String token = credentials.accessToken;
 
-    request =
-        request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
+    Request.Builder reqBuilder = request.newBuilder().addHeader("Authorization", "Bearer " + token);
+    if (request.header("Accept") == null) {
+      reqBuilder.addHeader("Accept", "application/json");
+    }
+    request = reqBuilder.build();
 
     return chain.proceed(request);
   }

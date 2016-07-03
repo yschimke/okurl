@@ -1,0 +1,1 @@
+PATH=.:.commands:$PATH
