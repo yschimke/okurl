@@ -16,6 +16,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static java.util.stream.Collectors.toList;
+
 public interface AuthInterceptor<T> {
   default String name() {
     return serviceDefinition().shortName();
@@ -50,6 +52,15 @@ public interface AuthInterceptor<T> {
   default List<String> matchingUrls(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore)
       throws IOException {
-    return UrlList.fromResource(name()).matchingUrls(prefix);
+    Optional<UrlList> urlList = UrlList.fromResource(name());
+
+    if (urlList.isPresent()) {
+      return urlList.get().matchingUrls(prefix);
+    } else {
+      return hosts().stream()
+          .map(h -> "https://" + h + "/")
+          .filter(u -> u.startsWith(prefix))
+          .collect(toList());
+    }
   }
 }

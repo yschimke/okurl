@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.integration;
+package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
@@ -37,7 +37,7 @@ public class AuthorizationTests {
 
   @Test public void authorizeByHost() throws Exception {
     main.authorize = true;
-    main.arguments = Lists.newArrayList("https://localhost/test");
+    main.arguments = Lists.newArrayList("https://test.com/test");
 
     main.run();
 

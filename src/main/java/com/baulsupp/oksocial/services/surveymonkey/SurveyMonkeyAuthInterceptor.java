@@ -69,7 +69,7 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
   @Override public List<String> matchingUrls(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore)
       throws IOException {
-    UrlList urlList = UrlList.fromResource("surveymonkey");
+    UrlList urlList = UrlList.fromResource("surveymonkey").get();
 
     Optional<SurveyMonkeyToken> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());

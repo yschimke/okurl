@@ -4,13 +4,8 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-
-import static java.util.stream.Collectors.toList;
 
 public class UrlCompleter {
   private Iterable<AuthInterceptor<?>> services;
@@ -25,37 +20,16 @@ public class UrlCompleter {
   }
 
   public List<String> urlList(String prefix) throws IOException {
-    if (prefix.matches("https://.*/.*")) {
-      return endpointUrls(prefix);
-    } else {
-      return topLevelUrls(prefix);
-    }
+    return endpointUrls(prefix);
   }
 
   private List<String> endpointUrls(String prefix) throws IOException {
-    HttpUrl url = HttpUrl.parse(prefix);
+    List<String> results = Lists.newArrayList();
 
     for (AuthInterceptor<?> a : services) {
-      if (a.supportsUrl(url)) {
-        return a.matchingUrls(prefix, client, credentialsStore);
-      }
+      results.addAll(a.matchingUrls(prefix, client, credentialsStore));
     }
 
-    return Lists.newArrayList();
-  }
-
-  private List<String> topLevelUrls(String prefix) {
-    List<String> list = new ArrayList<>(100);
-
-    for (AuthInterceptor<?> a : services) {
-      list.addAll(a.hosts());
-    }
-
-    list.sort(Comparator.naturalOrder());
-
-    return list.stream()
-        .map(h -> "https://" + h + "/")
-        .filter(u -> u.startsWith(prefix))
-        .collect(toList());
+    return results;
   }
 }

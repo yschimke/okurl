@@ -28,12 +28,16 @@ public class UrlCompleterTest {
   private UrlCompleter completer = new UrlCompleter(services, new OkHttpClient(), credentialsStore);
 
   @Test public void returnsAllUrls() throws IOException {
-    assertEquals(Lists.newArrayList("https://api1.test.com/", "https://test.com/"),
+    assertEquals(
+        Lists.newArrayList("https://api1.test.com/account.json", "https://api1.test.com/users.json",
+            "https://api1.test.com/usersList.json"),
         completer.urlList(""));
   }
 
   @Test public void returnsMatchingUrls() throws IOException {
-    assertEquals(Lists.newArrayList("https://api1.test.com/"), completer.urlList("https://api1"));
+    assertEquals(
+        Lists.newArrayList("https://api1.test.com/account.json", "https://api1.test.com/users.json",
+            "https://api1.test.com/usersList.json"), completer.urlList("https://api1"));
     assertEquals(Lists.newArrayList(), completer.urlList("https://api2"));
   }
 
