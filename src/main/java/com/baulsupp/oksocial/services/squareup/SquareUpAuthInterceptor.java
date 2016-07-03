@@ -1,19 +1,26 @@
 package com.baulsupp.oksocial.services.squareup;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
+import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
+import com.baulsupp.oksocial.services.lyft.LyftUtil;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Future;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
 
 public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
@@ -33,6 +40,13 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     request = reqBuilder.build();
 
     return chain.proceed(request);
+  }
+
+  @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
+      Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
+    return new JsonCredentialsValidator(
+        SquareUpUtil.apiRequest("/v1/me", requestBuilder), fieldExtractor("name")).validate(
+        client);
   }
 
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
