@@ -8,13 +8,14 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.UrlList;
+import com.baulsupp.oksocial.completion.UrlList;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import okhttp3.HttpUrl;
@@ -66,8 +67,8 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
         fieldExtractor("username")).validate(client);
   }
 
-  @Override public List<String> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore)
+  @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, boolean expensive)
       throws IOException {
     UrlList urlList = UrlList.fromResource("surveymonkey").get();
 
@@ -90,7 +91,7 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
       }
     }
 
-    return urlList.matchingUrls(prefix);
+    return CompletableFuture.completedFuture(urlList.matchingUrls(prefix));
   }
 
   private List<String> getSurveyIds(OkHttpClient client) throws IOException {

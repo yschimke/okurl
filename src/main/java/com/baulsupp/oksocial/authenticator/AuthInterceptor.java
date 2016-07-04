@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.authenticator;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
-import com.baulsupp.oksocial.services.UrlList;
+import com.baulsupp.oksocial.completion.UrlList;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -49,18 +49,18 @@ public interface AuthInterceptor<T> {
 
   Collection<? extends String> hosts();
 
-  default List<String> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore)
+  default Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, boolean expensive)
       throws IOException {
     Optional<UrlList> urlList = UrlList.fromResource(name());
 
     if (urlList.isPresent()) {
-      return urlList.get().matchingUrls(prefix);
+      return CompletableFuture.completedFuture(urlList.get().matchingUrls(prefix));
     } else {
-      return hosts().stream()
+      return CompletableFuture.completedFuture(hosts().stream()
           .map(h -> "https://" + h + "/")
           .filter(u -> u.startsWith(prefix))
-          .collect(toList());
+          .collect(toList()));
     }
   }
 }

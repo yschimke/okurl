@@ -32,4 +32,15 @@ public class TwilioTest {
     assertEquals(Lists.newArrayList(), output.failures);
     assertTrue(output.stdout.get(0).contains("/Calls.json"));
   }
+
+  @Test public void completeEndpointWithReplacements() throws Throwable {
+    credentialsStore.storeCredentials(new BasicCredentials("ABC", "PW"), service);
+
+    main.urlCompletion = "https://api.twilio.com/";
+
+    main.run();
+
+    assertEquals(Lists.newArrayList(), output.failures);
+    assertTrue(output.stdout.get(0).contains("/Accounts/ABC/Calls.json"));
+  }
 }

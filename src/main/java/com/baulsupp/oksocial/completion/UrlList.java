@@ -1,11 +1,14 @@
-package com.baulsupp.oksocial.services;
+package com.baulsupp.oksocial.completion;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,5 +34,26 @@ public class UrlList {
 
   public List<String> matchingUrls(String prefix) {
     return urls.stream().filter(u -> u.startsWith(prefix)).collect(toList());
+  }
+
+  public UrlList replace(String variable, List<String> replacements, boolean keepTemplate) {
+    String token = "\\{" + variable + "\\}";
+
+    final List<String> replacementList;
+    if (keepTemplate) {
+      replacementList = Lists.newArrayList(replacements);
+      if (keepTemplate) {
+        replacementList.add(token);
+      }
+    } else {
+      replacementList = replacements;
+    }
+
+    Function<String, Stream<String>> replacementFunction =
+        url -> replacementList.stream().map(s -> url.replaceAll(token, s));
+
+    List<String> newUrls = urls.stream().flatMap(replacementFunction).collect(toList());
+
+    return new UrlList(newUrls);
   }
 }

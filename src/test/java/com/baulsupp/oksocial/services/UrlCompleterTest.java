@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.services;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.completion.UrlCompleter;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.services.test.TestAuthInterceptor;

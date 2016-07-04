@@ -33,7 +33,7 @@ import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.security.CertificatePin;
-import com.baulsupp.oksocial.services.UrlCompleter;
+import com.baulsupp.oksocial.completion.UrlCompleter;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
@@ -214,16 +214,16 @@ public class Main extends HelpOption implements Runnable {
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
-  private ServiceInterceptor serviceInterceptor = null;
+  public ServiceInterceptor serviceInterceptor = null;
 
   private OkHttpClient authClient = null;
-  private OkHttpClient client = null;
+  public OkHttpClient client = null;
 
-  private Request.Builder requestBuilder;
+  public Request.Builder requestBuilder;
 
   private List<OkHttpClient> clients = Lists.newArrayList();
 
-  private CommandRegistry commandRegistry = new CommandRegistry();
+  public CommandRegistry commandRegistry = new CommandRegistry();
 
   public OutputHandler outputHandler = null;
 
