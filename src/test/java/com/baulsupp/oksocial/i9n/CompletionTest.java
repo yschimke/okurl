@@ -11,10 +11,12 @@ public class CompletionTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
+  private TestCompletionCache completionCache = new TestCompletionCache();
 
   {
     main.outputHandler = output;
     main.credentialsStore = credentialsStore;
+    main.completionCache = completionCache;
   }
 
   @Test public void completeEmpty() throws Throwable {

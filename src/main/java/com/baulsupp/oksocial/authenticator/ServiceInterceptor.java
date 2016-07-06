@@ -57,7 +57,7 @@ public class ServiceInterceptor implements Interceptor {
     }
   }
 
-  public Iterable<AuthInterceptor<?>> services() {
+  public List<AuthInterceptor<?>> services() {
     return services;
   }
 

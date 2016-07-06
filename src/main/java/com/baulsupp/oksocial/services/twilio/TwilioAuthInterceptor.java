@@ -4,24 +4,25 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.UrlList;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static java.util.stream.Collectors.toList;
 
 public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> {
   @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
@@ -64,22 +65,19 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
     return (String) accounts.get(0).get("friendly_name");
   }
 
-  @Override public List<String> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore)
+  @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
       throws IOException {
     UrlList urls = UrlList.fromResource("twilio").get();
 
     Optional<BasicCredentials> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());
+
     if (credentials.isPresent()) {
-      List<String> u = urls.getUrls();
-
-      String sid = credentials.get().user;
-
-      urls = new UrlList(u.stream().map(s -> s.replace("{AccountSid}", sid)).collect(toList()));
+      urls = urls.replace("AccountSid", Lists.newArrayList(credentials.get().user), false);
     }
 
-    return urls.matchingUrls(prefix);
+    return CompletableFuture.completedFuture(urls.matchingUrls(prefix));
   }
 
   @Override public Collection<? extends String> hosts() {

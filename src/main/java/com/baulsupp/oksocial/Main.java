@@ -22,6 +22,9 @@ import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
+import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.TmpCompletionCache;
+import com.baulsupp.oksocial.completion.UrlCompleter;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
@@ -33,7 +36,6 @@ import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.security.CertificatePin;
-import com.baulsupp.oksocial.services.UrlCompleter;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
@@ -214,20 +216,22 @@ public class Main extends HelpOption implements Runnable {
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
-  private ServiceInterceptor serviceInterceptor = null;
+  public ServiceInterceptor serviceInterceptor = null;
 
   private OkHttpClient authClient = null;
-  private OkHttpClient client = null;
+  public OkHttpClient client = null;
 
-  private Request.Builder requestBuilder;
+  public Request.Builder requestBuilder;
 
   private List<OkHttpClient> clients = Lists.newArrayList();
 
-  private CommandRegistry commandRegistry = new CommandRegistry();
+  public CommandRegistry commandRegistry = new CommandRegistry();
 
   public OutputHandler outputHandler = null;
 
   public CredentialsStore credentialsStore = null;
+
+  public CompletionCache completionCache;
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -289,7 +293,7 @@ public class Main extends HelpOption implements Runnable {
 
   private List<String> urlCompletionList() throws Exception {
     UrlCompleter completer =
-        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore);
+        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore, completionCache);
 
     ShellCommand command = getShellCommand();
 
@@ -346,6 +350,10 @@ public class Main extends HelpOption implements Runnable {
     client = clientBuilder.build();
 
     requestBuilder = createRequestBuilder();
+
+    if (completionCache == null) {
+      completionCache = new TmpCompletionCache();
+    }
   }
 
   public OkHttpClient getClient() {

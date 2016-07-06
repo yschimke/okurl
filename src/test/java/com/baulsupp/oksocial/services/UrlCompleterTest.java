@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.services;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.UrlCompleter;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.services.test.TestAuthInterceptor;
@@ -25,7 +27,8 @@ public class UrlCompleterTest {
     public <T> void storeCredentials(T credentials, ServiceDefinition<T> serviceDefinition) {
     }
   };
-  private UrlCompleter completer = new UrlCompleter(services, new OkHttpClient(), credentialsStore);
+  private UrlCompleter completer = new UrlCompleter(services, new OkHttpClient(), credentialsStore,
+      CompletionCache.NONE);
 
   @Test public void returnsAllUrls() throws IOException {
     assertEquals(
