@@ -20,7 +20,8 @@ public class TmpCompletionCache implements CompletionCache {
       throws IOException {
     File f = new File(dir, service + "-" + key + ".txt");
 
-    if (f.isFile()) {
+    // cache for 5 minutes
+    if (f.isFile() && (!freshOnly || f.lastModified() > System.currentTimeMillis() - 300000)) {
       return Optional.of(Files.readLines(f, StandardCharsets.UTF_8));
     } else {
       return Optional.empty();
