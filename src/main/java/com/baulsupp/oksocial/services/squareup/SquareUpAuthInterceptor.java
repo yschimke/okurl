@@ -80,28 +80,17 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Optional<List<String>> surveysOpt =
           completionCache.get(serviceDefinition().shortName(), "locations", expensive);
 
-      List<String> surveys;
+      List<String> locations;
       if (!surveysOpt.isPresent()) {
-        surveys =
+        locations =
             CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations", "locations",
                 "id");
-        completionCache.store(serviceDefinition().shortName(), "locations", surveys);
+        completionCache.store(serviceDefinition().shortName(), "locations", locations);
       } else {
-        surveys = surveysOpt.get();
+        locations = surveysOpt.get();
       }
 
-      if (!surveys.isEmpty()) {
-        List<String> urls = urlList.getUrls();
-
-        List<String> newUrls = urls.stream()
-            .flatMap(
-                u -> u.contains("{location}") ? surveys.stream()
-                    .map(s -> u.replace("{location}", s))
-                    : Stream.of(u))
-            .collect(toList());
-
-        urlList = new UrlList(newUrls);
-      }
+      urlList = urlList.replace("location", locations, true);
     }
 
     return CompletableFuture.completedFuture(urlList.matchingUrls(prefix));

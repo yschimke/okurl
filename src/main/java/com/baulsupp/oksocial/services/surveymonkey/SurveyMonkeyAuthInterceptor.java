@@ -87,17 +87,7 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
         surveys = surveysOpt.get();
       }
 
-      if (!surveys.isEmpty()) {
-        List<String> urls = urlList.getUrls();
-
-        List<String> newUrls = urls.stream()
-            .flatMap(
-                u -> u.contains("{survey}") ? surveys.stream().map(s -> u.replace("{survey}", s))
-                    : Stream.of(u))
-            .collect(toList());
-
-        urlList = new UrlList(newUrls);
-      }
+      urlList = urlList.replace("survey", surveys, true);
     }
 
     return CompletableFuture.completedFuture(urlList.matchingUrls(prefix));

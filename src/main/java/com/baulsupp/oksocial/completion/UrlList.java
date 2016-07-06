@@ -37,20 +37,26 @@ public class UrlList {
   }
 
   public UrlList replace(String variable, List<String> replacements, boolean keepTemplate) {
-    String token = "\\{" + variable + "\\}";
+    if (replacements.isEmpty()) {
+      return this;
+    }
+
+    String regexToken = "\\{" + variable + "\\}";
+    String literalToken = "{" + variable + "}";
 
     final List<String> replacementList;
     if (keepTemplate) {
       replacementList = Lists.newArrayList(replacements);
       if (keepTemplate) {
-        replacementList.add(token);
+        replacementList.add(literalToken);
       }
     } else {
       replacementList = replacements;
     }
 
     Function<String, Stream<String>> replacementFunction =
-        url -> replacementList.stream().map(s -> url.replaceAll(token, s));
+        url -> url.contains("{") ? replacementList.stream().map(s -> url.replaceAll(regexToken, s))
+            : Stream.of(url);
 
     List<String> newUrls = urls.stream().flatMap(replacementFunction).collect(toList());
 
