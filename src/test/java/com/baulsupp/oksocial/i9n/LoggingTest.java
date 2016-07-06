@@ -18,6 +18,11 @@ public class LoggingTest {
   private Main main = new Main();
 
   private SslClient sslClient = SslClient.localhost();
+  private TestOutputHandler output = new TestOutputHandler();
+
+  {
+    main.outputHandler = output;
+  }
 
   @AfterClass
   public static void resetLogging() {
@@ -39,7 +44,6 @@ public class LoggingTest {
   @Test public void version() throws Exception {
     TestOutputHandler output = new TestOutputHandler();
 
-    main.outputHandler = output;
     main.version = true;
 
     main.run();

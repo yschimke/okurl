@@ -5,22 +5,28 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.CompletionQuery;
+import com.baulsupp.oksocial.completion.UrlList;
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.lyft.LyftUtil;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+import static java.util.stream.Collectors.toList;
 
 public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
@@ -60,6 +66,45 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Secrets.promptArray("Scopes", "squareup.scopes", SquareUpUtil.ALL_PERMISSIONS);
 
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
+  }
+
+  @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
+      throws IOException {
+    UrlList urlList = UrlList.fromResource("squareup").get();
+
+    Optional<Oauth2Token> credentials =
+        credentialsStore.readDefaultCredentials(serviceDefinition());
+
+    if (credentials.isPresent()) {
+      Optional<List<String>> surveysOpt =
+          completionCache.get(serviceDefinition().shortName(), "locations", expensive);
+
+      List<String> surveys;
+      if (!surveysOpt.isPresent()) {
+        surveys =
+            CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations", "locations",
+                "id");
+        completionCache.store(serviceDefinition().shortName(), "locations", surveys);
+      } else {
+        surveys = surveysOpt.get();
+      }
+
+      if (!surveys.isEmpty()) {
+        List<String> urls = urlList.getUrls();
+
+        List<String> newUrls = urls.stream()
+            .flatMap(
+                u -> u.contains("{location}") ? surveys.stream()
+                    .map(s -> u.replace("{location}", s))
+                    : Stream.of(u))
+            .collect(toList());
+
+        urlList = new UrlList(newUrls);
+      }
+    }
+
+    return CompletableFuture.completedFuture(urlList.matchingUrls(prefix));
   }
 
   @Override public Collection<? extends String> hosts() {

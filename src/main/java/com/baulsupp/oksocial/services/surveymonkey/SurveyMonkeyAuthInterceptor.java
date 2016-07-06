@@ -1,19 +1,18 @@
 package com.baulsupp.oksocial.services.surveymonkey;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
-import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.CompletionQuery;
+import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.completion.UrlList;
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -68,7 +67,7 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
   }
 
   @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, boolean expensive)
+      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
       throws IOException {
     UrlList urlList = UrlList.fromResource("surveymonkey").get();
 
@@ -76,7 +75,17 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
         credentialsStore.readDefaultCredentials(serviceDefinition());
 
     if (credentials.isPresent()) {
-      List<String> surveys = getSurveyIds(client);
+      Optional<List<String>> surveysOpt =
+          completionCache.get(serviceDefinition().shortName(), "surveys", expensive);
+
+      List<String> surveys;
+      if (!surveysOpt.isPresent()) {
+        surveys = CompletionQuery.getIds(client, "https://api.surveymonkey.net/v3/surveys", "data",
+            "id");
+        completionCache.store(serviceDefinition().shortName(), "surveys", surveys);
+      } else {
+        surveys = surveysOpt.get();
+      }
 
       if (!surveys.isEmpty()) {
         List<String> urls = urlList.getUrls();
@@ -92,19 +101,6 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
     }
 
     return CompletableFuture.completedFuture(urlList.matchingUrls(prefix));
-  }
-
-  private List<String> getSurveyIds(OkHttpClient client) throws IOException {
-    try {
-      Map<String, Object> map = AuthUtil.makeJsonMapRequest(client,
-          new Request.Builder().url("https://api.surveymonkey.net/v3/surveys").build());
-
-      List<Map<String, Object>> surveys = (List<Map<String, Object>>) map.get("data");
-
-      return surveys.stream().map(m -> (String) m.get("id")).collect(toList());
-    } catch (IOException ioe) {
-      return Lists.newArrayList();
-    }
   }
 
   @Override public Collection<? extends String> hosts() {

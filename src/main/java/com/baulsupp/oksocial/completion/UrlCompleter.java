@@ -22,13 +22,15 @@ public class UrlCompleter {
   private Iterable<AuthInterceptor<?>> services;
   private OkHttpClient client;
   private CredentialsStore credentialsStore;
+  private CompletionCache completionCache;
   private Clock clock = Clock.systemDefaultZone();
 
   public UrlCompleter(List<AuthInterceptor<?>> services, OkHttpClient client,
-      CredentialsStore credentialsStore) {
+      CredentialsStore credentialsStore, CompletionCache completionCache) {
     this.services = services;
     this.client = client;
     this.credentialsStore = credentialsStore;
+    this.completionCache = completionCache;
   }
 
   public List<String> urlList(String prefix) throws IOException {
@@ -45,24 +47,18 @@ public class UrlCompleter {
     Optional<HttpUrl> fullUrl = parseUrl(prefix);
 
     if (fullUrl.isPresent()) {
-      System.out.println("full");
-
       for (AuthInterceptor<?> a : services) {
         if (a.supportsUrl(fullUrl.get())) {
-          System.out.println(a.name());
-
-          futures.add(a.matchingUrls(prefix, client, credentialsStore, true));
+          futures.add(a.matchingUrls(prefix, client, credentialsStore, completionCache, true));
         }
       }
     } else {
-      System.out.println("quick");
-
       for (AuthInterceptor<?> a : services) {
-        futures.add(a.matchingUrls(prefix, client, credentialsStore, false));
+        futures.add(a.matchingUrls(prefix, client, credentialsStore, completionCache, false));
       }
     }
 
-    for (Future<List<String>> f: futures) {
+    for (Future<List<String>> f : futures) {
       try {
         List<String> result = f.get(to - clock.millis(), TimeUnit.MILLISECONDS);
 

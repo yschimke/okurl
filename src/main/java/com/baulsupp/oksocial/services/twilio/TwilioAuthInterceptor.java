@@ -4,11 +4,12 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.completion.UrlList;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Collection;
@@ -65,7 +66,7 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
   }
 
   @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, boolean expensive)
+      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
       throws IOException {
     UrlList urls = UrlList.fromResource("twilio").get();
 
