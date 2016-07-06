@@ -25,6 +25,7 @@ public class SquareUpTest {
     main.run();
 
     assertEquals(Lists.newArrayList(), output.failures);
+    assertEquals(1, output.stdout.size());
     assertTrue(output.stdout.get(0).contains("/v2/locations/AA/transactions"));
   }
 }

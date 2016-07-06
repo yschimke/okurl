@@ -25,6 +25,7 @@ public class SurveyMonkeyTest {
     main.run();
 
     assertEquals(Lists.newArrayList(), output.failures);
+    assertEquals(1, output.stdout.size());
     assertTrue(output.stdout.get(0).contains("/v3/surveys/AA/details"));
     assertTrue(output.stdout.get(0).contains("/v3/surveys/BB/details"));
   }
