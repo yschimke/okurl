@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
+import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor;
+import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -12,15 +14,19 @@ public class SurveyMonkeyTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCompletionCache completionCache = new TestCompletionCache();
+  private TestCredentialsStore credentialsStore = new TestCredentialsStore();
 
   {
     main.outputHandler = output;
     main.completionCache = completionCache;
+    main.credentialsStore = credentialsStore;
   }
 
   @Test public void completeEndpointWithReplacements() throws Throwable {
     main.urlCompletion = "https://api.surveymonkey.net/";
     completionCache.store("surveymonkey", "surveys", Lists.newArrayList("AA", "BB"));
+    credentialsStore.storeCredentials(new SurveyMonkeyToken("", ""),
+        new SurveyMonkeyAuthInterceptor().serviceDefinition());
 
     main.run();
 

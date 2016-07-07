@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -12,15 +14,19 @@ public class SquareUpTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCompletionCache completionCache = new TestCompletionCache();
+  private TestCredentialsStore credentialsStore = new TestCredentialsStore();
 
   {
     main.outputHandler = output;
     main.completionCache = completionCache;
+    main.credentialsStore = credentialsStore;
   }
 
   @Test public void completeEndpointWithReplacements() throws Throwable {
     main.urlCompletion = "https://connect.squareup.com/";
     completionCache.store("squareup", "locations", Lists.newArrayList("AA", "bb"));
+    credentialsStore.storeCredentials(new Oauth2Token(""),
+        new SquareUpAuthInterceptor().serviceDefinition());
 
     main.run();
 
