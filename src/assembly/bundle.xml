@@ -35,6 +35,13 @@
       <outputDirectory>bash</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory>scripts</outputDirectory>
+      <includes>
+        <include>oksocial.js</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>target/alpn</directory>
       <outputDirectory>alpn</outputDirectory>
     </fileSet>

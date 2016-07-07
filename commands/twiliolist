@@ -1,7 +1,5 @@
 #!/usr/bin/env okshell
 
-load("classpath:oksocial.js");
-
 var account = credentials("twilio");
 
 if (!account) {
