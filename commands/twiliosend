@@ -1,7 +1,5 @@
 #!/usr/bin/env okshell
 
-load("classpath:oksocial.js");
-
 if (arguments.length < 2) {
   usage("usage: twiliosend +1xxxxx message to send");
 }

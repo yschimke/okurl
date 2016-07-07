@@ -25,4 +25,10 @@ if [ $? -ne 0 ]; then
 fi
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_HOME/bin/jjs $BCP -classpath $MAIN_JAR:$(ls target/dependency/*.jar | tr '\n' ':') -scripting "$@"
+if [ -z "$1" ]; then
+  input=-
+else 
+  input=$1
+  shift
+fi
+$JAVA_HOME/bin/jjs $BCP -classpath $MAIN_JAR:$(ls target/dependency/*.jar | tr '\n' ':') -scripting ./src/main/resources/oksocial.js $input -- "$@"
