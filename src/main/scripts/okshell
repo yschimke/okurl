@@ -18,4 +18,4 @@ else
   input=$1
   shift
 fi
-$JAVA_HOME/bin/jjs $BCP -classpath $(ls $INSTALLDIR/lib/*.jar | tr '\n' ':') -scripting ./src/main/resources/oksocial.js $input -- "$@"
+$JAVA_HOME/bin/jjs $BCP -classpath $(ls $INSTALLDIR/lib/*.jar | tr '\n' ':') -scripting $INSTALLDIR/scripts/oksocial.js $input -- "$@"
