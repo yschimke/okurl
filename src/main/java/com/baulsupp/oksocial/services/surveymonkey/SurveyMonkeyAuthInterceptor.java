@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -24,7 +23,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
-import static java.util.stream.Collectors.toList;
 
 /**
  * https://developer.surveymonkey.com/docs/authentication

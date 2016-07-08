@@ -19,14 +19,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
-import static java.util.stream.Collectors.toList;
 
 public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
