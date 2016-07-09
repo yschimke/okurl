@@ -73,7 +73,7 @@ public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredential
         map -> (String) map.get("name")).validate(client);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return TwitterUtil.TWITTER_API_HOSTS;
   }
 }

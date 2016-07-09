@@ -4,6 +4,8 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.completion.ApiCompleter;
+import com.baulsupp.oksocial.completion.BaseUrlCompleter;
 import com.baulsupp.oksocial.completion.CompletionCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
@@ -16,7 +18,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -65,22 +66,24 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
     return (String) accounts.get(0).get("friendly_name");
   }
 
-  @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
+  @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionCache completionCache)
       throws IOException {
-    UrlList urls = UrlList.fromResource("twilio").get();
+    Optional<UrlList> urlList = UrlList.fromResource(name());
 
     Optional<BasicCredentials> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());
 
+    BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
+
     if (credentials.isPresent()) {
-      urls = urls.replace("AccountSid", Lists.newArrayList(credentials.get().user), false);
+      completer.withVariable("AccountSid", Lists.newArrayList(credentials.get().user), false);
     }
 
-    return CompletableFuture.completedFuture(urls.matchingUrls(prefix));
+    return completer;
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return TwilioUtil.API_HOSTS;
   }
 }

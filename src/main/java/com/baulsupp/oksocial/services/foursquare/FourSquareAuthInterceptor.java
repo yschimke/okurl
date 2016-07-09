@@ -69,7 +69,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return user.get("firstName") + " " + user.get("lastName");
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return FourSquareUtil.API_HOSTS;
   }
 }

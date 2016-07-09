@@ -34,35 +34,39 @@ public class UrlCompleter {
   }
 
   public List<String> urlList(String prefix) throws IOException {
-    return endpointUrls(prefix);
-  }
-
-  private List<String> endpointUrls(String prefix) throws IOException {
-    long to = clock.millis() + 2000;
-
-    List<String> results = Lists.newArrayList();
-
-    List<Future<List<String>>> futures = Lists.newArrayList();
+    List<Future<UrlList>> futures = Lists.newArrayList();
 
     Optional<HttpUrl> fullUrl = parseUrl(prefix);
 
     if (fullUrl.isPresent()) {
+      HttpUrl u = fullUrl.get();
+
       for (AuthInterceptor<?> a : services) {
-        if (a.supportsUrl(fullUrl.get())) {
-          futures.add(a.matchingUrls(prefix, client, credentialsStore, completionCache, true));
+        if (a.supportsUrl(u)) {
+          futures.add(
+              a.apiCompleter(prefix, client, credentialsStore, completionCache).siteUrls(u));
         }
       }
     } else {
       for (AuthInterceptor<?> a : services) {
-        futures.add(a.matchingUrls(prefix, client, credentialsStore, completionCache, false));
+        futures.add(
+            a.apiCompleter(prefix, client, credentialsStore, completionCache).prefixUrls());
       }
     }
 
-    for (Future<List<String>> f : futures) {
-      try {
-        List<String> result = f.get(to - clock.millis(), TimeUnit.MILLISECONDS);
+    return futuresToList(prefix, futures);
+  }
 
-        results.addAll(result);
+  private List<String> futuresToList(String prefix, List<Future<UrlList>> futures) {
+    long to = clock.millis() + 2000;
+
+    List<String> results = Lists.newArrayList();
+
+    for (Future<UrlList> f : futures) {
+      try {
+        UrlList result = f.get(to - clock.millis(), TimeUnit.MILLISECONDS);
+
+        results.addAll(result.getUrls(prefix));
       } catch (ExecutionException e) {
         logger.log(Level.WARNING, "failure during url completion", e);
       } catch (InterruptedException | TimeoutException e) {

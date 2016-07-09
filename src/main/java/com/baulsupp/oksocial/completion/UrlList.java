@@ -1,7 +1,9 @@
 package com.baulsupp.oksocial.completion;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +12,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class UrlList {
@@ -19,8 +22,8 @@ public class UrlList {
     this.urls = urls;
   }
 
-  public List<String> getUrls() {
-    return urls;
+  public List<String> getUrls(String prefix) {
+    return urls.stream().filter(u -> u.startsWith(prefix)).collect(toList());
   }
 
   public static Optional<UrlList> fromResource(String serviceName) throws IOException {
@@ -32,8 +35,8 @@ public class UrlList {
     }
   }
 
-  public List<String> matchingUrls(String prefix) {
-    return urls.stream().filter(u -> u.startsWith(prefix)).collect(toList());
+  public UrlList matchingUrls(String prefix) {
+    return new UrlList(urls.stream().filter(u -> u.startsWith(prefix)).collect(toList()));
   }
 
   public UrlList replace(String variable, List<String> replacements, boolean keepTemplate) {
@@ -61,5 +64,11 @@ public class UrlList {
     List<String> newUrls = urls.stream().flatMap(replacementFunction).collect(toList());
 
     return new UrlList(newUrls);
+  }
+
+  public void toFile(File file) throws IOException {
+    String content = ".*\n" + urls.stream().collect(joining("\n"));
+
+    Files.write(content, file, StandardCharsets.UTF_8);
   }
 }

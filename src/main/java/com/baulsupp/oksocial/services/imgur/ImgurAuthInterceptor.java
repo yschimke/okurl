@@ -93,7 +93,7 @@ public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         credentials.clientSecret.get()));
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return ImgurUtil.API_HOSTS;
   }
 }

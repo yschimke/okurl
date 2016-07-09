@@ -1,6 +1,9 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.completion.ApiCompleter;
+import com.baulsupp.oksocial.completion.BaseUrlCompleter;
 import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.HostUrlCompleter;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -9,7 +12,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -17,7 +19,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Optional.empty;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public interface AuthInterceptor<T> {
   default String name() {
@@ -37,7 +40,7 @@ public interface AuthInterceptor<T> {
 
   default Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, T credentials) throws IOException {
-    return CompletableFuture.completedFuture(Optional.empty());
+    return completedFuture(empty());
   }
 
   default boolean canRenew(Response result, T credentials) {
@@ -45,23 +48,19 @@ public interface AuthInterceptor<T> {
   }
 
   default Optional<T> renew(OkHttpClient client, T credentials) throws IOException {
-    return Optional.empty();
+    return empty();
   }
 
-  Collection<? extends String> hosts();
+  Collection<String> hosts();
 
-  default Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
-      throws IOException {
+  default ApiCompleter apiCompleter(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionCache completionCache) throws IOException {
     Optional<UrlList> urlList = UrlList.fromResource(name());
 
     if (urlList.isPresent()) {
-      return CompletableFuture.completedFuture(urlList.get().matchingUrls(prefix));
+      return new BaseUrlCompleter(name(), urlList.get());
     } else {
-      return CompletableFuture.completedFuture(hosts().stream()
-          .map(h -> "https://" + h + "/")
-          .filter(u -> u.startsWith(prefix))
-          .collect(toList()));
+      return new HostUrlCompleter(hosts());
     }
   }
 }

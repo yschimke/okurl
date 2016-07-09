@@ -47,7 +47,7 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<Oauth2Token
     return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return StackExchangeUtil.API_HOSTS;
   }
 }

@@ -42,7 +42,7 @@ public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials>
     return new BasicCredentials(user, password);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return SheetsuUtil.API_HOSTS;
   }
 }
