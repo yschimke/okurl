@@ -35,10 +35,8 @@ public interface AuthInterceptor<T> {
 
   ServiceDefinition<T> serviceDefinition();
 
-  default Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
-      Request.Builder requestBuilder, T credentials) throws IOException {
-    return CompletableFuture.completedFuture(Optional.empty());
-  }
+  Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
+      Request.Builder requestBuilder, T credentials) throws IOException;
 
   default boolean canRenew(Response result, T credentials) {
     return false;

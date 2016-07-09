@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.services.stackexchange;
 
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
-import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -16,8 +15,9 @@ import static java.util.stream.Collectors.joining;
 
 public class StackExchangeAuthFlow {
 
-  public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
-      String clientSecret, Set<String> scopes) throws IOException {
+  public static StackExchangeToken login(OkHttpClient client, OutputHandler outputHandler,
+      String clientId, String clientSecret, String clientKey, Set<String> scopes)
+      throws IOException {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
       String serverUri = s.getRedirectUri();
@@ -41,7 +41,7 @@ public class StackExchangeAuthFlow {
 
       String longTokenBody = makeSimpleRequest(client, request);
 
-      return new Oauth2Token(parseExchangeRequest(longTokenBody));
+      return new StackExchangeToken(parseExchangeRequest(longTokenBody), clientKey);
     }
   }
 
