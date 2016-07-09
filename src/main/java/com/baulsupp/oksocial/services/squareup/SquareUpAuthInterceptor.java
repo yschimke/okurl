@@ -7,8 +7,8 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
-import com.baulsupp.oksocial.completion.CompletionCache;
 import com.baulsupp.oksocial.completion.CompletionQuery;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -69,7 +68,7 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache)
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
     Optional<UrlList> urlList = UrlList.fromResource(name());
 
@@ -79,11 +78,10 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
 
     if (credentials.isPresent()) {
-      Supplier<Future<List<String>>> supplier = () ->
-          CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations", "locations",
-              "id");
-
-      completer.withVariable("locations", supplier, false);
+      completer.withVariable("location", () -> completionVariableCache.compute(name(), "locations",
+          () -> CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations",
+              "locations",
+              "id")));
     }
 
     return completer;

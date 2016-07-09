@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
-import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.HostUrlCompleter;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
@@ -54,7 +54,8 @@ public interface AuthInterceptor<T> {
   Collection<String> hosts();
 
   default ApiCompleter apiCompleter(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache) throws IOException {
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
+      throws IOException {
     Optional<UrlList> urlList = UrlList.fromResource(name());
 
     if (urlList.isPresent()) {

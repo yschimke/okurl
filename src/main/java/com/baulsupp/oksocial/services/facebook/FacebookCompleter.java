@@ -20,7 +20,7 @@ public class FacebookCompleter implements ApiCompleter {
   }
 
   //public Future<UrlList> matchingUrls(String prefix, OkHttpClient client,
-  //    CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
+  //    CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache, boolean expensive)
   //    throws IOException {
   //    HttpUrl url = HttpUrl.parse(prefix);
   //

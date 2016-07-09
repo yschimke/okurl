@@ -5,8 +5,8 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
-import com.baulsupp.oksocial.completion.CompletionCache;
 import com.baulsupp.oksocial.completion.CompletionQuery;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -67,7 +66,7 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
   }
 
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache)
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
     Optional<UrlList> urlList = UrlList.fromResource(name());
 
@@ -77,10 +76,9 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
     BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
 
     if (credentials.isPresent()) {
-      Supplier<Future<List<String>>> supplier = () ->
-          CompletionQuery.getIds(client, "https://api.surveymonkey.net/v3/surveys", "data", "id");
-
-      completer.withVariable("survey", supplier, false);
+      completer.withVariable("survey", () -> completionVariableCache.compute(name(), "surveys",
+          () -> CompletionQuery.getIds(client, "https://api.surveymonkey.net/v3/surveys", "data",
+              "id")));
     }
 
     return completer;

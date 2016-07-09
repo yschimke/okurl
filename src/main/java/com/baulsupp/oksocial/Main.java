@@ -22,8 +22,8 @@ import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
-import com.baulsupp.oksocial.completion.CompletionCache;
-import com.baulsupp.oksocial.completion.TmpCompletionCache;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
+import com.baulsupp.oksocial.completion.TmpCompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlCompleter;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore;
@@ -231,7 +231,7 @@ public class Main extends HelpOption implements Runnable {
 
   public CredentialsStore credentialsStore = null;
 
-  public CompletionCache completionCache;
+  public CompletionVariableCache completionVariableCache;
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -293,7 +293,8 @@ public class Main extends HelpOption implements Runnable {
 
   private List<String> urlCompletionList() throws Exception {
     UrlCompleter completer =
-        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore, completionCache);
+        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore,
+            completionVariableCache);
 
     ShellCommand command = getShellCommand();
 
@@ -351,8 +352,8 @@ public class Main extends HelpOption implements Runnable {
 
     requestBuilder = createRequestBuilder();
 
-    if (completionCache == null) {
-      completionCache = new TmpCompletionCache();
+    if (completionVariableCache == null) {
+      completionVariableCache = new TmpCompletionVariableCache();
     }
   }
 

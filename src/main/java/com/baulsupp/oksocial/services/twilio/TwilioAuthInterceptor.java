@@ -6,7 +6,7 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
-import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -67,7 +67,7 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
   }
 
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache)
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
     Optional<UrlList> urlList = UrlList.fromResource(name());
 
@@ -77,7 +77,7 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
     BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
 
     if (credentials.isPresent()) {
-      completer.withVariable("AccountSid", Lists.newArrayList(credentials.get().user), false);
+      completer.withVariable("AccountSid", Lists.newArrayList(credentials.get().user));
     }
 
     return completer;

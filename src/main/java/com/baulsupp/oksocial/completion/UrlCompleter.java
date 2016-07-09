@@ -22,15 +22,15 @@ public class UrlCompleter {
   private Iterable<AuthInterceptor<?>> services;
   private OkHttpClient client;
   private CredentialsStore credentialsStore;
-  private CompletionCache completionCache;
+  private CompletionVariableCache completionVariableCache;
   private Clock clock = Clock.systemDefaultZone();
 
   public UrlCompleter(List<AuthInterceptor<?>> services, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache) {
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache) {
     this.services = services;
     this.client = client;
     this.credentialsStore = credentialsStore;
-    this.completionCache = completionCache;
+    this.completionVariableCache = completionVariableCache;
   }
 
   public List<String> urlList(String prefix) throws IOException {
@@ -44,13 +44,14 @@ public class UrlCompleter {
       for (AuthInterceptor<?> a : services) {
         if (a.supportsUrl(u)) {
           futures.add(
-              a.apiCompleter(prefix, client, credentialsStore, completionCache).siteUrls(u));
+              a.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+                  .siteUrls(u));
         }
       }
     } else {
       for (AuthInterceptor<?> a : services) {
         futures.add(
-            a.apiCompleter(prefix, client, credentialsStore, completionCache).prefixUrls());
+            a.apiCompleter(prefix, client, credentialsStore, completionVariableCache).prefixUrls());
       }
     }
 

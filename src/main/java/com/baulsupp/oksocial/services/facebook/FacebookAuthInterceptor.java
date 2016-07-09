@@ -76,7 +76,7 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   //@Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
-  //    CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
+  //    CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache, boolean expensive)
   //    throws IOException {
   //  return new FacebookCompleter();
   //}
