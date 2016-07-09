@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.util.ClientException;
 import com.baulsupp.oksocial.util.JsonUtil;
 import java.io.IOException;
 import java.util.Map;
@@ -11,6 +12,10 @@ public class AuthUtil {
   public static String makeSimpleRequest(OkHttpClient client, Request request) throws IOException {
     try (Response response = client.newCall(request).execute()) {
       if (!response.isSuccessful()) {
+        if (response.code() >= 400 && response.code() < 500) {
+          throw new ClientException(response.message(), response.code());
+        }
+
         String message = response.body().string();
 
         if (message.length() == 0) {
