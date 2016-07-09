@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.concurrent.Future;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.toList;
 
 public class HostUrlCompleter implements ApiCompleter {
@@ -15,7 +16,8 @@ public class HostUrlCompleter implements ApiCompleter {
   }
 
   @Override public Future<UrlList> prefixUrls() throws IOException {
-    return completedFuture(new UrlList(hosts.stream().map(h -> "https://" + h + "/")
+    String regex = hosts.size() == 1 ? quote("https://" + hosts.iterator().next() + "/") : ".*";
+    return completedFuture(new UrlList(regex, hosts.stream().map(h -> "https://" + h + "/")
         .collect(toList())));
   }
 }

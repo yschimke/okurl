@@ -26,6 +26,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+import static java.util.regex.Pattern.quote;
 
 public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
@@ -70,7 +71,7 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    Optional<UrlList> urlList = UrlList.fromResource(name());
+    Optional<UrlList> urlList = UrlList.fromResource(quote("https://connect.squareup.com/") + ".*", name());
 
     Optional<Oauth2Token> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());

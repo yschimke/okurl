@@ -21,6 +21,7 @@ import okhttp3.Response;
 
 import static java.util.Optional.empty;
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static java.util.regex.Pattern.quote;
 
 public interface AuthInterceptor<T> {
   default String name() {
@@ -56,7 +57,7 @@ public interface AuthInterceptor<T> {
   default ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    Optional<UrlList> urlList = UrlList.fromResource(name());
+    Optional<UrlList> urlList = UrlList.fromResource(quote(prefix) + ".*", name());
 
     if (urlList.isPresent()) {
       return new BaseUrlCompleter(name(), urlList.get());

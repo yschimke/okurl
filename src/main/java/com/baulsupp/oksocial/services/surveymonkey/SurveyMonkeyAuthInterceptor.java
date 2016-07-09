@@ -24,6 +24,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+import static java.util.regex.Pattern.quote;
 
 /**
  * https://developer.surveymonkey.com/docs/authentication
@@ -68,7 +69,8 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    Optional<UrlList> urlList = UrlList.fromResource(name());
+    Optional<UrlList> urlList =
+        UrlList.fromResource(quote("https://api.surveymonkey.net/") + ".*", name());
 
     Optional<SurveyMonkeyToken> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());

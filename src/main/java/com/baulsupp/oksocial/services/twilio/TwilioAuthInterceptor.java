@@ -25,6 +25,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static java.util.regex.Pattern.quote;
+
 public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> {
   @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
     return new TwilioServiceDefinition();
@@ -69,7 +71,8 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    Optional<UrlList> urlList = UrlList.fromResource(name());
+    Optional<UrlList> urlList =
+        UrlList.fromResource(quote("https://api.twilio.com/") + ".*", name());
 
     Optional<BasicCredentials> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());

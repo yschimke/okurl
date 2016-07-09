@@ -16,9 +16,11 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class UrlList {
+  private final String regex;
   private List<String> urls;
 
-  public UrlList(List<String> urls) {
+  public UrlList(String regex, List<String> urls) {
+    this.regex = regex;
     this.urls = urls;
   }
 
@@ -26,17 +28,13 @@ public class UrlList {
     return urls.stream().filter(u -> u.startsWith(prefix)).collect(toList());
   }
 
-  public static Optional<UrlList> fromResource(String serviceName) throws IOException {
+  public static Optional<UrlList> fromResource(String regex, String serviceName) throws IOException {
     URL url = UrlList.class.getResource("/urls/" + serviceName + ".txt");
     if (url != null) {
-      return Optional.of(new UrlList(Resources.readLines(url, StandardCharsets.UTF_8)));
+      return Optional.of(new UrlList(regex, Resources.readLines(url, StandardCharsets.UTF_8)));
     } else {
       return Optional.empty();
     }
-  }
-
-  public UrlList matchingUrls(String prefix) {
-    return new UrlList(urls.stream().filter(u -> u.startsWith(prefix)).collect(toList()));
   }
 
   public UrlList replace(String variable, List<String> replacements, boolean keepTemplate) {
@@ -63,12 +61,21 @@ public class UrlList {
 
     List<String> newUrls = urls.stream().flatMap(replacementFunction).collect(toList());
 
-    return new UrlList(newUrls);
+    return new UrlList(regex, newUrls);
   }
 
   public void toFile(File file) throws IOException {
-    String content = ".*\n" + urls.stream().collect(joining("\n"));
+    String content = regex + "\n" + urls.stream().collect(joining("\n"));
 
     Files.write(content, file, StandardCharsets.UTF_8);
+  }
+
+  public UrlList combine(UrlList b) {
+    List<String> newUrls = Lists.newArrayList();
+
+    newUrls.addAll(urls);
+    newUrls.addAll(b.urls);
+
+    return new UrlList(this.regex, newUrls);
   }
 }
