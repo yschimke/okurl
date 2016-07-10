@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.completion;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.Future;
+import okhttp3.HttpUrl;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.regex.Pattern.quote;
@@ -13,6 +14,10 @@ public class HostUrlCompleter implements ApiCompleter {
 
   public HostUrlCompleter(Collection<String> hosts) {
     this.hosts = hosts;
+  }
+
+  @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
+    return prefixUrls();
   }
 
   @Override public Future<UrlList> prefixUrls() throws IOException {

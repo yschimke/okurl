@@ -65,7 +65,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -292,18 +291,28 @@ public class Main extends HelpOption implements Runnable {
 
   private String urlCompletionList() throws Exception {
     UrlCompleter completer =
-        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore, completionVariableCache);
+        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore,
+            completionVariableCache);
 
-    Optional<String> fullCompletionUrl = getFullCompletionUrl();
+    Optional<String> fullCompletionUrlOpt = getFullCompletionUrl();
 
-    if (fullCompletionUrl.isPresent()) {
-      UrlList urls = completer.urlList(fullCompletionUrl.get());
+    if (fullCompletionUrlOpt.isPresent()) {
+      String fullCompletionUrl = fullCompletionUrlOpt.get();
+      UrlList urls = completer.urlList(fullCompletionUrl);
 
       if (System.getenv("COMPLETION_FILE") != null) {
-        urls.toFile(new File(System.getenv("COMPLETION_FILE")), stripPrefix);
+        urls.toFile(new File(System.getenv("COMPLETION_FILE")));
       }
 
-      return urls.toString(stripPrefix);
+      List<String> list = urls.getUrls(fullCompletionUrl);
+
+      if (!fullCompletionUrl.equals(urlCompletion)) {
+        return list.stream()
+            .map(u -> u.substring(fullCompletionUrl.length() - urlCompletion.length()))
+            .collect(joining("\n"));
+      } else {
+        return list.stream().collect(joining("\n"));
+      }
     } else {
       return "";
     }

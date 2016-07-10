@@ -77,7 +77,7 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
     Optional<BasicCredentials> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());
 
-    BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
+    BaseUrlCompleter completer = new BaseUrlCompleter(urlList.get(), hosts());
 
     if (credentials.isPresent()) {
       completer.withVariable("AccountSid", Lists.newArrayList(credentials.get().user));

@@ -1,9 +1,10 @@
 package com.baulsupp.oksocial.services.facebook;
 
 import com.baulsupp.oksocial.authenticator.AuthUtil;
-import com.baulsupp.oksocial.completion.ApiCompleter;
+import com.baulsupp.oksocial.completion.HostUrlCompleter;
 import com.baulsupp.oksocial.completion.UrlList;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -13,21 +14,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
-public class FacebookCompleter implements ApiCompleter {
+public class FacebookCompleter extends HostUrlCompleter {
   private OkHttpClient client;
 
-  public FacebookCompleter(OkHttpClient client) {
+  public FacebookCompleter(OkHttpClient client, Collection<String> hosts) {
+    super(hosts);
     this.client = client;
-  }
-
-  @Override public Future<UrlList> prefixUrls() throws IOException {
-    return completedFuture(
-        UrlList.fromResource(quote("https://graph.facebook.com/") + ".*", "facebook").get());
   }
 
   @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {

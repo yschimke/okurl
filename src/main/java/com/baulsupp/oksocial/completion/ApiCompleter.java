@@ -7,7 +7,5 @@ import okhttp3.HttpUrl;
 public interface ApiCompleter {
   Future<UrlList> prefixUrls() throws IOException;
 
-  default Future<UrlList> siteUrls(HttpUrl url) throws IOException {
-    return prefixUrls();
-  }
+  Future<UrlList> siteUrls(HttpUrl url) throws IOException;
 }

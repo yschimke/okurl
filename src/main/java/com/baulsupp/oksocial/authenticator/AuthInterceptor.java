@@ -60,7 +60,7 @@ public interface AuthInterceptor<T> {
     Optional<UrlList> urlList = UrlList.fromResource(quote(prefix) + ".*", name());
 
     if (urlList.isPresent()) {
-      return new BaseUrlCompleter(name(), urlList.get());
+      return new BaseUrlCompleter(urlList.get(), hosts());
     } else {
       return new HostUrlCompleter(hosts());
     }

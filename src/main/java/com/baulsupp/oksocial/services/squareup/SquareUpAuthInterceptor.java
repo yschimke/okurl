@@ -71,12 +71,13 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    Optional<UrlList> urlList = UrlList.fromResource(quote("https://connect.squareup.com/") + ".*", name());
+    Optional<UrlList> urlList =
+        UrlList.fromResource(quote("https://connect.squareup.com/") + ".*", name());
 
     Optional<Oauth2Token> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());
 
-    BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
+    BaseUrlCompleter completer = new BaseUrlCompleter(urlList.get(), hosts());
 
     if (credentials.isPresent()) {
       completer.withVariable("location", () -> completionVariableCache.compute(name(), "locations",

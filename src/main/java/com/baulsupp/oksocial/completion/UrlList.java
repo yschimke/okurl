@@ -28,7 +28,8 @@ public class UrlList {
     return urls.stream().filter(u -> u.startsWith(prefix)).collect(toList());
   }
 
-  public static Optional<UrlList> fromResource(String regex, String serviceName) throws IOException {
+  public static Optional<UrlList> fromResource(String regex, String serviceName)
+      throws IOException {
     URL url = UrlList.class.getResource("/urls/" + serviceName + ".txt");
     if (url != null) {
       return Optional.of(new UrlList(regex, Resources.readLines(url, StandardCharsets.UTF_8)));
@@ -64,13 +65,8 @@ public class UrlList {
     return new UrlList(regex, newUrls);
   }
 
-  public void toFile(File file, String stripPrefix) throws IOException {
+  public void toFile(File file) throws IOException {
     String content = regex + "\n" + urls.stream().collect(joining("\n"));
-
-    //if (stripPrefix > 0) {
-    //  final int finalStripPrefix = stripPrefix;
-    //  urls = urls.stream().map(s -> s.substring(finalStripPrefix)).collect(toList());
-    //}
 
     Files.write(content, file, StandardCharsets.UTF_8);
   }

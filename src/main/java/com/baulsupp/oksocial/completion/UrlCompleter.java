@@ -45,18 +45,26 @@ public class UrlCompleter {
 
       for (AuthInterceptor<?> a : services) {
         if (a.supportsUrl(u)) {
-          futures.add(
-              a.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
-                  .siteUrls(u));
-          break;
+          try {
+            return a.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+                .siteUrls(u)
+                .get();
+          } catch (InterruptedException e) {
+            logger.log(Level.FINE, "interrupted", e);
+          } catch (ExecutionException e) {
+            logger.log(Level.WARNING, "completion failed", e.getCause());
+          }
         }
       }
+
+      // won't match anything
+      return new UrlList("FAILED", Lists.newArrayList());
     } else {
       List<Future<UrlList>> futures = Lists.newArrayList();
 
       for (AuthInterceptor<?> a : services) {
         futures.add(
-            a.apiCompleter(prefix, client, credentialsStore, completionVariableCache).prefixUrls());
+            a.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls());
       }
 
       return futuresToList(prefix, futures);
@@ -74,7 +82,7 @@ public class UrlCompleter {
 
         results.addAll(result.getUrls(prefix));
       } catch (ExecutionException e) {
-        logger.log(Level.WARNING, "failure during url completion", e);
+        logger.log(Level.WARNING, "failure during url completion", e.getCause());
       } catch (InterruptedException | TimeoutException e) {
         logger.log(Level.FINE, "timeout during url completion", e);
       }

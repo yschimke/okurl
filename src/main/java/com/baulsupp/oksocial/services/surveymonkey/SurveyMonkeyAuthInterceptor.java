@@ -75,7 +75,7 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
     Optional<SurveyMonkeyToken> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());
 
-    BaseUrlCompleter completer = new BaseUrlCompleter(name(), urlList.get());
+    BaseUrlCompleter completer = new BaseUrlCompleter(urlList.get(), hosts());
 
     if (credentials.isPresent()) {
       completer.withVariable("survey", () -> completionVariableCache.compute(name(), "surveys",
