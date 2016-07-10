@@ -65,8 +65,9 @@ public class UrlList {
     return new UrlList(regex, newUrls);
   }
 
-  public void toFile(File file) throws IOException {
-    String content = regex + "\n" + urls.stream().collect(joining("\n"));
+  public void toFile(File file, int strip, Optional<String> mainRegex) throws IOException {
+    String content =
+        mainRegex.orElse(regex) + "\n" + urls.stream().map(u -> u.substring(strip)).collect(joining("\n"));
 
     Files.write(content, file, StandardCharsets.UTF_8);
   }

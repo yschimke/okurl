@@ -92,6 +92,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -213,6 +214,8 @@ public class Main extends HelpOption implements Runnable {
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
+  public String completionFile = System.getenv("COMPLETION_FILE");
+
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
@@ -300,19 +303,25 @@ public class Main extends HelpOption implements Runnable {
       String fullCompletionUrl = fullCompletionUrlOpt.get();
       UrlList urls = completer.urlList(fullCompletionUrl);
 
-      if (System.getenv("COMPLETION_FILE") != null) {
-        urls.toFile(new File(System.getenv("COMPLETION_FILE")));
+      final int strip;
+      final Optional<String> regex;
+      if (!fullCompletionUrl.equals(urlCompletion)) {
+        strip = fullCompletionUrl.length() - urlCompletion.length();
+        regex = Optional.of(quote(urlCompletion));
+      } else {
+        strip = 0;
+        regex = Optional.empty();
+      }
+
+      if (completionFile != null) {
+        urls.toFile(new File(completionFile), strip, regex);
       }
 
       List<String> list = urls.getUrls(fullCompletionUrl);
 
-      if (!fullCompletionUrl.equals(urlCompletion)) {
-        return list.stream()
-            .map(u -> u.substring(fullCompletionUrl.length() - urlCompletion.length()))
-            .collect(joining("\n"));
-      } else {
-        return list.stream().collect(joining("\n"));
-      }
+      return list.stream()
+          .map(u -> u.substring(strip))
+          .collect(joining("\n"));
     } else {
       return "";
     }

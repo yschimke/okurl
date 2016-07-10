@@ -2,6 +2,11 @@ package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -56,5 +61,37 @@ public class CompletionTest {
     main.run();
 
     assertEquals(Lists.newArrayList("/users.json\n/usersList.json"), output.stdout);
+  }
+
+  @Test public void completeEndpointsForTwitter() throws Throwable {
+    main.urlCompletion = "/";
+    main.commandName = "okapi";
+    main.arguments = Lists.newArrayList("commands/twitterapi");
+    main.completionFile = File.createTempFile("oksocialtest", ".txt").getPath();
+
+    main.run();
+
+    assertEquals(1, output.stdout.size());
+    assertTrue(output.stdout.get(0).contains("\n/1.1/geo/places.json\n"));
+
+    List<String> cacheFileContent =
+        Files.readAllLines(FileSystems.getDefault().getPath(main.completionFile));
+    assertEquals("\\Q/\\E", cacheFileContent.get(0));
+    assertTrue(cacheFileContent.contains("/1.1/geo/places.json"));
+  }
+
+  @Test public void completeEndpointsForTwitterApi() throws Throwable {
+    main.urlCompletion = "https://api.twitter.com/";
+    main.completionFile = File.createTempFile("oksocialtest", ".txt").getPath();
+
+    main.run();
+
+    assertEquals(1, output.stdout.size());
+    assertTrue(output.stdout.get(0).contains("\nhttps://api.twitter.com/1.1/geo/places.json\n"));
+
+    List<String> cacheFileContent =
+        Files.readAllLines(FileSystems.getDefault().getPath(main.completionFile));
+    assertEquals("\\Qhttps://api.twitter.com/\\E.*", cacheFileContent.get(0));
+    assertTrue(cacheFileContent.contains("https://api.twitter.com/1.1/geo/places.json"));
   }
 }
