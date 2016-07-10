@@ -64,8 +64,13 @@ public class UrlList {
     return new UrlList(regex, newUrls);
   }
 
-  public void toFile(File file) throws IOException {
+  public void toFile(File file, String stripPrefix) throws IOException {
     String content = regex + "\n" + urls.stream().collect(joining("\n"));
+
+    //if (stripPrefix > 0) {
+    //  final int finalStripPrefix = stripPrefix;
+    //  urls = urls.stream().map(s -> s.substring(finalStripPrefix)).collect(toList());
+    //}
 
     Files.write(content, file, StandardCharsets.UTF_8);
   }

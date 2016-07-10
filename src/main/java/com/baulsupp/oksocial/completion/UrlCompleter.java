@@ -16,6 +16,9 @@ import java.util.logging.Logger;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
+import static java.lang.Math.min;
+import static java.util.regex.Pattern.quote;
+
 public class UrlCompleter {
   private static Logger logger = Logger.getLogger(UrlCompleter.class.getName());
 
@@ -33,8 +36,7 @@ public class UrlCompleter {
     this.completionVariableCache = completionVariableCache;
   }
 
-  public List<String> urlList(String prefix) throws IOException {
-    List<Future<UrlList>> futures = Lists.newArrayList();
+  public UrlList urlList(String prefix) throws IOException {
 
     Optional<HttpUrl> fullUrl = parseUrl(prefix);
 
@@ -46,19 +48,22 @@ public class UrlCompleter {
           futures.add(
               a.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
                   .siteUrls(u));
+          break;
         }
       }
     } else {
+      List<Future<UrlList>> futures = Lists.newArrayList();
+
       for (AuthInterceptor<?> a : services) {
         futures.add(
             a.apiCompleter(prefix, client, credentialsStore, completionVariableCache).prefixUrls());
       }
-    }
 
-    return futuresToList(prefix, futures);
+      return futuresToList(prefix, futures);
+    }
   }
 
-  private List<String> futuresToList(String prefix, List<Future<UrlList>> futures) {
+  private UrlList futuresToList(String prefix, List<Future<UrlList>> futures) {
     long to = clock.millis() + 2000;
 
     List<String> results = Lists.newArrayList();
@@ -75,7 +80,7 @@ public class UrlCompleter {
       }
     }
 
-    return results;
+    return new UrlList(quote(prefix), results);
   }
 
   private Optional<HttpUrl> parseUrl(String prefix) {
@@ -88,5 +93,9 @@ public class UrlCompleter {
 
   private boolean isSingleApi(String prefix) {
     return prefix.matches("https://[^/]+/.*");
+  }
+
+  public static boolean isPossibleAddress(String urlCompletion) {
+    return urlCompletion.startsWith("https://".substring(0, min(urlCompletion.length(), 8)));
   }
 }
