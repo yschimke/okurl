@@ -34,7 +34,7 @@ public class CompletionTest {
     main.run();
 
     assertEquals(Lists.newArrayList(
-        "https://api1.test.com/account.json https://api1.test.com/users.json https://api1.test.com/usersList.json"),
+        "https://api1.test.com/"),
         output.stdout);
   }
 
@@ -45,7 +45,7 @@ public class CompletionTest {
 
     main.run();
 
-    assertEquals(Lists.newArrayList("/account.json /users.json /usersList.json"), output.stdout);
+    assertEquals(Lists.newArrayList("/account.json\n/users.json\n/usersList.json"), output.stdout);
   }
 
   @Test public void completeEndpointShortCommand2() throws Throwable {
@@ -55,6 +55,6 @@ public class CompletionTest {
 
     main.run();
 
-    assertEquals(Lists.newArrayList("/users.json /usersList.json"), output.stdout);
+    assertEquals(Lists.newArrayList("/users.json\n/usersList.json"), output.stdout);
   }
 }

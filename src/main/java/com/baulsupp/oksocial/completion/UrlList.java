@@ -79,4 +79,18 @@ public class UrlList {
 
     return new UrlList(this.regex, newUrls);
   }
+
+  @Override public String toString() {
+    return urls.stream().collect(joining("\n"));
+  }
+
+  @Override public boolean equals(Object obj) {
+    if (!(obj instanceof UrlList)) {
+      return false;
+    }
+
+    UrlList other = ((UrlList) obj);
+
+    return other.regex.equals(this.regex) && other.urls.equals(this.urls);
+  }
 }
