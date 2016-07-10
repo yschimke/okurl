@@ -35,7 +35,7 @@ public class UrlCompleterTest {
 
   @Test public void returnsAllUrls() throws IOException {
     assertEquals(
-        new UrlList(quote(""), Lists.newArrayList("https://test.com/", "https://api1.test.com/")),
+        new UrlList(UrlList.Match.HOSTS, Lists.newArrayList("https://test.com/", "https://api1.test.com/")),
         completer.urlList(""));
   }
 

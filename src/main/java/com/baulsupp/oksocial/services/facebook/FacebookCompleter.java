@@ -14,7 +14,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -47,9 +46,12 @@ public class FacebookCompleter extends HostUrlCompleter {
     CompletableFuture<FacebookMetadata> metadataFuture = getMetadata(client, HttpUrl.parse(prefix));
 
     return metadataFuture.thenApply(
-        metadata -> new UrlList(quote(prefix) + ".*",
-            metadata.connections().stream().map(c -> prefix + "/" + c).collect(toList())))
-        .exceptionally(e -> new UrlList(quote(prefix) + ".*", newArrayList()));
+        metadata -> {
+          List<String> urls =
+              metadata.connections().stream().map(c -> prefix + "/" + c).collect(toList());
+          urls.add(prefix);
+          return new UrlList(UrlList.Match.EXACT, urls);})
+        .exceptionally(e -> new UrlList(UrlList.Match.EXACT, newArrayList()));
   }
 
   private CompletableFuture<FacebookMetadata> getMetadata(OkHttpClient client, HttpUrl url) {

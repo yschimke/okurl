@@ -2,11 +2,12 @@ package com.baulsupp.oksocial.completion;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 import okhttp3.HttpUrl;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.toList;
 
 public class HostUrlCompleter implements ApiCompleter {
@@ -17,12 +18,18 @@ public class HostUrlCompleter implements ApiCompleter {
   }
 
   @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
-    return prefixUrls();
+    return completedFuture(
+        new UrlList(UrlList.Match.SITE, urls()));
+  }
+
+  private List<String> urls() {
+    return hosts.stream()
+        .flatMap(h -> Stream.of("https://" + h, "https://" + h + "/"))
+        .collect(toList());
   }
 
   @Override public Future<UrlList> prefixUrls() throws IOException {
-    String regex = hosts.size() == 1 ? quote("https://" + hosts.iterator().next() + "/") : ".*";
-    return completedFuture(new UrlList(regex, hosts.stream().map(h -> "https://" + h + "/")
-        .collect(toList())));
+    return completedFuture(
+        new UrlList(UrlList.Match.HOSTS, urls()));
   }
 }

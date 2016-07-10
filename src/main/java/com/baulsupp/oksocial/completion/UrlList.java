@@ -16,11 +16,15 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class UrlList {
-  private final String regex;
+  public enum Match {
+    EXACT, SITE, HOSTS
+  }
+
+  private Match match;
   private List<String> urls;
 
-  public UrlList(String regex, List<String> urls) {
-    this.regex = regex;
+  public UrlList(Match match, List<String> urls) {
+    this.match = match;
     this.urls = urls;
   }
 
@@ -32,7 +36,8 @@ public class UrlList {
       throws IOException {
     URL url = UrlList.class.getResource("/urls/" + serviceName + ".txt");
     if (url != null) {
-      return Optional.of(new UrlList(regex, Resources.readLines(url, StandardCharsets.UTF_8)));
+      return Optional.of(
+          new UrlList(Match.SITE, Resources.readLines(url, StandardCharsets.UTF_8)));
     } else {
       return Optional.empty();
     }
@@ -62,14 +67,28 @@ public class UrlList {
 
     List<String> newUrls = urls.stream().flatMap(replacementFunction).collect(toList());
 
-    return new UrlList(regex, newUrls);
+    return new UrlList(match, newUrls);
   }
 
-  public void toFile(File file, int strip, Optional<String> mainRegex) throws IOException {
-    String content =
-        mainRegex.orElse(regex) + "\n" + urls.stream().map(u -> u.substring(strip)).collect(joining("\n"));
+  public void toFile(File file, int strip, String prefix) throws IOException {
+    String content = regex(prefix) + "\n" + urls.stream()
+        .map(u -> u.substring(strip))
+        .collect(joining("\n"));
 
     Files.write(content, file, StandardCharsets.UTF_8);
+  }
+
+  private String regex(String prefix) {
+    switch (match) {
+      case EXACT:
+        return prefix;
+      case HOSTS:
+        return "[^/]*:?/?/?[^/]*";
+      case SITE:
+        return prefix + ".*";
+      default:
+        throw new IllegalArgumentException();
+    }
   }
 
   public UrlList combine(UrlList b) {
@@ -78,7 +97,14 @@ public class UrlList {
     newUrls.addAll(urls);
     newUrls.addAll(b.urls);
 
-    return new UrlList(this.regex, newUrls);
+    Match newMatch;
+    if (match == b.match) {
+      newMatch = match;
+    } else {
+      newMatch = Match.EXACT;
+    }
+
+    return new UrlList(newMatch, newUrls);
   }
 
   @Override public String toString() {
@@ -92,6 +118,10 @@ public class UrlList {
 
     UrlList other = ((UrlList) obj);
 
-    return other.regex.equals(this.regex) && other.urls.equals(this.urls);
+    return other.match == this.match && other.urls.equals(this.urls);
+  }
+
+  @Override public int hashCode() {
+    return match.hashCode() ^ urls.hashCode();
   }
 }

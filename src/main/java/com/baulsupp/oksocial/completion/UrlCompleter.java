@@ -58,7 +58,7 @@ public class UrlCompleter {
       }
 
       // won't match anything
-      return new UrlList("FAILED", Lists.newArrayList());
+      return new UrlList(UrlList.Match.EXACT, Lists.newArrayList());
     } else {
       List<Future<UrlList>> futures = Lists.newArrayList();
 
@@ -88,7 +88,7 @@ public class UrlCompleter {
       }
     }
 
-    return new UrlList(quote(prefix), results);
+    return new UrlList(UrlList.Match.HOSTS, results);
   }
 
   private Optional<HttpUrl> parseUrl(String prefix) {

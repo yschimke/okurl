@@ -16,7 +16,7 @@ function _oksocial_is_cache_valid ()
     regex=$(head -n 1 $cache_file)
     _ok_social_debug "regex $regex"
 
-    if [[ "$cur" =~ $regex ]]; then
+    if [[ "$cur" =~ ^$regex$ ]]; then
       _ok_social_debug "match"
       return 1
     else

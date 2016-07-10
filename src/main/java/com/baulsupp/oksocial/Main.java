@@ -304,17 +304,14 @@ public class Main extends HelpOption implements Runnable {
       UrlList urls = completer.urlList(fullCompletionUrl);
 
       final int strip;
-      final Optional<String> regex;
       if (!fullCompletionUrl.equals(urlCompletion)) {
         strip = fullCompletionUrl.length() - urlCompletion.length();
-        regex = Optional.of(quote(urlCompletion));
       } else {
         strip = 0;
-        regex = Optional.empty();
       }
 
       if (completionFile != null) {
-        urls.toFile(new File(completionFile), strip, regex);
+        urls.toFile(new File(completionFile), strip, urlCompletion);
       }
 
       List<String> list = urls.getUrls(fullCompletionUrl);
