@@ -72,7 +72,7 @@ public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> 
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
     Optional<UrlList> urlList =
-        UrlList.fromResource(quote("https://api.twilio.com/") + ".*", name());
+        UrlList.fromResource(name());
 
     Optional<BasicCredentials> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());

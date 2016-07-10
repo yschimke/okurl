@@ -32,7 +32,7 @@ public class UrlList {
     return urls.stream().filter(u -> u.startsWith(prefix)).collect(toList());
   }
 
-  public static Optional<UrlList> fromResource(String regex, String serviceName)
+  public static Optional<UrlList> fromResource(String serviceName)
       throws IOException {
     URL url = UrlList.class.getResource("/urls/" + serviceName + ".txt");
     if (url != null) {
