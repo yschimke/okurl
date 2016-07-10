@@ -2,7 +2,8 @@
 
 function _ok_social_debug ()
 {
-  echo "$*" >> /tmp/oksocialcached.test
+#  echo "$*" >> /tmp/oksocialcached.test
+  return
 }
 
 function _oksocial_is_cache_valid ()
