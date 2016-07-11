@@ -3,7 +3,7 @@
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 codesha() {
-  find pom.xml src -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
+  find pom.xml src/main -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
 }
 
 SHA=$(codesha)
