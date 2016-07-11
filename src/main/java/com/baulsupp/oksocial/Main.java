@@ -400,6 +400,8 @@ public class Main extends HelpOption implements Runnable {
   private void showCredentials() throws Exception {
     Iterable<AuthInterceptor<?>> services = serviceInterceptor.services();
 
+    boolean full = !arguments.isEmpty();
+
     if (!arguments.isEmpty()) {
       services = arguments.stream().flatMap(a ->
           optionalStream(findAuthInterceptor(a))).collect(
@@ -408,7 +410,7 @@ public class Main extends HelpOption implements Runnable {
 
     PrintCredentials printCredentials =
         new PrintCredentials(client, credentialsStore);
-    printCredentials.printKnownCredentials(createRequestBuilder(), services);
+    printCredentials.printKnownCredentials(createRequestBuilder(), services, full);
   }
 
   private OutputHandler buildHandler() {

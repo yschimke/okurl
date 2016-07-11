@@ -22,7 +22,7 @@ public class PrintCredentials {
   }
 
   public <T> void printKnownCredentials(Request.Builder requestBuilder,
-      AuthInterceptor<T> a) {
+      AuthInterceptor<T> a, boolean full) {
     ServiceDefinition<T> sd = a.serviceDefinition();
     Optional<T> credentials = credentialsStore.readDefaultCredentials(sd);
 
@@ -33,34 +33,45 @@ public class PrintCredentials {
         Optional<ValidatedCredentials> validated =
             a.validate(client, requestBuilder, credentials.get()).get(5, TimeUnit.SECONDS);
 
-        printSuccess(sd, credentialsString, validated);
+        printSuccess(sd, credentialsString, validated, full);
       } catch (IOException | InterruptedException | TimeoutException e) {
-        printFailed(sd, credentialsString, e);
+        printFailed(sd, credentialsString, e, full);
       } catch (ExecutionException e) {
-        printFailed(sd, credentialsString, e.getCause());
+        printFailed(sd, credentialsString, e.getCause(), full);
       }
     } else {
-      printSuccess(sd, empty(), empty());
+      printSuccess(sd, empty(), empty(), full);
     }
   }
 
   private <T> void printSuccess(ServiceDefinition<T> sd, Optional<String> credentialsString,
-      Optional<ValidatedCredentials> validated) {
-    System.out.format("%-20s\t%20s\t%20s\n\t%s\n", sd.serviceName(),
-        validated.flatMap(v -> v.username).orElse("-"),
-        validated.flatMap(v -> v.clientName).orElse("-"), credentialsString.orElse("-"));
+      Optional<ValidatedCredentials> validated, boolean full) {
+    if (full) {
+      System.out.format("%-20s\t%20s\t%20s\n\t%s\n", sd.serviceName(),
+          validated.flatMap(v -> v.username).orElse("-"),
+          validated.flatMap(v -> v.clientName).orElse("-"), credentialsString.orElse("-"));
+    } else {
+      System.out.format("%-20s\t%20s\t%20s\n", sd.serviceName(),
+          validated.flatMap(v -> v.username).orElse("-"),
+          validated.flatMap(v -> v.clientName).orElse("-"));
+    }
   }
 
   private <T> void printFailed(ServiceDefinition<T> sd, Optional<String> credentialsString,
-      Throwable e) {
-    System.out.format("%-20s\t%s\n\t%s\n", sd.serviceName(),
-        e.toString(), credentialsString.orElse("-"));
+      Throwable e, boolean full) {
+    if (full) {
+      System.out.format("%-20s\t%s\n\t%s\n", sd.serviceName(),
+          e.toString(), credentialsString.orElse("-"));
+    } else {
+      System.out.format("%-20s\t%s\n", sd.serviceName(),
+          e.toString());
+    }
   }
 
   public void printKnownCredentials(Request.Builder requestBuilder,
-      Iterable<AuthInterceptor<?>> services) {
+      Iterable<AuthInterceptor<?>> services, boolean full) {
     for (AuthInterceptor a : services) {
-      printKnownCredentials(requestBuilder, a);
+      printKnownCredentials(requestBuilder, a, full);
     }
   }
 }
