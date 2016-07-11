@@ -75,7 +75,7 @@ public class StackExchangeAuthInterceptor implements AuthInterceptor<StackExchan
         scopes);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return StackExchangeUtil.API_HOSTS;
   }
 }

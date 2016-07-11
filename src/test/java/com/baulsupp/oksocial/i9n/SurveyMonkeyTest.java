@@ -13,12 +13,12 @@ public class SurveyMonkeyTest {
 
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
-  private TestCompletionCache completionCache = new TestCompletionCache();
+  private TestCompletionVariableCache completionCache = new TestCompletionVariableCache();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
 
   {
     main.outputHandler = output;
-    main.completionCache = completionCache;
+    main.completionVariableCache = completionCache;
     main.credentialsStore = credentialsStore;
   }
 

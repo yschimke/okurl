@@ -7,16 +7,18 @@ import static org.junit.Assert.assertEquals;
 
 public class UrlListTest {
   @Test public void testReplacements() {
-    UrlList l = new UrlList(newArrayList("https://a.com/{location}", "https://a.com/here"));
+    UrlList l = new UrlList(UrlList.Match.EXACT,
+        newArrayList("https://a.com/{location}", "https://a.com/here"));
 
     assertEquals(newArrayList("https://a.com/A", "https://a.com/B", "https://a.com/{location}",
-        "https://a.com/here"), l.replace("location", newArrayList("A", "B"), true).getUrls());
+        "https://a.com/here"), l.replace("location", newArrayList("A", "B"), true).getUrls(""));
   }
 
   @Test public void testReplacementsEmpty() {
-    UrlList l = new UrlList(newArrayList("https://a.com/{location}", "https://a.com/here"));
+    UrlList l = new UrlList(UrlList.Match.EXACT,
+        newArrayList("https://a.com/{location}", "https://a.com/here"));
 
     assertEquals(newArrayList("https://a.com/{location}", "https://a.com/here"),
-        l.replace("location", newArrayList(), true).getUrls());
+        l.replace("location", newArrayList(), true).getUrls(""));
   }
 }

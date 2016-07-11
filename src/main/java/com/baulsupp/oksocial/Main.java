@@ -22,9 +22,10 @@ import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
-import com.baulsupp.oksocial.completion.CompletionCache;
-import com.baulsupp.oksocial.completion.TmpCompletionCache;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
+import com.baulsupp.oksocial.completion.TmpCompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlCompleter;
+import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
@@ -64,7 +65,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -213,6 +213,8 @@ public class Main extends HelpOption implements Runnable {
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
+  public String completionFile = System.getenv("COMPLETION_FILE");
+
   @Arguments(title = "arguments", description = "Remote resource URLs")
   public List<String> arguments = new ArrayList<>();
 
@@ -231,7 +233,7 @@ public class Main extends HelpOption implements Runnable {
 
   public CredentialsStore credentialsStore = null;
 
-  public CompletionCache completionCache;
+  public CompletionVariableCache completionVariableCache;
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -272,9 +274,7 @@ public class Main extends HelpOption implements Runnable {
       }
 
       if (urlCompletion != null) {
-        List<String> l = urlCompletionList();
-
-        outputHandler.info(l.stream().collect(joining(" ")));
+        outputHandler.info(urlCompletionList());
         return;
       }
 
@@ -291,13 +291,40 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private List<String> urlCompletionList() throws Exception {
+  private String urlCompletionList() throws Exception {
     UrlCompleter completer =
-        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore, completionCache);
+        new UrlCompleter(serviceInterceptor.services(), client, credentialsStore,
+            completionVariableCache);
 
+    Optional<String> fullCompletionUrlOpt = getFullCompletionUrl();
+
+    if (fullCompletionUrlOpt.isPresent()) {
+      String fullCompletionUrl = fullCompletionUrlOpt.get();
+      UrlList urls = completer.urlList(fullCompletionUrl);
+
+      final int strip;
+      if (!fullCompletionUrl.equals(urlCompletion)) {
+        strip = fullCompletionUrl.length() - urlCompletion.length();
+      } else {
+        strip = 0;
+      }
+
+      if (completionFile != null) {
+        urls.toFile(new File(completionFile), strip, urlCompletion);
+      }
+
+      List<String> list = urls.getUrls(fullCompletionUrl);
+
+      return list.stream()
+          .map(u -> u.substring(strip))
+          .collect(joining("\n"));
+    } else {
+      return "";
+    }
+  }
+
+  private Optional<String> getFullCompletionUrl() throws Exception {
     ShellCommand command = getShellCommand();
-
-    int stripPrefix = 0;
 
     if (command instanceof JavascriptApiCommand) {
       ((JavascriptApiCommand) command).setMain(this);
@@ -317,23 +344,15 @@ public class Main extends HelpOption implements Runnable {
 
         String newUrlCompletion = newUrl.toString();
 
-        if (!(newUrlCompletion.endsWith(urlCompletion))) {
-          return Collections.emptyList();
+        if (newUrlCompletion.endsWith(urlCompletion)) {
+          return Optional.of(newUrlCompletion);
         }
-
-        stripPrefix = newUrlCompletion.length() - urlCompletion.length();
-        urlCompletion = newUrlCompletion;
       }
+    } else if (UrlCompleter.isPossibleAddress(urlCompletion)) {
+      return Optional.of(urlCompletion);
     }
 
-    List<String> urls = completer.urlList(urlCompletion);
-
-    if (stripPrefix > 0) {
-      final int finalStripPrefix = stripPrefix;
-      urls = urls.stream().map(s -> s.substring(finalStripPrefix)).collect(toList());
-    }
-
-    return urls;
+    return Optional.empty();
   }
 
   public void initialise() throws Exception {
@@ -351,8 +370,8 @@ public class Main extends HelpOption implements Runnable {
 
     requestBuilder = createRequestBuilder();
 
-    if (completionCache == null) {
-      completionCache = new TmpCompletionCache();
+    if (completionVariableCache == null) {
+      completionVariableCache = new TmpCompletionVariableCache();
     }
   }
 

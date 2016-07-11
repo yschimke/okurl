@@ -5,6 +5,9 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.completion.ApiCompleter;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
@@ -71,7 +74,13 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         apiRequest("/app", requestBuilder), this::extract).validate(client);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return FacebookUtil.API_HOSTS;
+  }
+
+  @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
+      throws IOException {
+    return new FacebookCompleter(client, hosts());
   }
 }

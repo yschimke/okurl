@@ -10,7 +10,6 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +94,7 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         credentials.clientSecret.get()));
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Set<String> hosts() {
     return LyftUtil.API_HOSTS;
   }
 }

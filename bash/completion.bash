@@ -1,6 +1,39 @@
+#@IgnoreInspection BashAddShebang
+
+function _ok_social_debug ()
+{
+  echo "$*" >> /tmp/oksocialcached.test
+  return
+}
+
+function _oksocial_is_cache_valid ()
+{
+  local cache_file cur regex
+  cache_file=$1
+  cur=$2
+
+  _ok_social_debug "checking $cache_file '$cur'"
+  if [ -f "$cache_file" ]; then
+    regex=$(head -n 1 $cache_file)
+    _ok_social_debug "regex $regex"
+
+    if [[ "$cur" =~ ^$regex$ ]]; then
+      _ok_social_debug "match"
+      return 1
+    else
+      _ok_social_debug "no match"
+      return 0
+    fi
+  else
+    _ok_social_debug "no regex"
+
+    return 0
+  fi
+}
+
 function _oksocial_complete ()
 {
-  local cur prev words cword _cached
+  local cur prev words cword cache_file paths
   COMPREPLY=()
 	job="${COMP_WORDS[0]}"
 	cur="${COMP_WORDS[COMP_CWORD]}"
@@ -47,27 +80,21 @@ function _oksocial_complete ()
 
   _get_comp_words_by_ref -n : cur
 
-  _cached=0
+  cache_file=$TMPDIR$job-complete.cache
 
-  # something cached even null
-  if [ -n "${_oksocial_paths+xx}" -a "$job" == "$_oksocial_last_job" ]; then
-    # exact match
-    if [ "$cur" == "$_oksocial_last_cur" ]; then
-      _cached=1
-    elif [ "${cur#$_oksocial_last_cur}" != "${cur}" ]; then
-      _cached=2
-    fi
+  if _oksocial_is_cache_valid $cache_file $cur; then
+    _ok_social_debug compute
+
+    paths=$(COMPLETION_FILE=$cache_file $job --urlCompletion "$cur")
+
+    _ok_social_debug result $(wc -l $cache_file)
+  else
+    _ok_social_debug cached
+
+    paths=$(tail -n +2 $cache_file)
   fi
 
-  #echo "$_cached '$cur' '$_oksocial_last_cur'" >> /tmp/cached.test
-
-  if [ "$_cached" == "0" ]; then
-    _oksocial_paths=$($job --urlCompletion "$cur")
-    _oksocial_last_job="$job"
-    _oksocial_last_cur="$cur"
-  fi
-
-  COMPREPLY=( $( compgen -o nospace -W "$_oksocial_paths" -- "$cur" ) )
+  COMPREPLY=( $( compgen -o nospace -W "$paths" -- "$cur" ) )
 
   # bash 4
   #compopt -o nospace

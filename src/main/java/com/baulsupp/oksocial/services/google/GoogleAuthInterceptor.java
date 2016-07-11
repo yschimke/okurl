@@ -69,7 +69,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         fieldExtractor("name")).validate(client);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return GoogleUtil.API_HOSTS;
   }
 }

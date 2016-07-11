@@ -43,7 +43,7 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return new Oauth2ServiceDefinition("localhost", "Test Service", "test");
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return Arrays.asList("test.com", "api1.test.com");
   }
 }

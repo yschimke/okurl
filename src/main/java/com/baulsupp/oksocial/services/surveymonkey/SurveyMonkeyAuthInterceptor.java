@@ -3,8 +3,10 @@ package com.baulsupp.oksocial.services.surveymonkey;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
-import com.baulsupp.oksocial.completion.CompletionCache;
+import com.baulsupp.oksocial.completion.ApiCompleter;
+import com.baulsupp.oksocial.completion.BaseUrlCompleter;
 import com.baulsupp.oksocial.completion.CompletionQuery;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
@@ -14,7 +16,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -64,34 +65,27 @@ public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkey
         fieldExtractor("username")).validate(client);
   }
 
-  @Override public Future<List<String>> matchingUrls(String prefix, OkHttpClient client,
-      CredentialsStore credentialsStore, CompletionCache completionCache, boolean expensive)
+  @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    UrlList urlList = UrlList.fromResource("surveymonkey").get();
+    Optional<UrlList> urlList =
+        UrlList.fromResource(name());
 
     Optional<SurveyMonkeyToken> credentials =
         credentialsStore.readDefaultCredentials(serviceDefinition());
 
+    BaseUrlCompleter completer = new BaseUrlCompleter(urlList.get(), hosts());
+
     if (credentials.isPresent()) {
-      Optional<List<String>> surveysOpt =
-          completionCache.get(serviceDefinition().shortName(), "surveys", expensive);
-
-      List<String> surveys;
-      if (!surveysOpt.isPresent()) {
-        surveys = CompletionQuery.getIds(client, "https://api.surveymonkey.net/v3/surveys", "data",
-            "id");
-        completionCache.store(serviceDefinition().shortName(), "surveys", surveys);
-      } else {
-        surveys = surveysOpt.get();
-      }
-
-      urlList = urlList.replace("survey", surveys, true);
+      completer.withVariable("survey", () -> completionVariableCache.compute(name(), "surveys",
+          () -> CompletionQuery.getIds(client, "https://api.surveymonkey.net/v3/surveys", "data",
+              "id")));
     }
 
-    return CompletableFuture.completedFuture(urlList.matchingUrls(prefix));
+    return completer;
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return SurveyMonkeyUtil.API_HOSTS;
   }
 }

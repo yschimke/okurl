@@ -54,7 +54,7 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         map -> map.get("first_name") + " " + map.get("last_name")).validate(client);
   }
 
-  @Override public Collection<? extends String> hosts() {
+  @Override public Collection<String> hosts() {
     return UberUtil.API_HOSTS;
   }
 }
