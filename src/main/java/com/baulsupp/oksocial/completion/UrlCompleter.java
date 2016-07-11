@@ -17,7 +17,6 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 import static java.lang.Math.min;
-import static java.util.regex.Pattern.quote;
 
 public class UrlCompleter {
   private static Logger logger = Logger.getLogger(UrlCompleter.class.getName());

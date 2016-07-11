@@ -2,7 +2,7 @@
 
 function _ok_social_debug ()
 {
-#  echo "$*" >> /tmp/oksocialcached.test
+  echo "$*" >> /tmp/oksocialcached.test
   return
 }
 
@@ -86,6 +86,8 @@ function _oksocial_complete ()
     _ok_social_debug compute
 
     paths=$(COMPLETION_FILE=$cache_file $job --urlCompletion "$cur")
+
+    _ok_social_debug result $(wc -l $cache_file)
   else
     _ok_social_debug cached
 

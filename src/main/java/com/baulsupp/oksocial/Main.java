@@ -92,7 +92,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 

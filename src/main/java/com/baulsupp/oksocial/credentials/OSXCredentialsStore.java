@@ -16,6 +16,10 @@ public class OSXCredentialsStore implements CredentialsStore {
     this.tokenSet = tokenSet;
   }
 
+  public OSXCredentialsStore() {
+    this(Optional.empty());
+  }
+
   @Override public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
     try {
       Process process =

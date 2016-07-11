@@ -25,8 +25,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static java.util.regex.Pattern.quote;
-
 public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> {
   @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
     return new TwilioServiceDefinition();
