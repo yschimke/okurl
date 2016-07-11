@@ -14,7 +14,6 @@ import java.util.Optional;
 import okhttp3.OkHttpClient;
 import org.junit.Test;
 
-import static java.util.regex.Pattern.quote;
 import static org.junit.Assert.assertEquals;
 
 public class UrlCompleterTest {
@@ -35,13 +34,16 @@ public class UrlCompleterTest {
 
   @Test public void returnsAllUrls() throws IOException {
     assertEquals(
-        new UrlList(UrlList.Match.HOSTS, Lists.newArrayList("https://test.com/", "https://api1.test.com/")),
+        new UrlList(UrlList.Match.HOSTS,
+            Lists.newArrayList("https://test.com", "https://test.com/", "https://api1.test.com",
+                "https://api1.test.com/")),
         completer.urlList(""));
   }
 
   @Test public void returnsMatchingUrls() throws IOException {
     assertEquals(
-        Lists.newArrayList("https://api1.test.com/"), completer.urlList("https://api1").getUrls("https://api1"));
+        Lists.newArrayList("https://api1.test.com", "https://api1.test.com/"),
+        completer.urlList("https://api1").getUrls("https://api1"));
     assertEquals(Lists.newArrayList(), completer.urlList("https://api2").getUrls("https://api2"));
   }
 

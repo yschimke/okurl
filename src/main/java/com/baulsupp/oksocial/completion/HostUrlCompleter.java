@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import okhttp3.HttpUrl;
 
@@ -19,17 +20,22 @@ public class HostUrlCompleter implements ApiCompleter {
 
   @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
     return completedFuture(
-        new UrlList(UrlList.Match.SITE, urls()));
+        new UrlList(UrlList.Match.SITE, urls(true)));
   }
 
-  private List<String> urls() {
-    return hosts.stream()
-        .flatMap(h -> Stream.of("https://" + h, "https://" + h + "/"))
-        .collect(toList());
+  private List<String> urls(boolean siteOnly) {
+    Function<String, Stream<String>> f;
+    if (siteOnly) {
+      f = h -> Stream.of("https://" + h + "/");
+    } else {
+      f = h -> Stream.of("https://" + h, "https://" + h + "/");
+    }
+
+    return hosts.stream().flatMap(f).collect(toList());
   }
 
   @Override public Future<UrlList> prefixUrls() throws IOException {
     return completedFuture(
-        new UrlList(UrlList.Match.HOSTS, urls()));
+        new UrlList(UrlList.Match.HOSTS, urls(false)));
   }
 }
