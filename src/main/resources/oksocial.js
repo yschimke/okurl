@@ -34,3 +34,25 @@ var FormBuilder = Java.type("okhttp3.FormBody.Builder");
 
 var requestBuilder = okshell.requestBuilder;
 
+// http://stackoverflow.com/questions/2686855/is-there-a-javascript-function-that-can-pad-a-string-to-get-to-a-determined-leng
+function pad(length, str, padLeft) {
+  var padding = Array(length).join(' ');
+
+  if (typeof str === 'undefined')
+    return pad;
+  if (padLeft) {
+    return (padding + str).slice(-padding.length);
+  } else {
+    return (str + padding).substring(0, padding.length);
+  }
+}
+
+function padRight(length, str) {
+  return pad(length, str, false);
+}
+
+function padLeft(length, str) {
+  return pad(length, str, true);
+}
+
+var terminalWidth = com.baulsupp.oksocial.output.ConsoleHandler.terminalWidth();

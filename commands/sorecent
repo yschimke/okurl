@@ -2,25 +2,11 @@
 
 var a = query("https://api.stackexchange.com/2.2/questions/unanswered/my-tags?order=desc&sort=creation&site=stackoverflow");
 
-// http://stackoverflow.com/questions/2686855/is-there-a-javascript-function-that-can-pad-a-string-to-get-to-a-determined-leng
-function pad(length, str, padLeft) {
-  var padding = Array(length).join(' ');
-  if (typeof str === 'undefined')
-    return pad;
-  if (padLeft) {
-    return (padding + str).slice(-padding.length);
-  } else {
-    return (str + padding).substring(0, padding.length);
-  }
-}
-
-var width = com.baulsupp.oksocial.output.ConsoleHandler.terminalWidth();
-
 a.items.forEach(function(question) {
-   var title = pad(Math.max(50, width - 79), question.title, false);
+   var title = padRight(Math.max(50, terminalWidth - 79), question.title);
    var url = question.link.replace(/(.*)\/.*/, "$1");
-   var tags = pad(20, question.tags.join(','), false);
-   var answers = pad(4, String(question.answer_count), false);
+   var tags = padRight(20, question.tags.join(','));
+   var answers = padRight(4, String(question.answer_count));
    var time = new Date(question.creation_date * 1000).toLocaleTimeString();
    print("${title}  ${tags}  ${answers} ${time}  ${url}");
 });
