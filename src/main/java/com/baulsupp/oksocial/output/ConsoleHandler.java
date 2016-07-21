@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import okhttp3.Handshake;
 import okhttp3.Headers;
 import okhttp3.MediaType;
@@ -175,6 +177,24 @@ public class ConsoleHandler implements OutputHandler {
       Desktop.getDesktop().browse(URI.create(url));
     } else {
       System.err.println(url);
+    }
+  }
+
+  public static int terminalWidth() throws InterruptedException, TimeoutException, IOException {
+    ProcessExecutor pe = new ProcessExecutor().command("/bin/stty", "-a", "-f", "/dev/tty")
+        .timeout(5, TimeUnit.SECONDS)
+        .redirectError(Slf4jStream.ofCaller().asInfo())
+        .readOutput(true);
+
+    String output = pe.execute().outputString();
+
+    Pattern p = Pattern.compile("(\\d+) columns", Pattern.MULTILINE);
+
+    Matcher m = p.matcher(output);
+    if (m.find()) {
+      return Integer.parseInt(m.group(1));
+    } else {
+      return 80;
     }
   }
 }
