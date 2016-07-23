@@ -55,4 +55,4 @@ function padLeft(length, str) {
   return pad(length, str, true);
 }
 
-var terminalWidth = com.baulsupp.oksocial.output.ConsoleHandler.terminalWidth();
+var terminalWidth = okshell.outputHandler.terminalWidth();
