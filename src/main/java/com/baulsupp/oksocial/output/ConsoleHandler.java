@@ -1,10 +1,12 @@
 package com.baulsupp.oksocial.output;
 
+import com.baulsupp.oksocial.iterm.ItermOutputHandler;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -40,16 +42,11 @@ import static java.util.stream.Collectors.joining;
 public class ConsoleHandler implements OutputHandler {
   private static Logger logger = Logger.getLogger(ConsoleHandler.class.getName());
 
-  private final boolean showHeaders;
-  private final boolean debug;
-
-  public ConsoleHandler(boolean showHeaders, boolean debug) {
-    this.showHeaders = showHeaders;
-    this.debug = debug;
+  public ConsoleHandler() {
   }
 
   @Override public void showError(String message, Throwable e) {
-    if (debug) {
+    if (logger.isLoggable(Level.FINE)) {
       logger.log(Level.WARNING, message, e);
     } else {
       if (e instanceof UsageException) {
@@ -63,7 +60,7 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
-  @Override public void showOutput(Response response) throws IOException {
+  @Override public void showOutput(Response response, boolean showHeaders) throws IOException {
     if (showHeaders) {
       System.out.println(StatusLine.get(response));
       Headers headers = response.headers();
@@ -73,7 +70,7 @@ public class ConsoleHandler implements OutputHandler {
       System.out.println();
     }
 
-    if (debug) {
+    if (logger.isLoggable(Level.FINE)) {
       Handshake handshake = response.handshake();
 
       if (handshake != null) {
@@ -112,44 +109,7 @@ public class ConsoleHandler implements OutputHandler {
     streamToCommand(Optional.of(response.body().source()), command);
   }
 
-  public static void openPreview(Response response) throws IOException {
-    if (Util.isOSX()) {
-      streamToCommand(Optional.of(response.body().source()),
-          asList("open", "-f", "-a", "/Applications/Preview.app"));
-    } else if (Desktop.isDesktopSupported()) {
-      File tempFile = writeToFile(response);
-
-      Desktop.getDesktop().open(tempFile);
-    } else if (isInstalled("img2txt")) {
-      // TODO mplayer -really-quiet -vo caca ~/Movies/*
-      File tempFile = writeToFile(response);
-
-      String columns = System.getenv("COLUMNS");
-      if (columns == null) {
-        columns = "80";
-      }
-
-      streamToCommand(Optional.empty(),
-          asList("img2txt", "-W", columns, "-f", "utf8", tempFile.getPath()));
-    } else {
-      System.err.println("Falling back to console output, use -r to avoid warning");
-
-      writeToSink(response.body().source(), systemOut());
-      System.out.println("");
-    }
-  }
-
-  private static File writeToFile(Response response) throws IOException {
-    File tempFile =
-        File.createTempFile("oksocial", OutputUtil.getExtension(response.body().contentType()));
-
-    try (Sink out = Okio.sink(tempFile)) {
-      writeToSink(response.body().source(), out);
-    }
-    return tempFile;
-  }
-
-  public static void streamToCommand(Optional<BufferedSource> source, List<String> command)
+  public void streamToCommand(Optional<BufferedSource> source, List<String> command)
       throws IOException {
     try {
       ProcessExecutor pe = new ProcessExecutor().command(command)
@@ -172,6 +132,29 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
+  public void openPreview(Response response) throws IOException {
+    if (Desktop.isDesktopSupported()) {
+      File tempFile = writeToFile(response);
+
+      Desktop.getDesktop().open(tempFile);
+    } else {
+      System.err.println("Falling back to console output, use -r to avoid warning");
+
+      writeToSink(response.body().source(), systemOut());
+      System.out.println("");
+    }
+  }
+
+  public File writeToFile(Response response) throws IOException {
+    File tempFile =
+        File.createTempFile("oksocial", OutputUtil.getExtension(response.body().contentType()));
+
+    try (Sink out = Okio.sink(tempFile)) {
+      writeToSink(response.body().source(), out);
+    }
+    return tempFile;
+  }
+
   @Override public void openLink(String url) throws IOException {
     if (Desktop.isDesktopSupported()) {
       Desktop.getDesktop().browse(URI.create(url));
@@ -180,21 +163,37 @@ public class ConsoleHandler implements OutputHandler {
     }
   }
 
-  public static int terminalWidth() throws InterruptedException, TimeoutException, IOException {
-    ProcessExecutor pe = new ProcessExecutor().command("/bin/stty", "-a", "-f", "/dev/tty")
-        .timeout(5, TimeUnit.SECONDS)
-        .redirectError(Slf4jStream.ofCaller().asInfo())
-        .readOutput(true);
+  public int terminalWidth() throws IOException {
+    try {
+      ProcessExecutor pe = new ProcessExecutor().command("/bin/stty", "-a", "-f", "/dev/tty")
+          .timeout(5, TimeUnit.SECONDS)
+          .redirectError(Slf4jStream.ofCaller().asInfo())
+          .readOutput(true);
 
-    String output = pe.execute().outputString();
+      String output = pe.execute().outputString();
 
-    Pattern p = Pattern.compile("(\\d+) columns", Pattern.MULTILINE);
+      Pattern p = Pattern.compile("(\\d+) columns", Pattern.MULTILINE);
 
-    Matcher m = p.matcher(output);
-    if (m.find()) {
-      return Integer.parseInt(m.group(1));
+      Matcher m = p.matcher(output);
+      if (m.find()) {
+        return Integer.parseInt(m.group(1));
+      } else {
+        return 80;
+      }
+    } catch (InterruptedException ie) {
+      throw new InterruptedIOException(ie.getMessage());
+    } catch (TimeoutException e) {
+      throw new IOException(e);
+    }
+  }
+
+  public static ConsoleHandler instance() {
+    if (ItermOutputHandler.isAvailable()) {
+      return new ItermOutputHandler();
+    } else if (Util.isOSX()) {
+      return new OsxOutputHandler();
     } else {
-      return 80;
+      return new ConsoleHandler();
     }
   }
 }

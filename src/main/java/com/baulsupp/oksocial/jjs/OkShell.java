@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.util.FileContent;
 import com.google.common.base.Throwables;
 import java.io.IOException;
@@ -18,12 +19,14 @@ public class OkShell {
   public final Request.Builder requestBuilder;
   private final ScriptEngine engine;
   private final Main main;
+  public final OutputHandler outputHandler;
 
   private OkShell() throws Exception {
     main = new Main();
     main.initialise();
     client = main.getClient();
     requestBuilder = main.createRequestBuilder();
+    outputHandler = main.outputHandler;
 
     ScriptEngineManager m = new ScriptEngineManager();
     engine = m.getEngineByName("nashorn");

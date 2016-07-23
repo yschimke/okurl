@@ -34,6 +34,7 @@ import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
+import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.security.CertificatePin;
@@ -100,7 +101,6 @@ public class Main extends HelpOption implements Runnable {
   private static Logger logger = Logger.getLogger(Main.class.getName());
 
   static final String NAME = "oksocial";
-  private static final int DEFAULT_TIMEOUT = -1;
 
   // store active logger to avoid GC
   private Logger activeLogger;
@@ -356,6 +356,10 @@ public class Main extends HelpOption implements Runnable {
   }
 
   public void initialise() throws Exception {
+    if (outputHandler == null) {
+      outputHandler = buildHandler();
+    }
+
     if (credentialsStore == null) {
       credentialsStore = createCredentialsStore();
     }
@@ -419,7 +423,7 @@ public class Main extends HelpOption implements Runnable {
     } else if (rawOutput) {
       return new DownloadHandler(new File("-"));
     } else {
-      return new com.baulsupp.oksocial.output.ConsoleHandler(showHeaders, debug);
+      return ConsoleHandler.instance();
     }
   }
 
@@ -448,7 +452,7 @@ public class Main extends HelpOption implements Runnable {
         responseFuture.cancel(true);
       } else {
         try (Response response = responseFuture.get()) {
-          outputHandler.showOutput(response);
+          outputHandler.showOutput(response, showHeaders);
         } catch (ExecutionException ee) {
           // TODO allow setting failure/cancel strategy
           outputHandler.showError("request failed", ee.getCause());
