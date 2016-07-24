@@ -122,7 +122,9 @@ public class CompletionTest {
   //
   //  main.run();
   //
+  //  assertEquals(0, output.failures.size());
   //  assertEquals(1, output.stdout.size());
+  //  System.out.println(output.stdout.get(0));
   //
   //  List<String> cacheFileContent = readCompletionFile();
   //  assertEquals("/me", cacheFileContent.get(0));
@@ -139,11 +141,16 @@ public class CompletionTest {
   //
   //  main.run();
   //
+  //  if (output.failures.size() > 0) {
+  //    output.failures.get(0).printStackTrace();
+  //  }
+  //
+  //  assertEquals(0, output.failures.size());
   //  assertEquals(1, output.stdout.size());
   //
   //  List<String> cacheFileContent = readCompletionFile();
   //  assertEquals("/", cacheFileContent.get(0));
-  //  assertTrue(cacheFileContent.contains("/v2.6"));
+  //  assertTrue(cacheFileContent.contains("/v2.7"));
   //  assertTrue(cacheFileContent.contains("/me"));
   //}
 
