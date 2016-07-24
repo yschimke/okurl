@@ -106,16 +106,20 @@ public class ConsoleHandler implements OutputHandler {
 
   private void prettyPrintJson(Response response) throws IOException {
     List<String> command = isTerminal() ? asList("jq", "-C", ".") : asList("jq", ".");
-    streamToCommand(Optional.of(response.body().source()), command);
+    streamToCommand(Optional.of(response.body().source()), command, Optional.empty());
   }
 
-  public void streamToCommand(Optional<BufferedSource> source, List<String> command)
+  public void streamToCommand(Optional<BufferedSource> source, List<String> command,
+      Optional<Integer> timeout)
       throws IOException {
     try {
       ProcessExecutor pe = new ProcessExecutor().command(command)
           .redirectOutput(System.out)
-          .timeout(5, TimeUnit.SECONDS)
           .redirectError(Slf4jStream.ofCaller().asInfo());
+
+      if (timeout.isPresent()) {
+        pe.timeout(timeout.get(), TimeUnit.SECONDS);
+      }
 
       if (source.isPresent()) {
         pe.redirectInput(source.get().inputStream());

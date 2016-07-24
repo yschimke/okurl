@@ -6,8 +6,8 @@ import okhttp3.Response;
 import okio.ByteString;
 
 public class ItermOutputHandler extends OsxOutputHandler {
-  public static final char ESC = (char)27;
-  public static final char BELL = (char)7;
+  public static final char ESC = (char) 27;
+  public static final char BELL = (char) 7;
 
   // https://www.iterm2.com/documentation-images.html
   @Override public void openPreview(Response response) throws IOException {
