@@ -1,102 +1,53 @@
 package com.baulsupp.oksocial.credentials;
 
 import com.google.common.base.Throwables;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import com.mcdermottroe.apple.OSXKeychain;
+import com.mcdermottroe.apple.OSXKeychainException;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import okio.BufferedSource;
-import okio.Okio;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class OSXCredentialsStore implements CredentialsStore {
-  private final Optional<String> tokenSet;
+  private static Logger logger = Logger.getLogger(OSXCredentialsStore.class.getName());
 
-  public OSXCredentialsStore(Optional<String> tokenSet) {
+  private final Optional<String> tokenSet;
+  private final OSXKeychain keychain;
+
+  public OSXCredentialsStore(Optional<String> tokenSet) throws OSXKeychainException {
     this.tokenSet = tokenSet;
+    this.keychain = OSXKeychain.getInstance();
   }
 
-  public OSXCredentialsStore() {
+  public OSXCredentialsStore() throws OSXKeychainException {
     this(Optional.empty());
   }
 
   @Override public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
     try {
-      Process process =
-          new ProcessBuilder("/usr/bin/security", "find-generic-password", "-a",
-              serviceDefinition.apiHost(),
-              "-D", tokenKey(), "-w")
-              .redirectError(new File("/dev/null"))
-              .start();
+      String pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey());
 
-      try {
-        process.getOutputStream().close();
-        // may timeout if password is somehow longer than the pipe can hold
-        if (!process.waitFor(10, TimeUnit.SECONDS)) {
-          process.destroyForcibly();
-          throw new IOException("timeout calling /usr/bin/security");
-        }
-
-        if (process.exitValue() == 44) {
-          return Optional.empty();
-        }
-
-        BufferedSource stderr = Okio.buffer(Okio.source(process.getErrorStream()));
-        String errorLog = stderr.readString(Charset.defaultCharset());
-
-        if (errorLog != null) {
-          System.err.print(errorLog);
-        }
-
-        if (process.exitValue() != 0) {
-          throw new IOException("/usr/bin/security exited with return code " + process.exitValue());
-        }
-
-        BufferedSource stdout = Okio.buffer(Okio.source(process.getInputStream()));
-
-        return Optional.ofNullable(
-            serviceDefinition.parseCredentialsString(stdout.readUtf8LineStrict()));
-      } catch (InterruptedException e) {
-        throw new IOException(e);
-      } finally {
-        if (process.isAlive()) {
-          process.destroyForcibly();
-        }
-      }
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+      return Optional.ofNullable(serviceDefinition.parseCredentialsString(pw));
+    } catch (OSXKeychainException e) {
+      // TODO check "The specified item could not be found in the keychain"
+      logger.log(Level.FINE, "Failed to read from keychain", e);
+      return Optional.empty();
     }
   }
 
   @Override
   public <T> void storeCredentials(T credentials, ServiceDefinition<T> serviceDefinition) {
+    String credentialsString = serviceDefinition.formatCredentialsString(credentials);
+
     try {
-      String credentialsString = serviceDefinition.formatCredentialsString(credentials);
+      keychain.deleteGenericPassword(serviceDefinition.apiHost(), tokenKey());
+    } catch (OSXKeychainException e) {
+      logger.log(Level.FINE, "No key to delete", e);
+    }
 
-      Process process =
-          new ProcessBuilder("/usr/bin/security", "add-generic-password", "-a",
-              serviceDefinition.apiHost(),
-              "-D", tokenKey(), "-s", serviceDefinition.serviceName(), "-U", "-w",
-              credentialsString)
-              .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-              .redirectError(ProcessBuilder.Redirect.INHERIT)
-              .start();
-
-      try {
-        process.getOutputStream().close();
-        // may timeout if password is somehow longer than the pipe can hold
-        if (!process.waitFor(10, TimeUnit.SECONDS)) {
-          process.destroyForcibly();
-          throw new IOException("timeout calling /usr/bin/security");
-        }
-      } catch (InterruptedException e) {
-        throw new IOException(e);
-      } finally {
-        if (process.isAlive()) {
-          process.destroyForcibly();
-        }
-      }
-    } catch (Exception e) {
+    try {
+      keychain.addGenericPassword(serviceDefinition.apiHost(), tokenKey(), credentialsString);
+    } catch (OSXKeychainException e) {
+      logger.log(Level.WARNING, "Failed to write to keychain", e);
       throw Throwables.propagate(e);
     }
   }

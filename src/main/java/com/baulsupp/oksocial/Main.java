@@ -52,6 +52,7 @@ import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mcdermottroe.apple.OSXKeychainException;
 import com.moczul.ok2curl.CurlInterceptor;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
@@ -383,7 +384,7 @@ public class Main extends HelpOption implements Runnable {
     return client;
   }
 
-  private CredentialsStore createCredentialsStore() {
+  private CredentialsStore createCredentialsStore() throws OSXKeychainException {
     if (token != null && !authorize) {
       return new FixedTokenCredentialsStore(token);
     } else if (Util.isOSX()) {

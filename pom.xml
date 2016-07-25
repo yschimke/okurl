@@ -144,6 +144,13 @@
       <version>1.9</version>
     </dependency>
     <dependency>
+      <groupId>us.physion</groupId>
+      <artifactId>osx-keychain</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/external/osxkeychain.jar</systemPath>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
@@ -288,6 +295,12 @@
           </execution>
         </executions>
       </plugin>
+        <plugin>
+          <groupId>com.github.maven-nar</groupId>
+          <artifactId>nar-maven-plugin</artifactId>
+          <version>3.5.0</version>
+          <extensions>true</extensions>
+        </plugin>
     </plugins>
   </build>
   <profiles>
