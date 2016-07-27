@@ -45,5 +45,9 @@
       <directory>target/alpn</directory>
       <outputDirectory>alpn</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>external</directory>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>
