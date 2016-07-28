@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.util.FileContent;
-import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.util.Optional;
 import javax.script.ScriptEngine;
@@ -49,29 +48,25 @@ public class OkShell {
     t.start();
   }
 
-  public String query(String url) {
+  public String query(String url) throws IOException {
     return execute(requestBuilder.url(url).build());
   }
 
-  public String execute(Request request) {
+  public String execute(Request request) throws IOException {
+    Call call = client.newCall(request);
+
+    Response response = call.execute();
+
     try {
-      Call call = client.newCall(request);
+      String responseString = response.body().string();
 
-      Response response = call.execute();
-
-      try {
-        String responseString = response.body().string();
-
-        if (!response.isSuccessful()) {
-          throw new RuntimeException(responseString);
-        }
-
-        return responseString;
-      } finally {
-        response.body().close();
+      if (!response.isSuccessful()) {
+        throw new RuntimeException(responseString);
       }
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+
+      return responseString;
+    } finally {
+      response.body().close();
     }
   }
 
