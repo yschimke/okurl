@@ -1,0 +1,74 @@
+package com.baulsupp.oksocial.services.slack;
+
+import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
+import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.secrets.Secrets;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Future;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+
+/**
+ * https://api.slack.com/docs/oauth
+ */
+public class SlackAuthInterceptor implements AuthInterceptor<Oauth2Token> {
+  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+    return new Oauth2ServiceDefinition("slack.com", "Slack API", "slack");
+  }
+
+  @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
+      throws IOException {
+    Request request = chain.request();
+
+    String token = credentials.accessToken;
+
+    HttpUrl newUrl = request.url().newBuilder().addQueryParameter("token", token).build();
+
+    request =
+        request.newBuilder().url(newUrl).build();
+
+    Response response = chain.proceed(request);
+
+    // TODO check for ok=false?
+
+    return response;
+  }
+
+  @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
+      List<String> authArguments) throws IOException {
+    System.err.println("Authorising Slack API");
+
+    String clientId =
+        Secrets.prompt("Slack Client Id", "slack.clientId", "", false);
+    String clientSecret =
+        Secrets.prompt("Slack Client Secret", "slack.clientSecret", "", true);
+    Set<String> scopes =
+        Secrets.promptArray("Scopes", "slack.scopes", SlackUtil.SCOPES);
+
+    return SlackAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
+  }
+
+  @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
+      Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
+    return new JsonCredentialsValidator(
+        SlackUtil.apiRequest("/api/auth.test", requestBuilder), fieldExtractor("user")).validate(
+        client);
+  }
+
+  @Override public Set<String> hosts() {
+    return SlackUtil.API_HOSTS;
+  }
+}
