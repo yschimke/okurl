@@ -72,6 +72,11 @@
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp-ws</artifactId>
+      <version>${okhttp.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okcurl</artifactId>
       <version>${okhttp.version}</version>
     </dependency>
