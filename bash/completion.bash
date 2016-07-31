@@ -80,7 +80,7 @@ function _oksocial_complete ()
 
   _get_comp_words_by_ref -n : cur
 
-  cache_file=$TMPDIR$job-complete.cache
+  cache_file=$TMPDIR$(basename $job)-complete.cache
 
   if _oksocial_is_cache_valid $cache_file $cur; then
     _ok_social_debug compute
@@ -109,6 +109,7 @@ complete -F _oksocial_complete fbapi
 complete -F _oksocial_complete githubapi
 complete -F _oksocial_complete imgurapi
 complete -F _oksocial_complete lyftapi
+complete -F _oksocial_complete slackapi
 complete -F _oksocial_complete squareapi
 complete -F _oksocial_complete stackexchangeapi
 complete -F _oksocial_complete surveymonkeyapi

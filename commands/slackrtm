@@ -1,0 +1,18 @@
+#!/usr/bin/env okshell
+
+var WebSocketCall = Java.type('okhttp3.ws.WebSocketCall');
+var WebSocketPrinter = Java.type('com.baulsupp.oksocial.ws.WebSocketPrinter');
+var TimeUnit = Java.type('java.util.concurrent.TimeUnit');
+
+client = client.newBuilder().readTimeout(0, TimeUnit.MINUTES).build();
+
+var start = query("https://slack.com/api/rtm.start");
+
+var request = requestBuilder.url(start.url).build();
+
+var printer = new WebSocketPrinter();
+var call = WebSocketCall.create(client, request);
+
+call.enqueue(printer);
+
+printer.waitForExit();

@@ -3,6 +3,7 @@ com.baulsupp.oksocial.services.foursquare.FourSquareAuthInterceptor
 com.baulsupp.oksocial.services.google.GoogleAuthInterceptor
 com.baulsupp.oksocial.services.imgur.ImgurAuthInterceptor
 com.baulsupp.oksocial.services.lyft.LyftAuthInterceptor
+com.baulsupp.oksocial.services.slack.SlackAuthInterceptor
 com.baulsupp.oksocial.services.sheetsu.SheetsuAuthInterceptor
 com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor

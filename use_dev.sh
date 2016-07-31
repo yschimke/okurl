@@ -1,2 +1,2 @@
-PATH=.:.commands:$PATH
+PATH=.:./commands:$PATH
 . bash/completion.bash 
