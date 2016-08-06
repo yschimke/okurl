@@ -38,6 +38,7 @@ import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.security.CertificatePin;
+import com.baulsupp.oksocial.security.CertificateUtils;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
@@ -187,6 +188,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
+
+  @Option(name = {"--cert"}, description = "Use given server cert (Root CA)")
+  public List<File> serverCerts = null;
 
   @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate")
   public boolean opensc = false;
@@ -621,11 +625,6 @@ public class Main extends HelpOption implements Runnable {
     X509TrustManager trustManager = null;
     KeyManager[] keyManagers = null;
 
-    if (allowInsecure) {
-      trustManager = new InsecureTrustManager();
-      builder.hostnameVerifier(new InsecureHostnameVerifier());
-    }
-
     if (clientCert != null) {
       char[] password = System.console().readPassword("keystore password: ");
       keyManagers =
@@ -633,6 +632,15 @@ public class Main extends HelpOption implements Runnable {
     } else if (opensc) {
       char[] password = System.console().readPassword("smartcard password: ");
       keyManagers = OpenSCUtil.getKeyManagers(password);
+    }
+
+    if (serverCerts != null) {
+      trustManager = CertificateUtils.load(serverCerts);
+    }
+
+    if (allowInsecure) {
+      trustManager = new InsecureTrustManager();
+      builder.hostnameVerifier(new InsecureHostnameVerifier());
     }
 
     if (keyManagers != null || trustManager != null || certificatePins != null) {
