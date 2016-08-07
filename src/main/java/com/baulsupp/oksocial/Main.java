@@ -192,8 +192,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--cert"}, description = "Use given server cert (Root CA)")
   public List<File> serverCerts = null;
 
-  @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate")
-  public boolean opensc = false;
+  @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate (slot)")
+  public Integer opensc;
 
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
   public InetAddressParam socksProxy;
@@ -629,9 +629,9 @@ public class Main extends HelpOption implements Runnable {
       char[] password = System.console().readPassword("keystore password: ");
       keyManagers =
           createLocalKeyManagers(clientCert, password);
-    } else if (opensc) {
+    } else if (opensc != null) {
       char[] password = System.console().readPassword("smartcard password: ");
-      keyManagers = OpenSCUtil.getKeyManagers(password);
+      keyManagers = OpenSCUtil.getKeyManagers(password, opensc);
     }
 
     if (serverCerts != null) {
