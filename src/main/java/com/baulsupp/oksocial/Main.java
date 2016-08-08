@@ -37,6 +37,7 @@ import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.secrets.Secrets;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.baulsupp.oksocial.security.CertificateUtils;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
@@ -568,6 +569,8 @@ public class Main extends HelpOption implements Runnable {
     T credentials = auth.authorize(authClient, outputHandler, authArguments);
 
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
+
+    Secrets.instance().saveIfNeeded();
 
     // TODO validate credentials
   }
