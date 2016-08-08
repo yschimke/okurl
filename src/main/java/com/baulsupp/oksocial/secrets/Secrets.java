@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.secrets;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,10 +12,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.baulsupp.oksocial.util.Util.or;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 
@@ -22,16 +25,53 @@ public class Secrets {
   private static Secrets instance;
 
   private final Map<String, String> secrets;
+  private final Function<String, Optional<String>> defaults;
+  private final Optional<Path> file;
+  private boolean changed = false;
 
-  public Secrets(Map<String, String> secrets) {
+  public Secrets(Map<String, String> secrets, Optional<Path> file,
+      Function<String, Optional<String>> defaults) {
     this.secrets = secrets;
+    this.defaults = defaults;
+    this.file = file;
   }
 
   public Optional<String> get(String key) {
-    return ofNullable(secrets.get(key)).filter(s -> !s.isEmpty());
+    Optional<String> result = ofNullable(secrets.get(key));
+
+    if (!result.isPresent()) {
+      result = defaults.apply(key);
+    }
+
+    return result.filter(s -> !s.isEmpty());
+  }
+
+  private void put(String key, String value) {
+    secrets.put(key, value);
+    changed = true;
   }
 
   public static Secrets loadSecrets() {
+    Secrets classPathSecrets = loadClasspathDefaults();
+
+    Path configFile =
+        FileSystems.getDefault().getPath(System.getenv("HOME"), ".oksocial-secrets.properties");
+
+    Properties p = new Properties();
+    if (Files.exists(configFile)) {
+      try (InputStream is = Files.newInputStream(configFile)) {
+        p.load(is);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    Secrets secrets = new Secrets(new HashMap(p), Optional.of(configFile), classPathSecrets::get);
+
+    return secrets;
+  }
+
+  public static Secrets loadClasspathDefaults() {
     Properties p = new Properties();
 
     try (InputStream is = Secrets.class.getResourceAsStream("/oksocial-secrets.properties")) {
@@ -42,32 +82,15 @@ public class Secrets {
       e.printStackTrace();
     }
 
-    Path configFile =
-        FileSystems.getDefault().getPath(System.getenv("HOME"), ".oksocial-secrets.properties");
-
-    if (Files.exists(configFile)) {
-      try (InputStream is = Files.newInputStream(configFile)) {
-        p.load(is);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-
-    Secrets secrets = new Secrets(new HashMap(p));
-
-    return secrets;
+    return new Secrets(new HashMap(p), empty(), k -> empty());
   }
 
   public static Optional<String> getDefined(String key) {
-    if (instance == null) {
-      instance = loadSecrets();
-    }
-
-    return instance.get(key);
+    return instance().get(key);
   }
 
   public static String prompt(String name, String key, String defaultValue, boolean password) {
-    Optional<String> defaulted = or(getDefined(key), () -> ofNullable(defaultValue));
+    Optional<String> defaulted = or(instance().getDefined(key), () -> ofNullable(defaultValue));
 
     String prompt = name + defaultDisplay(defaulted, password) + ": ";
 
@@ -79,10 +102,14 @@ public class Secrets {
       } else {
         value = System.console().readLine(prompt);
       }
+    } else {
+      System.err.println("using default value for " + key);
     }
 
     if (value.isEmpty()) {
       value = defaulted.orElse("");
+    } else {
+      instance().put(key, value);
     }
 
     return value;
@@ -100,5 +127,24 @@ public class Secrets {
     }
 
     return defaultValue.map(s -> " [" + s + "]").orElse("");
+  }
+
+  public static synchronized Secrets instance() {
+    if (instance == null) {
+      instance = loadSecrets();
+    }
+
+    return instance;
+  }
+
+  public void saveIfNeeded() throws IOException {
+    if (changed && file.isPresent()) {
+      Properties p = new Properties();
+      p.putAll(secrets);
+
+      try (Writer w = Files.newBufferedWriter(file.get())) {
+        p.store(w, null);
+      }
+    }
   }
 }
