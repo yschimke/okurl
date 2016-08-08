@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.secrets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -59,8 +60,8 @@ public class Secrets {
 
     Properties p = new Properties();
     if (Files.exists(configFile)) {
-      try (InputStream is = Files.newInputStream(configFile)) {
-        p.load(is);
+      try (BufferedReader r = Files.newBufferedReader(configFile)) {
+        p.load(r);
       } catch (IOException e) {
         e.printStackTrace();
       }
