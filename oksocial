@@ -3,6 +3,7 @@
 CMD=$(basename "$0")
 
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+export INSTALLDIR=.
 
 codesha() {
   find pom.xml src/main -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+export INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 if [ -x /usr/libexec/java_home ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)

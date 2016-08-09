@@ -42,7 +42,7 @@ function _oksocial_complete ()
   case $prev in
         -d | --data | -H | --header | -A | --user-agent | --connect-timeout | --read-timeout \
         | -e | --referer | --cache | --token | --resolve | --certificatePin | --clientcert \
-        | --socks | -s | --set )
+        | --socks | -s | --set | --cert)
             return
             ;;
         --authorize)

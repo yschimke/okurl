@@ -25,6 +25,10 @@
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
+      <directory>certificates</directory>
+      <outputDirectory>certificates</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>commands</directory>
       <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>

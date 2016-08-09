@@ -2,7 +2,7 @@
 
 CMD=$(basename $0)
 
-INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+export INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 JAVA_CMD=java
 if [ -x /usr/libexec/java_home ]; then

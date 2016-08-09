@@ -81,7 +81,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
@@ -191,7 +190,7 @@ public class Main extends HelpOption implements Runnable {
   public File clientCert = null;
 
   @Option(name = {"--cert"}, description = "Use given server cert (Root CA)")
-  public List<File> serverCerts = null;
+  public List<File> serverCerts = Lists.newArrayList();
 
   @Option(name = {"--opensc"}, description = "Send OpenSC Client Certificate (slot)")
   public Integer opensc;
@@ -625,7 +624,6 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureTls(OkHttpClient.Builder builder) throws Exception {
-    X509TrustManager trustManager = null;
     KeyManager[] keyManagers = null;
 
     if (clientCert != null) {
@@ -637,30 +635,20 @@ public class Main extends HelpOption implements Runnable {
       keyManagers = OpenSCUtil.getKeyManagers(password, opensc);
     }
 
-    if (serverCerts != null) {
-      trustManager = CertificateUtils.load(serverCerts);
-    }
-
+    X509TrustManager trustManager = null;
     if (allowInsecure) {
       trustManager = new InsecureTrustManager();
       builder.hostnameVerifier(new InsecureHostnameVerifier());
+    } else {
+      trustManager = CertificateUtils.loadCombined(serverCerts);
     }
 
-    if (keyManagers != null || trustManager != null || certificatePins != null) {
-      if (trustManager == null) {
-        TrustManagerFactory trustManagerFactory =
-            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init((KeyStore) null);
-        trustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
-      }
+    builder.sslSocketFactory(
+        createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
+        trustManager);
 
-      builder.sslSocketFactory(
-          createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
-          trustManager);
-
-      if (certificatePins != null) {
-        builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
-      }
+    if (certificatePins != null) {
+      builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
     }
   }
 
