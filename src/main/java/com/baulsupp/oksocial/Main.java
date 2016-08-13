@@ -44,11 +44,11 @@ import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
-import com.baulsupp.oksocial.util.InsecureHostnameVerifier;
-import com.baulsupp.oksocial.util.InsecureTrustManager;
+import com.baulsupp.oksocial.security.InsecureHostnameVerifier;
+import com.baulsupp.oksocial.security.InsecureTrustManager;
 import com.baulsupp.oksocial.util.LoggingUtil;
-import com.baulsupp.oksocial.util.OkHttpResponseFuture;
-import com.baulsupp.oksocial.util.OpenSCUtil;
+import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
+import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
@@ -62,12 +62,8 @@ import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Proxy;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,10 +73,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
@@ -93,6 +85,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+import static com.baulsupp.oksocial.security.KeystoreUtils.createLocalKeyManager;
+import static com.baulsupp.oksocial.security.KeystoreUtils.createSslSocketFactory;
 import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
@@ -188,6 +182,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--clientcert"}, description = "Send Client Certificate")
   public File clientCert = null;
+
+  @Option(name = {"--keystore"}, description = "Keystore")
+  public File keystore = null;
 
   @Option(name = {"--cert"}, description = "Use given server cert (Root CA)")
   public List<File> serverCerts = Lists.newArrayList();
@@ -627,9 +624,9 @@ public class Main extends HelpOption implements Runnable {
     KeyManager[] keyManagers = null;
 
     if (clientCert != null) {
-      char[] password = System.console().readPassword("keystore password: ");
-      keyManagers =
-          createLocalKeyManagers(clientCert, password);
+      throw new UnsupportedOperationException();
+    } else if (keystore != null) {
+      keyManagers = new KeyManager[] {createLocalKeyManager(keystore, null)};
     } else if (opensc != null) {
       char[] password = System.console().readPassword("smartcard password: ");
       keyManagers = OpenSCUtil.getKeyManagers(password, opensc);
@@ -644,7 +641,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     builder.sslSocketFactory(
-        createSslSocketFactory(keyManagers, new TrustManager[] {trustManager}),
+        createSslSocketFactory(keyManagers, trustManager),
         trustManager);
 
     if (certificatePins != null) {
@@ -699,24 +696,5 @@ public class Main extends HelpOption implements Runnable {
     requestBuilder.header("User-Agent", userAgent);
 
     return requestBuilder;
-  }
-
-  private static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
-      TrustManager[] trustManagers) throws NoSuchAlgorithmException, KeyManagementException {
-    SSLContext context = SSLContext.getInstance("TLS");
-
-    context.init(keyManagers, trustManagers, null);
-
-    return context.getSocketFactory();
-  }
-
-  private static KeyManager[] createLocalKeyManagers(File keystore, char[] password)
-      throws Exception {
-    KeyStore keystore_client = KeyStore.getInstance("JKS");
-    keystore_client.load(new FileInputStream(keystore), password);
-    KeyManagerFactory kmf =
-        KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-    kmf.init(keystore_client, password);
-    return kmf.getKeyManagers();
   }
 }

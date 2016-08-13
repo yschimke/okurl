@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.util;
+package com.baulsupp.oksocial.security;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

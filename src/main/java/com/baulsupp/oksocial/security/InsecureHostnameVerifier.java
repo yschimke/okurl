@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.util;
+package com.baulsupp.oksocial.security;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
