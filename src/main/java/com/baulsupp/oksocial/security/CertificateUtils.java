@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.security;
 
-import com.secdec.codedx.security.CompositeX509TrustManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -54,7 +52,7 @@ public class CertificateUtils {
     trustManagers.add(load(includedCertificates()));
     trustManagers.add(systemTrustManager());
 
-    return new CompositeX509TrustManager(trustManagers);
+    return new MergedX509TrustManager(trustManagers);
   }
 
   public static X509TrustManager systemTrustManager()

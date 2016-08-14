@@ -36,7 +36,6 @@ public class WebServerTest {
 
     assertEquals(0, output.responses.size());
     assertEquals(1, output.failures.size());
-    output.failures.get(0).printStackTrace();
     assertTrue(output.failures.get(0) instanceof SSLHandshakeException);
   }
 
