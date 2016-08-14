@@ -1,19 +1,14 @@
 package com.baulsupp.oksocial.security;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.Provider;
 import java.security.Security;
-import java.util.Arrays;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
 
 public class OpenSCUtil {
   public static KeyManager[] getKeyManagers(ConsoleCallbackHandler password, int slot)
@@ -46,15 +41,7 @@ public class OpenSCUtil {
       keystore = KeyStore.getInstance("PKCS11", pkcs11);
     }
 
-    CallbackHandler handler = new CallbackHandler() {
-      @Override public void handle(Callback[] callbacks)
-          throws IOException, UnsupportedCallbackException {
-        System.out.println(Arrays.toString(callbacks));
-        System.exit(0);
-      }
-    };
-    KeyStore.CallbackHandlerProtection ch = new KeyStore.CallbackHandlerProtection(handler);
-    keystore.load(() -> ch);
+    keystore.load(() -> new KeyStore.CallbackHandlerProtection(password));
 
     KeyManagerFactory kmf = KeyManagerFactory.getInstance("NewSunX509");
     kmf.init(keystore, null);
