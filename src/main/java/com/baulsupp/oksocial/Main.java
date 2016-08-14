@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2014 Square, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
@@ -34,21 +19,22 @@ import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
+import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.baulsupp.oksocial.security.CertificateUtils;
+import com.baulsupp.oksocial.security.ConsoleCallbackHandler;
+import com.baulsupp.oksocial.security.InsecureHostnameVerifier;
+import com.baulsupp.oksocial.security.InsecureTrustManager;
+import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
-import com.baulsupp.oksocial.security.InsecureHostnameVerifier;
-import com.baulsupp.oksocial.security.InsecureTrustManager;
 import com.baulsupp.oksocial.util.LoggingUtil;
-import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
-import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
@@ -64,6 +50,7 @@ import io.airlift.airline.SingleCommand;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -85,9 +72,13 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
-import static com.baulsupp.oksocial.security.KeystoreUtils.createLocalKeyManager;
+import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
+import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createSslSocketFactory;
+import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
+import static com.baulsupp.oksocial.security.KeystoreUtils.keyManagerArray;
 import static com.baulsupp.oksocial.util.Util.optionalStream;
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -180,11 +171,11 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--networkInterface"}, description = "Specific Local Network Interface")
   public String networkInterface = null;
 
-  @Option(name = {"--clientcert"}, description = "Send Client Certificate")
-  public File clientCert = null;
+  @Option(name = {"--clientauth"}, description = "Use Client Authentication (from keystore)")
+  public boolean clientAuth = false;
 
   @Option(name = {"--keystore"}, description = "Keystore")
-  public File keystore = null;
+  public File keystoreFile = null;
 
   @Option(name = {"--cert"}, description = "Use given server cert (Root CA)")
   public List<File> serverCerts = Lists.newArrayList();
@@ -621,15 +612,25 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void configureTls(OkHttpClient.Builder builder) throws Exception {
-    KeyManager[] keyManagers = null;
+    ConsoleCallbackHandler callbackHandler = new ConsoleCallbackHandler();
 
-    if (clientCert != null) {
-      throw new UnsupportedOperationException();
-    } else if (keystore != null) {
-      keyManagers = new KeyManager[] {createLocalKeyManager(keystore, null)};
-    } else if (opensc != null) {
-      char[] password = System.console().readPassword("smartcard password: ");
-      keyManagers = OpenSCUtil.getKeyManagers(password, opensc);
+    // possibly null
+    KeyStore keystore = null;
+
+    if (keystoreFile != null) {
+      keystore = getKeyStore(keystoreFile);
+    }
+
+    List<KeyManager> keyManagers = Lists.newArrayList();
+
+    if (opensc != null) {
+      keyManagers.addAll(asList(OpenSCUtil.getKeyManagers(callbackHandler, opensc)));
+    } else if (clientAuth) {
+      if (keystore == null) {
+        throw new UsageException("--clientauth specified without --keystore");
+      }
+
+      keyManagers.add(createKeyManager(keystore, callbackHandler));
     }
 
     X509TrustManager trustManager = null;
@@ -637,12 +638,20 @@ public class Main extends HelpOption implements Runnable {
       trustManager = new InsecureTrustManager();
       builder.hostnameVerifier(new InsecureHostnameVerifier());
     } else {
-      trustManager = CertificateUtils.loadCombined(serverCerts);
+      List<X509TrustManager> trustManagers = Lists.newArrayList();
+
+      if (keystore != null) {
+        trustManagers.add(trustManagerForKeyStore(keystore));
+      }
+
+      if (!serverCerts.isEmpty()) {
+        trustManagers.add(CertificateUtils.load(serverCerts));
+      }
+
+      trustManager = CertificateUtils.combineTrustManagers(trustManagers);
     }
 
-    builder.sslSocketFactory(
-        createSslSocketFactory(keyManagers, trustManager),
-        trustManager);
+    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager), trustManager);
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));

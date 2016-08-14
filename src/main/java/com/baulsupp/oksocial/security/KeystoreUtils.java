@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.List;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -17,22 +18,17 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 public class KeystoreUtils {
-  public KeyStore.CallbackHandlerProtection passwordCallback(String mypass) {
-    return new KeyStore.CallbackHandlerProtection(callbacks -> {
-      for (Callback c : callbacks) {
-        if (c instanceof PasswordCallback) {
-          PasswordCallback pw = (PasswordCallback) c;
-          System.out.println("PROMPT> " + pw.getPrompt());
-          pw.setPassword(mypass.toCharArray());
-        } else {
-          throw new UnsupportedCallbackException(c);
-        }
-      }
-    });
+  public static KeyManager[] keyManagerArray(List<KeyManager> keyManagers) {
+    KeyManager[] kms = null;
+    if (!keyManagers.isEmpty()) {
+      kms = keyManagers.toArray(new KeyManager[0]);
+    }
+    return kms;
   }
 
   public static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
@@ -44,10 +40,8 @@ public class KeystoreUtils {
     return context.getSocketFactory();
   }
 
-  public static KeyManager createLocalKeyManager(File keystoreFile,
-      KeyStore.CallbackHandlerProtection protection)
+  public static KeyManager createKeyManager(KeyStore keystore, CallbackHandler callbackHandler)
       throws Exception {
-    KeyStore keystore = getKeyStore(keystoreFile);
     KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
     try {
@@ -55,7 +49,7 @@ public class KeystoreUtils {
     } catch (UnrecoverableKeyException uke) {
       PasswordCallback pwCallback = new PasswordCallback("Keystore password: ", false);
       Callback[] callbacks = new Callback[] {pwCallback};
-      protection.getCallbackHandler().handle(callbacks);
+      callbackHandler.handle(callbacks);
 
       kmf.init(keystore, pwCallback.getPassword());
     }
@@ -74,7 +68,7 @@ public class KeystoreUtils {
       UnsupportedCallbackException {
     KeyStore keystore_client = KeyStore.getInstance("JKS");
 
-    keystore_client.load(new FileInputStream(keystore), null);
+    keystore_client.load(keystore != null ? new FileInputStream(keystore) : null, null);
 
     return keystore_client;
   }

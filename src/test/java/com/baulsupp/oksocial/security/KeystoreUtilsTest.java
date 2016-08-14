@@ -17,37 +17,40 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import org.junit.Test;
+
+import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
+import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
 
 public class KeystoreUtilsTest {
   @Test public void loadEmptyPassword()
       throws Exception {
     File f = writeFile("");
 
-    KeystoreUtils.createLocalKeyManager(f, passwordCallback(""));
+    createKeyManager(getKeyStore(f), passwordCallback(null));
   }
 
   @Test public void loadNonEmptyPassword()
       throws Exception {
     File f = writeFile("a");
 
-    KeystoreUtils.createLocalKeyManager(f, passwordCallback("a"));
+    createKeyManager(getKeyStore(f), passwordCallback("a"));
   }
 
-  private KeyStore.CallbackHandlerProtection passwordCallback(String mypass) {
-    return new KeyStore.CallbackHandlerProtection(callbacks -> {
+  private CallbackHandler passwordCallback(String mypass) {
+    return callbacks -> {
       for (Callback c : callbacks) {
-        if (c instanceof PasswordCallback) {
+        if (c instanceof PasswordCallback && mypass != null) {
           PasswordCallback pw = (PasswordCallback) c;
-          System.out.println("PROMPT> " + pw.getPrompt());
           pw.setPassword(mypass.toCharArray());
         } else {
           throw new UnsupportedCallbackException(c);
         }
       }
-    });
+    };
   }
 
   public static File writeFile(String keyPw)

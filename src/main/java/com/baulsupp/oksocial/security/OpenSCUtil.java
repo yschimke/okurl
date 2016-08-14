@@ -16,7 +16,8 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 public class OpenSCUtil {
-  public static KeyManager[] getKeyManagers(char[] password, int slot) throws Exception {
+  public static KeyManager[] getKeyManagers(ConsoleCallbackHandler password, int slot)
+      throws Exception {
     String config =
         "name=OpenSC\nlibrary=/Library/OpenSC/lib/opensc-pkcs11.so\nslot=" + slot + "\n";
 
@@ -27,7 +28,8 @@ public class OpenSCUtil {
       pkcs11 = Security.getProvider("SunPKCS11");
 
       pkcs11 =
-          (Provider) Provider.class.getMethod("configure", String.class).invoke(pkcs11, "--" + config);
+          (Provider) Provider.class.getMethod("configure", String.class)
+              .invoke(pkcs11, "--" + config);
 
       Security.addProvider(pkcs11);
 

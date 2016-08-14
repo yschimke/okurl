@@ -20,10 +20,23 @@ import javax.net.ssl.X509TrustManager;
 public class CertificateUtils {
   public static X509TrustManager load(List<File> serverCerts)
       throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+    return trustManagerForKeyStore(keyStoreForCerts(serverCerts));
+  }
+
+  public static X509TrustManager trustManagerForKeyStore(KeyStore ks)
+      throws NoSuchAlgorithmException, KeyStoreException {
+    TrustManagerFactory tmf =
+        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+    tmf.init(ks);
+
+    return (X509TrustManager) tmf.getTrustManagers()[0];
+  }
+
+  public static KeyStore keyStoreForCerts(List<File> serverCerts)
+      throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
     CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-    TrustManagerFactory tmf = TrustManagerFactory
-        .getInstance(TrustManagerFactory.getDefaultAlgorithm());
     KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
     ks.load(null);
 
@@ -33,41 +46,35 @@ public class CertificateUtils {
         ks.setCertificateEntry("cacrt." + i, caCert);
       }
     }
-
-    tmf.init(ks);
-
-    return (X509TrustManager) tmf.getTrustManagers()[0];
+    return ks;
   }
 
-  public static X509TrustManager loadCombined(List<File> serverCerts)
+  public static X509TrustManager combineTrustManagers(List<X509TrustManager> trustManagers)
       throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-    TrustManagerFactory trustManagerFactory =
-        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-    trustManagerFactory.init((KeyStore) null);
-    X509TrustManager systemTrustManager =
-        (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
+    trustManagers.add(load(includedCertificates()));
+    trustManagers.add(systemTrustManager());
 
-    serverCerts.addAll(includedCertificates());
+    return new CompositeX509TrustManager(trustManagers);
+  }
 
-    if (serverCerts.isEmpty()) {
-      return systemTrustManager;
-    } else {
-      return new CompositeX509TrustManager(load(serverCerts), systemTrustManager);
-    }
+  public static X509TrustManager systemTrustManager()
+      throws NoSuchAlgorithmException, KeyStoreException {
+    return trustManagerForKeyStore(null);
   }
 
   public static List<File> includedCertificates() {
     String installDir = System.getenv("INSTALLDIR");
-
-    if (installDir != null) {
-      File[] files =
-          new File(installDir, "certificates").listFiles(f -> f.getName().endsWith(".crt"));
-
-      if (files != null) {
-        return Arrays.asList(files);
-      }
+    if (installDir == null) {
+      installDir = ".";
     }
 
-    return Collections.emptyList();
+    File[] files =
+        new File(installDir, "certificates").listFiles(f -> f.getName().endsWith(".crt"));
+
+    if (files != null) {
+      return Arrays.asList(files);
+    }
+
+    return null;
   }
 }
