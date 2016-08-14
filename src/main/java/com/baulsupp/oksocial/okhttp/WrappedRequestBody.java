@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.util;
+package com.baulsupp.oksocial.okhttp;
 
 import java.io.IOException;
 import okhttp3.MediaType;

@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.util.ClientException;
 import com.baulsupp.oksocial.util.JsonUtil;
-import com.baulsupp.oksocial.util.ResponseFutureCallback;
+import com.baulsupp.oksocial.okhttp.ResponseFutureCallback;
 import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.util.Map;

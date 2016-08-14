@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.util;
+package com.baulsupp.oksocial.security;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,7 +11,8 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 
 public class OpenSCUtil {
-  public static KeyManager[] getKeyManagers(char[] password, int slot) throws Exception {
+  public static KeyManager[] getKeyManagers(ConsoleCallbackHandler password, int slot)
+      throws Exception {
     String config =
         "name=OpenSC\nlibrary=/Library/OpenSC/lib/opensc-pkcs11.so\nslot=" + slot + "\n";
 
@@ -22,7 +23,8 @@ public class OpenSCUtil {
       pkcs11 = Security.getProvider("SunPKCS11");
 
       pkcs11 =
-          (Provider) Provider.class.getMethod("configure", String.class).invoke(pkcs11, "--" + config);
+          (Provider) Provider.class.getMethod("configure", String.class)
+              .invoke(pkcs11, "--" + config);
 
       Security.addProvider(pkcs11);
 
@@ -39,7 +41,7 @@ public class OpenSCUtil {
       keystore = KeyStore.getInstance("PKCS11", pkcs11);
     }
 
-    keystore.load(null, password);
+    keystore.load(() -> new KeyStore.CallbackHandlerProtection(password));
 
     KeyManagerFactory kmf = KeyManagerFactory.getInstance("NewSunX509");
     kmf.init(keystore, null);
