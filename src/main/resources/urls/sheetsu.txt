@@ -1,3 +1,4 @@
+https://sheetsu.com/apis/v1.0/
 https://sheetsu.com/apis/v1.0/{SHEET}
 https://sheetsu.com/apis/v1.0/{SHEET}/:column/:value
 https://sheetsu.com/apis/v1.0/{SHEET}/search
