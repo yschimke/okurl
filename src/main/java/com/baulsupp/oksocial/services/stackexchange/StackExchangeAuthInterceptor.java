@@ -22,7 +22,7 @@ import okhttp3.Response;
 import static com.baulsupp.oksocial.services.stackexchange.StackExchangeUtil.apiRequest;
 
 public class StackExchangeAuthInterceptor implements AuthInterceptor<StackExchangeToken> {
-  @Override public ServiceDefinition<StackExchangeToken> serviceDefinition() {
+  @Override public StackExchangeServiceDefinition serviceDefinition() {
     return new StackExchangeServiceDefinition();
   }
 

@@ -26,7 +26,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> {
-  @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
+  @Override public TwilioServiceDefinition serviceDefinition() {
     return new TwilioServiceDefinition();
   }
 

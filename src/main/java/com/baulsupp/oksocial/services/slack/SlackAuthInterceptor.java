@@ -25,7 +25,7 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  * https://api.slack.com/docs/oauth
  */
 public class SlackAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+  @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("slack.com", "Slack API", "slack");
   }
 

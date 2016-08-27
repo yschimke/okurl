@@ -25,7 +25,7 @@ import okhttp3.Response;
 import static com.baulsupp.oksocial.services.imgur.ImgurUtil.apiRequest;
 
 public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+  @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("api.imgur.com", "Imgur API", "imgur");
   }
 
