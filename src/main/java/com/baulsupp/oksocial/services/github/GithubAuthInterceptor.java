@@ -1,6 +1,7 @@
-package com.baulsupp.oksocial.services.uber;
+package com.baulsupp.oksocial.services.github;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
@@ -9,18 +10,27 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Future;
+import okhttp3.Credentials;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
+import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
+
+/**
+ * https://developer.github.com/docs/authentication
+ */
+public class GithubAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.uber.com", "Uber API", "uber");
+    return new Oauth2ServiceDefinition("api.github.com", "Github API", "github");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
@@ -30,31 +40,33 @@ public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     String token = credentials.accessToken;
 
     request =
-        request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
+        request.newBuilder().addHeader("Authorization", "token " + token).build();
 
     return chain.proceed(request);
   }
 
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,
       List<String> authArguments) throws IOException {
-    System.err.println("Authorising Uber API");
+    System.err.println("Authorising Github API");
 
     String clientId =
-        Secrets.prompt("Uber Client Id", "uber.clientId", "", false);
+        Secrets.prompt("Github Client Id", "github.clientId", "", false);
     String clientSecret =
-        Secrets.prompt("Uber Client Secret", "uber.clientSecret", "", true);
+        Secrets.prompt("Github Client Secret", "github.clientSecret", "", true);
+    Set<String> scopes =
+        Secrets.promptArray("Scopes", "github.scopes", GithubUtil.SCOPES);
 
-    return UberAuthFlow.login(client, outputHandler, clientId, clientSecret);
+    return GithubAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(
-        UberUtil.apiRequest("/v1/me", requestBuilder),
-        map -> map.get("first_name") + " " + map.get("last_name")).validate(client);
+        GithubUtil.apiRequest("/user", requestBuilder), fieldExtractor("name")).validate(
+        client);
   }
 
-  @Override public Collection<String> hosts() {
-    return UberUtil.API_HOSTS;
+  @Override public Set<String> hosts() {
+    return GithubUtil.API_HOSTS;
   }
 }

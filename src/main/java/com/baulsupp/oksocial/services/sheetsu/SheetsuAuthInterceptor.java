@@ -19,7 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SheetsuAuthInterceptor implements AuthInterceptor<BasicCredentials> {
-  @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
+  @Override public SheetsuServiceDefinition serviceDefinition() {
     return new SheetsuServiceDefinition();
   }
 

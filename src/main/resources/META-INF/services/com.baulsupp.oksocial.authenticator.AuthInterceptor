@@ -1,5 +1,6 @@
 com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
 com.baulsupp.oksocial.services.foursquare.FourSquareAuthInterceptor
+com.baulsupp.oksocial.services.github.GithubAuthInterceptor
 com.baulsupp.oksocial.services.google.GoogleAuthInterceptor
 com.baulsupp.oksocial.services.imgur.ImgurAuthInterceptor
 com.baulsupp.oksocial.services.lyft.LyftAuthInterceptor

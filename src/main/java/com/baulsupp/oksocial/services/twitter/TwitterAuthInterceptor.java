@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.joining;
 
 public class TwitterAuthInterceptor implements AuthInterceptor<TwitterCredentials> {
 
-  @Override public ServiceDefinition<TwitterCredentials> serviceDefinition() {
+  @Override public TwitterServiceDefinition serviceDefinition() {
     return new TwitterServiceDefinition();
   }
 
