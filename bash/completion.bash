@@ -63,7 +63,7 @@ function _oksocial_complete ()
             return
             ;;
         --protocols)
-            COMPREPLY=($(compgen -W 'http/1.1 spdy/3.1 h2' -- "$curlast"))
+            COMPREPLY=($(compgen -W 'http/1.1 h2' -- "$curlast"))
             return
             ;;
         -X|--request)
