@@ -29,7 +29,7 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  * https://developer.github.com/docs/authentication
  */
 public class GithubAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+  @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("api.github.com", "Github API", "github");
   }
 

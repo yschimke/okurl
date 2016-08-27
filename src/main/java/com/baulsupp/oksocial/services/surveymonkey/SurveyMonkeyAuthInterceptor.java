@@ -29,7 +29,7 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  * https://developer.surveymonkey.com/docs/authentication
  */
 public class SurveyMonkeyAuthInterceptor implements AuthInterceptor<SurveyMonkeyToken> {
-  @Override public ServiceDefinition<SurveyMonkeyToken> serviceDefinition() {
+  @Override public SurveyMonkeyServiceDefinition serviceDefinition() {
     return new SurveyMonkeyServiceDefinition();
   }
 

@@ -19,7 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+  @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("api.uber.com", "Uber API", "uber");
   }
 

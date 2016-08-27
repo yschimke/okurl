@@ -31,7 +31,7 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  * http://graph.microsoft.io/en-us/docs/authorization/permission_scopes
  */
 public class MicrosoftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+  @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft");
   }
 

@@ -28,7 +28,7 @@ import okhttp3.Response;
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
 
 public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
-  @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
+  @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup");
   }
 
