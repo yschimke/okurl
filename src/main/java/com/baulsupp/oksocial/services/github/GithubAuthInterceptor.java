@@ -40,7 +40,7 @@ public class GithubAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     String token = credentials.accessToken;
 
     request =
-        request.newBuilder().addHeader("Authorization", "Bearer " + token).build();
+        request.newBuilder().addHeader("Authorization", "token " + token).build();
 
     return chain.proceed(request);
   }
