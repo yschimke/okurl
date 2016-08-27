@@ -78,6 +78,6 @@ public abstract class TwitterAuthFlow {
 
   protected void showUserLogin(TwitterCredentials newCredentials) throws IOException {
     outputHandler.openLink(
-        "http://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
+        "https://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token);
   }
 }
