@@ -101,7 +101,6 @@ https://api.github.com/repos/{owner}/{repo}/commits/{ref}/statuses
 https://api.github.com/repos/{owner}/{repo}/commits/{sha}
 https://api.github.com/repos/{owner}/{repo}/commits/{sha}/comments
 https://api.github.com/repos/{owner}/{repo}/compare/{base...:head}
-https://api.github.com/repos/{owner}/{repo}/compare/hubot{branchname...octocat:branchname}
 https://api.github.com/repos/{owner}/{repo}/contents/{path}
 https://api.github.com/repos/{owner}/{repo}/contributors
 https://api.github.com/repos/{owner}/{repo}/deployments
@@ -124,7 +123,6 @@ https://api.github.com/repos/{owner}/{repo}/git/tags
 https://api.github.com/repos/{owner}/{repo}/git/tags/{sha}
 https://api.github.com/repos/{owner}/{repo}/git/trees
 https://api.github.com/repos/{owner}/{repo}/git/trees/{sha}
-https://api.github.com/repos/{owner}/{repo}/git/trees/{sha?recursive=1}
 https://api.github.com/repos/{owner}/{repo}/hooks
 https://api.github.com/repos/{owner}/{repo}/hooks/{id}
 https://api.github.com/repos/{owner}/{repo}/hooks/{id}/pings
@@ -184,7 +182,6 @@ https://api.github.com/repos/{owner}/{repo}/stats/commit_activity
 https://api.github.com/repos/{owner}/{repo}/stats/contributors
 https://api.github.com/repos/{owner}/{repo}/stats/participation
 https://api.github.com/repos/{owner}/{repo}/stats/punch_card
-https://api.github.com/repos/{owner}/{repo}/statuses/{ref`.}
 https://api.github.com/repos/{owner}/{repo}/statuses/{sha}
 https://api.github.com/repos/{owner}/{repo}/subscribers
 https://api.github.com/repos/{owner}/{repo}/subscription
