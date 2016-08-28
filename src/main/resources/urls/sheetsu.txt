@@ -1,9 +1,0 @@
-https://sheetsu.com/apis/v1.0/
-https://sheetsu.com/apis/v1.0/{SHEET}
-https://sheetsu.com/apis/v1.0/{SHEET}/:column/:value
-https://sheetsu.com/apis/v1.0/{SHEET}/search
-https://sheetsu.com/apis/v1.0/{SHEET}/_keys
-https://sheetsu.com/apis/v1.0/{SHEET}/sheets/{TAB}
-https://sheetsu.com/apis/v1.0/{SHEET}/sheets/{TAB}/:column/:value
-https://sheetsu.com/apis/v1.0/{SHEET}/sheets/{TAB}/search
-https://sheetsu.com/apis/v1.0/{SHEET}/sheets/{TAB}/_keys

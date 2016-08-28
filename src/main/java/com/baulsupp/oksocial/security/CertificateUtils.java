@@ -49,7 +49,10 @@ public class CertificateUtils {
 
   public static X509TrustManager combineTrustManagers(List<X509TrustManager> trustManagers)
       throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-    trustManagers.add(load(includedCertificates()));
+    List<File> localCerts = includedCertificates();
+    if (localCerts != null) {
+      trustManagers.add(load(localCerts));
+    }
     trustManagers.add(systemTrustManager());
 
     return new MergedX509TrustManager(trustManagers);
