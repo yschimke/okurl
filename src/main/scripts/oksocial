@@ -3,6 +3,7 @@
 CMD=$(basename $0)
 
 export INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+PLUGINDIR=/dev/null
 
 JAVA_CMD=java
 if [ -x /usr/libexec/java_home ]; then
@@ -18,4 +19,10 @@ if [ -x /usr/libexec/java_home ]; then
   JAVA_CMD=$JAVA_HOME/bin/java
 fi
 
-$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\* -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
+PLUGINS=
+
+for i in `find $PLUGINDIR -name lib 2>/dev/null`; do
+  PLUGINS=$PLUGINS:$i/\*
+done
+
+$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"

@@ -24,11 +24,15 @@ if [ $? -ne 0 ]; then
   BCP="-J-Xbootclasspath/p:$ALPN"
 fi
 
+CLASSPATH=$(JARS=(target/dependency/*.jar); IFS=:; echo "${JARS[*]}")
+
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
+
 if [ -z "$1" ]; then
   input=-
 else 
   input=$1
   shift
 fi
-$JAVA_HOME/bin/jjs $BCP -classpath $MAIN_JAR:$(ls target/dependency/*.jar | tr '\n' ':') -scripting ./src/main/resources/oksocial.js $input -- "$@"
+
+$JAVA_HOME/bin/jjs $BCP -classpath $MAIN_JAR:$CLASSPATH -scripting ./src/main/resources/oksocial.js $input -- "$@"

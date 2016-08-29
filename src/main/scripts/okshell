@@ -1,6 +1,7 @@
 #!/bin/sh
 
 export INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+PLUGINDIR=/dev/null
 
 if [ -x /usr/libexec/java_home ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
@@ -12,10 +13,19 @@ if [ -x /usr/libexec/java_home ]; then
   fi
 fi
 
+CLASSPATH=$(JARS=($INSTALLDIR/lib/*.jar); IFS=:; echo "${JARS[*]}")
+
+PLUGINS=
+
+for i in `find $PLUGINDIR -name lib 2>/dev/null`; do
+  PLUGINS=$PLUGINS:$i/\*
+done
+
 if [ -z "$1" ]; then
   input=-
 else
   input=$1
   shift
 fi
-$JAVA_HOME/bin/jjs $BCP -classpath $(ls $INSTALLDIR/lib/*.jar | tr '\n' ':') -scripting $INSTALLDIR/scripts/oksocial.js $input -- "$@"
+
+$JAVA_HOME/bin/jjs $BCP -classpath "$CLASSPATH$PLUGINS" -scripting $INSTALLDIR/scripts/oksocial.js $input -- "$@"
