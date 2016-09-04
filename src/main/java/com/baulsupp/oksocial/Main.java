@@ -186,6 +186,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--socks"}, description = "Use SOCKS proxy")
   public InetAddressParam socksProxy;
 
+  @Option(name = {"--proxy"}, description = "Use HTTP proxy")
+  public InetAddressParam proxy;
+
   @Option(name = {"--show-credentials"}, description = "Show Credentials")
   public boolean showCredentials = false;
 
@@ -602,6 +605,8 @@ public class Main extends HelpOption implements Runnable {
 
     if (socksProxy != null) {
       builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+    } else if (proxy != null) {
+      builder.proxy(new Proxy(Proxy.Type.HTTP, proxy.address));
     }
 
     if (protocols != null) {
