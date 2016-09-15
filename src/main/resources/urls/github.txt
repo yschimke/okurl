@@ -39,6 +39,7 @@ https://api.github.com/gists/public
 https://api.github.com/gists/starred
 https://api.github.com/gitignore/templates
 https://api.github.com/gitignore/templates/C
+https://api.github.com/graphql
 https://api.github.com/issues
 https://api.github.com/legacy/issues/search/{owner}/{repository}/{state}/{keyword}
 https://api.github.com/legacy/repos/search/{keyword}
