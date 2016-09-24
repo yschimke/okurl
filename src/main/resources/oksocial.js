@@ -13,6 +13,10 @@ var execute = function(request) {
   return JSON.parse(okshell.execute(request));
 }
 
+var show = function(url) {
+  return okshell.show(url);
+}
+
 var location = function() {
   var a = Java.type("com.baulsupp.oksocial.location.Location");
   return a.read().get();
