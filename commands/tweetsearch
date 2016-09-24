@@ -1,5 +1,0 @@
-#!/usr/bin/env okapi -m
-
-var argumentString = arguments.map(encodeURIComponent).join("+");
-
-"https://api.twitter.com/1.1/search/tweets.json?q=" + argumentString
