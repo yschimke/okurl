@@ -70,6 +70,16 @@ public class OkShell {
     }
   }
 
+  public void show(String url) throws IOException {
+    Request request = requestBuilder.url(url).build();
+
+    Call call = client.newCall(request);
+
+    Response response = call.execute();
+
+    outputHandler.showOutput(response, false);
+  }
+
   public Object credentials(String name) {
     if (main != null) {
       Optional<AuthInterceptor<?>> interceptor = main.interceptorByName(name);
