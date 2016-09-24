@@ -11,8 +11,6 @@ $ oksocial --authorize twitter
 
 $ twitterapi '/1.1/statuses/show.json?id=733545978398040064'
 ...
-$ tweetsearch twitterapi | jq .statuses[].text | head -1
-"And now for a test / API integration / For Twitter streaming! #haiku #twitterAPI"
 ``` 
 
 # Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
