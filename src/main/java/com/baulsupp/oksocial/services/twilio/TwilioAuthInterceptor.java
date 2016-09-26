@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
@@ -26,8 +27,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class TwilioAuthInterceptor implements AuthInterceptor<BasicCredentials> {
-  @Override public TwilioServiceDefinition serviceDefinition() {
-    return new TwilioServiceDefinition();
+  @Override public BasicAuthServiceDefinition serviceDefinition() {
+    return new BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio");
   }
 
   @Override

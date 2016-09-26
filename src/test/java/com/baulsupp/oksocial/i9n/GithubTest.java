@@ -1,11 +1,9 @@
 package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
-import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor;
-import com.baulsupp.oksocial.services.twilio.TwilioServiceDefinition;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
