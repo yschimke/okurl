@@ -2,7 +2,8 @@ package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
-import com.baulsupp.oksocial.services.twilio.TwilioServiceDefinition;
+import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition;
+import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ public class TwilioTest {
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
-  private TwilioServiceDefinition service = new TwilioServiceDefinition();
+  private BasicAuthServiceDefinition service = new TwilioAuthInterceptor().serviceDefinition();
 
   {
     main.outputHandler = output;

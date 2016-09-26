@@ -1,28 +1,10 @@
 package com.baulsupp.oksocial.authenticator.oauth2;
 
-import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.AbstractServiceDefinition;
 
-public class Oauth2ServiceDefinition implements ServiceDefinition<Oauth2Token> {
-  private String apiHost;
-  private String serviceName;
-  private final String shortName;
-
+public class Oauth2ServiceDefinition extends AbstractServiceDefinition<Oauth2Token> {
   public Oauth2ServiceDefinition(String apiHost, String serviceName, String shortName) {
-    this.apiHost = apiHost;
-    this.serviceName = serviceName;
-    this.shortName = shortName;
-  }
-
-  @Override public String shortName() {
-    return shortName;
-  }
-
-  @Override public String apiHost() {
-    return apiHost;
-  }
-
-  @Override public String serviceName() {
-    return serviceName;
+    super(apiHost, serviceName, shortName);
   }
 
   public Oauth2Token parseCredentialsString(String s) {
