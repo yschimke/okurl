@@ -94,6 +94,16 @@
       <version>2.6.0</version>
     </dependency>
     <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-okhttp</artifactId>
+      <version>3.13.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-spancollector-http</artifactId>
+      <version>3.13.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>joauth</artifactId>
       <version>6.0.2</version>

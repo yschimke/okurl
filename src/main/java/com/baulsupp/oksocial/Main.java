@@ -38,6 +38,14 @@ import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
+import com.github.kristofa.brave.Brave;
+import com.github.kristofa.brave.BraveExecutorService;
+import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
+import com.github.kristofa.brave.InheritableServerClientAndLocalSpanState;
+import com.github.kristofa.brave.SpanCollectorMetricsHandler;
+import com.github.kristofa.brave.http.HttpSpanCollector;
+import com.github.kristofa.brave.okhttp.BraveOkHttpRequestResponseInterceptor;
+import com.github.kristofa.brave.okhttp.BraveTracingInterceptor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
@@ -63,6 +71,7 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
+import okhttp3.Dispatcher;
 import okhttp3.Dns;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -71,6 +80,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import zipkin.Endpoint;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -206,6 +216,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--urlCompletion"}, description = "URL Completion")
   public String urlCompletion;
+
+  @Option(name = {"--zipkin"}, description = "Record zipkin traces")
+  public boolean zipkin;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -366,6 +379,24 @@ public class Main extends HelpOption implements Runnable {
 
     OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
+
+    if (zipkin) {
+      HttpSpanCollector collector = HttpSpanCollector.create("http://localhost:9411/",
+          new EmptySpanCollectorMetricsHandler());
+      Brave brave = new Brave.Builder("oksocial").spanCollector(collector).build();
+
+      BraveExecutorService tracePropagatingExecutor = new BraveExecutorService(
+          authClient.dispatcher().executorService(),
+          brave.serverSpanThreadBinder()
+      );
+
+      BraveTracingInterceptor tracingInterceptor = BraveTracingInterceptor.create(brave);
+
+      clientBuilder.addInterceptor(tracingInterceptor);
+      clientBuilder.addNetworkInterceptor(tracingInterceptor);
+      clientBuilder.dispatcher(new Dispatcher(tracePropagatingExecutor));
+    }
+
     client = clientBuilder.build();
 
     requestBuilder = createRequestBuilder();

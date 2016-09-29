@@ -4,6 +4,7 @@ https://api.twitter.com/1.1/account/update_profile.json
 https://api.twitter.com/1.1/account/update_profile_background_image.json
 https://api.twitter.com/1.1/account/update_profile_colors.json
 https://api.twitter.com/1.1/account/update_profile_image.json
+https://api.twitter.com/1.1/account/verify_credentials.json
 https://api.twitter.com/1.1/application/rate_limit_status.json
 https://api.twitter.com/1.1/blocks/create.json
 https://api.twitter.com/1.1/blocks/destroy.json
