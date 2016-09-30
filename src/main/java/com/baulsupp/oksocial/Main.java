@@ -3,6 +3,7 @@ package com.baulsupp.oksocial;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
+import com.baulsupp.oksocial.brave.OkSocialParser;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
@@ -217,8 +218,11 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--urlCompletion"}, description = "URL Completion")
   public String urlCompletion;
 
-  @Option(name = {"--zipkin"}, description = "Record zipkin traces")
+  @Option(name = {"--zipkin-local"}, description = "Record zipkin traces")
   public boolean zipkin;
+
+  @Option(name = {"--zipkin-remote"}, description = "Record zipkin traces to server")
+  public InetAddressParam zipkinServer;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -380,17 +384,30 @@ public class Main extends HelpOption implements Runnable {
     OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
 
-    if (zipkin) {
-      HttpSpanCollector collector = HttpSpanCollector.create("http://localhost:9411/",
+    if (zipkin || zipkinServer != null) {
+      String zipkinTarget = "http://localhost:9411/";
+      if (zipkinServer != null) {
+        zipkinTarget = "http://" + zipkinServer.address.getHostString() + ":" + zipkinServer.address.getHostString();
+      }
+
+      HttpSpanCollector collector = HttpSpanCollector.create(zipkinTarget,
           new EmptySpanCollectorMetricsHandler());
-      Brave brave = new Brave.Builder("oksocial").spanCollector(collector).build();
+
+      com.twitter.zipkin.gen.Endpoint localEndpoint = com.twitter.zipkin.gen.Endpoint.builder()
+          .serviceName("oksocial")
+          .build();
+
+      Brave brave = new Brave.Builder(
+          new InheritableServerClientAndLocalSpanState(localEndpoint)).spanCollector(collector)
+          .build();
 
       BraveExecutorService tracePropagatingExecutor = new BraveExecutorService(
           authClient.dispatcher().executorService(),
           brave.serverSpanThreadBinder()
       );
 
-      BraveTracingInterceptor tracingInterceptor = BraveTracingInterceptor.create(brave);
+      BraveTracingInterceptor tracingInterceptor =
+          BraveTracingInterceptor.builder(brave).parser(new OkSocialParser()).build();
 
       clientBuilder.addInterceptor(tracingInterceptor);
       clientBuilder.addNetworkInterceptor(tracingInterceptor);
@@ -687,7 +704,8 @@ public class Main extends HelpOption implements Runnable {
       trustManager = CertificateUtils.combineTrustManagers(trustManagers);
     }
 
-    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager), trustManager);
+    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager),
+        trustManager);
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
