@@ -43,9 +43,7 @@ import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.BraveExecutorService;
 import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
 import com.github.kristofa.brave.InheritableServerClientAndLocalSpanState;
-import com.github.kristofa.brave.SpanCollectorMetricsHandler;
 import com.github.kristofa.brave.http.HttpSpanCollector;
-import com.github.kristofa.brave.okhttp.BraveOkHttpRequestResponseInterceptor;
 import com.github.kristofa.brave.okhttp.BraveTracingInterceptor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -56,6 +54,7 @@ import io.airlift.airline.Command;
 import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
@@ -81,7 +80,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
-import zipkin.Endpoint;
+import org.apache.commons.io.IOUtils;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -93,6 +92,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
@@ -238,8 +238,6 @@ public class Main extends HelpOption implements Runnable {
 
   public Request.Builder requestBuilder;
 
-  private List<OkHttpClient> clients = Lists.newArrayList();
-
   public CommandRegistry commandRegistry = new CommandRegistry();
 
   public OutputHandler outputHandler = null;
@@ -247,6 +245,8 @@ public class Main extends HelpOption implements Runnable {
   public CredentialsStore credentialsStore = null;
 
   public CompletionVariableCache completionVariableCache;
+
+  private List<Runnable> completionList = Lists.newArrayList();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -393,6 +393,11 @@ public class Main extends HelpOption implements Runnable {
       HttpSpanCollector collector = HttpSpanCollector.create(zipkinTarget,
           new EmptySpanCollectorMetricsHandler());
 
+      onComplete(() -> {
+        collector.flush();
+        collector.close();
+      });
+
       com.twitter.zipkin.gen.Endpoint localEndpoint = com.twitter.zipkin.gen.Endpoint.builder()
           .serviceName("oksocial")
           .build();
@@ -414,13 +419,21 @@ public class Main extends HelpOption implements Runnable {
       clientBuilder.dispatcher(new Dispatcher(tracePropagatingExecutor));
     }
 
-    client = clientBuilder.build();
+    client = build(clientBuilder);
 
     requestBuilder = createRequestBuilder();
 
     if (completionVariableCache == null) {
       completionVariableCache = new TmpCompletionVariableCache();
     }
+  }
+
+  private void onComplete(Runnable r) {
+    completionList.add(r);
+  }
+
+  private void closeOnComplete(Closeable c) {
+    onComplete(() -> closeQuietly(c));
   }
 
   public OkHttpClient getClient() {
@@ -438,11 +451,9 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void closeClients() {
-    clients.forEach(client -> {
-      client.dispatcher().executorService().shutdown();
-      client.connectionPool().evictAll();
-    });
-    clients.clear();
+    for (Runnable runnable : completionList) {
+      runnable.run();
+    }
   }
 
   private void showCredentials() throws Exception {
@@ -524,7 +535,10 @@ public class Main extends HelpOption implements Runnable {
   private OkHttpClient build(OkHttpClient.Builder clientBuilder) {
     OkHttpClient client = clientBuilder.build();
 
-    clients.add(client);
+    onComplete(() -> {
+      client.dispatcher().executorService().shutdown();
+      client.connectionPool().evictAll();
+    });
 
     return client;
   }
