@@ -38,8 +38,12 @@ public class ServiceInterceptor implements Interceptor {
     Optional<T> credentials =
         credentialsStore.readDefaultCredentials(interceptor.serviceDefinition());
 
+    if (!credentials.isPresent()) {
+      credentials = interceptor.defaultCredentials();
+    }
+
     if (credentials.isPresent()) {
-      Response result = interceptor.intercept(chain, credentials.get());
+      Response result = interceptor.intercept(chain, credentials.orElse(null));
 
       if (result.code() >= 400 && result.code() < 500) {
         if (interceptor.canRenew(result, credentials.get())) {
