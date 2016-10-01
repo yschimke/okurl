@@ -43,7 +43,7 @@ public class ServiceInterceptor implements Interceptor {
     }
 
     if (credentials.isPresent()) {
-      Response result = interceptor.intercept(chain, credentials.orElse(null));
+      Response result = interceptor.intercept(chain, credentials.get());
 
       if (result.code() >= 400 && result.code() < 500) {
         if (interceptor.canRenew(result, credentials.get())) {
