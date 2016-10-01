@@ -2,8 +2,8 @@ package com.baulsupp.oksocial.services.httpbin;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
-import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
+import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;

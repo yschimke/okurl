@@ -6,16 +6,13 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
-import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.services.lyft.LyftUtil;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.FormBody;
 import okhttp3.Interceptor;
@@ -93,7 +90,8 @@ public class MicrosoftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(
-        MicrosoftUtil.apiRequest("/v1.0/me", requestBuilder), fieldExtractor("displayName")).validate(
+        MicrosoftUtil.apiRequest("/v1.0/me", requestBuilder),
+        fieldExtractor("displayName")).validate(
         client);
   }
 
