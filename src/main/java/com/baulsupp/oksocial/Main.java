@@ -3,7 +3,10 @@ package com.baulsupp.oksocial;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
-import com.baulsupp.oksocial.brave.OkSocialParser;
+import com.baulsupp.oksocial.brave.BaseZipkinHandler;
+import com.baulsupp.oksocial.brave.NullZipkinHandler;
+import com.baulsupp.oksocial.brave.ServerZipkinHandler;
+import com.baulsupp.oksocial.brave.ZipkinHandler;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
@@ -39,12 +42,6 @@ import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
-import com.github.kristofa.brave.Brave;
-import com.github.kristofa.brave.BraveExecutorService;
-import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
-import com.github.kristofa.brave.InheritableServerClientAndLocalSpanState;
-import com.github.kristofa.brave.http.HttpSpanCollector;
-import com.github.kristofa.brave.okhttp.BraveTracingInterceptor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
@@ -60,6 +57,7 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -71,7 +69,6 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
-import okhttp3.Dispatcher;
 import okhttp3.Dns;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -80,7 +77,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.apache.commons.io.IOUtils;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -99,11 +95,14 @@ public class Main extends HelpOption implements Runnable {
   private static Logger logger = Logger.getLogger(Main.class.getName());
 
   static final String NAME = "oksocial";
+  private static String[] commandLineArgs;
 
   // store active logger to avoid GC
   private Logger activeLogger;
 
   private static Main fromArgs(String... args) {
+    Main.commandLineArgs = args;
+
     return SingleCommand.singleCommand(Main.class).parse(args);
   }
 
@@ -219,10 +218,13 @@ public class Main extends HelpOption implements Runnable {
   public String urlCompletion;
 
   @Option(name = {"--zipkin-local"}, description = "Record zipkin traces")
-  public boolean zipkin;
+  public boolean zipkinLocal;
 
   @Option(name = {"--zipkin-remote"}, description = "Record zipkin traces to server")
   public InetAddressParam zipkinServer;
+
+  @Option(name = {"--zipkin-debug"}, description = "Record zipkin traces to debug")
+  public boolean zipkinDebug;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -384,40 +386,20 @@ public class Main extends HelpOption implements Runnable {
     OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
 
-    if (zipkin || zipkinServer != null) {
-      String zipkinTarget = "http://localhost:9411/";
-      if (zipkinServer != null) {
-        zipkinTarget = "http://" + zipkinServer.address.getHostString() + ":" + zipkinServer.address.getHostString();
-      }
-
-      HttpSpanCollector collector = HttpSpanCollector.create(zipkinTarget,
-          new EmptySpanCollectorMetricsHandler());
-
-      onComplete(() -> {
-        collector.flush();
-        collector.close();
-      });
-
-      com.twitter.zipkin.gen.Endpoint localEndpoint = com.twitter.zipkin.gen.Endpoint.builder()
-          .serviceName("oksocial")
-          .build();
-
-      Brave brave = new Brave.Builder(
-          new InheritableServerClientAndLocalSpanState(localEndpoint)).spanCollector(collector)
-          .build();
-
-      BraveExecutorService tracePropagatingExecutor = new BraveExecutorService(
-          authClient.dispatcher().executorService(),
-          brave.serverSpanThreadBinder()
-      );
-
-      BraveTracingInterceptor tracingInterceptor =
-          BraveTracingInterceptor.builder(brave).parser(new OkSocialParser()).build();
-
-      clientBuilder.addInterceptor(tracingInterceptor);
-      clientBuilder.addNetworkInterceptor(tracingInterceptor);
-      clientBuilder.dispatcher(new Dispatcher(tracePropagatingExecutor));
+    ZipkinHandler zipkinHandler;
+    if (zipkinDebug) {
+      zipkinHandler = BaseZipkinHandler.logging();
+    } else if (zipkinLocal) {
+      zipkinHandler = ServerZipkinHandler.localhost(outputHandler);
+    } else if (zipkinServer != null) {
+      zipkinHandler = ServerZipkinHandler.instance(zipkinServer.address, outputHandler);
+    } else {
+      zipkinHandler = NullZipkinHandler.instance();
     }
+
+    zipkinHandler.configureClient(Arrays.asList(commandLineArgs), clientBuilder);
+
+    closeOnComplete(zipkinHandler);
 
     client = build(clientBuilder);
 
