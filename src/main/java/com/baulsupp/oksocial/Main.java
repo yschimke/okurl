@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.brave.BaseZipkinHandler;
-import com.baulsupp.oksocial.brave.NullZipkinHandler;
 import com.baulsupp.oksocial.brave.ServerZipkinHandler;
 import com.baulsupp.oksocial.brave.ZipkinHandler;
 import com.baulsupp.oksocial.commands.CommandRegistry;
@@ -386,20 +385,11 @@ public class Main extends HelpOption implements Runnable {
     OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
 
-    ZipkinHandler zipkinHandler;
-    if (zipkinDebug) {
-      zipkinHandler = BaseZipkinHandler.logging();
-    } else if (zipkinLocal) {
-      zipkinHandler = ServerZipkinHandler.localhost(outputHandler);
-    } else if (zipkinServer != null) {
-      zipkinHandler = ServerZipkinHandler.instance(zipkinServer.address, outputHandler);
-    } else {
-      zipkinHandler = NullZipkinHandler.instance();
-    }
+    buildZipkinHandler().ifPresent(zipkin -> {
+      zipkin.configureClient(Arrays.asList(commandLineArgs), clientBuilder);
 
-    zipkinHandler.configureClient(Arrays.asList(commandLineArgs), clientBuilder);
-
-    closeOnComplete(zipkinHandler);
+      closeOnComplete(zipkin);
+    });
 
     client = build(clientBuilder);
 
@@ -407,6 +397,18 @@ public class Main extends HelpOption implements Runnable {
 
     if (completionVariableCache == null) {
       completionVariableCache = new TmpCompletionVariableCache();
+    }
+  }
+
+  private Optional<ZipkinHandler> buildZipkinHandler() {
+    if (zipkinDebug) {
+      return Optional.of(BaseZipkinHandler.logging());
+    } else if (zipkinLocal) {
+      return Optional.of(ServerZipkinHandler.localhost(outputHandler));
+    } else if (zipkinServer != null) {
+      return Optional.of(ServerZipkinHandler.instance(zipkinServer.address, outputHandler));
+    } else {
+      return Optional.empty();
     }
   }
 
