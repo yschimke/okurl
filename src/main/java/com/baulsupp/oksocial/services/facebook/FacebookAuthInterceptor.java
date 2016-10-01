@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;

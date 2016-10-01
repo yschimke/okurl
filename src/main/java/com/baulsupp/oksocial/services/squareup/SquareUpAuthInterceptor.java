@@ -11,7 +11,6 @@ import com.baulsupp.oksocial.completion.CompletionQuery;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;

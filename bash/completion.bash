@@ -106,6 +106,7 @@ complete -F _oksocial_complete oksocial
 
 complete -F _oksocial_complete 4sqapi
 complete -F _oksocial_complete fbapi
+complete -F _oksocial_complete giphyapi
 complete -F _oksocial_complete githubapi
 complete -F _oksocial_complete imgurapi
 complete -F _oksocial_complete lyftapi

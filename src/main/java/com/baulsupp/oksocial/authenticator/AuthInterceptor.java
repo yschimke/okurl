@@ -61,4 +61,8 @@ public interface AuthInterceptor<T> {
       return new HostUrlCompleter(hosts());
     }
   }
+
+  default Optional<T> defaultCredentials() {
+    return Optional.empty();
+  }
 }

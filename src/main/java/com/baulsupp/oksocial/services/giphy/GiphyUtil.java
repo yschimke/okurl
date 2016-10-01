@@ -1,20 +1,20 @@
-package com.baulsupp.oksocial.services.microsoft;
+package com.baulsupp.oksocial.services.giphy;
 
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import okhttp3.Request;
 
-public class MicrosoftUtil {
-  private MicrosoftUtil() {
+public class GiphyUtil {
+  private GiphyUtil() {
   }
 
   public static final Set<String> API_HOSTS =
       Collections.unmodifiableSet(Sets.newHashSet(
-          "graph.microsoft.com")
+          "api.giphy.com")
       );
 
   public static Request apiRequest(String s, Request.Builder requestBuilder) {
-    return requestBuilder.url("https://graph.microsoft.com" + s).build();
+    return requestBuilder.url("https://api.giphy.com" + s).build();
   }
 }

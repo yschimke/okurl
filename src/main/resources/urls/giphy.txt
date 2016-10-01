@@ -1,0 +1,10 @@
+https://api.giphy.com/v1/gifs
+https://api.giphy.com/v1/gifs/{id}
+https://api.giphy.com/v1/gifs/random?tag=american+psycho
+https://api.giphy.com/v1/gifs/search?q={query}
+https://api.giphy.com/v1/gifs/translate?s=superman
+https://api.giphy.com/v1/gifs/trending
+https://api.giphy.com/v1/stickers/random?tag={tag}
+https://api.giphy.com/v1/stickers/search?q=cat
+https://api.giphy.com/v1/stickers/translate?s=hungry
+https://api.giphy.com/v1/stickers/trending

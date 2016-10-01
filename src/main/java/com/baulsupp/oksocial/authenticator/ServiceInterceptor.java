@@ -38,6 +38,10 @@ public class ServiceInterceptor implements Interceptor {
     Optional<T> credentials =
         credentialsStore.readDefaultCredentials(interceptor.serviceDefinition());
 
+    if (!credentials.isPresent()) {
+      credentials = interceptor.defaultCredentials();
+    }
+
     if (credentials.isPresent()) {
       Response result = interceptor.intercept(chain, credentials.get());
 
