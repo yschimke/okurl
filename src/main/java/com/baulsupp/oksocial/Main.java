@@ -77,6 +77,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.apache.commons.io.IOUtils;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -88,7 +89,6 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
@@ -248,7 +248,7 @@ public class Main extends HelpOption implements Runnable {
 
   public CompletionVariableCache completionVariableCache;
 
-  private List<Runnable> completionList = Lists.newArrayList();
+  private List<Closeable> completionList = Lists.newArrayList();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -410,12 +410,8 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private void onComplete(Runnable r) {
-    completionList.add(r);
-  }
-
   private void closeOnComplete(Closeable c) {
-    onComplete(() -> closeQuietly(c));
+    completionList.add(c);
   }
 
   public OkHttpClient getClient() {
@@ -433,8 +429,8 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void closeClients() {
-    for (Runnable runnable : completionList) {
-      runnable.run();
+    for (Closeable closeable : completionList) {
+      IOUtils.closeQuietly(closeable);
     }
   }
 
@@ -517,7 +513,7 @@ public class Main extends HelpOption implements Runnable {
   private OkHttpClient build(OkHttpClient.Builder clientBuilder) {
     OkHttpClient client = clientBuilder.build();
 
-    onComplete(() -> {
+    closeOnComplete(() -> {
       client.dispatcher().executorService().shutdown();
       client.connectionPool().evictAll();
     });
