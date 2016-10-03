@@ -22,6 +22,7 @@ import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
+import com.baulsupp.oksocial.network.ListeningSSLSocketFactory;
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
@@ -62,9 +63,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
@@ -698,8 +704,16 @@ public class Main extends HelpOption implements Runnable {
       trustManager = CertificateUtils.combineTrustManagers(trustManagers);
     }
 
-    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager),
-        trustManager);
+    SSLSocketFactory realSocketFactory = createSslSocketFactory(keyManagerArray(keyManagers), trustManager);
+    Consumer<SSLSocket> newListener = socket -> {
+      System.out.println("a " + System.currentTimeMillis());
+    };
+    HandshakeCompletedListener handshakeListener = handshakeCompletedEvent -> {
+      System.out.println("b " + System.currentTimeMillis());
+      System.out.println(handshakeCompletedEvent.getSocket().getSSLParameters());
+    };
+    SSLSocketFactory listeningSocketFactory = new ListeningSSLSocketFactory(realSocketFactory, newListener, handshakeListener);
+    builder.sslSocketFactory(listeningSocketFactory, trustManager);
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
