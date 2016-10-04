@@ -20,7 +20,7 @@ BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
 #DEBUG="-Djavax.net.debug=ssl:handshake -Djava.security.debug=sunpkcs11"
 
-JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
+JAVA_HOME=$(/usr/libexec/java_home -v 99 2>/dev/null)
 
 if [ $? -ne 0 ]; then
   JAVA_HOME=$(/usr/libexec/java_home -v 1.8)

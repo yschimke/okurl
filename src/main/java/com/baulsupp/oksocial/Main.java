@@ -3,9 +3,11 @@ package com.baulsupp.oksocial;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
-import com.baulsupp.oksocial.brave.BaseZipkinHandler;
-import com.baulsupp.oksocial.brave.ServerZipkinHandler;
-import com.baulsupp.oksocial.brave.ZipkinHandler;
+import com.baulsupp.oksocial.brave.BraveDns;
+import com.baulsupp.oksocial.brave.BraveUtil;
+import com.baulsupp.oksocial.brave.CollectingSpanCollector;
+import com.baulsupp.oksocial.brave.OkHttpSpanCollector;
+import com.baulsupp.oksocial.brave.OkSocialParser;
 import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
@@ -42,6 +44,14 @@ import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
+import com.github.kristofa.brave.Brave;
+import com.github.kristofa.brave.BraveExecutorService;
+import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
+import com.github.kristofa.brave.IdConversion;
+import com.github.kristofa.brave.InheritableServerClientAndLocalSpanState;
+import com.github.kristofa.brave.LoggingSpanCollector;
+import com.github.kristofa.brave.SpanCollector;
+import com.github.kristofa.brave.okhttp.BraveTracingInterceptor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
@@ -57,23 +67,22 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
+import okhttp3.Dispatcher;
 import okhttp3.Dns;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -81,8 +90,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http2.FrameLogger;
+import okhttp3.internal.http2.Http2;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.io.IOUtils;
+import zipkin.reporter.Reporter;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -228,9 +240,6 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--zipkin-remote"}, description = "Record zipkin traces to server")
   public InetAddressParam zipkinServer;
 
-  @Option(name = {"--zipkin-debug"}, description = "Record zipkin traces to debug")
-  public boolean zipkinDebug;
-
   public String commandName = System.getProperty("command.name", "oksocial");
 
   public String completionFile = System.getenv("COMPLETION_FILE");
@@ -255,12 +264,59 @@ public class Main extends HelpOption implements Runnable {
 
   private List<Closeable> completionList = Lists.newArrayList();
 
+  private Brave brave;
+
+  private ThreadPoolExecutor executor;
+
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
   }
 
   @Override public void run() {
     LoggingUtil.configureLogging(debug, showHttp2Frames);
+
+    com.twitter.zipkin.gen.Endpoint localEndpoint = com.twitter.zipkin.gen.Endpoint.builder()
+        .serviceName("oksocial").build();
+
+    if (zipkinLocal) {
+      zipkinServer = new InetAddressParam("localhost:9411");
+    }
+
+    SpanCollector spanCollector;
+    if (zipkinServer != null) {
+      String server = BraveUtil.getServer(zipkinServer.address);
+
+      OkHttpSpanCollector httpSpanCollector =
+          OkHttpSpanCollector.create(server, new EmptySpanCollectorMetricsHandler());
+
+      closeOnComplete(() -> {
+        httpSpanCollector.flush();
+        httpSpanCollector.close();
+      });
+
+      Set<Long> opened = Sets.newHashSet();
+      spanCollector = new CollectingSpanCollector(httpSpanCollector, span -> {
+        closeOnComplete(() -> {
+          if (opened.add(span.getTrace_id())) {
+            outputHandler.openLink(
+                server + "traces/" + IdConversion.convertToString(span.getTrace_id()));
+          }
+        });
+      });
+    } else {
+      spanCollector = new LoggingSpanCollector();
+    }
+
+    brave = new Brave.Builder(
+        new InheritableServerClientAndLocalSpanState(localEndpoint)).spanCollector(spanCollector)
+        .build();
+
+    Http2.setFrameLogger((inbound, streamId, length, type, flags) -> {
+      brave.clientTracer().submitAnnotation("frame:" + type);
+    });
+
+    executor = new ThreadPoolExecutor(1, Integer.MAX_VALUE, 3, TimeUnit.SECONDS,
+        new SynchronousQueue<>(), okhttp3.internal.Util.threadFactory("OkSocial Dispatcher", true));
 
     if (outputHandler == null) {
       outputHandler = buildHandler();
@@ -308,6 +364,8 @@ public class Main extends HelpOption implements Runnable {
       outputHandler.showError("unknown error", e);
     } finally {
       closeClients();
+
+      executor.shutdown();
     }
   }
 
@@ -391,30 +449,12 @@ public class Main extends HelpOption implements Runnable {
     OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
 
-    buildZipkinHandler().ifPresent(zipkin -> {
-      zipkin.configureClient(Arrays.asList(commandLineArgs), clientBuilder);
-
-      closeOnComplete(zipkin);
-    });
-
     client = build(clientBuilder);
 
     requestBuilder = createRequestBuilder();
 
     if (completionVariableCache == null) {
       completionVariableCache = new TmpCompletionVariableCache();
-    }
-  }
-
-  private Optional<ZipkinHandler> buildZipkinHandler() {
-    if (zipkinDebug) {
-      return Optional.of(BaseZipkinHandler.logging());
-    } else if (zipkinLocal) {
-      return Optional.of(ServerZipkinHandler.localhost(outputHandler));
-    } else if (zipkinServer != null) {
-      return Optional.of(ServerZipkinHandler.instance(zipkinServer.address, outputHandler));
-    } else {
-      return Optional.empty();
     }
   }
 
@@ -627,6 +667,7 @@ public class Main extends HelpOption implements Runnable {
     if (resolve != null) {
       dns = DnsOverride.build(dns, resolve);
     }
+    dns = new BraveDns(dns, brave);
     builder.dns(dns);
 
     if (networkInterface != null) {
@@ -660,6 +701,16 @@ public class Main extends HelpOption implements Runnable {
     if (protocols != null) {
       builder.protocols(ProtocolUtil.parseProtocolList(protocols));
     }
+
+    BraveTracingInterceptor tracingInterceptor =
+        BraveTracingInterceptor.builder(brave).parser(new OkSocialParser()).build();
+
+    BraveExecutorService tracePropagatingExecutor = new BraveExecutorService(
+        executor, brave.serverSpanThreadBinder());
+
+    builder.addInterceptor(tracingInterceptor);
+    builder.addNetworkInterceptor(tracingInterceptor);
+    builder.dispatcher(new Dispatcher(tracePropagatingExecutor));
 
     return builder;
   }
@@ -704,15 +755,17 @@ public class Main extends HelpOption implements Runnable {
       trustManager = CertificateUtils.combineTrustManagers(trustManagers);
     }
 
-    SSLSocketFactory realSocketFactory = createSslSocketFactory(keyManagerArray(keyManagers), trustManager);
-    Consumer<SSLSocket> newListener = socket -> {
-      System.out.println("a " + System.currentTimeMillis());
-    };
-    HandshakeCompletedListener handshakeListener = handshakeCompletedEvent -> {
-      System.out.println("b " + System.currentTimeMillis());
-      System.out.println(handshakeCompletedEvent.getSocket().getSSLParameters());
-    };
-    SSLSocketFactory listeningSocketFactory = new ListeningSSLSocketFactory(realSocketFactory, newListener, handshakeListener);
+    SSLSocketFactory realSocketFactory =
+        createSslSocketFactory(keyManagerArray(keyManagers), trustManager);
+    SSLSocketFactory listeningSocketFactory =
+        new ListeningSSLSocketFactory(realSocketFactory, s -> {
+          brave.clientTracer().startNewSpan("SSLHandshake");
+          brave.clientTracer().setClientSent();
+        },
+            hce -> {
+              brave.clientTracer().submitBinaryAnnotation("cipherSuite", hce.getCipherSuite());
+              brave.clientTracer().setClientReceived();
+            });
     builder.sslSocketFactory(listeningSocketFactory, trustManager);
 
     if (certificatePins != null) {

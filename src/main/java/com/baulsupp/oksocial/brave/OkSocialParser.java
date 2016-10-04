@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.brave;
 import com.github.kristofa.brave.KeyValueAnnotation;
 import com.github.kristofa.brave.okhttp.OkHttpParser;
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.util.List;
 import okhttp3.Handshake;
 import okhttp3.Headers;
@@ -12,6 +11,7 @@ import okhttp3.Response;
 import zipkin.TraceKeys;
 
 public class OkSocialParser extends OkHttpParser {
+  private boolean includeHeaders = false;
 
   public List<KeyValueAnnotation> networkRequestTags(Request request) {
     List<KeyValueAnnotation> tags = Lists.newArrayList();
@@ -30,9 +30,9 @@ public class OkSocialParser extends OkHttpParser {
     //  // TODO worth warning?
     //}
 
-    addHeaders(tags, request.headers(), "http.request.header");
-
-    System.out.println(tags);
+    if (includeHeaders) {
+      addHeaders(tags, request.headers(), "http.request.header");
+    }
 
     return tags;
   }
@@ -64,9 +64,9 @@ public class OkSocialParser extends OkHttpParser {
       tags.add(KeyValueAnnotation.create("http.peer", handshake.peerPrincipal().toString()));
     }
 
-    addHeaders(tags, response.headers(), "http.response.header");
-
-    System.out.println(tags);
+    if (includeHeaders) {
+      addHeaders(tags, response.headers(), "http.response.header");
+    }
 
     return tags;
   }

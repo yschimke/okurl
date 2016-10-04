@@ -91,12 +91,17 @@
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-okhttp</artifactId>
-      <version>3.13.0</version>
+      <version>3.13.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-spancollector-http</artifactId>
-      <version>3.13.0</version>
+      <version>3.13.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.reporter</groupId>
+      <artifactId>zipkin-sender-okhttp3</artifactId>
+      <version>0.6.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
