@@ -1,0 +1,13 @@
+https://api.mapbox.com/datasets/v1/{owner}
+https://api.mapbox.com/datasets/v1/{owner}/{id}
+https://api.mapbox.com/datasets/v1/{owner}/features
+https://api.mapbox.com/datasets/v1/{owner}/{did}/features/{fid}
+https://api.mapbox.com/v4/directions/{profile}/{waypoints}.json
+https://api.mapbox.com/distances/v1/mapbox/{profile}
+https://api.mapbox.com/geocoding/v5/{dataset}/{query}.json
+https://api.mapbox.com/geocoding/v5/{dataset}/{lon},{lat}.json
+https://api.mapbox.com/matching/v4/{profile}.json
+https://api.mapbox.com/v4/surface/{mapid}.json
+https://api.mapbox.com/uploads/v1/{username}/credentials
+https://api.mapbox.com/uploads/v1/{username}
+https://api.mapbox.com/uploads/v1/{username}/{upload_id}

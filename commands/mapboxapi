@@ -1,0 +1,3 @@
+#!/usr/bin/env okapi
+
+"https://api.mapbox.com" + item
