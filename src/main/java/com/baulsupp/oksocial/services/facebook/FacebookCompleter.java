@@ -59,7 +59,7 @@ public class FacebookCompleter extends HostUrlCompleter {
   private CompletableFuture<UrlList> completePath(String path) {
     if (path.equals("/")) {
       return topLevel().thenApply(l -> {
-        l.add("v2.7");
+        l.add("v2.8");
         return l;
       }).thenApply(l -> new UrlList(UrlList.Match.EXACT,
           l.stream().map(addPath("https://graph.facebook.com/")).collect(toList())));

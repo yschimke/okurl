@@ -150,7 +150,7 @@ public class CompletionTest {
   //
   //  List<String> cacheFileContent = readCompletionFile();
   //  assertEquals("/", cacheFileContent.get(0));
-  //  assertTrue(cacheFileContent.contains("/v2.7"));
+  //  assertTrue(cacheFileContent.contains("/v2.8"));
   //  assertTrue(cacheFileContent.contains("/me"));
   //}
 
