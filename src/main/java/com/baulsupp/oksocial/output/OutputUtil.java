@@ -37,7 +37,7 @@ public class OutputUtil {
   }
 
   public static boolean isJson(MediaType mediaType) {
-    return isMediaType(mediaType, "application/json", "text/json");
+    return isMediaType(mediaType, "application/json", "text/json") || mediaType.subtype().endsWith("+json");
   }
 
   public static boolean isMediaType(MediaType mediaType, String... types) {
