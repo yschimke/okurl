@@ -42,3 +42,6 @@ https://sandbox-api.uber.com/v1/requests/current
 https://sandbox-api.uber.com/v1/requests/estimate
 https://sandbox-api.uber.com/v1.1/history
 https://sandbox-api.uber.com/v1.2/history
+https://login.uber.com/oauth/v2/authorize
+https://login.uber.com/oauth/v2/token
+https://login.uber.com/oauth/revoke

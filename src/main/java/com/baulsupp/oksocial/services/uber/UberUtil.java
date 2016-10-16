@@ -11,7 +11,7 @@ public class UberUtil {
 
   public static final Set<String> API_HOSTS =
       Collections.unmodifiableSet(Sets.newHashSet(
-          "api.uber.com", "api.uber.com")
+          "api.uber.com", "sandbox-api.uber.com", "login.uber.com")
       );
 
   public static Request apiRequest(String s, Request.Builder requestBuilder) {
