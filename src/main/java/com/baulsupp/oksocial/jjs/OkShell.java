@@ -61,7 +61,14 @@ public class OkShell {
       String responseString = response.body().string();
 
       if (!response.isSuccessful()) {
-        throw new RuntimeException(responseString);
+        String msg;
+        if (responseString.length() > 0) {
+          msg = responseString;
+        } else {
+          msg = response.code() + " " + response.message();
+        }
+
+        throw new RuntimeException(msg);
       }
 
       return responseString;
