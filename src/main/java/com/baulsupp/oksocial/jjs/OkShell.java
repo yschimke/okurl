@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.jjs;
 
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.location.Location;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.util.FileContent;
 import java.io.IOException;
@@ -100,6 +101,10 @@ public class OkShell {
     }
 
     return null;
+  }
+
+  public Location location() throws IOException {
+    return main.locationSource.read().get();
   }
 
   private void close() {
