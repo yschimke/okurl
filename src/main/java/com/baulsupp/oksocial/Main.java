@@ -16,6 +16,8 @@ import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore;
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore;
 import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore;
 import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
+import com.baulsupp.oksocial.location.BestLocation;
+import com.baulsupp.oksocial.location.LocationSource;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
@@ -230,6 +232,8 @@ public class Main extends HelpOption implements Runnable {
   public CredentialsStore credentialsStore = null;
 
   public CompletionVariableCache completionVariableCache;
+
+  public LocationSource locationSource = new BestLocation();
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");

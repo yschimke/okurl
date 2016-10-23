@@ -18,8 +18,7 @@ var show = function(url) {
 }
 
 var location = function() {
-  var a = Java.type("com.baulsupp.oksocial.location.Location");
-  return a.read().get();
+  return okshell.location();
 }
 
 var readParam = Java.type("com.baulsupp.oksocial.jjs.OkShell").readParam;
