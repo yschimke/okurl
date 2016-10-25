@@ -52,6 +52,11 @@ public class MapboxAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return CompletableFuture.completedFuture(Optional.of(new ValidatedCredentials("?", null)));
   }
 
+  @Override public Optional<Oauth2Token> defaultCredentials() {
+    return Optional.of(new Oauth2Token(
+        "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2l0eGRkc245MDAzODJ5cDF2Z3l2czJjaSJ9.9XMBjr0vkbh2WD74DQcd3w"));
+  }
+
   @Override public Collection<String> hosts() {
     return MapboxUtil.API_HOSTS;
   }
