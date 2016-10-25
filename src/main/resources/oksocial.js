@@ -60,3 +60,9 @@ function padLeft(length, str) {
 }
 
 var terminalWidth = okshell.outputHandler.terminalWidth();
+
+function warmup(paths) {
+  paths.forEach(function(path) {
+    okshell.warmup(path);
+  });
+}

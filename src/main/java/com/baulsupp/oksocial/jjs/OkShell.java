@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -78,6 +79,21 @@ public class OkShell {
     }
   }
 
+  public void warmup(String url) {
+    Request request = requestBuilder.url(url).build();
+    Call call = client.newCall(request);
+    call.enqueue(new Callback() {
+      @Override public void onFailure(Call call, IOException e) {
+        // ignore
+      }
+
+      @Override public void onResponse(Call call, Response response) throws IOException {
+        // ignore
+        response.close();
+      }
+    });
+  }
+
   public void show(String url) throws IOException {
     Request request = requestBuilder.url(url).build();
 
@@ -109,6 +125,7 @@ public class OkShell {
 
   private void close() {
     client.connectionPool().evictAll();
+    client.dispatcher().executorService().shutdownNow();
   }
 
   public static OkShell instance() throws Exception {
