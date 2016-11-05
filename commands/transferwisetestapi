@@ -1,0 +1,3 @@
+#!/usr/bin/env okapi
+
+"https://test-restgw.transferwise.com" + item

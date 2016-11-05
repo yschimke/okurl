@@ -12,6 +12,8 @@ com.baulsupp.oksocial.services.slack.SlackAuthInterceptor
 com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor
 com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
+com.baulsupp.oksocial.services.transferwise.TransferwiseAuthInterceptor
+com.baulsupp.oksocial.services.transferwise.TransferwiseTestAuthInterceptor
 com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
 com.baulsupp.oksocial.services.twitter.TwitterAuthInterceptor
 com.baulsupp.oksocial.services.uber.UberAuthInterceptor

@@ -115,6 +115,8 @@ complete -F _oksocial_complete slackapi
 complete -F _oksocial_complete squareapi
 complete -F _oksocial_complete stackexchangeapi
 complete -F _oksocial_complete surveymonkeyapi
+complete -F _oksocial_complete transferwiseapi
+complete -F _oksocial_complete transferwistesteapi
 complete -F _oksocial_complete twilioapi
 complete -F _oksocial_complete twitterapi
 complete -F _oksocial_complete uberapi
