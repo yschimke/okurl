@@ -21,6 +21,7 @@ public class TransferwiseAuthFlow {
       String loginUrl = "https://" + host + "/oauth/authorize"
           + "?client_id=" + clientId
           + "&response_type=code"
+          + "&scope=transfers"
           + "&redirect_uri=" + serverUri;
 
       outputHandler.openLink(loginUrl);
