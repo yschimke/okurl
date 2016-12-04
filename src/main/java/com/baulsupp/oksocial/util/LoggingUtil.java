@@ -6,7 +6,7 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import okhttp3.internal.framed.Http2;
+import okhttp3.internal.http2.Http2;
 
 public class LoggingUtil {
   private static Logger activeLogger;
@@ -23,7 +23,7 @@ public class LoggingUtil {
         activeLogger.addHandler(handler);
         activeLogger.setLevel(Level.ALL);
       } else {
-        activeLogger = Logger.getLogger(Http2.class.getName() + "$FrameLogger");
+        activeLogger = Logger.getLogger(Http2.class.getName());
         activeLogger.setLevel(Level.FINE);
         handler.setLevel(Level.FINE);
         handler.setFormatter(new SimpleFormatter() {
