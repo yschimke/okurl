@@ -14,7 +14,7 @@ public class PreferencesCredentialsStore implements CredentialsStore {
   @Override public <T> Optional<T> readDefaultCredentials(ServiceDefinition<T> serviceDefinition) {
     String credentialsString = userNode.get(tokenKey(serviceDefinition.apiHost()), null);
     return Optional.ofNullable(credentialsString)
-        .map(s -> serviceDefinition.parseCredentialsString(s));
+        .map(serviceDefinition::parseCredentialsString);
   }
 
   private String tokenKey(String name) {

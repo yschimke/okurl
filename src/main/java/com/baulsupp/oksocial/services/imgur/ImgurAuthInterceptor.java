@@ -56,7 +56,7 @@ public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(
         apiRequest("/3/account/me", requestBuilder),
-        map -> getName(map)).validate(client);
+        this::getName).validate(client);
   }
 
   private String getName(Map<String, Object> map) {

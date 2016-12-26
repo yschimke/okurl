@@ -77,12 +77,11 @@ public class SquareUpAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
     BaseUrlCompleter completer = new BaseUrlCompleter(urlList.get(), hosts());
 
-    if (credentials.isPresent()) {
-      completer.withVariable("location", () -> completionVariableCache.compute(name(), "locations",
-          () -> CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations",
-              "locations",
-              "id")));
-    }
+    credentials.ifPresent(oauth2Token -> completer.withVariable("location",
+        () -> completionVariableCache.compute(name(), "locations",
+            () -> CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations",
+                "locations",
+                "id"))));
 
     return completer;
   }

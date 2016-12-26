@@ -48,10 +48,8 @@ public class ServiceInterceptor implements Interceptor {
       if (result.code() >= 400 && result.code() < 500) {
         if (interceptor.canRenew(result, credentials.get())) {
           Optional<T> newCredentials = interceptor.renew(authClient, credentials.get());
-          if (newCredentials.isPresent()) {
-            credentialsStore.storeCredentials(newCredentials.get(),
-                interceptor.serviceDefinition());
-          }
+          newCredentials.ifPresent(t -> credentialsStore.storeCredentials(t,
+              interceptor.serviceDefinition()));
         }
       }
 

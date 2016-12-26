@@ -12,6 +12,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -127,7 +128,7 @@ public class JavascriptApiCommand implements ShellCommand, MainAware {
 
       return list;
     } else {
-      return Arrays.asList(toRequest(requestBuilder, result));
+      return Collections.singletonList(toRequest(requestBuilder, result));
     }
   }
 

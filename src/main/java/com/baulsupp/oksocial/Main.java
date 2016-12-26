@@ -513,7 +513,7 @@ public class Main extends HelpOption implements Runnable {
     List<String> authArguments = Lists.newArrayList(arguments);
 
     Optional<AuthInterceptor<?>> auth =
-        command.authenticator().flatMap(authName -> interceptorByName(authName));
+        command.authenticator().flatMap(this::interceptorByName);
 
     if (!auth.isPresent() && !authArguments.isEmpty()) {
       String name = authArguments.remove(0);
@@ -604,7 +604,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (debug) {
-      builder.networkInterceptors().add(new HttpLoggingInterceptor(s -> logger.info(s)));
+      builder.networkInterceptors().add(new HttpLoggingInterceptor(logger::info));
     }
 
     if (socksProxy != null) {
@@ -642,7 +642,7 @@ public class Main extends HelpOption implements Runnable {
       keyManagers.add(createKeyManager(keystore, callbackHandler));
     }
 
-    X509TrustManager trustManager = null;
+    X509TrustManager trustManager;
     if (allowInsecure) {
       trustManager = new InsecureTrustManager();
       builder.hostnameVerifier(new InsecureHostnameVerifier());

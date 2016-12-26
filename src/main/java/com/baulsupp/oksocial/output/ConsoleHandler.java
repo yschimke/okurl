@@ -117,13 +117,9 @@ public class ConsoleHandler implements OutputHandler {
           .redirectOutput(System.out)
           .redirectError(Slf4jStream.ofCaller().asInfo());
 
-      if (timeout.isPresent()) {
-        pe.timeout(timeout.get(), TimeUnit.SECONDS);
-      }
+      timeout.ifPresent(integer -> pe.timeout(integer, TimeUnit.SECONDS));
 
-      if (source.isPresent()) {
-        pe.redirectInput(source.get().inputStream());
-      }
+      source.ifPresent(bufferedSource -> pe.redirectInput(bufferedSource.inputStream()));
 
       ProcessResult pr = pe.execute();
 
