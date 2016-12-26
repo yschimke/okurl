@@ -8,6 +8,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -52,10 +53,15 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Secrets.prompt("Lyft Client Id", "lyft.clientId", "", false);
     String clientSecret =
         Secrets.prompt("Lyft Client Secret", "lyft.clientSecret", "", true);
-    Set<String> scopes =
-        Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES);
 
-    return LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
+    if (authArguments.equals(Lists.newArrayList("--client"))) {
+      return LyftClientAuthFlow.login(client, clientId, clientSecret);
+    } else {
+      Set<String> scopes =
+          Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES);
+
+      return LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
+    }
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
