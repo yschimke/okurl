@@ -41,7 +41,7 @@ public class FacebookCompleter extends HostUrlCompleter {
 
       String parentPath = "/" + parentPaths.stream().collect(joining("/"));
 
-      result = result.thenCombine(completePath(parentPath), (a, b) -> a.combine(b));
+      result = result.thenCombine(completePath(parentPath), UrlList::combine);
     }
 
     return result;

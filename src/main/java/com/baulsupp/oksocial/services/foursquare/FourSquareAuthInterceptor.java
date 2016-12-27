@@ -58,7 +58,7 @@ public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(
         FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
-        map -> getName(map)).validate(client);
+        this::getName).validate(client);
   }
 
   private String getName(Map<String, Object> map) {

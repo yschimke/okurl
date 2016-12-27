@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import okhttp3.Dns;
@@ -25,7 +26,7 @@ public class DnsOverride implements Dns {
     String override = overrides.get(s);
 
     if (override != null) {
-      return Arrays.asList(InetAddress.getByName(override));
+      return Collections.singletonList(InetAddress.getByName(override));
     }
 
     return dns.lookup(s);

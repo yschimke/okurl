@@ -39,11 +39,9 @@ public class SlackAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     request =
         request.newBuilder().url(newUrl).build();
 
-    Response response = chain.proceed(request);
-
     // TODO check for ok=false?
 
-    return response;
+    return chain.proceed(request);
   }
 
   @Override public Oauth2Token authorize(OkHttpClient client, OutputHandler outputHandler,

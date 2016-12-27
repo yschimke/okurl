@@ -50,6 +50,6 @@ public final class Util {
   }
 
   public static <T> Stream<T> optionalStream(Optional<T> ai) {
-    return ai.isPresent() ? Stream.of(ai.get()) : Stream.empty();
+    return ai.map(Stream::of).orElseGet(Stream::empty);
   }
 }

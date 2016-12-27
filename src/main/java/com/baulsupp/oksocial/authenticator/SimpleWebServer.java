@@ -83,7 +83,7 @@ public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
 
     baseRequest.setHandled(true);
 
-    Thread t = new Thread(() -> shutdown(), "SimpleWebServer Stop");
+    Thread t = new Thread(this::shutdown, "SimpleWebServer Stop");
     t.setDaemon(true);
     t.start();
   }
@@ -100,22 +100,22 @@ public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
   }
 
   private String generateSuccessBody(HttpServletRequest request) {
-    String response = "<html>\n"
+
+    return "<html>\n"
         + "<body background=\"http://win.blogadda.com/wp-content/uploads/2015/08/inspire-win-15.jpg\">\n"
         + "<h1>Authorization Token Received!</h1>\n"
         + "</body>\n"
         + "</html>";
-
-    return response;
   }
 
   private String generateFailBody(HttpServletRequest request, String error) {
     String params = request.getParameterMap()
         .entrySet()
         .stream()
-        .map(e -> e.getKey() + " = " + Arrays.asList(e.getValue()).stream().collect(joining(", ")))
+        .map(e -> e.getKey() + " = " + Arrays.stream(e.getValue()).collect(joining(", ")))
         .collect(joining("<br/>"));
-    String response = "<html>\n"
+
+    return "<html>\n"
         + "<body background=\"http://adsoftheworld.com/sites/default/files/fail_moon_aotw.jpg\">\n"
         + "<h1>Authorization Error!</h1>\n"
         + "<p style=\"font-size: 600%; font-family: Comic Sans, Comic Sans MS, cursive;\">"
@@ -126,8 +126,6 @@ public class SimpleWebServer<T> extends AbstractHandler implements Closeable {
         + "</p>"
         + "</body>\n"
         + "</html>";
-
-    return response;
   }
 
   public static SimpleWebServer<String> forCode() throws IOException {

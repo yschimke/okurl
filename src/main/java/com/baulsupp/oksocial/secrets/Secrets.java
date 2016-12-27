@@ -67,9 +67,7 @@ public class Secrets {
       }
     }
 
-    Secrets secrets = new Secrets(new HashMap(p), Optional.of(configFile), classPathSecrets::get);
-
-    return secrets;
+    return new Secrets(new HashMap(p), Optional.of(configFile), classPathSecrets::get);
   }
 
   public static Secrets loadClasspathDefaults() {
