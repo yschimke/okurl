@@ -8,9 +8,11 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Future;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -47,8 +49,11 @@ public class InstagramAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false);
     String clientSecret =
         Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true);
+    Set<String> scopes =
+        Secrets.promptArray("Scopes", "instagram.scopes",
+            Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships", "likes"));
 
-    return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret);
+    return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,

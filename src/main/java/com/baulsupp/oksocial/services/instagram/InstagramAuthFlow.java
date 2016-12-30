@@ -6,20 +6,24 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+import static java.util.stream.Collectors.joining;
+
 public class InstagramAuthFlow {
   public static Oauth2Token login(OkHttpClient client, OutputHandler outputHandler, String clientId,
-      String clientSecret) throws IOException {
+      String clientSecret, Set<String> scopes) throws IOException {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
       String loginUrl = "https://api.instagram.com/oauth/authorize/"
           + "?client_id=" + clientId
           + "&response_type=code"
-          + "&redirect_uri=" + s.getRedirectUri();
+          + "&redirect_uri=" + s.getRedirectUri()
+          + "&scope=" + scopes.stream().collect(joining("+"));
 
       outputHandler.openLink(loginUrl);
 

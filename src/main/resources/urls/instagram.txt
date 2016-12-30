@@ -4,7 +4,6 @@ https://api.instagram.com/v1/users/{user-id}/follows
 https://api.instagram.com/v1/users/{user-id}/followed-by
 https://api.instagram.com/v1/users/{user-id}/relationship
 https://api.instagram.com/v1/users/self
-https://api.instagram.com/v1/users/self/feed
 https://api.instagram.com/v1/users/self/follows
 https://api.instagram.com/v1/users/self/followed-by
 https://api.instagram.com/v1/users/self/media/liked
