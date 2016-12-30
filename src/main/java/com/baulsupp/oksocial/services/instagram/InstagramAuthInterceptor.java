@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -60,7 +61,13 @@ public class InstagramAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
     return new JsonCredentialsValidator(
         InstagramUtil.apiRequest("/v1/users/self", requestBuilder),
-        fieldExtractor("name")).validate(client);
+        this::getName).validate(client);
+  }
+
+  private String getName(Map<String, Object> map) {
+    Map<String, Object> user = (Map<String, Object>) map.get("data");
+
+    return (String) user.get("full_name");
   }
 
   @Override public Collection<String> hosts() {
