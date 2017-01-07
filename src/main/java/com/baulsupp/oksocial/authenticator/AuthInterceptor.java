@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -22,12 +24,19 @@ import okhttp3.Response;
 import static java.util.Optional.empty;
 
 public interface AuthInterceptor<T> {
+  Logger logger = Logger.getLogger(AuthInterceptor.class.getName());
+
   default String name() {
     return serviceDefinition().shortName();
   }
 
   default boolean supportsUrl(HttpUrl url) {
-    return hosts().contains(url.host());
+    try {
+      return hosts().contains(url.host());
+    } catch (IOException e) {
+      logger.log(Level.WARNING, "failed getting hosts", e);
+      return false;
+    }
   }
 
   Response intercept(Interceptor.Chain chain, T credentials) throws IOException;
@@ -48,7 +57,7 @@ public interface AuthInterceptor<T> {
     return empty();
   }
 
-  Collection<String> hosts();
+  Collection<String> hosts() throws IOException;
 
   default ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
