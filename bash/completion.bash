@@ -110,6 +110,7 @@ complete -F _oksocial_complete giphyapi
 complete -F _oksocial_complete githubapi
 complete -F _oksocial_complete imgurapi
 complete -F _oksocial_complete igapi
+complete -F _oksocial_complete linkedinapi
 complete -F _oksocial_complete lyftapi
 complete -F _oksocial_complete mapboxapi
 complete -F _oksocial_complete slackapi
