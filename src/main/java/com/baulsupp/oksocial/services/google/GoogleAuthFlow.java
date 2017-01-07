@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+import static com.baulsupp.oksocial.services.google.GoogleUtil.fullScope;
 import static java.util.stream.Collectors.joining;
 
 public class GoogleAuthFlow {
@@ -21,16 +23,20 @@ public class GoogleAuthFlow {
     try (SimpleWebServer<String> s = SimpleWebServer.forCode()) {
 
       String scopesString =
-          URLEncoder.encode(scopes.stream().collect(joining(" ")), "UTF-8");
+          scopes.stream().map(GoogleUtil::fullScope).collect(joining("+"));
 
       String redirectUri = s.getRedirectUri();
+      String uuid = UUID.randomUUID().toString();
 
       String loginUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-          + "?client_id=" + URLEncoder.encode(clientId, "UTF-8")
+          + "?client_id=" + clientId
           + "&response_type=code"
           + "&scope=" + scopesString
-          + "&state=x"
-          + "&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8");
+          + "&state=" + uuid
+          + "&access_type=offline"
+          + "&redirect_uri=" + redirectUri
+          + "&prompt=consent"
+          + "&include_granted_scopes=true";
 
       outputHandler.openLink(loginUrl);
 
