@@ -10,11 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
-import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
-/**
+/*
  * API URL -> Discovery URL
  */
 public class DiscoveryIndex {
@@ -37,14 +35,14 @@ public class DiscoveryIndex {
     return new DiscoveryIndex(m);
   }
 
-  /**
+  /*
    * Exact search
    */
   public List<String> getDiscoveryUrlForApi(String api) {
     return Optional.ofNullable(map.get(api)).orElse(Lists.newArrayList());
   }
 
-  /**
+  /*
    * Prefix search (returns longest)
    */
   public List<String> getDiscoveryUrlForPrefix(String prefix) {
