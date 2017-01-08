@@ -126,8 +126,18 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
-    Optional<UrlList> urlList = UrlList.fromResource(name());
+    if (isPastHost(prefix)) {
+      List<String> discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix);
 
-    return new BaseUrlCompleter(urlList.get(), hosts());
+      return GoogleDiscoveryCompleter.forApis(client, discoveryPaths);
+    } else {
+      UrlList urlList = UrlList.fromResource(name()).get();
+
+      return new BaseUrlCompleter(urlList, hosts());
+    }
+  }
+
+  private boolean isPastHost(String prefix) {
+    return prefix.matches("https://.*/.*");
   }
 }
