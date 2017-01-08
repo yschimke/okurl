@@ -37,7 +37,7 @@ public class GoogleDiscoveryCompleter implements ApiCompleter {
   }
 
   private UrlList flattenList(List<List<String>> l) {
-    return new UrlList(UrlList.Match.EXACT, l.stream().flatMap(List::stream).collect(toList()));
+    return new UrlList(UrlList.Match.SITE, l.stream().flatMap(List::stream).collect(toList()));
   }
 
   public static <T> CompletableFuture<List<T>> all(List<CompletableFuture<T>> futures) {
