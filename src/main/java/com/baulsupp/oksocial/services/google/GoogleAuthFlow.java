@@ -5,7 +5,6 @@ import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -14,7 +13,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-import static com.baulsupp.oksocial.services.google.GoogleUtil.fullScope;
 import static java.util.stream.Collectors.joining;
 
 public class GoogleAuthFlow {

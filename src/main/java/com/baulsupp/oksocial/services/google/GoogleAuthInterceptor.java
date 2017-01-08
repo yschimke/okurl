@@ -6,7 +6,11 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
+import com.baulsupp.oksocial.completion.ApiCompleter;
+import com.baulsupp.oksocial.completion.BaseUrlCompleter;
+import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
+import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
 import java.io.IOException;
@@ -34,7 +38,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private Set<String> hosts = null;
 
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.google.com", "Google API", "google");
+    return new Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
@@ -117,5 +121,23 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   private <R> String extractHost(String s) {
     return HttpUrl.parse(s).host();
+  }
+
+  @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,
+      CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
+      throws IOException {
+    if (isPastHost(prefix)) {
+      List<String> discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix);
+
+      return GoogleDiscoveryCompleter.forApis(client, discoveryPaths);
+    } else {
+      UrlList urlList = UrlList.fromResource(name()).get();
+
+      return new BaseUrlCompleter(urlList, hosts());
+    }
+  }
+
+  private boolean isPastHost(String prefix) {
+    return prefix.matches("https://.*/.*");
   }
 }

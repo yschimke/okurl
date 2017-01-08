@@ -91,9 +91,6 @@ public class Main extends HelpOption implements Runnable {
 
   static final String NAME = "oksocial";
 
-  // store active logger to avoid GC
-  private Logger activeLogger;
-
   private static Main fromArgs(String... args) {
     return SingleCommand.singleCommand(Main.class).parse(args);
   }
