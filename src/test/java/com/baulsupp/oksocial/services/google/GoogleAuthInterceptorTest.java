@@ -12,6 +12,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import org.junit.Test;
 
+import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -56,6 +57,8 @@ public class GoogleAuthInterceptorTest {
   // hits the network
   @Test public void completesSitePaths()
       throws IOException, ExecutionException, InterruptedException {
+    assumeHasNetwork();
+
     ApiCompleter hostCompleter =
         interceptor.apiCompleter("https://www.googleapis.com/urlshortener/v1/url", client,
             credentialsStore, cache);
@@ -75,6 +78,8 @@ public class GoogleAuthInterceptorTest {
   // hits the network
   @Test public void completesSitePathsForDuplicates()
       throws IOException, ExecutionException, InterruptedException {
+    assumeHasNetwork();
+
     ApiCompleter hostCompleter =
         interceptor.apiCompleter("https://www.googleapis.com/", client,
             credentialsStore, cache);

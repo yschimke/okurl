@@ -7,6 +7,7 @@ import com.baulsupp.oksocial.services.github.GithubAuthInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -21,6 +22,8 @@ public class GoogleTest {
   }
 
   @Test public void completePeopleEndpointSite() throws Throwable {
+    assumeHasNetwork();
+
     main.urlCompletion = "https://people.googleapis.com/";
 
     main.run();
@@ -30,6 +33,8 @@ public class GoogleTest {
   }
 
   @Test public void completePeopleEndpointPath() throws Throwable {
+    assumeHasNetwork();
+
     main.urlCompletion = "https://people.googleapis.com/v1/people:batch";
 
     main.run();
