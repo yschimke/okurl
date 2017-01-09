@@ -204,7 +204,7 @@ public class Main extends HelpOption implements Runnable {
   public boolean serviceNames = false;
 
   @Option(name = {"--urlCompletion"}, description = "URL Completion")
-  public String urlCompletion;
+  public boolean urlComplete;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -270,7 +270,7 @@ public class Main extends HelpOption implements Runnable {
         return;
       }
 
-      if (urlCompletion != null) {
+      if (urlComplete) {
         outputHandler.info(urlCompletionList());
         return;
       }
@@ -293,21 +293,26 @@ public class Main extends HelpOption implements Runnable {
         new UrlCompleter(serviceInterceptor.services(), client, credentialsStore,
             completionVariableCache);
 
-    Optional<String> fullCompletionUrlOpt = getFullCompletionUrl();
+    String originalCompletionUrl = arguments.get(arguments.size() - 1);
+
+    Optional<String> fullCompletionUrlOpt = getFullCompletionUrl(originalCompletionUrl);
+
+    // reload hack (in case changed for "" case
+    originalCompletionUrl = arguments.get(arguments.size() - 1);
 
     if (fullCompletionUrlOpt.isPresent()) {
       String fullCompletionUrl = fullCompletionUrlOpt.get();
       UrlList urls = completer.urlList(fullCompletionUrl);
 
       final int strip;
-      if (!fullCompletionUrl.equals(urlCompletion)) {
-        strip = fullCompletionUrl.length() - urlCompletion.length();
+      if (!fullCompletionUrl.equals(originalCompletionUrl)) {
+        strip = fullCompletionUrl.length() - originalCompletionUrl.length();
       } else {
         strip = 0;
       }
 
       if (completionFile != null) {
-        urls.toFile(new File(completionFile), strip, urlCompletion);
+        urls.toFile(new File(completionFile), strip, originalCompletionUrl);
       }
 
       List<String> list = urls.getUrls(fullCompletionUrl);
@@ -320,33 +325,39 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private Optional<String> getFullCompletionUrl() throws Exception {
+  /*
+   * The last url in arguments which should be used for completion or apidoc requests.
+   * In the case of javascript command expansion, it is expanded first before
+   * being returned.
+   *
+   * n.b. arguments may be modified by this call.
+   */
+  private Optional<String> getFullCompletionUrl(String urlToComplete) throws Exception {
     ShellCommand command = getShellCommand();
 
     if (command instanceof JavascriptApiCommand) {
       ((JavascriptApiCommand) command).setMain(this);
 
-      ArrayList<String> newArguments = Lists.newArrayList(arguments);
-      newArguments.add(urlCompletion);
-
-      List<Request> requests = command.buildRequests(client, requestBuilder, newArguments);
+      List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
 
       if (requests.size() > 0) {
         HttpUrl newUrl = requests.get(0).url();
 
         // support "" -> http://api.test.com
-        if (urlCompletion.isEmpty() && newUrl.encodedPath().equals("/")) {
-          urlCompletion = "/";
+        if (urlToComplete.isEmpty() && newUrl.encodedPath().equals("/")) {
+          urlToComplete = "/";
+          arguments.remove(arguments.size() - 1);
+          arguments.add(urlToComplete);
         }
 
         String newUrlCompletion = newUrl.toString();
 
-        if (newUrlCompletion.endsWith(urlCompletion)) {
+        if (newUrlCompletion.endsWith(urlToComplete)) {
           return Optional.of(newUrlCompletion);
         }
       }
-    } else if (UrlCompleter.isPossibleAddress(urlCompletion)) {
-      return Optional.of(urlCompletion);
+    } else if (UrlCompleter.isPossibleAddress(urlToComplete)) {
+      return Optional.of(urlToComplete);
     }
 
     return Optional.empty();

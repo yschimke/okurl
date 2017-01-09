@@ -7,6 +7,7 @@ import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,24 +25,25 @@ public class TwilioTest {
   @Test public void completeEndpointShortCommand1() throws Throwable {
     credentialsStore.storeCredentials(new BasicCredentials("ABC", "PW"), service);
 
-    main.urlCompletion = "/";
     main.commandName = "okapi";
-    main.arguments = Lists.newArrayList("commands/twilioapi");
+    main.arguments = newArrayList("commands/twilioapi", "/");
+    main.urlComplete = true;
 
     main.run();
 
-    assertEquals(Lists.newArrayList(), output.failures);
+    assertEquals(newArrayList(), output.failures);
     assertTrue(output.stdout.get(0).contains("/Calls.json"));
   }
 
   @Test public void completeEndpointWithReplacements() throws Throwable {
     credentialsStore.storeCredentials(new BasicCredentials("ABC", "PW"), service);
 
-    main.urlCompletion = "https://api.twilio.com/";
+    main.arguments = newArrayList("https://api.twilio.com/");
+    main.urlComplete = true;
 
     main.run();
 
-    assertEquals(Lists.newArrayList(), output.failures);
+    assertEquals(newArrayList(), output.failures);
     assertTrue(output.stdout.get(0).contains("/Accounts/ABC/Calls.json"));
   }
 }

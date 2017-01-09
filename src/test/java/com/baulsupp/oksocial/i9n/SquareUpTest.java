@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +24,8 @@ public class SquareUpTest {
   }
 
   @Test public void completeEndpointWithReplacements() throws Throwable {
-    main.urlCompletion = "https://connect.squareup.com/";
+    main.arguments = newArrayList("https://connect.squareup.com/");
+    main.urlComplete = true;
     completionCache.store("squareup", "locations", Lists.newArrayList("AA", "bb"));
     credentialsStore.storeCredentials(new Oauth2Token(""),
         new SquareUpAuthInterceptor().serviceDefinition());

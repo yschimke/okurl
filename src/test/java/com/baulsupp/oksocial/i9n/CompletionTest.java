@@ -13,6 +13,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -30,12 +31,13 @@ public class CompletionTest {
     main.credentialsStore = credentialsStore;
     main.completionVariableCache = completionCache;
     main.completionFile = File.createTempFile("oksocialtest", ".txt").getPath();
+    main.urlComplete = true;
 
     new File(main.completionFile).deleteOnExit();
   }
 
   @Test public void completeEmpty() throws Throwable {
-    main.urlCompletion = "";
+    main.arguments = newArrayList("");
 
     main.run();
 
@@ -47,7 +49,7 @@ public class CompletionTest {
   }
 
   @Test public void completeSingleEndpoint() throws Throwable {
-    main.urlCompletion = "https://api1.test.co";
+    main.arguments = newArrayList("https://api1.test.co");
 
     main.run();
 
@@ -60,9 +62,8 @@ public class CompletionTest {
   }
 
   @Test public void completeEndpointShortCommand1() throws Throwable {
-    main.urlCompletion = "";
     main.commandName = "okapi";
-    main.arguments = Lists.newArrayList("src/test/resources/commands/testcommand");
+    main.arguments = Lists.newArrayList("src/test/resources/commands/testcommand", "");
 
     main.run();
 
@@ -73,9 +74,8 @@ public class CompletionTest {
   }
 
   @Test public void completeEndpointShortCommand2() throws Throwable {
-    main.urlCompletion = "/users";
     main.commandName = "okapi";
-    main.arguments = Lists.newArrayList("src/test/resources/commands/testcommand");
+    main.arguments = Lists.newArrayList("src/test/resources/commands/testcommand", "/users");
 
     main.run();
 
@@ -86,9 +86,8 @@ public class CompletionTest {
   }
 
   @Test public void completeEndpointsForTwitter() throws Throwable {
-    main.urlCompletion = "/";
     main.commandName = "okapi";
-    main.arguments = Lists.newArrayList("commands/twitterapi");
+    main.arguments = Lists.newArrayList("commands/twitterapi", "/");
 
     main.run();
 
@@ -101,7 +100,7 @@ public class CompletionTest {
   }
 
   @Test public void completeEndpointsForTwitterApi() throws Throwable {
-    main.urlCompletion = "https://api.twitter.com/";
+    main.arguments = newArrayList("https://api.twitter.com/");
 
     main.run();
 

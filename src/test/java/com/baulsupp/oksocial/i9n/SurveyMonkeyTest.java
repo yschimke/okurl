@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +24,8 @@ public class SurveyMonkeyTest {
   }
 
   @Test public void completeEndpointWithReplacements() throws Throwable {
-    main.urlCompletion = "https://api.surveymonkey.net/";
+    main.arguments = newArrayList("https://api.surveymonkey.net/");
+    main.urlComplete = true;
     completionCache.store("surveymonkey", "surveys", Lists.newArrayList("AA", "BB"));
     credentialsStore.storeCredentials(new SurveyMonkeyToken("", ""),
         new SurveyMonkeyAuthInterceptor().serviceDefinition());

@@ -7,6 +7,7 @@ import com.baulsupp.oksocial.services.github.GithubAuthInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,24 +25,25 @@ public class GithubTest {
   @Test public void completeEndpointShortCommand1() throws Throwable {
     credentialsStore.storeCredentials(new Oauth2Token("ABC"), service);
 
-    main.urlCompletion = "/";
     main.commandName = "okapi";
-    main.arguments = Lists.newArrayList("commands/githubapi");
+    main.arguments = newArrayList("commands/githubapi", "/");
+    main.urlComplete = true;
 
     main.run();
 
-    assertEquals(Lists.newArrayList(), output.failures);
+    assertEquals(newArrayList(), output.failures);
     assertTrue(output.stdout.get(0).contains("/user"));
   }
 
   @Test public void completeEndpoint() throws Throwable {
     credentialsStore.storeCredentials(new Oauth2Token("ABC"), service);
 
-    main.urlCompletion = "https://api.github.com/";
+    main.arguments = newArrayList("https://api.github.com/");
+    main.urlComplete = true;
 
     main.run();
 
-    assertEquals(Lists.newArrayList(), output.failures);
+    assertEquals(newArrayList(), output.failures);
     assertTrue(output.stdout.get(0).contains("https://api.github.com/user"));
   }
 }

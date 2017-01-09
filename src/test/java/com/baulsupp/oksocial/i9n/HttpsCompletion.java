@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -18,7 +19,8 @@ public class HttpsCompletion {
   }
 
   @Test public void completePeopleEndpointSite() throws Throwable {
-    main.urlCompletion = "https://";
+    main.arguments = newArrayList("https://");
+    main.urlComplete = true;
 
     main.run();
 
