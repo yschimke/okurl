@@ -9,7 +9,8 @@ public class UrlCompleterMain {
     Main main = new Main();
     main.initialise();
 
-    main.arguments = newArrayList(args.length > 0 ? args[0] : "https://graph.facebook.com/BooneStudio");
+    main.arguments =
+        newArrayList(args.length > 0 ? args[0] : "https://graph.facebook.com/BooneStudio");
     main.run();
   }
 }
