@@ -2,8 +2,10 @@ package com.baulsupp.oksocial.completion;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
@@ -49,9 +51,10 @@ public class UrlCompleter {
                 .siteUrls(u)
                 .get();
           } catch (InterruptedException e) {
-            logger.log(Level.FINE, "interrupted", e);
+            throw (InterruptedIOException) new InterruptedIOException().initCause(e);
           } catch (ExecutionException e) {
-            logger.log(Level.WARNING, "completion failed", e.getCause());
+            Throwables.propagateIfPossible(e.getCause(), IOException.class);
+            throw Throwables.propagate(e);
           }
         }
       }

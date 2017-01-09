@@ -52,17 +52,23 @@ public class AuthUtil {
 
   public static CompletableFuture<Map<String, Object>> enqueueJsonMapRequest(OkHttpClient client,
       Request request) {
-    ResponseFutureCallback callback = new ResponseFutureCallback();
-    client.newCall(request).enqueue(callback);
+    try {
+      ResponseFutureCallback callback = new ResponseFutureCallback();
+      client.newCall(request).enqueue(callback);
 
-    return callback.future.thenApply(response -> {
-      try {
-        return JsonUtil.map(responseToString(response));
-      } catch (IOException e) {
-        throw Throwables.propagate(e);
-      } finally {
-        response.close();
-      }
-    });
+      return callback.future.thenApply(response -> {
+        try {
+          return JsonUtil.map(responseToString(response));
+        } catch (IOException e) {
+          throw Throwables.propagate(e);
+        } finally {
+          response.close();
+        }
+      });
+    } catch (Exception e) {
+      CompletableFuture failed = new CompletableFuture();
+      failed.completeExceptionally(e);
+      return failed;
+    }
   }
 }
