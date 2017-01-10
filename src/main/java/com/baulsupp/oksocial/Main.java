@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial;
 
+import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
@@ -81,6 +82,7 @@ import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.keyManagerArray;
 import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -206,6 +208,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--urlCompletion"}, description = "URL Completion")
   public boolean urlComplete;
 
+  @Option(name = {"--apidoc"}, description = "API Documentation")
+  public boolean apiDoc;
+
   public String commandName = System.getProperty("command.name", "oksocial");
 
   public String completionFile = System.getenv("COMPLETION_FILE");
@@ -275,6 +280,11 @@ public class Main extends HelpOption implements Runnable {
         return;
       }
 
+      if (apiDoc) {
+        showApiDocs();
+        return;
+      }
+
       if (authorize) {
         authorize();
         return;
@@ -288,17 +298,25 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
+  private void showApiDocs() throws Exception {
+    ApiDocPresenter docs =
+        new ApiDocPresenter(serviceInterceptor.services(), client, credentialsStore, outputHandler);
+
+    getFullCompletionUrl().ifPresent(u -> {
+      docs.explainApi(u);
+    });
+  }
+
+  // TODO refactor this mess out of Main
   private String urlCompletionList() throws Exception {
     UrlCompleter completer =
         new UrlCompleter(serviceInterceptor.services(), client, credentialsStore,
             completionVariableCache);
 
+    Optional<String> fullCompletionUrlOpt = getFullCompletionUrl();
+
+    // reload hack (in case changed for "" case)
     String originalCompletionUrl = arguments.get(arguments.size() - 1);
-
-    Optional<String> fullCompletionUrlOpt = getFullCompletionUrl(originalCompletionUrl);
-
-    // reload hack (in case changed for "" case
-    originalCompletionUrl = arguments.get(arguments.size() - 1);
 
     if (fullCompletionUrlOpt.isPresent()) {
       String fullCompletionUrl = fullCompletionUrlOpt.get();
@@ -332,7 +350,13 @@ public class Main extends HelpOption implements Runnable {
    *
    * n.b. arguments may be modified by this call.
    */
-  private Optional<String> getFullCompletionUrl(String urlToComplete) throws Exception {
+  private Optional<String> getFullCompletionUrl() throws Exception {
+    if (arguments.isEmpty()) {
+      return empty();
+    }
+
+    String urlToComplete = arguments.get(arguments.size() - 1);
+
     ShellCommand command = getShellCommand();
 
     if (command instanceof JavascriptApiCommand) {
@@ -360,7 +384,7 @@ public class Main extends HelpOption implements Runnable {
       return Optional.of(urlToComplete);
     }
 
-    return Optional.empty();
+    return empty();
   }
 
   public void initialise() throws Exception {
