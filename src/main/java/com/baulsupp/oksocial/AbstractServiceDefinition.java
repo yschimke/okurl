@@ -7,7 +7,8 @@ public abstract class AbstractServiceDefinition<T> implements ServiceDefinition<
   private String serviceName;
   private final String shortName;
 
-  public AbstractServiceDefinition(String apiHost, String serviceName, String shortName) {
+  public AbstractServiceDefinition(String apiHost, String serviceName, String shortName,
+      String apiDocs) {
     this.apiHost = apiHost;
     this.serviceName = serviceName;
     this.shortName = shortName;

@@ -1,5 +1,9 @@
 package com.baulsupp.oksocial.credentials;
 
+import java.util.Optional;
+
+import static java.util.Optional.empty;
+
 public interface ServiceDefinition<T> {
   String apiHost();
 
@@ -10,4 +14,8 @@ public interface ServiceDefinition<T> {
   String formatCredentialsString(T credentials);
 
   String shortName();
+
+  default Optional<String> apiDocs() {
+    return empty();
+  }
 }

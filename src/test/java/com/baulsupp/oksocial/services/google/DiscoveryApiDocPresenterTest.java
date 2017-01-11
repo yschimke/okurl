@@ -19,7 +19,7 @@ public class DiscoveryApiDocPresenterTest {
     DiscoveryApiDocPresenter p = new DiscoveryApiDocPresenter();
     p.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client);
 
-    assertEquals(newArrayList("API: Google People API",
-        "Documentation: https://developers.google.com/people/"), outputHandler.stdout);
+    assertEquals(newArrayList("name: Google People API",
+        "docs: https://developers.google.com/people/"), outputHandler.stdout);
   }
 }

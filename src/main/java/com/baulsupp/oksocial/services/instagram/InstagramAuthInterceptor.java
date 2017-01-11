@@ -23,7 +23,8 @@ import okhttp3.Response;
 
 public class InstagramAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram");
+    return new Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
+        "https://www.instagram.com/developer/endpoints/");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

@@ -3,8 +3,9 @@ package com.baulsupp.oksocial.authenticator.oauth2;
 import com.baulsupp.oksocial.AbstractServiceDefinition;
 
 public class Oauth2ServiceDefinition extends AbstractServiceDefinition<Oauth2Token> {
-  public Oauth2ServiceDefinition(String apiHost, String serviceName, String shortName) {
-    super(apiHost, serviceName, shortName);
+  public Oauth2ServiceDefinition(String apiHost, String serviceName, String shortName,
+      String apiDocs) {
+    super(apiHost, serviceName, shortName, apiDocs);
   }
 
   public Oauth2Token parseCredentialsString(String s) {

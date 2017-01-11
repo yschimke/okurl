@@ -24,7 +24,8 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  */
 public class GithubAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.github.com", "Github API", "github");
+    return new Oauth2ServiceDefinition("api.github.com", "Github API", "github",
+        "https://developer.github.com/v3/");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

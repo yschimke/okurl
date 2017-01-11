@@ -4,8 +4,9 @@ import com.baulsupp.oksocial.AbstractServiceDefinition;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 
 public class BasicAuthServiceDefinition extends AbstractServiceDefinition<BasicCredentials> {
-  public BasicAuthServiceDefinition(String apiHost, String serviceName, String shortName) {
-    super(apiHost, serviceName, shortName);
+  public BasicAuthServiceDefinition(String apiHost, String serviceName, String shortName,
+      String apiDocs) {
+    super(apiHost, serviceName, shortName, apiDocs);
   }
 
   public BasicCredentials parseCredentialsString(String s) {
