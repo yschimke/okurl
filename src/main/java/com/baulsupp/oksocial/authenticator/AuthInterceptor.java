@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.authenticator;
 
+import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
@@ -13,8 +14,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -72,6 +73,10 @@ public interface AuthInterceptor<T> {
   }
 
   default Optional<T> defaultCredentials() {
-    return Optional.empty();
+    return empty();
+  }
+
+  default ApiDocPresenter apiDocPresenter(String url) {
+    return ApiDocPresenter.NONE;
   }
 }

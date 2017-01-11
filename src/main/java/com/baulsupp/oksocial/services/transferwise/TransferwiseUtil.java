@@ -1,8 +1,6 @@
 package com.baulsupp.oksocial.services.transferwise;
 
 import com.google.common.collect.Sets;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import okhttp3.Request;

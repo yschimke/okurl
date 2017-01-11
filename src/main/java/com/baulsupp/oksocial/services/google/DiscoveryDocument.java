@@ -62,4 +62,12 @@ public class DiscoveryDocument {
 
     return (String) method.get("path");
   }
+
+  public String getApiName() {
+    return (String) map.get("title");
+  }
+
+  public String getDocLink() {
+    return (String) map.get("documentationLink");
+  }
 }

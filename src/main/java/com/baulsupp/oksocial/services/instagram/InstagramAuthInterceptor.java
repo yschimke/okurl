@@ -21,8 +21,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
-
 public class InstagramAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram");
@@ -52,7 +50,8 @@ public class InstagramAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true);
     Set<String> scopes =
         Secrets.promptArray("Scopes", "instagram.scopes",
-            Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships", "likes"));
+            Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships",
+                "likes"));
 
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes);
   }

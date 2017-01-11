@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial;
 
-import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
+import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
@@ -41,6 +41,7 @@ import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
 import com.baulsupp.oksocial.util.UsageException;
 import com.baulsupp.oksocial.util.Util;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
@@ -299,11 +300,15 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void showApiDocs() throws Exception {
-    ApiDocPresenter docs =
-        new ApiDocPresenter(serviceInterceptor.services(), client, credentialsStore, outputHandler);
+    ServiceApiDocPresenter docs =
+        new ServiceApiDocPresenter(serviceInterceptor, client, credentialsStore);
 
     getFullCompletionUrl().ifPresent(u -> {
-      docs.explainApi(u);
+      try {
+        docs.explainApi(u, outputHandler, client);
+      } catch (IOException e) {
+        throw Throwables.propagate(e);
+      }
     });
   }
 
@@ -692,7 +697,8 @@ public class Main extends HelpOption implements Runnable {
       trustManager = CertificateUtils.combineTrustManagers(trustManagers);
     }
 
-    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager), trustManager);
+    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager),
+        trustManager);
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));

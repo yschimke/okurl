@@ -1,11 +1,15 @@
 package com.baulsupp.oksocial.services.google;
 
+import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.util.JsonUtil;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class DiscoveryRegistry {
   private final Map<String, Object> map;
@@ -29,5 +33,13 @@ public class DiscoveryRegistry {
   private Map<String, Map<String, Object>> getItems() {
     //noinspection unchecked
     return (Map<String, Map<String, Object>>) map.get("items");
+  }
+
+  public CompletableFuture<DiscoveryDocument> load(OkHttpClient client, String discoveryDocPath) {
+    Request request = new Request.Builder().url(discoveryDocPath).build();
+    CompletableFuture<Map<String, Object>> mapFuture =
+        AuthUtil.enqueueJsonMapRequest(client, request);
+
+    return mapFuture.thenApply(s -> new DiscoveryDocument(s));
   }
 }

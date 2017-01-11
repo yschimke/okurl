@@ -67,11 +67,11 @@ public class ServiceInterceptor implements Interceptor {
     return services.stream().filter(n -> n.name().equals(authName)).findFirst();
   }
 
-  public Optional<AuthInterceptor<?>> getByUrl(String s) {
-    HttpUrl url = HttpUrl.parse(s);
+  public Optional<AuthInterceptor<?>> getByUrl(String url) {
+    HttpUrl httpUrl = HttpUrl.parse(url);
 
-    if (url != null) {
-      return services.stream().filter(n -> n.supportsUrl(url)).findFirst();
+    if (httpUrl != null) {
+      return services.stream().filter(n -> n.supportsUrl(httpUrl)).findFirst();
     }
 
     return Optional.empty();
