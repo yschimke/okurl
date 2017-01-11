@@ -55,8 +55,8 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         Secrets.promptArray("Scopes", "facebook.scopes",
             Arrays.asList("public_profile", "user_friends", "email"));
 
-    if (scopes.contains("join")) {
-      scopes.remove("join");
+    if (scopes.contains("all")) {
+      scopes.remove("all");
       scopes.addAll(FacebookUtil.ALL_PERMISSIONS);
     }
 
