@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition;
 import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor;
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import static com.google.common.collect.Lists.newArrayList;

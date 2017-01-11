@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google;
 
+import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
@@ -129,7 +130,8 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     if (isPastHost(prefix)) {
       List<String> discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix);
 
-      return GoogleDiscoveryCompleter.forApis(client, discoveryPaths);
+      return GoogleDiscoveryCompleter.forApis(client, DiscoveryRegistry.loadStatic(),
+          discoveryPaths);
     } else {
       UrlList urlList = UrlList.fromResource(name()).get();
 
@@ -139,5 +141,9 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   private boolean isPastHost(String prefix) {
     return prefix.matches("https://.*/.*");
+  }
+
+  @Override public ApiDocPresenter apiDocPresenter(String url) {
+    return new DiscoveryApiDocPresenter();
   }
 }

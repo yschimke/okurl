@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.test;
 
+import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
@@ -11,12 +12,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
@@ -36,7 +38,7 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
-    return CompletableFuture.completedFuture(Optional.empty());
+    return completedFuture(Optional.empty());
   }
 
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
@@ -45,5 +47,9 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override public Collection<String> hosts() {
     return Arrays.asList("test.com", "api1.test.com");
+  }
+
+  @Override public ApiDocPresenter apiDocPresenter(String url) {
+    return (url1, outputHandler, client) -> outputHandler.info("Test: " + url1);
   }
 }
