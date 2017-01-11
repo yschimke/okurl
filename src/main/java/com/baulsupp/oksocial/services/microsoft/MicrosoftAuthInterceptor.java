@@ -29,7 +29,8 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
  */
 public class MicrosoftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft");
+    return new Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
+        "https://graph.microsoft.io/en-us/docs/get-started/rest");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

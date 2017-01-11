@@ -20,8 +20,8 @@ public class DiscoveryApiDocPresenter implements ApiDocPresenter {
       DiscoveryDocument s = FutureUtil.ioSafeGet(registry.load(client, path));
 
       if (s.getUrls().contains(url)) {
-        outputHandler.info("API: " + s.getApiName());
-        outputHandler.info("Documentation: " + s.getDocLink());
+        outputHandler.info("name: " + s.getApiName());
+        outputHandler.info("docs: " + s.getDocLink());
         return;
       }
     }

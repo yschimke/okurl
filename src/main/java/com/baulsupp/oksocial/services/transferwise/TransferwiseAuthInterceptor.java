@@ -25,12 +25,10 @@ import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
 
-/**
- * https://api-docs.transferwise.com/docs/versions/v1/overview
- */
 public class TransferwiseAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise");
+    return new Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
+        "https://api-docs.transferwise.com/docs/versions/v1/overview");
   }
 
   protected String host() {

@@ -39,7 +39,8 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private Set<String> hosts = null;
 
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google");
+    return new Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
+        "https://developers.google.com/");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

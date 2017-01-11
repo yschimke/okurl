@@ -3,7 +3,10 @@ package com.baulsupp.oksocial.services.twitter;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.google.common.base.Splitter;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringJoiner;
+
+import static java.util.Optional.of;
 
 public class TwitterServiceDefinition implements ServiceDefinition<TwitterCredentials> {
   @Override public String apiHost() {
@@ -16,6 +19,10 @@ public class TwitterServiceDefinition implements ServiceDefinition<TwitterCreden
 
   @Override public String shortName() {
     return "twitter";
+  }
+
+  @Override public Optional<String> apiDocs() {
+    return of("https://dev.twitter.com/rest/reference");
   }
 
   public TwitterCredentials parseCredentialsString(String s) {

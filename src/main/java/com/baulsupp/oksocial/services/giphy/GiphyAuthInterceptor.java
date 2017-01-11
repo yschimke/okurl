@@ -20,7 +20,7 @@ import okhttp3.Response;
 
 public class GiphyAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy");
+    return new Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy", "https://github.com/Giphy/GiphyAPI");
   }
 
   @Override public Optional<Oauth2Token> defaultCredentials() {

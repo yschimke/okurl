@@ -19,7 +19,8 @@ import okhttp3.Response;
 
 public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.uber.com", "Uber API", "uber");
+    return new Oauth2ServiceDefinition("api.uber.com", "Uber API", "uber",
+        "https://developer.uber.com/docs/riders/references/api");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

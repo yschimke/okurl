@@ -1,6 +1,9 @@
 package com.baulsupp.oksocial.services.stackexchange;
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import java.util.Optional;
+
+import static java.util.Optional.of;
 
 public class StackExchangeServiceDefinition implements ServiceDefinition<StackExchangeToken> {
   @Override public String apiHost() {
@@ -22,5 +25,9 @@ public class StackExchangeServiceDefinition implements ServiceDefinition<StackEx
 
   public String formatCredentialsString(StackExchangeToken credentials) {
     return credentials.accessToken + ":" + credentials.key;
+  }
+
+  @Override public Optional<String> apiDocs() {
+    return of("https://api.stackexchange.com/docs");
   }
 }

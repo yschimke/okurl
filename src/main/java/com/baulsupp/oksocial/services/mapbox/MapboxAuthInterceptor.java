@@ -20,7 +20,8 @@ import okhttp3.Response;
 
 public class MapboxAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.mapbox.com", "Mapbox API", "mapbox");
+    return new Oauth2ServiceDefinition("api.mapbox.com", "Mapbox API", "mapbox",
+        "https://www.mapbox.com/api-documentation/");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)
