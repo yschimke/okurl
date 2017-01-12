@@ -1,8 +1,6 @@
 package com.baulsupp.oksocial.util;
 
 import com.google.common.base.Throwables;
-import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -20,14 +18,13 @@ public class FutureUtil {
         );
   }
 
-  public static <U> U ioSafeGet(Future<U> load) throws IOException {
+  public static <U> U ioSafeGet(Future<U> load) {
     try {
       return load.get();
     } catch (InterruptedException e) {
-      throw (IOException) new InterruptedIOException().initCause(e);
-    } catch (ExecutionException e) {
-      Throwables.propagateIfPossible(e.getCause(), IOException.class);
       throw Throwables.propagate(e);
+    } catch (ExecutionException e) {
+      throw Throwables.propagate(e.getCause());
     }
   }
 }
