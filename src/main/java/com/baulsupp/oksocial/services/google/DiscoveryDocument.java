@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,13 +28,20 @@ public class DiscoveryDocument {
   }
 
   public List<String> getUrls() {
+    return getEndpoints()
+        .stream()
+        .map(e -> e.url())
+        .distinct()
+        .collect(toList());
+  }
+
+  public List<DiscoveryEndpoint> getEndpoints() {
     Map<String, Map<String, Object>> resources = getResources();
 
     return resources.values()
         .stream()
         .flatMap(r -> getMethods(r).values().stream())
-        .map(m -> getBaseUrl() + getPath(m))
-        .distinct()
+        .map(m -> new DiscoveryEndpoint(getBaseUrl(), m))
         .collect(toList());
   }
 
@@ -55,19 +63,15 @@ public class DiscoveryDocument {
     return (Map<String, Map<String, Object>>) resource.get("methods");
   }
 
-  private String getPath(Map<String, Object> method) {
-    if (!method.containsKey("path")) {
-      throw new NullPointerException("path not found");
-    }
-
-    return (String) method.get("path");
-  }
-
   public String getApiName() {
     return (String) map.get("title");
   }
 
   public String getDocLink() {
     return (String) map.get("documentationLink");
+  }
+
+  public Optional<DiscoveryEndpoint> findEndpoint(String url) {
+    return getEndpoints().stream().filter(e -> e.url().equals(url)).findAny();
   }
 }
