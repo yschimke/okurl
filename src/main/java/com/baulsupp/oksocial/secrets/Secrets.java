@@ -117,7 +117,7 @@ public class Secrets {
   public static Set<String> promptArray(String name, String key, Collection<String> defaults) {
     String valueString =
         prompt(name, key, defaults.stream().collect(joining(",")), false);
-    return newHashSet(asList(valueString.split(",")));
+    return newHashSet(asList(valueString.split("\\s*,\\s*")));
   }
 
   private static String defaultDisplay(Optional<String> defaultValue, boolean password) {
