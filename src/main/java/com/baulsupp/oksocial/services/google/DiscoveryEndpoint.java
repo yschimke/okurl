@@ -52,6 +52,10 @@ public class DiscoveryEndpoint {
   public List<DiscoveryParameter> parameters() {
     Map<String, Map<String, Object>> o = (Map<String, Map<String, Object>>) map.get("parameters");
 
+    if (o == null) {
+      return Lists.newArrayList();
+    }
+
     return o.entrySet()
         .stream()
         .map(p -> new DiscoveryParameter(p.getKey(), p.getValue()))
