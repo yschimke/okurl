@@ -2,27 +2,37 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import static com.baulsupp.oksocial.util.Util.optionalStream;
 import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
 
 public class PrintCredentials {
-  private OkHttpClient client;
-  private CredentialsStore credentialsStore;
+  private final OutputHandler outputHandler;
+  private final OkHttpClient client;
+  private final CredentialsStore credentialsStore;
+  private final ServiceInterceptor serviceInterceptor;
 
-  public PrintCredentials(OkHttpClient client, CredentialsStore credentialsStore) {
+  public PrintCredentials(OkHttpClient client, CredentialsStore credentialsStore,
+      OutputHandler outputHandler, ServiceInterceptor serviceInterceptor) {
     this.client = client;
     this.credentialsStore = credentialsStore;
+    this.outputHandler = outputHandler;
+    this.serviceInterceptor = serviceInterceptor;
   }
 
-  public <T> void printKnownCredentials(Request.Builder requestBuilder,
-      AuthInterceptor<T> a, boolean full) {
+  public <T> void printKnownCredentials(Request.Builder requestBuilder, AuthInterceptor<T> a,
+      boolean full) {
     ServiceDefinition<T> sd = a.serviceDefinition();
     Optional<T> credentials = credentialsStore.readDefaultCredentials(sd);
 
@@ -33,45 +43,46 @@ public class PrintCredentials {
         Optional<ValidatedCredentials> validated =
             a.validate(client, requestBuilder, credentials.get()).get(5, TimeUnit.SECONDS);
 
-        printSuccess(sd, credentialsString, validated, full);
+        printSuccess(sd, validated);
       } catch (IOException | InterruptedException | TimeoutException e) {
-        printFailed(sd, credentialsString, e, full);
+        printFailed(sd, e);
       } catch (ExecutionException e) {
-        printFailed(sd, credentialsString, e.getCause(), full);
+        printFailed(sd, e.getCause());
       }
     } else {
-      printSuccess(sd, empty(), empty(), full);
+      printSuccess(sd, empty());
     }
-  }
-
-  private <T> void printSuccess(ServiceDefinition<T> sd, Optional<String> credentialsString,
-      Optional<ValidatedCredentials> validated, boolean full) {
     if (full) {
-      System.out.format("%-20s\t%20s\t%20s\n\t%s\n", sd.serviceName(),
-          validated.flatMap(v -> v.username).orElse("-"),
-          validated.flatMap(v -> v.clientName).orElse("-"), credentialsString.orElse("-"));
-    } else {
-      System.out.format("%-20s\t%20s\t%20s\n", sd.serviceName(),
-          validated.flatMap(v -> v.username).orElse("-"),
-          validated.flatMap(v -> v.clientName).orElse("-"));
+      outputHandler.info(credentialsString.orElse("-"));
     }
   }
 
-  private <T> void printFailed(ServiceDefinition<T> sd, Optional<String> credentialsString,
-      Throwable e, boolean full) {
-    if (full) {
-      System.out.format("%-20s\t%s\n\t%s\n", sd.serviceName(),
-          e.toString(), credentialsString.orElse("-"));
-    } else {
-      System.out.format("%-20s\t%s\n", sd.serviceName(),
-          e.toString());
-    }
+  private <T> void printSuccess(ServiceDefinition<T> sd, Optional<ValidatedCredentials> validated) {
+    outputHandler.info(
+        String.format("%-40s\t%-20s\t%-20s", sd.serviceName() + " (" + sd.shortName() + ")",
+            validated.flatMap(v -> v.username).orElse("-"),
+            validated.flatMap(v -> v.clientName).orElse("-")));
   }
 
-  public void printKnownCredentials(Request.Builder requestBuilder,
-      Iterable<AuthInterceptor<?>> services, boolean full) {
+  private <T> void printFailed(ServiceDefinition<T> sd,
+      Throwable e) {
+    outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.toString()));
+  }
+
+  public void showCredentials(List<String> arguments, Callable<Request.Builder> requestBuilder)
+      throws Exception {
+    Iterable<AuthInterceptor<?>> services = serviceInterceptor.services();
+
+    boolean full = !arguments.isEmpty();
+
+    if (!arguments.isEmpty()) {
+      services = arguments.stream().flatMap(a ->
+          optionalStream(serviceInterceptor.findAuthInterceptor(a))).collect(
+          toList());
+    }
+
     for (AuthInterceptor a : services) {
-      printKnownCredentials(requestBuilder, a, full);
+      printKnownCredentials(requestBuilder.call(), a, full);
     }
   }
 }
