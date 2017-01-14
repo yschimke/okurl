@@ -440,8 +440,10 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void closeClients() {
-    client.dispatcher().executorService().shutdown();
-    client.connectionPool().evictAll();
+    if (client != null) {
+      client.dispatcher().executorService().shutdown();
+      client.connectionPool().evictAll();
+    }
   }
 
   private OutputHandler buildHandler() {
