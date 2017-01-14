@@ -50,7 +50,11 @@ public interface AuthInterceptor<T> {
   Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, T credentials) throws IOException;
 
-  default boolean canRenew(Response result, T credentials) {
+  default boolean canRenew(Response result) {
+    return result.code() == 401;
+  }
+
+  default boolean canRenew(T credentials) {
     return false;
   }
 
