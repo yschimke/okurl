@@ -86,7 +86,7 @@ public class JavascriptApiCommand implements ShellCommand, MainAware {
 
   public Object credentials(String name) {
     if (main != null) {
-      Optional<AuthInterceptor<?>> interceptor = main.interceptorByName(name);
+      Optional<AuthInterceptor<?>> interceptor = main.serviceInterceptor.getByName(name);
 
       if (interceptor.isPresent()) {
         Optional<?> credentials =

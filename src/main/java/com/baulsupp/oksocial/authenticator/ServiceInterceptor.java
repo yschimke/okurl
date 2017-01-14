@@ -77,6 +77,16 @@ public class ServiceInterceptor implements Interceptor {
     return Optional.empty();
   }
 
+  public Optional<AuthInterceptor<?>> findAuthInterceptor(String nameOrUrl) {
+    Optional<AuthInterceptor<?>> auth = getByName(nameOrUrl);
+
+    if (!auth.isPresent()) {
+      auth = getByUrl(nameOrUrl);
+    }
+
+    return auth;
+  }
+
   public List<String> names() {
     return services.stream().map(AuthInterceptor::name).collect(Collectors.toList());
   }
