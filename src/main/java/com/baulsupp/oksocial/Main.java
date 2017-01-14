@@ -2,6 +2,7 @@ package com.baulsupp.oksocial;
 
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
+import com.baulsupp.oksocial.authenticator.Authorisation;
 import com.baulsupp.oksocial.authenticator.PrintCredentials;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.commands.CommandRegistry;
@@ -26,7 +27,6 @@ import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
 import com.baulsupp.oksocial.output.OutputHandler;
-import com.baulsupp.oksocial.secrets.Secrets;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.baulsupp.oksocial.security.CertificateUtils;
 import com.baulsupp.oksocial.security.ConsoleCallbackHandler;
@@ -83,6 +83,7 @@ import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.keyManagerArray;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
 
@@ -152,6 +153,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--authorize"}, description = "Authorize API")
   public boolean authorize;
 
+  @Option(name = {"--renew"}, description = "Renew API Authorization")
+  public boolean renew;
+
   @Option(name = {"--token"}, description = "Use existing Token for authorization")
   public String token;
 
@@ -219,12 +223,11 @@ public class Main extends HelpOption implements Runnable {
 
   public ServiceInterceptor serviceInterceptor = null;
 
-  private OkHttpClient authClient = null;
+  private Authorisation authorisation;
+
   public OkHttpClient client = null;
 
   public Request.Builder requestBuilder;
-
-  private List<OkHttpClient> clients = Lists.newArrayList();
 
   public CommandRegistry commandRegistry = new CommandRegistry();
 
@@ -287,6 +290,11 @@ public class Main extends HelpOption implements Runnable {
 
       if (authorize) {
         authorize();
+        return;
+      }
+
+      if (renew) {
+        renew();
         return;
       }
 
@@ -400,13 +408,14 @@ public class Main extends HelpOption implements Runnable {
       credentialsStore = createCredentialsStore();
     }
 
-    authClient = build(createClientBuilder());
+    OkHttpClient.Builder clientBuilder = createClientBuilder();
 
-    serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
+    serviceInterceptor = new ServiceInterceptor(clientBuilder.build(), credentialsStore);
 
-    OkHttpClient.Builder clientBuilder = authClient.newBuilder();
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
     client = clientBuilder.build();
+
+    authorisation = new Authorisation(serviceInterceptor, credentialsStore, client, outputHandler);
 
     requestBuilder = createRequestBuilder();
 
@@ -423,18 +432,15 @@ public class Main extends HelpOption implements Runnable {
     if (token != null && !authorize) {
       return new FixedTokenCredentialsStore(token);
     } else if (Util.isOSX()) {
-      return new OSXCredentialsStore(Optional.ofNullable(tokenSet));
+      return new OSXCredentialsStore(ofNullable(tokenSet));
     } else {
-      return new PreferencesCredentialsStore(Optional.ofNullable(tokenSet));
+      return new PreferencesCredentialsStore(ofNullable(tokenSet));
     }
   }
 
   private void closeClients() {
-    clients.forEach(client -> {
-      client.dispatcher().executorService().shutdown();
-      client.connectionPool().evictAll();
-    });
-    clients.clear();
+    client.dispatcher().executorService().shutdown();
+    client.connectionPool().evictAll();
   }
 
   private OutputHandler buildHandler() {
@@ -497,14 +503,6 @@ public class Main extends HelpOption implements Runnable {
     return responseFutures;
   }
 
-  private OkHttpClient build(OkHttpClient.Builder clientBuilder) {
-    OkHttpClient client = clientBuilder.build();
-
-    clients.add(client);
-
-    return client;
-  }
-
   private ShellCommand getShellCommand() throws Exception {
     return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
   }
@@ -528,51 +526,29 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void authorize() throws Exception {
-    ShellCommand command = getShellCommand();
+    Optional<AuthInterceptor<?>> auth = findAuthInterceptor();
 
-    List<String> authArguments = Lists.newArrayList(arguments);
+    authorisation.authorize(auth, ofNullable(token), arguments);
+  }
+
+  private void renew() throws Exception {
+    Optional auth = findAuthInterceptor();
+
+    authorisation.renew(auth);
+  }
+
+  private Optional<AuthInterceptor<?>> findAuthInterceptor() throws Exception {
+    ShellCommand command = getShellCommand();
 
     Optional<AuthInterceptor<?>> auth =
         command.authenticator().flatMap((authName) -> serviceInterceptor.getByName(authName));
 
-    if (!auth.isPresent() && !authArguments.isEmpty()) {
-      String name = authArguments.remove(0);
+    if (!auth.isPresent() && !arguments.isEmpty()) {
+      String name = arguments.remove(0);
 
       auth = serviceInterceptor.findAuthInterceptor(name);
     }
-
-    if (!auth.isPresent()) {
-      throw new UsageException(
-          "unable to find authenticator. Specify name from " + serviceInterceptor.names()
-              .stream()
-              .collect(joining(", ")));
-    }
-
-    if (token != null) {
-      storeCredentials(auth.get());
-    } else {
-      authRequest(auth.get(), authArguments);
-    }
-  }
-
-  private <T> void storeCredentials(AuthInterceptor<T> auth) {
-    T credentials = auth.serviceDefinition().parseCredentialsString(token);
-    credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
-  }
-
-  private <T> void authRequest(AuthInterceptor<T> auth, List<String> authArguments)
-      throws Exception {
-    OkHttpClient.Builder b = client.newBuilder();
-    b.networkInterceptors().removeIf(ServiceInterceptor.class::isInstance);
-    OkHttpClient authClient = build(b);
-
-    T credentials = auth.authorize(authClient, outputHandler, authArguments);
-
-    credentialsStore.storeCredentials(credentials, auth.serviceDefinition());
-
-    Secrets.instance().saveIfNeeded();
-
-    // TODO validate credentials
+    return auth;
   }
 
   public OkHttpClient.Builder createClientBuilder() throws Exception {
