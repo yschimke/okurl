@@ -57,9 +57,8 @@ public class MicrosoftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret);
   }
 
-  @Override public boolean canRenew(Response result, Oauth2Token credentials) {
-    return result.code() == 401
-        && credentials.refreshToken.isPresent()
+  @Override public boolean canRenew(Oauth2Token credentials) {
+    return credentials.refreshToken.isPresent()
         && credentials.clientId.isPresent()
         && credentials.clientSecret.isPresent();
   }

@@ -73,7 +73,9 @@ public class Authorisation {
       throw new UsageException("no existing credentials");
     }
 
-    // TODO check canRenew
+    if (!auth.get().canRenew(credentials.get())) {
+      throw new UsageException("credentials not renewable");
+    }
 
     Optional<T> newCredentials = auth.get().renew(client, credentials.get());
 

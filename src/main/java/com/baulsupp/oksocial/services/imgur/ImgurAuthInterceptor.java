@@ -65,9 +65,12 @@ public class ImgurAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return (String) data.get("url");
   }
 
-  @Override public boolean canRenew(Response result, Oauth2Token credentials) {
-    return result.code() == 403
-        && credentials.refreshToken.isPresent()
+  @Override public boolean canRenew(Response result) {
+    return result.code() == 403;
+  }
+
+  @Override public boolean canRenew(Oauth2Token credentials) {
+    return credentials.refreshToken.isPresent()
         && credentials.clientId.isPresent()
         && credentials.clientSecret.isPresent();
   }

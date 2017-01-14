@@ -72,9 +72,8 @@ public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
         client);
   }
 
-  @Override public boolean canRenew(Response result, Oauth2Token credentials) {
-    return result.code() == 401
-        && credentials.refreshToken.isPresent()
+  @Override public boolean canRenew(Oauth2Token credentials) {
+    return credentials.refreshToken.isPresent()
         && credentials.clientId.isPresent()
         && credentials.clientSecret.isPresent();
   }
