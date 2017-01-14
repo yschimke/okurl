@@ -410,12 +410,13 @@ public class Main extends HelpOption implements Runnable {
 
     OkHttpClient.Builder clientBuilder = createClientBuilder();
 
-    serviceInterceptor = new ServiceInterceptor(clientBuilder.build(), credentialsStore);
+    OkHttpClient authClient = clientBuilder.build();
+    serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
+
+    authorisation = new Authorisation(serviceInterceptor, credentialsStore, authClient, outputHandler);
 
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
     client = clientBuilder.build();
-
-    authorisation = new Authorisation(serviceInterceptor, credentialsStore, client, outputHandler);
 
     requestBuilder = createRequestBuilder();
 
