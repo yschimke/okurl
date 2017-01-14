@@ -25,6 +25,8 @@ https://api.uber.com/v1.2/estimates/price
 https://api.uber.com/v1.2/me
 https://api.uber.com/v1.2/payment-methods
 https://api.uber.com/v1.2/places/{place_id}
+https://api.uber.com/v1.2/places/home
+https://api.uber.com/v1.2/places/work
 https://api.uber.com/v1.2/products
 https://api.uber.com/v1.2/products/{product_id}
 https://api.uber.com/v1.2/reminders
@@ -63,6 +65,8 @@ https://sandbox-api.uber.com/v1.2/estimates/price
 https://sandbox-api.uber.com/v1.2/me
 https://sandbox-api.uber.com/v1.2/payment-methods
 https://sandbox-api.uber.com/v1.2/places/{place_id}
+https://sandbox-api.uber.com/v1.2/places/home
+https://sandbox-api.uber.com/v1.2/places/work
 https://sandbox-api.uber.com/v1.2/products
 https://sandbox-api.uber.com/v1.2/products/{product_id}
 https://sandbox-api.uber.com/v1.2/reminders
