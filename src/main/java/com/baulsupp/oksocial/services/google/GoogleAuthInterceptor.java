@@ -107,7 +107,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     Map<String, Object> responseMap = AuthUtil.makeJsonMapRequest(client, request);
 
     return Optional.of(new Oauth2Token((String) responseMap.get("access_token"),
-        (String) responseMap.get("refresh_token"), credentials.clientId.get(),
+        credentials.refreshToken.get(), credentials.clientId.get(),
         credentials.clientSecret.get()));
   }
 
