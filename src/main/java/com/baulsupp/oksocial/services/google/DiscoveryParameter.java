@@ -23,4 +23,12 @@ public class DiscoveryParameter {
   public String description() {
     return (String) map.get("description");
   }
+
+  public String location() {
+    return (String) map.get("location");
+  }
+
+  public String pattern() {
+    return (String) map.get("pattern");
+  }
 }

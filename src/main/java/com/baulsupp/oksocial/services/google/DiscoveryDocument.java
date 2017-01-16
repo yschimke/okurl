@@ -72,6 +72,10 @@ public class DiscoveryDocument {
   }
 
   public Optional<DiscoveryEndpoint> findEndpoint(String url) {
-    return getEndpoints().stream().filter(e -> e.url().equals(url)).findAny();
+    return getEndpoints().stream().filter(e -> matches(url, e)).findAny();
+  }
+
+  private boolean matches(String url, DiscoveryEndpoint e) {
+    return e.url().equals(url) || e.matches(url);
   }
 }

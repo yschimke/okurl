@@ -3,16 +3,21 @@ package com.baulsupp.oksocial.services.google;
 import com.baulsupp.oksocial.i9n.TestOutputHandler;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import okhttp3.OkHttpClient;
 import org.junit.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DiscoveryApiDocPresenterTest {
   private TestOutputHandler outputHandler = new TestOutputHandler();
   private OkHttpClient client = new OkHttpClient();
+
+  private DiscoveryApiDocPresenter p = new DiscoveryApiDocPresenter();
 
   @Test public void testExplainsUrl() throws IOException {
     assumeHasNetwork();
@@ -34,5 +39,52 @@ public class DiscoveryApiDocPresenterTest {
     );
 
     assertEquals(es, outputHandler.stdout);
+  }
+
+  @Test public void testExplainsExpandedUrl() throws IOException {
+    assertMatch("https://people.googleapis.com/v1/people/me",
+        "https://people.googleapis.com/v1/{+resourceName}", "url");
+  }
+
+  @Test public void testExplainsExpandedUrl2() throws IOException {
+    assertMatch("https://people.googleapis.com/v1/people:batchGet?resourceNames=me",
+        "https://people.googleapis.com/v1/people:batchGet", "url");
+  }
+
+  @Test public void testExplainsExpandedUrl3() throws IOException {
+    assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
+        "https://www.googleapis.com/tasks/v1/users/@me/lists", "url");
+  }
+
+  @Test public void testExplainsExpandedUrl4() throws IOException {
+    assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists/x",
+        "https://www.googleapis.com/tasks/v1/users/@me/lists/{tasklist}", "url");
+  }
+
+  @Test public void testExplainsExpandedWWWBeforeSiteUrls() throws IOException {
+    assertMatch("https://www.googleapis.com/tasks/v1/",
+        "https://developers.google.com/google-apps/tasks/firstapp", "docs");
+  }
+
+  @Test public void testExplainsExpandedWWWAfterSiteUrls() throws IOException {
+    assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
+        "https://developers.google.com/google-apps/tasks/firstapp", "docs");
+  }
+
+  private void assertMatch(String requested, String expected, String field) throws IOException {
+    assumeHasNetwork();
+
+    p.explainApi(requested, outputHandler, client);
+
+    boolean contains = outputHandler.stdout.contains(field + ": " + expected);
+
+    if (!contains) {
+      Optional<String> found =
+          outputHandler.stdout.stream().filter(s -> s.startsWith(field + ": ")).findFirst();
+
+      fail("expected '" + expected + "' found " + found.map(s -> s.substring(field.length() + 2)).orElse("nothing"));
+    }
+
+    assertTrue(contains);
   }
 }
