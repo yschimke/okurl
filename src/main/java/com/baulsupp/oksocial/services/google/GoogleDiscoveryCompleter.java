@@ -7,19 +7,16 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
 
 import static com.baulsupp.oksocial.util.FutureUtil.join;
 import static java.util.stream.Collectors.toList;
 
 public class GoogleDiscoveryCompleter implements ApiCompleter {
-  private OkHttpClient client;
   private DiscoveryRegistry discoveryRegistry;
   private final List<String> discoveryDocPaths;
 
-  public GoogleDiscoveryCompleter(OkHttpClient client, DiscoveryRegistry discoveryRegistry,
+  public GoogleDiscoveryCompleter(DiscoveryRegistry discoveryRegistry,
       List<String> discoveryDocPaths) {
-    this.client = client;
     this.discoveryRegistry = discoveryRegistry;
     this.discoveryDocPaths = discoveryDocPaths;
   }
@@ -41,12 +38,11 @@ public class GoogleDiscoveryCompleter implements ApiCompleter {
   }
 
   private CompletableFuture<List<String>> singleFuture(String discoveryDocPath) {
-    return discoveryRegistry.load(client, discoveryDocPath).thenApply(s -> s.getUrls());
+    return discoveryRegistry.load(discoveryDocPath).thenApply(s -> s.getUrls());
   }
 
-  public static GoogleDiscoveryCompleter forApis(OkHttpClient client,
-      DiscoveryRegistry discoveryRegistry,
+  public static GoogleDiscoveryCompleter forApis(DiscoveryRegistry discoveryRegistry,
       List<String> discoveryDocPaths) {
-    return new GoogleDiscoveryCompleter(client, discoveryRegistry, discoveryDocPaths);
+    return new GoogleDiscoveryCompleter(discoveryRegistry, discoveryDocPaths);
   }
 }

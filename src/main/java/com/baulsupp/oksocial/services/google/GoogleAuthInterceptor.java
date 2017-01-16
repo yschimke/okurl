@@ -37,6 +37,7 @@ import static java.util.stream.Collectors.toSet;
  */
 public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   private Set<String> hosts = null;
+  private DiscoveryIndex discoveryIndex;
 
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
@@ -130,7 +131,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     if (isPastHost(prefix)) {
       List<String> discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix);
 
-      return GoogleDiscoveryCompleter.forApis(client, DiscoveryRegistry.loadStatic(),
+      return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
           discoveryPaths);
     } else {
       UrlList urlList = UrlList.fromResource(name()).get();
@@ -143,7 +144,15 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     return prefix.matches("https://.*/.*");
   }
 
-  @Override public ApiDocPresenter apiDocPresenter(String url) {
-    return new DiscoveryApiDocPresenter();
+  @Override public ApiDocPresenter apiDocPresenter(String url) throws IOException {
+    return new DiscoveryApiDocPresenter(discoveryIndex());
+  }
+
+  private synchronized DiscoveryIndex discoveryIndex() throws IOException {
+    if (discoveryIndex == null) {
+      discoveryIndex = DiscoveryIndex.loadStatic();
+    }
+
+    return discoveryIndex;
   }
 }

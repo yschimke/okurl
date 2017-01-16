@@ -80,7 +80,7 @@ public interface AuthInterceptor<T> {
     return empty();
   }
 
-  default ApiDocPresenter apiDocPresenter(String url) {
+  default ApiDocPresenter apiDocPresenter(String url) throws IOException {
     return new ApiDocPresenter() {
       @Override public void explainApi(String url, OutputHandler outputHandler, OkHttpClient client)
           throws IOException {
