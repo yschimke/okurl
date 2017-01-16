@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.OkHttpClient;
+import org.junit.Before;
 import org.junit.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
@@ -17,12 +18,16 @@ public class DiscoveryApiDocPresenterTest {
   private TestOutputHandler outputHandler = new TestOutputHandler();
   private OkHttpClient client = new OkHttpClient();
 
-  private DiscoveryApiDocPresenter p = new DiscoveryApiDocPresenter();
+  private DiscoveryApiDocPresenter p;
+
+  @Before public void loadPresenter() throws IOException {
+    DiscoveryIndex discoveryIndex = DiscoveryIndex.loadStatic();
+    p = new DiscoveryApiDocPresenter(discoveryIndex);
+  }
 
   @Test public void testExplainsUrl() throws IOException {
     assumeHasNetwork();
 
-    DiscoveryApiDocPresenter p = new DiscoveryApiDocPresenter();
     p.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client);
 
     List<String> es = newArrayList("name: Google People API",
@@ -82,7 +87,8 @@ public class DiscoveryApiDocPresenterTest {
       Optional<String> found =
           outputHandler.stdout.stream().filter(s -> s.startsWith(field + ": ")).findFirst();
 
-      fail("expected '" + expected + "' found " + found.map(s -> s.substring(field.length() + 2)).orElse("nothing"));
+      fail("expected '" + expected + "' found " + found.map(s -> s.substring(field.length() + 2))
+          .orElse("nothing"));
     }
 
     assertTrue(contains);

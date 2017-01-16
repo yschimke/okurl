@@ -23,8 +23,6 @@ public class DiscoveryRegistry {
   private static final CacheControl cacheControl =
       new CacheControl.Builder().maxStale(1, TimeUnit.DAYS).build();
 
-  private static DiscoveryRegistry instance;
-
   private final OkHttpClient client;
   private final Map<String, Object> map;
 
@@ -34,25 +32,20 @@ public class DiscoveryRegistry {
   }
 
   // TODO make non synchronous
-  // don't ignore client
   public static synchronized DiscoveryRegistry instance(OkHttpClient client) throws IOException {
-    if (instance == null) {
-      client = client.newBuilder().cache(cache).build();
+    client = client.newBuilder().cache(cache).build();
 
-      String url = "https://www.googleapis.com/discovery/v1/apis";
-      Request request = new Request.Builder().cacheControl(cacheControl).url(url).build();
-      Response response = client.newCall(request).execute();
+    String url = "https://www.googleapis.com/discovery/v1/apis";
+    Request request = new Request.Builder().cacheControl(cacheControl).url(url).build();
+    Response response = client.newCall(request).execute();
 
-      try {
-        instance = new DiscoveryRegistry(client, JsonUtil.map(response.body().string()));
-      } finally {
-        if (response != null) {
-          response.close();
-        }
+    try {
+      return new DiscoveryRegistry(client, JsonUtil.map(response.body().string()));
+    } finally {
+      if (response != null) {
+        response.close();
       }
     }
-
-    return instance;
   }
 
   private Map<String, Map<String, Object>> getItems() {

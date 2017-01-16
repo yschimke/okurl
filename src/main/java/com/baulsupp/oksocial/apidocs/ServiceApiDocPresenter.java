@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.apidocs;
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.output.OutputHandler;
+import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.util.Optional;
 import okhttp3.OkHttpClient;
@@ -22,7 +23,13 @@ public class ServiceApiDocPresenter implements ApiDocPresenter {
   public void explainApi(String url, OutputHandler outputHandler, OkHttpClient client)
       throws IOException {
     Optional<ApiDocPresenter> presenter =
-        services.getByUrl(url).map(s -> s.apiDocPresenter(url));
+        services.getByUrl(url).map(s -> {
+          try {
+            return s.apiDocPresenter(url);
+          } catch (IOException e) {
+            throw Throwables.propagate(e);
+          }
+        });
 
     if (presenter.isPresent()) {
       presenter.get().explainApi(url, outputHandler, client);

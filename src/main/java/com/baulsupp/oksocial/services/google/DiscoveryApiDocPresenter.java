@@ -15,9 +15,14 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class DiscoveryApiDocPresenter implements ApiDocPresenter {
+  private DiscoveryIndex discoveryIndex;
+
+  public DiscoveryApiDocPresenter(DiscoveryIndex discoveryIndex) {
+    this.discoveryIndex = discoveryIndex;
+  }
+
   @Override public void explainApi(String url, OutputHandler outputHandler, OkHttpClient client)
       throws IOException {
-    DiscoveryIndex discoveryIndex = DiscoveryIndex.loadStatic();
     List<String> discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url);
 
     DiscoveryRegistry registry = DiscoveryRegistry.instance(client);
