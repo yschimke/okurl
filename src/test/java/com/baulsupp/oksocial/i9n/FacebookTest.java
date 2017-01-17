@@ -41,7 +41,7 @@ public class FacebookTest {
     main.run();
 
     List<String> es = newArrayList("service: facebook", "name: Facebook API",
-        "docs: https://developers.facebook.com/docs/graph-api");
+        "docs: https://developers.facebook.com/docs/graph-api", "", "fields: ", "", "connections: ");
 
     assertEquals(es, output.stdout);
   }
