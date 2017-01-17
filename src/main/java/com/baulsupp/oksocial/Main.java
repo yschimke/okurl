@@ -432,7 +432,9 @@ public class Main extends HelpOption implements Runnable {
   private CredentialsStore createCredentialsStore() throws OSXKeychainException {
     if (token != null && !authorize) {
       return new FixedTokenCredentialsStore(token);
-    } else if (Util.isOSX()) {
+    }
+
+    if (Util.isOSX()) {
       return new OSXCredentialsStore(ofNullable(tokenSet));
     } else {
       return new PreferencesCredentialsStore(ofNullable(tokenSet));

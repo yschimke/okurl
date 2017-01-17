@@ -81,15 +81,12 @@ public interface AuthInterceptor<T> {
   }
 
   default ApiDocPresenter apiDocPresenter(String url) throws IOException {
-    return new ApiDocPresenter() {
-      @Override public void explainApi(String url, OutputHandler outputHandler, OkHttpClient client)
-          throws IOException {
-        ServiceDefinition<T> sd = serviceDefinition();
+    return (url1, outputHandler, client) -> {
+      ServiceDefinition<T> sd = serviceDefinition();
 
-        outputHandler.info("service: " + sd.shortName());
-        outputHandler.info("name: " + sd.serviceName());
-        sd.apiDocs().ifPresent(d -> outputHandler.info("docs: " + d));
-      }
+      outputHandler.info("service: " + sd.shortName());
+      outputHandler.info("name: " + sd.serviceName());
+      sd.apiDocs().ifPresent(d -> outputHandler.info("docs: " + d));
     };
   }
 }
