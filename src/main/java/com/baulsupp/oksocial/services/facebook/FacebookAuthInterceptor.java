@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.facebook;
 
+import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator;
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
@@ -82,5 +83,9 @@ public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
       CredentialsStore credentialsStore, CompletionVariableCache completionVariableCache)
       throws IOException {
     return new FacebookCompleter(client, hosts());
+  }
+
+  @Override public ApiDocPresenter apiDocPresenter(String url) throws IOException {
+    return new FacebookApiDocPresenter(serviceDefinition());
   }
 }
