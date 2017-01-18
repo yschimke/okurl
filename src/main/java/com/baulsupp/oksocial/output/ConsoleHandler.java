@@ -68,6 +68,8 @@ public class ConsoleHandler implements OutputHandler {
         System.out.println(headers.name(i) + ": " + headers.value(i));
       }
       System.out.println();
+    } else if (!response.isSuccessful()) {
+      System.err.println(StatusLine.get(response));
     }
 
     if (logger.isLoggable(Level.FINE)) {
