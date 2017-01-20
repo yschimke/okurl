@@ -29,7 +29,7 @@ public class FacebookCompleter extends HostUrlCompleter {
     this.client = client;
   }
 
-  @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
+  @Override public CompletableFuture<UrlList> siteUrls(HttpUrl url) throws IOException {
     CompletableFuture<UrlList> result = completePath(url.encodedPath());
 
     if (!url.encodedPath().endsWith("/")) {

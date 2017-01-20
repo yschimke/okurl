@@ -14,28 +14,24 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class BaseUrlCompleter extends HostUrlCompleter {
   private final UrlList urlList;
-  private List<Function<UrlList, CompletableFuture<UrlList>>> mappings = Lists.newArrayList();
+  private CompletionMappings mappings = new CompletionMappings();
 
   public BaseUrlCompleter(UrlList urlList, Collection<String> hosts) {
     super(hosts);
     this.urlList = urlList;
   }
 
-  @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
+  @Override public CompletableFuture<UrlList> siteUrls(HttpUrl url) throws IOException {
     CompletableFuture<UrlList> future = completedFuture(urlList);
 
-    for (Function<UrlList, CompletableFuture<UrlList>> s : mappings) {
-      future = future.thenCompose(s);
-    }
-
-    return future;
+    return future.thenCompose(r -> mappings.replaceVariables(r));
   }
 
   public void withVariable(String name, List<String> values) {
-    withVariable(name, () -> completedFuture(values));
+    mappings.withVariable(name, values);
   }
 
   public void withVariable(String name, Supplier<CompletableFuture<List<String>>> values) {
-    mappings.add(ul -> values.get().thenApply(l -> ul.replace(name, l, true)));
+    mappings.withVariable(name, values);
   }
 }

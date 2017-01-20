@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.completion;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ public class HostUrlCompleter implements ApiCompleter {
     this.hosts = hosts;
   }
 
-  @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
+  @Override public CompletableFuture<UrlList> siteUrls(HttpUrl url) throws IOException {
     return completedFuture(
         new UrlList(UrlList.Match.SITE, urls(true)));
   }
@@ -34,7 +35,7 @@ public class HostUrlCompleter implements ApiCompleter {
     return hosts.stream().flatMap(f).collect(toList());
   }
 
-  @Override public Future<UrlList> prefixUrls() throws IOException {
+  @Override public CompletableFuture<UrlList> prefixUrls() throws IOException {
     return completedFuture(
         new UrlList(UrlList.Match.HOSTS, urls(false)));
   }
