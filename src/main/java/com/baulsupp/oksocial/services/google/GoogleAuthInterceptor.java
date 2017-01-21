@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
+import com.baulsupp.oksocial.completion.CompletionMappings;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
@@ -131,8 +132,11 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     if (isPastHost(prefix)) {
       List<String> discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix);
 
-      return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-          discoveryPaths);
+      GoogleDiscoveryCompleter completer =
+          GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
+              discoveryPaths);
+
+      return completer;
     } else {
       UrlList urlList = UrlList.fromResource(name()).get();
 
