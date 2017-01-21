@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -36,9 +37,7 @@ public class DiscoveryDocument {
   }
 
   public List<DiscoveryEndpoint> getEndpoints() {
-    String prefix = "";
-
-    return expandEndpoints(prefix, map);
+    return expandEndpoints(map);
   }
 
   private List<DiscoveryEndpoint> expandEndpoints(Map<String, Object> map) {
@@ -46,10 +45,9 @@ public class DiscoveryDocument {
 
     List<DiscoveryEndpoint> thisLevel = resources.values()
         .stream()
-        .flatMap(r -> {
-          return getMethods(r).values().stream();
-        })
-        .map(m -> new DiscoveryEndpoint(getBaseUrl(), m))
+        .flatMap(r -> Stream.concat(
+            getMethods(r).values().stream().map(m -> new DiscoveryEndpoint(getBaseUrl(), m)),
+            expandEndpoints(r).stream()))
         .collect(toList());
 
     return thisLevel;
