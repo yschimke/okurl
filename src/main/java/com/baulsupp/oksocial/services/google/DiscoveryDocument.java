@@ -36,16 +36,26 @@ public class DiscoveryDocument {
   }
 
   public List<DiscoveryEndpoint> getEndpoints() {
-    Map<String, Map<String, Object>> resources = getResources();
+    String prefix = "";
 
-    return resources.values()
-        .stream()
-        .flatMap(r -> getMethods(r).values().stream())
-        .map(m -> new DiscoveryEndpoint(getBaseUrl(), m))
-        .collect(toList());
+    return expandEndpoints(prefix, map);
   }
 
-  private Map<String, Map<String, Object>> getResources() {
+  private List<DiscoveryEndpoint> expandEndpoints(Map<String, Object> map) {
+    Map<String, Map<String, Object>> resources = getResources(map);
+
+    List<DiscoveryEndpoint> thisLevel = resources.values()
+        .stream()
+        .flatMap(r -> {
+          return getMethods(r).values().stream();
+        })
+        .map(m -> new DiscoveryEndpoint(getBaseUrl(), m))
+        .collect(toList());
+
+    return thisLevel;
+  }
+
+  private Map<String, Map<String, Object>> getResources(Map<String, Object> map) {
     if (!map.containsKey("resources")) {
       return Collections.emptyMap();
     }
