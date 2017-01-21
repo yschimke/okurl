@@ -67,6 +67,6 @@ public class GoogleCompletionTest {
     main.run();
 
     assertEquals(Lists.newArrayList(), output.failures);
-    assertTrue(output.stdout.get(0).contains("https://www.googleapis.com/gmail/v1/me/messages"));
+    assertTrue(output.stdout.get(0).contains("https://www.googleapis.com/gmail/v1/users/me/messages"));
   }
 }
