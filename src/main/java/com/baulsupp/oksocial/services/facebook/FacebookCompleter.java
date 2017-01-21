@@ -1,23 +1,25 @@
 package com.baulsupp.oksocial.services.facebook;
 
+import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.completion.HostUrlCompleter;
 import com.baulsupp.oksocial.completion.UrlList;
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 
 public class FacebookCompleter extends HostUrlCompleter {
   private static Logger logger = Logger.getLogger(FacebookCompleter.class.getName());
@@ -49,8 +51,13 @@ public class FacebookCompleter extends HostUrlCompleter {
   }
 
   private CompletableFuture<List<String>> topLevel() {
-    // TODO add accounts, albums, groups
-    return completedFuture(Lists.newArrayList("me"));
+    HttpUrl url = HttpUrl.parse("https://graph.facebook.com/v2.8/me/accounts?fields=username");
+    Request request = new Request.Builder().url(url).build();
+
+    return AuthUtil.enqueueJsonMapRequest(client, request)
+        .thenApply(m -> concat(
+            ((List<Map<String, String>>) m.get("data")).stream().map(v -> v.get("username")),
+            of("me")).collect(toList()));
   }
 
   private CompletableFuture<UrlList> completePath(String path) {
