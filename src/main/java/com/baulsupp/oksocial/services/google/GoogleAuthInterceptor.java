@@ -132,12 +132,9 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
     if (isPastHost(prefix)) {
       List<String> discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix);
 
-      CompletionMappings mappings = new CompletionMappings();
-      //mappings.withVariable("userId", );
-
       GoogleDiscoveryCompleter completer =
           GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-              discoveryPaths, mappings);
+              discoveryPaths);
 
       return completer;
     } else {

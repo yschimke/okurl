@@ -20,22 +20,27 @@ public class GoogleDiscoveryCompleter implements ApiCompleter {
   private CompletionMappings mappings = new CompletionMappings();
 
   public GoogleDiscoveryCompleter(DiscoveryRegistry discoveryRegistry,
-      List<String> discoveryDocPaths, CompletionMappings mappings) {
+      List<String> discoveryDocPaths) {
     this.discoveryRegistry = discoveryRegistry;
     this.discoveryDocPaths = discoveryDocPaths;
-    this.mappings = mappings;
+
+    initMappings();
   }
 
-  @Override public Future<UrlList> prefixUrls() throws IOException {
+  private void initMappings() {
+    mappings.withVariable("userId", Lists.newArrayList("me"));
+  }
+
+  @Override public CompletableFuture<UrlList> prefixUrls() throws IOException {
     // not supported for partial urls
     throw new UnsupportedOperationException();
   }
 
-  @Override public Future<UrlList> siteUrls(HttpUrl url) throws IOException {
+  @Override public CompletableFuture<UrlList> siteUrls(HttpUrl url) throws IOException {
     List<CompletableFuture<List<String>>> futures =
         discoveryDocPaths.stream().map(this::singleFuture).collect(toList());
 
-    return join(futures).thenApply(this::flattenList);
+    return join(futures).thenApply(this::flattenList).thenCompose(mappings::replaceVariables);
   }
 
   private UrlList flattenList(List<List<String>> l) {
@@ -47,7 +52,7 @@ public class GoogleDiscoveryCompleter implements ApiCompleter {
   }
 
   public static GoogleDiscoveryCompleter forApis(DiscoveryRegistry discoveryRegistry,
-      List<String> discoveryDocPaths, CompletionMappings mappings) {
-    return new GoogleDiscoveryCompleter(discoveryRegistry, discoveryDocPaths, mappings);
+      List<String> discoveryDocPaths) {
+    return new GoogleDiscoveryCompleter(discoveryRegistry, discoveryDocPaths);
   }
 }

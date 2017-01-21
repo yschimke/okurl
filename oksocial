@@ -19,7 +19,7 @@ fi
 
 BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
-#DEBUG="-Djavax.net.debug=ssl:handshake -Djava.security.debug=sunpkcs11"
+#DEBUG="-Djavax.net.debug=ssl:handshake"
 
 JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
 
