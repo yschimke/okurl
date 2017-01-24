@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.authenticator;
 
-import com.baulsupp.oksocial.okhttp.ResponseFutureCallback;
+import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
 import com.baulsupp.oksocial.util.JsonUtil;
 import com.baulsupp.oksocial.util.Util;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class JsonCredentialsValidator {
   }
 
   private CompletableFuture<Response> enqueue(OkHttpClient client, Request r) {
-    ResponseFutureCallback callback = new ResponseFutureCallback();
+    OkHttpResponseFuture callback = new OkHttpResponseFuture();
     client.newCall(r).enqueue(callback);
     return callback.future;
   }

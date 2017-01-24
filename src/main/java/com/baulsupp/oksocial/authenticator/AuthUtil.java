@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.authenticator;
 
-import com.baulsupp.oksocial.okhttp.ResponseFutureCallback;
+import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
 import com.baulsupp.oksocial.util.ClientException;
 import com.baulsupp.oksocial.util.JsonUtil;
 import com.google.common.base.Throwables;
@@ -53,7 +53,7 @@ public class AuthUtil {
   public static CompletableFuture<Map<String, Object>> enqueueJsonMapRequest(OkHttpClient client,
       Request request) {
     try {
-      ResponseFutureCallback callback = new ResponseFutureCallback();
+      OkHttpResponseFuture callback = new OkHttpResponseFuture();
       client.newCall(request).enqueue(callback);
 
       return callback.future.thenApply(response -> {

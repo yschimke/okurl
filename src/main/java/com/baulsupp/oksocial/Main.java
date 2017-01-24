@@ -523,7 +523,7 @@ public class Main extends HelpOption implements Runnable {
 
     Call call = client.newCall(request);
 
-    OkHttpResponseFuture result = new OkHttpResponseFuture(call);
+    OkHttpResponseFuture result = new OkHttpResponseFuture();
 
     call.enqueue(result);
 

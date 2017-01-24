@@ -7,6 +7,7 @@ import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter;
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor;
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,16 @@ public class FacebookTest {
 
     main.run();
 
-    List<String> es = newArrayList("service: facebook", "name: Facebook API",
-        "docs: https://developers.facebook.com/docs/graph-api", "", "fields: ", "", "connections: ");
+    // TODO improve logic of test
+    List<String> es;
+    if (main.credentialsStore.readDefaultCredentials(new FacebookAuthInterceptor().serviceDefinition()).isPresent()) {
+      es = newArrayList("service: facebook", "name: Facebook API",
+          "docs: https://developers.facebook.com/docs/graph-api", "", "fields: ", "",
+          "connections: ");
+    } else {
+      es = newArrayList("service: facebook", "name: Facebook API",
+          "docs: https://developers.facebook.com/docs/graph-api");
+    }
 
     assertEquals(es, output.stdout);
   }

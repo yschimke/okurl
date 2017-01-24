@@ -8,10 +8,8 @@ import okhttp3.Response;
 
 public class OkHttpResponseFuture implements Callback {
   public final CompletableFuture<Response> future = new CompletableFuture<>();
-  public Call call;
 
-  public OkHttpResponseFuture(Call call) {
-    this.call = call;
+  public OkHttpResponseFuture() {
   }
 
   @Override public void onFailure(Call call, IOException e) {
