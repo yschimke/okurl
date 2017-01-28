@@ -7,7 +7,11 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Optional;
 import javax.net.SocketFactory;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 public class InterfaceSocketFactory extends SocketFactory {
   private InetAddress localAddress;
@@ -42,15 +46,22 @@ public class InterfaceSocketFactory extends SocketFactory {
     return systemFactory.createSocket(address, port, localAddr, localPort);
   }
 
-  public static SocketFactory byName(String networkInterface) throws SocketException {
+  public static Optional<SocketFactory> byName(String ipOrInterface) throws SocketException {
     InetAddress localAddress;
     try {
-      localAddress = InetAddress.getByName(networkInterface);
+      // example 192.168.0.51
+      localAddress = InetAddress.getByName(ipOrInterface);
     } catch (UnknownHostException uhe) {
-      localAddress =
-          NetworkInterface.getByName(networkInterface).getInetAddresses().nextElement();
+      // example en0
+      NetworkInterface networkInterface = NetworkInterface.getByName(ipOrInterface);
+
+      if (networkInterface == null) {
+        return empty();
+      }
+
+      localAddress = networkInterface.getInetAddresses().nextElement();
     }
 
-    return new InterfaceSocketFactory(localAddress);
+    return of(new InterfaceSocketFactory(localAddress));
   }
 }
