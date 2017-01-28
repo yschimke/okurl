@@ -7,15 +7,13 @@ import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter;
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor;
 import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
-import static com.baulsupp.oksocial.util.TestUtil.assumeHasToken;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FacebookTest {
   private Main main = new Main();
@@ -29,7 +27,8 @@ public class FacebookTest {
   private ServiceDefinition<Oauth2Token> sd = new FacebookAuthInterceptor().serviceDefinition();
   private FacebookApiDocPresenter p;
 
-  @Before public void loadPresenter() throws IOException {
+  @BeforeEach
+  public void loadPresenter() throws IOException {
     p = new FacebookApiDocPresenter(sd);
   }
 
@@ -42,7 +41,8 @@ public class FacebookTest {
     main.run();
 
     List<String> es = newArrayList("service: facebook", "name: Facebook API",
-        "docs: https://developers.facebook.com/docs/graph-api", "apps: https://developers.facebook.com/apps/");
+        "docs: https://developers.facebook.com/docs/graph-api",
+        "apps: https://developers.facebook.com/apps/");
 
     assertEquals(es, output.stdout);
   }

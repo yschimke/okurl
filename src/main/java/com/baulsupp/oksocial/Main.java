@@ -54,6 +54,7 @@ import io.airlift.airline.SingleCommand;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
+import java.net.SocketException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
@@ -573,7 +575,7 @@ public class Main extends HelpOption implements Runnable {
     builder.dns(dns);
 
     if (networkInterface != null) {
-      builder.socketFactory(InterfaceSocketFactory.byName(networkInterface));
+      builder.socketFactory(getSocketFactory());
     }
 
     configureTls(builder);
@@ -605,6 +607,16 @@ public class Main extends HelpOption implements Runnable {
     }
 
     return builder;
+  }
+
+  private SocketFactory getSocketFactory() throws SocketException {
+    Optional<SocketFactory> socketFactory = InterfaceSocketFactory.byName(networkInterface);
+
+    if (!socketFactory.isPresent()) {
+      throw new UsageException("networkInterface '" + networkInterface + "' not found");
+    }
+
+    return socketFactory.get();
   }
 
   private void configureTls(OkHttpClient.Builder builder) throws Exception {

@@ -4,11 +4,11 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor;
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken;
 import com.google.common.collect.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SurveyMonkeyTest {
 

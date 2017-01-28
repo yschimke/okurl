@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 
 import static java.util.Optional.empty;
 
@@ -19,7 +20,7 @@ public class TestUtil {
   public static synchronized void assumeHasNetwork() {
     initialise();
 
-    Assume.assumeNoException(cachedException);
+    Assumptions.assumeTrue(cachedException == null);
   }
 
   private static void initialise() {

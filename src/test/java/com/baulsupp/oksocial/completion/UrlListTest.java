@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.completion;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UrlListTest {
   @Test public void testReplacements() {
