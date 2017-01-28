@@ -7,11 +7,11 @@ import okhttp3.Protocol;
 import okhttp3.internal.tls.SslClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.AfterClass;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LoggingTest {
   @Rule public MockWebServer server = new MockWebServer();
@@ -24,12 +24,13 @@ public class LoggingTest {
     main.outputHandler = output;
   }
 
-  @AfterClass
+  @AfterAll
   public static void resetLogging() {
     LogManager.getLogManager().reset();
   }
 
-  @Test public void logsData() throws Exception {
+  @Test
+  public void logsData() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
     server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1));
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
@@ -41,7 +42,8 @@ public class LoggingTest {
     main.run();
   }
 
-  @Test public void version() throws Exception {
+  @Test
+  public void version() throws Exception {
     TestOutputHandler output = new TestOutputHandler();
 
     main.version = true;

@@ -8,15 +8,16 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import okhttp3.internal.tls.SslClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebServerTest {
-  @Rule public MockWebServer server = new MockWebServer();
+  @Rule
+  public MockWebServer server = new MockWebServer();
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
 
@@ -26,7 +27,8 @@ public class WebServerTest {
 
   private SslClient sslClient = SslClient.localhost();
 
-  @Test public void httpsRequestInsecureFails() throws Exception {
+  @Test
+  public void httpsRequestInsecureFails() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
 
@@ -39,7 +41,8 @@ public class WebServerTest {
     assertTrue(output.failures.get(0) instanceof SSLHandshakeException);
   }
 
-  @Test public void httpsRequestInsecure() throws Exception {
+  @Test
+  public void httpsRequestInsecure() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
 
@@ -52,7 +55,8 @@ public class WebServerTest {
     assertEquals(200, output.responses.get(0).code());
   }
 
-  @Test @Ignore public void httpsRequestSecure() throws Exception {
+  @Test @Disabled
+  public void httpsRequestSecure() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
 
@@ -64,7 +68,8 @@ public class WebServerTest {
     assertEquals(200, output.responses.get(0).code());
   }
 
-  @Test public void rejectedWithPin() throws Exception {
+  @Test
+  public void rejectedWithPin() throws Exception {
     server.useHttps(sslClient.socketFactory, false);
     server.enqueue(new MockResponse().setBody("Isla Sorna"));
 

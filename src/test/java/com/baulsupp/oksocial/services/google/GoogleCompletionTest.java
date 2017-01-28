@@ -4,12 +4,12 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.i9n.TestCredentialsStore;
 import com.baulsupp.oksocial.i9n.TestOutputHandler;
 import com.google.common.collect.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GoogleCompletionTest {
   private Main main = new Main();
@@ -54,7 +54,8 @@ public class GoogleCompletionTest {
     main.run();
 
     assertEquals(Lists.newArrayList(), output.failures);
-    assertTrue(output.stdout.get(0).contains("https://www.googleapis.com/gmail/v1/users/me/profile"));
+    assertTrue(
+        output.stdout.get(0).contains("https://www.googleapis.com/gmail/v1/users/me/profile"));
   }
 
   // Nested example
@@ -67,6 +68,7 @@ public class GoogleCompletionTest {
     main.run();
 
     assertEquals(Lists.newArrayList(), output.failures);
-    assertTrue(output.stdout.get(0).contains("https://www.googleapis.com/gmail/v1/users/me/messages"));
+    assertTrue(
+        output.stdout.get(0).contains("https://www.googleapis.com/gmail/v1/users/me/messages"));
   }
 }

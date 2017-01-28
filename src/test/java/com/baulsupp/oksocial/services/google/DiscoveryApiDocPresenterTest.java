@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.OkHttpClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class DiscoveryApiDocPresenterTest {
   private TestOutputHandler outputHandler = new TestOutputHandler();
@@ -20,7 +20,8 @@ public class DiscoveryApiDocPresenterTest {
 
   private DiscoveryApiDocPresenter p;
 
-  @Before public void loadPresenter() throws IOException {
+  @BeforeEach
+  public void loadPresenter() throws IOException {
     DiscoveryIndex discoveryIndex = DiscoveryIndex.loadStatic();
     p = new DiscoveryApiDocPresenter(discoveryIndex);
   }

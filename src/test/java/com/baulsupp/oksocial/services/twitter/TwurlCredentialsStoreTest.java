@@ -3,9 +3,9 @@ package com.baulsupp.oksocial.services.twitter;
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlCredentialsStore;
 import java.io.File;
 import java.io.IOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TwurlCredentialsStoreTest {
   @Test public void testReadDefaultCredentials() throws IOException {

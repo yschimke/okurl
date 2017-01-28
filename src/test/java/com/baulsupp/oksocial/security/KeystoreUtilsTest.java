@@ -20,7 +20,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
 import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;

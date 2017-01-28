@@ -5,10 +5,10 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.i9n.TestOutputHandler;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ServiceApiDocPresenterTest {
   private TestOutputHandler outputHandler = new TestOutputHandler();
