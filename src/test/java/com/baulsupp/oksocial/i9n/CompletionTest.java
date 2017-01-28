@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CompletionTest {
   private Main main = new Main();
@@ -20,7 +20,7 @@ public class CompletionTest {
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
   private TestCompletionVariableCache completionCache = new TestCompletionVariableCache();
 
-  @Before
+  @BeforeEach
   public void setup() throws IOException {
     main.outputHandler = output;
     main.credentialsStore = credentialsStore;

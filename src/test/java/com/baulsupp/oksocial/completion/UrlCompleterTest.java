@@ -7,9 +7,9 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import okhttp3.OkHttpClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UrlCompleterTest {
   private List<AuthInterceptor<?>> services = Lists.newArrayList(new TestAuthInterceptor());

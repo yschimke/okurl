@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GoogleAuthInterceptorTest {
   private GoogleAuthInterceptor interceptor = new GoogleAuthInterceptor();

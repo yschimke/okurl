@@ -2,9 +2,9 @@ package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TwitterTest {
   private Main main = new Main();

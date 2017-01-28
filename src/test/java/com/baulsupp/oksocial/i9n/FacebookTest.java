@@ -7,15 +7,14 @@ import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter;
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor;
 import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasToken;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FacebookTest {
   private Main main = new Main();
@@ -23,17 +22,18 @@ public class FacebookTest {
 
   {
     main.outputHandler = output;
+    main.credentialsStore = new TestCredentialsStore();
   }
 
   private ServiceDefinition<Oauth2Token> sd = new FacebookAuthInterceptor().serviceDefinition();
   private FacebookApiDocPresenter p;
 
-  @Before public void loadPresenter() throws IOException {
+  @BeforeEach
+  public void loadPresenter() throws IOException {
     p = new FacebookApiDocPresenter(sd);
   }
 
   @Test public void testExplainsUrl() throws IOException {
-    assumeHasToken(sd);
     assumeHasNetwork();
 
     main.arguments = Lists.newArrayList("https://graph.facebook.com/v2.8/app/groups");
@@ -41,16 +41,8 @@ public class FacebookTest {
 
     main.run();
 
-    // TODO improve logic of test
-    List<String> es;
-    if (main.credentialsStore.readDefaultCredentials(new FacebookAuthInterceptor().serviceDefinition()).isPresent()) {
-      es = newArrayList("service: facebook", "name: Facebook API",
-          "docs: https://developers.facebook.com/docs/graph-api", "", "fields: ", "",
-          "connections: ");
-    } else {
-      es = newArrayList("service: facebook", "name: Facebook API",
-          "docs: https://developers.facebook.com/docs/graph-api");
-    }
+    List<String> es = newArrayList("service: facebook", "name: Facebook API",
+        "docs: https://developers.facebook.com/docs/graph-api");
 
     assertEquals(es, output.stdout);
   }
