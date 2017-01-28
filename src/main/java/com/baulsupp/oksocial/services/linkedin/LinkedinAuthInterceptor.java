@@ -24,7 +24,7 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
 public class LinkedinAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("api.linkedin.com", "Linkedin API", "linkedin",
-        "https://developer.linkedin.com/docs/rest-api");
+        "https://developer.linkedin.com/docs/rest-api", "https://www.linkedin.com/developer/apps");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

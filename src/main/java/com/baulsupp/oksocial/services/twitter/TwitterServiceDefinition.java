@@ -22,7 +22,11 @@ public class TwitterServiceDefinition implements ServiceDefinition<TwitterCreden
   }
 
   @Override public Optional<String> apiDocs() {
-    return of("https://dev.twitter.com/rest/reference");
+    return of("https://apps.twitter.com/");
+  }
+
+  @Override public Optional<String> accountsLink() {
+    return of("");
   }
 
   public TwitterCredentials parseCredentialsString(String s) {

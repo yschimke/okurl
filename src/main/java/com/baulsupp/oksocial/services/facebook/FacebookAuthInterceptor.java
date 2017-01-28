@@ -30,7 +30,7 @@ import static com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest;
 public class FacebookAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
-        "https://developers.facebook.com/docs/graph-api");
+        "https://developers.facebook.com/docs/graph-api", "https://developers.facebook.com/apps/");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

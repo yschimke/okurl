@@ -23,6 +23,7 @@ public class FacebookTest {
 
   {
     main.outputHandler = output;
+    main.credentialsStore = new TestCredentialsStore();
   }
 
   private ServiceDefinition<Oauth2Token> sd = new FacebookAuthInterceptor().serviceDefinition();
@@ -33,7 +34,6 @@ public class FacebookTest {
   }
 
   @Test public void testExplainsUrl() throws IOException {
-    assumeHasToken(sd);
     assumeHasNetwork();
 
     main.arguments = Lists.newArrayList("https://graph.facebook.com/v2.8/app/groups");
@@ -41,16 +41,8 @@ public class FacebookTest {
 
     main.run();
 
-    // TODO improve logic of test
-    List<String> es;
-    if (main.credentialsStore.readDefaultCredentials(new FacebookAuthInterceptor().serviceDefinition()).isPresent()) {
-      es = newArrayList("service: facebook", "name: Facebook API",
-          "docs: https://developers.facebook.com/docs/graph-api", "", "fields: ", "",
-          "connections: ");
-    } else {
-      es = newArrayList("service: facebook", "name: Facebook API",
-          "docs: https://developers.facebook.com/docs/graph-api");
-    }
+    List<String> es = newArrayList("service: facebook", "name: Facebook API",
+        "docs: https://developers.facebook.com/docs/graph-api", "apps: https://developers.facebook.com/apps/");
 
     assertEquals(es, output.stdout);
   }

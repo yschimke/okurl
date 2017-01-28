@@ -33,7 +33,8 @@ import static java.util.Optional.of;
 public class UberAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition(host(), "Uber API", "uber",
-        "https://developer.uber.com/docs/riders/references/api");
+        "https://developer.uber.com/docs/riders/references/api",
+        "https://developer.uber.com/dashboard/");
   }
 
   protected String host() {

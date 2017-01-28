@@ -10,13 +10,15 @@ public abstract class AbstractServiceDefinition<T> implements ServiceDefinition<
   private final String serviceName;
   private final String shortName;
   private final String apiDocs;
+  private final String accountsLink;
 
   public AbstractServiceDefinition(String apiHost, String serviceName, String shortName,
-      String apiDocs) {
+      String apiDocs, String accountsLink) {
     this.apiHost = apiHost;
     this.serviceName = serviceName;
     this.shortName = shortName;
     this.apiDocs = apiDocs;
+    this.accountsLink = accountsLink;
   }
 
   @Override public String shortName() {
@@ -33,5 +35,9 @@ public abstract class AbstractServiceDefinition<T> implements ServiceDefinition<
 
   @Override public Optional<String> apiDocs() {
     return ofNullable(apiDocs);
+  }
+
+  @Override public Optional<String> accountsLink() {
+    return ofNullable(accountsLink);
   }
 }

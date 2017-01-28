@@ -42,7 +42,8 @@ public class TestAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   }
 
   @Override public ServiceDefinition<Oauth2Token> serviceDefinition() {
-    return new Oauth2ServiceDefinition("localhost", "Test Service", "test", "https://docs.test.com");
+    return new Oauth2ServiceDefinition("localhost", "Test Service", "test",
+        "https://docs.test.com", "https://apps.test.com");
   }
 
   @Override public Collection<String> hosts() {

@@ -50,7 +50,7 @@ public class HttpBinAuthInterceptor implements AuthInterceptor<BasicCredentials>
 
   @Override public ServiceDefinition<BasicCredentials> serviceDefinition() {
     return new BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
-        "https://httpbin.org/");
+        "https://httpbin.org/", null);
   }
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
