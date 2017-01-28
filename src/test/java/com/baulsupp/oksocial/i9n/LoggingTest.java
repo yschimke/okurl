@@ -10,11 +10,16 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.migrationsupport.rules.ExternalResourceSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(ExternalResourceSupport.class)
 public class LoggingTest {
-  @Rule public MockWebServer server = new MockWebServer();
+  @Rule
+  public MockWebServer server = new MockWebServer();
+
   private Main main = new Main();
 
   private SslClient sslClient = SslClient.localhost();

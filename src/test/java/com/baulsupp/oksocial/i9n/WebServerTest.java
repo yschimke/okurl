@@ -11,13 +11,17 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Rule;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.migrationsupport.rules.ExternalResourceSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(ExternalResourceSupport.class)
 public class WebServerTest {
   @Rule
   public MockWebServer server = new MockWebServer();
+
   private Main main = new Main();
   private TestOutputHandler output = new TestOutputHandler();
 

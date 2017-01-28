@@ -34,7 +34,6 @@ public class FacebookTest {
   }
 
   @Test public void testExplainsUrl() throws IOException {
-    assumeHasToken(sd);
     assumeHasNetwork();
 
     main.arguments = Lists.newArrayList("https://graph.facebook.com/v2.8/app/groups");
