@@ -25,6 +25,7 @@ public class FacebookApiDocPresenter implements ApiDocPresenter {
     outputHandler.info("service: " + sd.shortName());
     outputHandler.info("name: " + sd.serviceName());
     sd.apiDocs().ifPresent(d -> outputHandler.info("docs: " + d));
+    sd.accountsLink().ifPresent(d -> outputHandler.info("apps: " + d));
 
     try {
       FacebookMetadata md = FacebookUtil.getMetadata(client, HttpUrl.parse(url)).get();

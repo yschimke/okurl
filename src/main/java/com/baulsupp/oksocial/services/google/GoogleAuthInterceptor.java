@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.BaseUrlCompleter;
-import com.baulsupp.oksocial.completion.CompletionMappings;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlList;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
@@ -42,7 +41,7 @@ public class GoogleAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
-        "https://developers.google.com/");
+        "https://developers.google.com/", "https://console.developers.google.com/apis/credentials");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

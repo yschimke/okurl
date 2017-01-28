@@ -19,7 +19,8 @@ public class TransferwiseTestAuthInterceptor extends TransferwiseAuthInterceptor
 
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition(host(), "Transferwise Test API", "transferwise-test",
-        "https://api-docs.transferwise.com/");
+        "https://api-docs.transferwise.com/",
+        "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/");
   }
 
   @Override public ApiCompleter apiCompleter(String prefix, OkHttpClient client,

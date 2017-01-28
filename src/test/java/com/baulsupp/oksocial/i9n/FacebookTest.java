@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
-import static com.baulsupp.oksocial.util.TestUtil.assumeHasToken;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,7 +41,8 @@ public class FacebookTest {
     main.run();
 
     List<String> es = newArrayList("service: facebook", "name: Facebook API",
-        "docs: https://developers.facebook.com/docs/graph-api");
+        "docs: https://developers.facebook.com/docs/graph-api",
+        "apps: https://developers.facebook.com/apps/");
 
     assertEquals(es, output.stdout);
   }

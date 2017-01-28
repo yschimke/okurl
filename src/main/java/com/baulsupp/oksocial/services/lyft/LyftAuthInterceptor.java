@@ -31,7 +31,7 @@ import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.field
 public class LyftAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
     return new Oauth2ServiceDefinition("api.lyft.com", "Lyft API", "lyft",
-        "https://developer.lyft.com/docs");
+        "https://developer.lyft.com/docs", "https://www.lyft.com/developers/manage");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

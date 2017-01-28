@@ -30,4 +30,8 @@ public class SurveyMonkeyServiceDefinition implements ServiceDefinition<SurveyMo
   @Override public Optional<String> apiDocs() {
     return of("https://developer.surveymonkey.com/api/v3/#scopes");
   }
+
+  @Override public Optional<String> accountsLink() {
+    return of("https://developer.surveymonkey.com/apps/");
+  }
 }

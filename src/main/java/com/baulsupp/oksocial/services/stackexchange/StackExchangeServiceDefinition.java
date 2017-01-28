@@ -30,4 +30,8 @@ public class StackExchangeServiceDefinition implements ServiceDefinition<StackEx
   @Override public Optional<String> apiDocs() {
     return of("https://api.stackexchange.com/docs");
   }
+
+  @Override public Optional<String> accountsLink() {
+    return of("http://stackapps.com/apps/oauth");
+  }
 }

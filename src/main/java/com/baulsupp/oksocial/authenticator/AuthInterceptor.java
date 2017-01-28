@@ -87,6 +87,7 @@ public interface AuthInterceptor<T> {
       outputHandler.info("service: " + sd.shortName());
       outputHandler.info("name: " + sd.serviceName());
       sd.apiDocs().ifPresent(d -> outputHandler.info("docs: " + d));
+      sd.accountsLink().ifPresent(d -> outputHandler.info("apps: " + d));
     };
   }
 }

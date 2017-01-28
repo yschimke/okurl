@@ -23,7 +23,8 @@ import okhttp3.Response;
 
 public class FourSquareAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
-    return new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq", "https://developer.foursquare.com/docs/");
+    return new Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
+        "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps");
   }
 
   @Override public Response intercept(Interceptor.Chain chain, Oauth2Token credentials)

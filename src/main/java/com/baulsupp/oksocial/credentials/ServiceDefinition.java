@@ -18,4 +18,8 @@ public interface ServiceDefinition<T> {
   default Optional<String> apiDocs() {
     return empty();
   }
+
+  default Optional<String> accountsLink() {
+    return empty();
+  }
 }
