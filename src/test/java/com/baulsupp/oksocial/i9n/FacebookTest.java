@@ -23,6 +23,7 @@ public class FacebookTest {
 
   {
     main.outputHandler = output;
+    main.credentialsStore = new TestCredentialsStore();
   }
 
   private ServiceDefinition<Oauth2Token> sd = new FacebookAuthInterceptor().serviceDefinition();
@@ -41,16 +42,8 @@ public class FacebookTest {
 
     main.run();
 
-    // TODO improve logic of test
-    List<String> es;
-    if (main.credentialsStore.readDefaultCredentials(new FacebookAuthInterceptor().serviceDefinition()).isPresent()) {
-      es = newArrayList("service: facebook", "name: Facebook API",
-          "docs: https://developers.facebook.com/docs/graph-api", "", "fields: ", "",
-          "connections: ");
-    } else {
-      es = newArrayList("service: facebook", "name: Facebook API",
+    List<String> es = newArrayList("service: facebook", "name: Facebook API",
           "docs: https://developers.facebook.com/docs/graph-api");
-    }
 
     assertEquals(es, output.stdout);
   }
