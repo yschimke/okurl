@@ -10,6 +10,8 @@ com.baulsupp.oksocial.services.linkedin.LinkedinAuthInterceptor
 com.baulsupp.oksocial.services.lyft.LyftAuthInterceptor
 com.baulsupp.oksocial.services.mapbox.MapboxAuthInterceptor
 com.baulsupp.oksocial.services.microsoft.MicrosoftAuthInterceptor
+com.baulsupp.oksocial.services.paypal.PaypalAuthInterceptor
+com.baulsupp.oksocial.services.paypal.PaypalSandboxAuthInterceptor
 com.baulsupp.oksocial.services.slack.SlackAuthInterceptor
 com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor
