@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.util;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -9,7 +11,7 @@ import java.util.logging.SimpleFormatter;
 import okhttp3.internal.http2.Http2;
 
 public class LoggingUtil {
-  private static Logger activeLogger;
+  private static List<Logger> activeLoggers = Lists.newArrayList();
 
   public static void configureLogging(boolean debug, boolean showHttp2Frames) {
     if (debug || showHttp2Frames) {
@@ -19,11 +21,14 @@ public class LoggingUtil {
       if (debug) {
         handler.setLevel(Level.ALL);
         handler.setFormatter(new OneLineLogFormat());
-        activeLogger = Logger.getLogger("");
+        Logger activeLogger = getLogger("");
         activeLogger.addHandler(handler);
         activeLogger.setLevel(Level.ALL);
-      } else {
-        activeLogger = Logger.getLogger(Http2.class.getName());
+
+        Logger x = getLogger("org.zeroturnaround.exec.stream");
+        x.setLevel(Level.INFO);
+      } else if (showHttp2Frames) {
+        Logger activeLogger = Logger.getLogger(Http2.class.getName());
         activeLogger.setLevel(Level.FINE);
         handler.setLevel(Level.FINE);
         handler.setFormatter(new SimpleFormatter() {
@@ -34,5 +39,11 @@ public class LoggingUtil {
         activeLogger.addHandler(handler);
       }
     }
+  }
+
+  public static Logger getLogger(String name) {
+    Logger logger = Logger.getLogger(name);
+    activeLoggers.add(logger);
+    return logger;
   }
 }

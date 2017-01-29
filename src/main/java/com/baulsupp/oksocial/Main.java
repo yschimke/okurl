@@ -216,6 +216,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--apidoc"}, description = "API Documentation")
   public boolean apiDoc;
 
+  @Option(name = {"--ssldebug"}, description = "SSL Debug")
+  public boolean sslDebug;
+
   public String commandName = System.getProperty("command.name", "oksocial");
 
   public String completionFile = System.getenv("COMPLETION_FILE");
@@ -246,6 +249,10 @@ public class Main extends HelpOption implements Runnable {
   }
 
   @Override public void run() {
+    if (sslDebug) {
+      System.setProperty("javax.net.debug", "ssl,handshake");
+    }
+
     LoggingUtil.configureLogging(debug, showHttp2Frames);
 
     if (outputHandler == null) {
