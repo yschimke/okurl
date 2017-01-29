@@ -1,13 +1,13 @@
 https://graph.microsoft.com/v1.0/me
 https://graph.microsoft.com/v1.0/me/drive/root/children
-https://graph.microsoft.com/v1.0/me/photo/$value
+https://graph.microsoft.com/v1.0/me/photo/{value}
 https://graph.microsoft.com/v1.0/me/messages
 https://graph.microsoft.com/v1.0/me/calendar
 https://graph.microsoft.com/v1.0/me/manager
 https://graph.microsoft.com/v1.0/me/drive/root/
 https://graph.microsoft.com/v1.0/me/memberOf/
 https://graph.microsoft.com/v1.0/users
-https://graph.microsoft.com/v1.0/groups/<id>/conversations
+https://graph.microsoft.com/v1.0/groups/{id}/conversations
 https://graph.microsoft.com/beta/me/people
 https://graph.microsoft.com/beta/me/trendingAround
 https://graph.microsoft.com/beta/me/workingWith
