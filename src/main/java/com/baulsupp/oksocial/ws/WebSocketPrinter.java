@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 public class WebSocketPrinter extends WebSocketListener {
   private CountDownLatch latch = new CountDownLatch(1);
@@ -20,6 +21,10 @@ public class WebSocketPrinter extends WebSocketListener {
 
   @Override public void onMessage(WebSocket webSocket, String text) {
     outputHandler.info(text);
+  }
+
+  @Override public void onMessage(WebSocket webSocket, ByteString bytes) {
+    outputHandler.info(bytes.hex());
   }
 
   @Override public void onClosed(WebSocket webSocket, int code, String reason) {
