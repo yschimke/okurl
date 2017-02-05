@@ -9,11 +9,14 @@ import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import okhttp3.Dns;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class DnsSelector implements Dns {
+  private static Logger logger = Logger.getLogger(DnsSelector.class.getName());
 
   public enum Mode {
     SYSTEM,
@@ -77,6 +80,10 @@ public class DnsSelector implements Dns {
         addresses = addresses.stream().filter(Inet4Address.class::isInstance).collect(toList());
         break;
     }
+
+    logger.fine("Dns (" + hostname + "): " + addresses.stream()
+        .map(Object::toString)
+        .collect(joining(", ")));
 
     return addresses;
   }

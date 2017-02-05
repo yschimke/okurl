@@ -7,9 +7,12 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import okhttp3.Dns;
 
 public class DnsOverride implements Dns {
+  private static Logger logger = Logger.getLogger(DnsOverride.class.getName());
+
   private final Dns dns;
   private Map<String, String> overrides = Maps.newHashMap();
 
@@ -21,14 +24,15 @@ public class DnsOverride implements Dns {
     overrides.put(host, target);
   }
 
-  @Override public List<InetAddress> lookup(String s) throws UnknownHostException {
-    String override = overrides.get(s);
+  @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+    String override = overrides.get(hostname);
 
     if (override != null) {
+      logger.fine("Using Dns Override (" + hostname + "): " + override);
       return Collections.singletonList(InetAddress.getByName(override));
     }
 
-    return dns.lookup(s);
+    return dns.lookup(hostname);
   }
 
   public static DnsOverride build(Dns dns, List<String> resolveStrings) {
