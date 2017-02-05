@@ -14,4 +14,8 @@ public interface ShellCommand {
   default Optional<String> authenticator() {
     return Optional.empty();
   }
+
+  default boolean handlesRequests() {
+    return false;
+  }
 }
