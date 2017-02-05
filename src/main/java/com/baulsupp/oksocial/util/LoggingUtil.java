@@ -28,7 +28,7 @@ public class LoggingUtil {
         Logger x = getLogger("org.zeroturnaround.exec.stream");
         x.setLevel(Level.INFO);
       } else if (showHttp2Frames) {
-        Logger activeLogger = Logger.getLogger(Http2.class.getName());
+        Logger activeLogger = getLogger(Http2.class.getName());
         activeLogger.setLevel(Level.FINE);
         handler.setLevel(Level.FINE);
         handler.setFormatter(new SimpleFormatter() {
