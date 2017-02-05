@@ -7,8 +7,12 @@ public interface OutputHandler {
   void showOutput(Response response, boolean showHeaders) throws IOException;
 
   default void showError(String message, Throwable e) {
-    System.err.println(message);
-    e.printStackTrace();
+    if (message != null) {
+      System.err.println(message);
+    }
+    if (e != null) {
+      e.printStackTrace();
+    }
   }
 
   default void openLink(String url) throws IOException {

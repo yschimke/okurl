@@ -89,6 +89,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.joining;
 
+@SuppressWarnings({"WeakerAccess", "CanBeFinal", "unused"})
 @Command(name = Main.NAME, description = "A curl for social apis.")
 public class Main extends HelpOption implements Runnable {
   private static Logger logger = Logger.getLogger(Main.class.getName());
@@ -273,7 +274,7 @@ public class Main extends HelpOption implements Runnable {
 
       if (showCredentials) {
         new PrintCredentials(client, credentialsStore, outputHandler,
-            serviceInterceptor).showCredentials(arguments, () -> createRequestBuilder());
+            serviceInterceptor).showCredentials(arguments, this::createRequestBuilder);
         return;
       }
 
@@ -422,7 +423,8 @@ public class Main extends HelpOption implements Runnable {
     OkHttpClient authClient = clientBuilder.build();
     serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
 
-    authorisation = new Authorisation(serviceInterceptor, credentialsStore, authClient, outputHandler);
+    authorisation =
+        new Authorisation(serviceInterceptor, credentialsStore, authClient, outputHandler);
 
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
     client = clientBuilder.build();
@@ -476,12 +478,14 @@ public class Main extends HelpOption implements Runnable {
 
     List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
 
-    if (requests.isEmpty()) {
-      throw new UsageException("no urls specified");
-    }
+    if (!command.handlesRequests()) {
+      if (requests.isEmpty()) {
+        throw new UsageException("no urls specified");
+      }
 
-    List<Future<Response>> responseFutures = enqueueRequests(requests, client);
-    processResponses(outputHandler, responseFutures);
+      List<Future<Response>> responseFutures = enqueueRequests(requests, client);
+      processResponses(outputHandler, responseFutures);
+    }
   }
 
   private void processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
@@ -494,7 +498,6 @@ public class Main extends HelpOption implements Runnable {
         try (Response response = responseFuture.get()) {
           outputHandler.showOutput(response, showHeaders);
         } catch (ExecutionException ee) {
-          // TODO allow setting failure/cancel strategy
           outputHandler.showError("request failed", ee.getCause());
           failed = true;
         }
@@ -517,7 +520,7 @@ public class Main extends HelpOption implements Runnable {
     return responseFutures;
   }
 
-  private ShellCommand getShellCommand() throws Exception {
+  private ShellCommand getShellCommand() {
     return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
   }
 

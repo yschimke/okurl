@@ -48,13 +48,20 @@ public class ConsoleHandler implements OutputHandler {
   @Override public void showError(String message, Throwable e) {
     if (logger.isLoggable(Level.FINE)) {
       logger.log(Level.WARNING, message, e);
+    }
+
+    if (e instanceof UsageException) {
+      System.err.println(e.getMessage());
+    } else if (e instanceof UnknownHostException && e.getCause() == null) {
+      if (message != null) {
+        System.err.print(message + ": ");
+      }
+      System.err.println(e.toString());
     } else {
-      if (e instanceof UsageException) {
-        System.err.println(e.getMessage());
-      } else if (e instanceof UnknownHostException && e.getCause() == null) {
-        System.err.println(message + ": " + e.toString());
-      } else {
+      if (message != null) {
         System.err.println(message);
+      }
+      if (e != null) {
         e.printStackTrace();
       }
     }
