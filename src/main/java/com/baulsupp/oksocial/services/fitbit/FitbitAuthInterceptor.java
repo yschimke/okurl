@@ -15,14 +15,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 import okhttp3.Credentials;
+import okhttp3.FormBody;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
 
 public class FitbitAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override public Oauth2ServiceDefinition serviceDefinition() {
@@ -71,10 +69,10 @@ public class FitbitAuthInterceptor implements AuthInterceptor<Oauth2Token> {
   @Override
   public Optional<Oauth2Token> renew(OkHttpClient client, Oauth2Token credentials)
       throws IOException {
-
-    RequestBody body = RequestBody.create(MediaType.parse("application/json"),
-        "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""
-            + credentials.refreshToken.get() + "\"}");
+    RequestBody body =
+        new FormBody.Builder().add("grant_type", "refresh_token")
+            .add("refresh_token", credentials.refreshToken.get())
+            .build();
     String basic = Credentials.basic(credentials.clientId.get(), credentials.clientSecret.get());
     Request request =
         new Request.Builder().url("https://api.fitbit.com/oauth2/token")

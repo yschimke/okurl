@@ -57,6 +57,6 @@ public class FitbitAuthCodeFlow {
   }
 
   public static void main(String[] args) {
-    Main.main("--show-credentials", "fitbit");
+    Main.main("--renew", "fitbit");
   }
 }
