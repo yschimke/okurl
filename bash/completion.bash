@@ -106,6 +106,7 @@ complete -F _oksocial_complete oksocial
 
 complete -F _oksocial_complete 4sqapi
 complete -F _oksocial_complete fbapi
+complete -F _oksocial_complete fitbitapi
 complete -F _oksocial_complete giphyapi
 complete -F _oksocial_complete githubapi
 complete -F _oksocial_complete imgurapi
@@ -113,12 +114,12 @@ complete -F _oksocial_complete igapi
 complete -F _oksocial_complete linkedinapi
 complete -F _oksocial_complete lyftapi
 complete -F _oksocial_complete mapboxapi
+complete -F _oksocial_complete msftapi
 complete -F _oksocial_complete slackapi
 complete -F _oksocial_complete squareapi
 complete -F _oksocial_complete stackexchangeapi
 complete -F _oksocial_complete surveymonkeyapi
 complete -F _oksocial_complete transferwiseapi
-complete -F _oksocial_complete transferwistesteapi
 complete -F _oksocial_complete twilioapi
 complete -F _oksocial_complete twitterapi
 complete -F _oksocial_complete uberapi
