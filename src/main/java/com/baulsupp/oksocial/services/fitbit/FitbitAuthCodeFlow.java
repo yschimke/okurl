@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.fitbit;
 
-import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
@@ -54,9 +53,5 @@ public class FitbitAuthCodeFlow {
       return new Oauth2Token((String) responseMap.get("access_token"),
           (String) responseMap.get("refresh_token"), clientId, clientSecret);
     }
-  }
-
-  public static void main(String[] args) {
-    Main.main("--renew", "fitbit");
   }
 }
