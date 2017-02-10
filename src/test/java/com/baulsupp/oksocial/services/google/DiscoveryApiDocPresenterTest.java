@@ -36,15 +36,13 @@ public class DiscoveryApiDocPresenterTest {
         "url: https://people.googleapis.com/v1/{+resourceName}",
         "scopes: https://www.googleapis.com/auth/contacts, https://www.googleapis.com/auth/contacts.readonly, https://www.googleapis.com/auth/plus.login, https://www.googleapis.com/auth/user.addresses.read, https://www.googleapis.com/auth/user.birthday.read, https://www.googleapis.com/auth/user.emails.read, https://www.googleapis.com/auth/user.phonenumbers.read, https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile",
         "",
-        "Provides information about a person resource for a resource name. Use `people/me` to indicate the authenticated user.",
-        "",
-        "parameter: resourceName (string)",
-        "The resource name of the person to provide information about. - To get information about the authenticated user, specify `people/me`. - To get information about any user, specify the resource name that identifies the user, such as the resource names returned by [`people.connections.list`](/people/api/rest/v1/people.connections/list).",
-        "parameter: requestMask.includeField (string)",
-        "Comma-separated list of fields to be included in the response. Omitting this field will include all fields. Each path should start with `person.`: for example, `person.names` or `person.photos`."
+        "Provides information about a person resource for a resource name. Use\n"
+            + "`people/me` to indicate the authenticated user."
     );
 
-    assertEquals(es, outputHandler.stdout);
+    for (String l: es) {
+      assertTrue(outputHandler.stdout.contains(l), l);
+    }
   }
 
   @Test public void testExplainsExpandedUrl() throws IOException {

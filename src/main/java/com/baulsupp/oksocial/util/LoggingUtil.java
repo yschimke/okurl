@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.util;
 
 import com.google.common.collect.Lists;
+import io.netty.util.internal.logging.InternalLoggerFactory;
+import io.netty.util.internal.logging.JdkLoggerFactory;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -14,6 +16,8 @@ public class LoggingUtil {
   private static List<Logger> activeLoggers = Lists.newArrayList();
 
   public static void configureLogging(boolean debug, boolean showHttp2Frames) {
+    InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE);
+
     if (debug || showHttp2Frames) {
       LogManager.getLogManager().reset();
       ConsoleHandler handler = new ConsoleHandler();
@@ -25,8 +29,9 @@ public class LoggingUtil {
         activeLogger.addHandler(handler);
         activeLogger.setLevel(Level.ALL);
 
-        Logger x = getLogger("org.zeroturnaround.exec.stream");
-        x.setLevel(Level.INFO);
+        getLogger("org.zeroturnaround.exec").setLevel(Level.INFO);
+        getLogger("io.netty").setLevel(Level.INFO);
+        getLogger("io.netty.resolver.dns").setLevel(Level.FINE);
       } else if (showHttp2Frames) {
         Logger activeLogger = getLogger(Http2.class.getName());
         activeLogger.setLevel(Level.FINE);
@@ -37,7 +42,10 @@ public class LoggingUtil {
           }
         });
         activeLogger.addHandler(handler);
+        getLogger("io.netty.resolver.dns.DnsServerAddresses").setLevel(Level.SEVERE);
       }
+    } else {
+      getLogger("io.netty.resolver.dns.DnsServerAddresses").setLevel(Level.SEVERE);
     }
   }
 

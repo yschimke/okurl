@@ -1,14 +1,11 @@
 package com.baulsupp.oksocial.network;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import okhttp3.Dns;
 
@@ -25,8 +22,6 @@ public class DnsSelector implements Dns {
     IPV6_ONLY,
     IPV4_ONLY
   }
-
-  private Map<String, List<InetAddress>> overrides = Maps.newHashMap();
 
   private Mode mode;
 
@@ -58,13 +53,7 @@ public class DnsSelector implements Dns {
   }
 
   @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
-    List<InetAddress> addresses = overrides.get(hostname.toLowerCase());
-
-    if (addresses != null) {
-      return addresses;
-    }
-
-    addresses = Dns.SYSTEM.lookup(hostname);
+    List<InetAddress> addresses = Dns.SYSTEM.lookup(hostname);
 
     switch (mode) {
       case IPV6_FIRST:
@@ -86,9 +75,5 @@ public class DnsSelector implements Dns {
         .collect(joining(", ")));
 
     return addresses;
-  }
-
-  public void addOverride(String hostname, InetAddress address) {
-    overrides.put(hostname.toLowerCase(), Lists.newArrayList(address));
   }
 }

@@ -21,8 +21,8 @@ import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
 import com.baulsupp.oksocial.location.BestLocation;
 import com.baulsupp.oksocial.location.LocationSource;
 import com.baulsupp.oksocial.network.DnsOverride;
-import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
+import com.baulsupp.oksocial.network.NettyDns;
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
 import com.baulsupp.oksocial.output.ConsoleHandler;
 import com.baulsupp.oksocial.output.DownloadHandler;
@@ -51,6 +51,7 @@ import io.airlift.airline.Command;
 import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
+import io.netty.channel.nio.NioEventLoopGroup;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
@@ -62,6 +63,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
@@ -244,6 +246,8 @@ public class Main extends HelpOption implements Runnable {
   public CompletionVariableCache completionVariableCache;
 
   public LocationSource locationSource = new BestLocation();
+
+  private NioEventLoopGroup eventLoopGroup;
 
   private String versionString() {
     return Util.versionString("/oksocial-version.properties");
@@ -457,6 +461,10 @@ public class Main extends HelpOption implements Runnable {
       client.dispatcher().executorService().shutdown();
       client.connectionPool().evictAll();
     }
+
+    if (eventLoopGroup != null) {
+      eventLoopGroup.shutdownGracefully(0, 0, TimeUnit.SECONDS);
+    }
   }
 
   private OutputHandler buildHandler() {
@@ -578,7 +586,7 @@ public class Main extends HelpOption implements Runnable {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
-    Dns dns = DnsSelector.byName(ipmode);
+    Dns dns = NettyDns.byName(ipmode, getEventLoopGroup());
     if (resolve != null) {
       dns = DnsOverride.build(dns, resolve);
     }
@@ -617,6 +625,14 @@ public class Main extends HelpOption implements Runnable {
     }
 
     return builder;
+  }
+
+  private NioEventLoopGroup getEventLoopGroup() {
+    if (eventLoopGroup == null) {
+      eventLoopGroup = new NioEventLoopGroup(1);
+    }
+
+    return eventLoopGroup;
   }
 
   private SocketFactory getSocketFactory() throws SocketException {

@@ -161,6 +161,16 @@
       <version>0.9.1</version>
     </dependency>
     <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.8.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-resolver-dns</artifactId>
+      <version>4.1.8.Final</version>
+    </dependency>
+    <dependency>
       <groupId>us.physion</groupId>
       <artifactId>osx-keychain</artifactId>
       <version>1.0</version>
@@ -274,7 +284,6 @@
           <descriptors>
             <descriptor>src/assembly/bundle.xml</descriptor>
           </descriptors>
-          <finalName>oksocial-${project.version}</finalName>
           <archive>
             <manifest>
               <mainClass>com.baulsupp.oksocial.Main</mainClass>
