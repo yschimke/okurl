@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.Dns;
 
@@ -31,6 +32,10 @@ public class NettyDns implements Dns {
         .optResourceEnabled(false)
         .maxQueriesPerResolve(3)
         .recursionDesired(true);
+
+    if (logger.isLoggable(Level.FINEST)) {
+      builder.traceEnabled(true);
+    }
 
     if (addressTypes != null) {
       builder.resolvedAddressTypes(addressTypes);

@@ -65,6 +65,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
@@ -464,7 +465,7 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (eventLoopGroup != null) {
-      eventLoopGroup.shutdownGracefully();
+      eventLoopGroup.shutdownGracefully(0, 0, TimeUnit.SECONDS);
     }
   }
 
