@@ -596,20 +596,7 @@ public class Main extends HelpOption implements Runnable {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
-    Dns dns;
-    if (dnsMode == DnsMode.NETTY) {
-      dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
-    } else {
-      if (dnsServers != null) {
-        throw new UsageException("unable to set dns servers with java DNS");
-      }
-
-      dns = new DnsSelector(ipMode);
-    }
-    if (resolve != null) {
-      dns = DnsOverride.build(dns, resolve);
-    }
-    builder.dns(dns);
+    builder.dns(buildDns());
 
     if (networkInterface != null) {
       builder.socketFactory(getSocketFactory());
@@ -644,6 +631,23 @@ public class Main extends HelpOption implements Runnable {
     }
 
     return builder;
+  }
+
+  private Dns buildDns() {
+    Dns dns;
+    if (dnsMode == DnsMode.NETTY) {
+      dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
+    } else {
+      if (dnsServers != null) {
+        throw new UsageException("unable to set dns servers with java DNS");
+      }
+
+      dns = new DnsSelector(ipMode);
+    }
+    if (resolve != null) {
+      dns = DnsOverride.build(dns, resolve);
+    }
+    return dns;
   }
 
   private NioEventLoopGroup getEventLoopGroup() {
