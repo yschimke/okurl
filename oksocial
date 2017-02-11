@@ -30,9 +30,11 @@ if [ $? -ne 0 ]; then
     ALPN=$(ls target/alpn/alpn-boot-*.jar)
     BCP="-Xbootclasspath/p:$ALPN"
   fi
+else
+  VMOPTS="--add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED  --add-opens=java.base/java.nio=ALL-UNNAMED  --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
 fi
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_HOME/bin/java $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
+$JAVA_HOME/bin/java $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"

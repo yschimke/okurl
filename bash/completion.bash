@@ -42,7 +42,7 @@ function _oksocial_complete ()
   case $prev in
         -d | --data | -H | --header | -A | --user-agent | --connect-timeout | --read-timeout \
         | -e | --referer | --cache | --token | --resolve | --certificatePin | --keystore \
-        | --socks | --proxy | -s | --set | --cert | --clientauth)
+        | --socks | --proxy | -s | --set | --cert | --clientauth | --dnsServers)
             return
             ;;
         --authorize)
@@ -50,8 +50,12 @@ function _oksocial_complete ()
             COMPREPLY=( $( compgen -W "$_oksocial_services" -- "$cur" ) )
             return
             ;;
-        --dns)
+        --ip)
             COMPREPLY=( $( compgen -W "system ipv4 ipv6 ipv4only ipv6only" -- "$cur" ) )
+            return
+            ;;
+        --dns)
+            COMPREPLY=( $( compgen -W "java netty" -- "$cur" ) )
             return
             ;;
         --networkInterface)

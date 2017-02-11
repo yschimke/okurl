@@ -20,7 +20,10 @@ import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore;
 import com.baulsupp.oksocial.jjs.JavascriptApiCommand;
 import com.baulsupp.oksocial.location.BestLocation;
 import com.baulsupp.oksocial.location.LocationSource;
+import com.baulsupp.oksocial.network.DnsMode;
 import com.baulsupp.oksocial.network.DnsOverride;
+import com.baulsupp.oksocial.network.DnsSelector;
+import com.baulsupp.oksocial.network.IPvMode;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.network.NettyDns;
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
@@ -167,9 +170,16 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
 
-  @Option(name = {"--dns"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
+  @Option(name = {"--ip"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
       allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
-  public String ipmode = "system";
+  public IPvMode ipMode = IPvMode.SYSTEM;
+
+  @Option(name = {"--dns"}, description = "DNS (netty, java)",
+      allowedValues = {"java", "netty"})
+  public DnsMode dnsMode = DnsMode.NETTY;
+
+  @Option(name = {"--dnsServers"}, description = "Specific DNS Servers (csv, google)")
+  public String dnsServers = null;
 
   @Option(name = {"--resolve"}, description = "DNS Overrides (HOST:TARGET)")
   public List<String> resolve = null;
@@ -586,7 +596,16 @@ public class Main extends HelpOption implements Runnable {
       builder.readTimeout(readTimeout, SECONDS);
     }
 
-    Dns dns = NettyDns.byName(ipmode, getEventLoopGroup());
+    Dns dns;
+    if (dnsMode == DnsMode.NETTY) {
+      dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
+    } else {
+      if (dnsServers != null) {
+        throw new UsageException("unable to set dns servers with java DNS");
+      }
+
+      dns = new DnsSelector(ipMode);
+    }
     if (resolve != null) {
       dns = DnsOverride.build(dns, resolve);
     }

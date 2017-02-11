@@ -5,8 +5,10 @@ import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.resolver.dns.DnsNameResolver;
 import io.netty.resolver.dns.DnsNameResolverBuilder;
+import io.netty.resolver.dns.DnsServerAddresses;
 import io.netty.util.concurrent.Future;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
@@ -17,16 +19,21 @@ import okhttp3.Dns;
 
 import static io.netty.channel.socket.InternetProtocolFamily.IPv4;
 import static io.netty.channel.socket.InternetProtocolFamily.IPv6;
+import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 public class NettyDns implements Dns {
   private static Logger logger = Logger.getLogger(NettyDns.class.getName());
 
   private final DnsNameResolver r;
   private final EventLoopGroup group;
+  private final Iterable<InetSocketAddress> dnsServers;
 
-  public NettyDns(EventLoopGroup group, Iterable<InternetProtocolFamily> addressTypes) {
+  public NettyDns(EventLoopGroup group, Iterable<InternetProtocolFamily> addressTypes,
+      Iterable<InetSocketAddress> dnsServers) {
     this.group = group;
+    this.dnsServers = dnsServers;
     DnsNameResolverBuilder builder = new DnsNameResolverBuilder(this.group.next())
         .channelType(NioDatagramChannel.class)
         .optResourceEnabled(false)
@@ -35,6 +42,10 @@ public class NettyDns implements Dns {
 
     if (logger.isLoggable(Level.FINEST)) {
       builder.traceEnabled(true);
+    }
+
+    if (this.dnsServers != null) {
+      builder.nameServerAddresses(DnsServerAddresses.sequential(this.dnsServers));
     }
 
     if (addressTypes != null) {
@@ -63,27 +74,37 @@ public class NettyDns implements Dns {
     }
   }
 
-  public static Dns byName(String ipMode, EventLoopGroup eventLoopGroup) {
-    List<InternetProtocolFamily> types;
+  public static Dns byName(IPvMode ipMode, EventLoopGroup eventLoopGroup, String dnsServers) {
+    List<InternetProtocolFamily> types = getInternetProtocolFamilies(ipMode);
 
-    switch (ipMode) {
-      case "ipv6":
-        types = Arrays.asList(IPv6, IPv4);
-        break;
-      case "ipv4":
-        types = Arrays.asList(IPv4, IPv6);
-        break;
-      case "ipv6only":
-        types = Arrays.asList(IPv6);
-        break;
-      case "ipv4only":
-        types = Arrays.asList(IPv4);
-        break;
-      default:
-        types = null;
-        break;
+    return new NettyDns(eventLoopGroup, types, getDnsServers(dnsServers));
+  }
+
+  private static List<InetSocketAddress> getDnsServers(String dnsServers) {
+    if (dnsServers == null) {
+      return DnsServerAddresses.defaultAddressList();
     }
 
-    return new NettyDns(eventLoopGroup, types);
+    if (dnsServers.equals("google")) {
+      return Arrays.asList(new InetSocketAddress("8.8.8.8", 53),
+          new InetSocketAddress("8.8.4.4", 53));
+    }
+
+    return stream(dnsServers.split(",")).map(s -> new InetSocketAddress(s, 53)).collect(toList());
+  }
+
+  private static List<InternetProtocolFamily> getInternetProtocolFamilies(IPvMode ipMode) {
+    switch (ipMode) {
+      case IPV6_FIRST:
+        return Arrays.asList(IPv6, IPv4);
+      case IPV4_FIRST:
+        return Arrays.asList(IPv4, IPv6);
+      case IPV6_ONLY:
+        return Arrays.asList(IPv6);
+      case IPV4_ONLY:
+        return Arrays.asList(IPv4);
+      default:
+        return null;
+    }
   }
 }
