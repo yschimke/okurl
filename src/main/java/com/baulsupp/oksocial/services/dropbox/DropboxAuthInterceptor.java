@@ -12,9 +12,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
+import okhttp3.FormBody;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor;
@@ -55,9 +58,13 @@ public class DropboxAuthInterceptor implements AuthInterceptor<Oauth2Token> {
 
   @Override public Future<Optional<ValidatedCredentials>> validate(OkHttpClient client,
       Request.Builder requestBuilder, Oauth2Token credentials) throws IOException {
+    RequestBody body = FormBody.create(MediaType.parse("application/json"), "null");
     return new JsonCredentialsValidator(
-        DropboxUtil.apiRequest("/2/users/get_current_account", requestBuilder),
-        fieldExtractor("display_name")).validate(client);
+        DropboxUtil.apiRequest("/2/users/get_current_account", requestBuilder)
+            .newBuilder()
+            .post(body)
+            .build(),
+        fieldExtractor("email")).validate(client);
   }
 
   @Override public Set<String> hosts() {
