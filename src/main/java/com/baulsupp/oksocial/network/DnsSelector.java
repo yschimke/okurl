@@ -15,41 +15,10 @@ import static java.util.stream.Collectors.toList;
 public class DnsSelector implements Dns {
   private static Logger logger = Logger.getLogger(DnsSelector.class.getName());
 
-  public enum Mode {
-    SYSTEM,
-    IPV6_FIRST,
-    IPV4_FIRST,
-    IPV6_ONLY,
-    IPV4_ONLY
-  }
+  private IPvMode mode;
 
-  private Mode mode;
-
-  public DnsSelector(Mode mode) {
+  public DnsSelector(IPvMode mode) {
     this.mode = mode;
-  }
-
-  public static Dns byName(String ipMode) {
-    Mode selectedMode;
-    switch (ipMode) {
-      case "ipv6":
-        selectedMode = Mode.IPV6_FIRST;
-        break;
-      case "ipv4":
-        selectedMode = Mode.IPV4_FIRST;
-        break;
-      case "ipv6only":
-        selectedMode = Mode.IPV6_ONLY;
-        break;
-      case "ipv4only":
-        selectedMode = Mode.IPV4_ONLY;
-        break;
-      default:
-        selectedMode = Mode.SYSTEM;
-        break;
-    }
-
-    return new DnsSelector(selectedMode);
   }
 
   @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
