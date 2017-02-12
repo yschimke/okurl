@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.commands.CommandRegistry;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.OksocialCommand;
 import com.baulsupp.oksocial.commands.ShellCommand;
+import com.baulsupp.oksocial.completion.ArgumentCompleter;
 import com.baulsupp.oksocial.completion.CompletionVariableCache;
 import com.baulsupp.oksocial.completion.TmpCompletionVariableCache;
 import com.baulsupp.oksocial.completion.UrlCompleter;
@@ -345,7 +346,22 @@ public class Main extends HelpOption implements Runnable {
 
   // TODO refactor this mess out of Main
   private String urlCompletionList() throws Exception {
-    UrlCompleter completer =
+    ShellCommand command = getShellCommand();
+
+    Optional<ArgumentCompleter> commandCompletor = command.completer();
+    if (commandCompletor.isPresent()) {
+      UrlList urls = commandCompletion(commandCompletor.get(), arguments);
+
+      String prefix = arguments.get(arguments.size() - 1);
+
+      if (completionFile != null) {
+        urls.toFile(new File(completionFile), 0, prefix);
+      }
+
+      return urls.getUrls(prefix).stream().collect(joining("\n"));
+    }
+
+    ArgumentCompleter completer =
         new UrlCompleter(serviceInterceptor.services(), client, credentialsStore,
             completionVariableCache);
 
@@ -369,14 +385,17 @@ public class Main extends HelpOption implements Runnable {
         urls.toFile(new File(completionFile), strip, originalCompletionUrl);
       }
 
-      List<String> list = urls.getUrls(fullCompletionUrl);
-
-      return list.stream()
+      return urls.getUrls(fullCompletionUrl).stream()
           .map(u -> u.substring(strip))
           .collect(joining("\n"));
     } else {
       return "";
     }
+  }
+
+  private UrlList commandCompletion(ArgumentCompleter urlCompleter, List<String> arguments)
+      throws IOException {
+    return urlCompleter.urlList(arguments.get(arguments.size() - 1));
   }
 
   /*
@@ -396,8 +415,6 @@ public class Main extends HelpOption implements Runnable {
     ShellCommand command = getShellCommand();
 
     if (command instanceof JavascriptApiCommand) {
-      ((JavascriptApiCommand) command).setMain(this);
-
       List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
 
       if (requests.size() > 0) {
@@ -490,10 +507,6 @@ public class Main extends HelpOption implements Runnable {
   private void executeRequests(OutputHandler outputHandler) throws Exception {
     ShellCommand command = getShellCommand();
 
-    if (command instanceof MainAware) {
-      ((MainAware) command).setMain(this);
-    }
-
     List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
 
     if (!command.handlesRequests()) {
@@ -539,7 +552,14 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private ShellCommand getShellCommand() {
-    return commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
+    ShellCommand shellCommand =
+        commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
+
+    if (shellCommand instanceof MainAware) {
+      ((MainAware) shellCommand).setMain(this);
+    }
+
+    return shellCommand;
   }
 
   private void printAliasNames() {

@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient;
 
 import static java.lang.Math.min;
 
-public class UrlCompleter {
+public class UrlCompleter implements ArgumentCompleter {
   private static Logger logger = Logger.getLogger(UrlCompleter.class.getName());
 
   private Iterable<AuthInterceptor<?>> services;
