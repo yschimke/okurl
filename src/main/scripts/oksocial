@@ -14,6 +14,8 @@ if [ -x /usr/libexec/java_home ]; then
 
     ALPN=$(ls $INSTALLDIR/alpn/alpn-boot-*.jar)
     BCP="-Xbootclasspath/p:$ALPN"
+  else
+    VMOPTS="--add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED  --add-opens=java.base/java.nio=ALL-UNNAMED  --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
   fi
   
   JAVA_CMD=$JAVA_HOME/bin/java
@@ -25,4 +27,4 @@ for i in `find $PLUGINDIR -name lib 2>/dev/null`; do
   PLUGINS=$PLUGINS:$i/\*
 done
 
-$JAVA_CMD $BCP -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
+$JAVA_CMD $BCP $VMOPTS -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
