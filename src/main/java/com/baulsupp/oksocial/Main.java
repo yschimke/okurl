@@ -56,6 +56,7 @@ import io.airlift.airline.HelpOption;
 import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
@@ -67,6 +68,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -672,7 +674,8 @@ public class Main extends HelpOption implements Runnable {
 
   private NioEventLoopGroup getEventLoopGroup() {
     if (eventLoopGroup == null) {
-      eventLoopGroup = new NioEventLoopGroup(1);
+      ThreadFactory threadFactory = new DefaultThreadFactory("netty", true);
+      eventLoopGroup = new NioEventLoopGroup(1, threadFactory);
     }
 
     return eventLoopGroup;
