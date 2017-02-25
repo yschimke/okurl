@@ -130,8 +130,8 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = "--read-timeout", description = "Maximum time allowed for reading data (seconds)")
   public Integer readTimeout;
 
-  @Option(name = {"-L", "--location"}, description = "Follow redirects")
-  public boolean followRedirects = false;
+  @Option(name = {"--no-follow"}, description = "Follow redirects")
+  public boolean dontFollowRedirects = false;
 
   @Option(name = {"-k", "--insecure"},
       description = "Allow connections to SSL sites without certs")
@@ -610,7 +610,8 @@ public class Main extends HelpOption implements Runnable {
 
   public OkHttpClient.Builder createClientBuilder() throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    builder.followSslRedirects(followRedirects);
+    builder.followSslRedirects(!dontFollowRedirects);
+    builder.followRedirects(!dontFollowRedirects);
     if (connectTimeout != null) {
       builder.connectTimeout(connectTimeout, SECONDS);
     }
