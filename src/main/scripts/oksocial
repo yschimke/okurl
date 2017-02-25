@@ -27,4 +27,4 @@ for i in `find $PLUGINDIR -name lib 2>/dev/null`; do
   PLUGINS=$PLUGINS:$i/\*
 done
 
-$JAVA_CMD $BCP $VMOPTS -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
+$JAVA_CMD -Dio.netty.processId=$$ $BCP $VMOPTS -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.Main "$@"
