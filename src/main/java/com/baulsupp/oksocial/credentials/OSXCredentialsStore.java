@@ -28,8 +28,13 @@ public class OSXCredentialsStore implements CredentialsStore {
 
       return Optional.ofNullable(serviceDefinition.parseCredentialsString(pw));
     } catch (OSXKeychainException e) {
-      // TODO check "The specified item could not be found in the keychain"
-      logger.log(Level.FINE, "Failed to read from keychain", e);
+      if ("The specified item could not be found in the keychain.".equals(e.getMessage())) {
+        logger.log(Level.FINE,
+            "No OSX Keychain entry for '" + serviceDefinition.apiHost() + "' '" + tokenKey() + "'");
+      } else {
+        logger.log(Level.FINE, "Failed to read from keychain", e);
+      }
+
       return Optional.empty();
     }
   }
