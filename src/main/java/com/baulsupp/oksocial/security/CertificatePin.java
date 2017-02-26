@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.security;
 
+import com.baulsupp.oksocial.util.UsageException;
 import java.util.List;
 import okhttp3.CertificatePinner;
 
@@ -11,8 +12,9 @@ public class CertificatePin {
 
   public CertificatePin(String patternAndPin) {
     String[] parts = patternAndPin.split(":", 2);
+
     pattern = parts[0];
-    pin = parts[1];
+    pin = parts.length == 2 ? parts[1] : null;
   }
 
   public String getPattern() {
@@ -20,6 +22,11 @@ public class CertificatePin {
   }
 
   public String getPin() {
+    if (pin == null) {
+      throw new UsageException(
+          "--certificatePin expects host:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    }
+
     return pin;
   }
 

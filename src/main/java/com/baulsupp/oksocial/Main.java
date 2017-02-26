@@ -75,8 +75,10 @@ import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509TrustManager;
+import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.Call;
+import okhttp3.Credentials;
 import okhttp3.Dns;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -84,6 +86,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
@@ -234,6 +237,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--ssldebug"}, description = "SSL Debug")
   public boolean sslDebug;
+
+  @Option(name = {"--user"}, description = "user:password for basic auth")
+  public String user;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -452,6 +458,30 @@ public class Main extends HelpOption implements Runnable {
     }
 
     OkHttpClient.Builder clientBuilder = createClientBuilder();
+
+    // TODO consider if user should
+    if (user != null) {
+      String[] userParts = user.split(":", 2);
+      if (userParts.length < 2) {
+        throw new UsageException("--user should have user:password");
+      }
+      String credential = Credentials.basic(userParts[0], userParts[1]);
+
+      clientBuilder.authenticator(new Authenticator() {
+        @Override public Request authenticate(Route route, Response response) throws IOException {
+          logger.fine("Challenges: " + response.challenges());
+
+          // authenticate once
+          if (response.request().header("Authorization") != null) {
+            return null;
+          }
+
+          return response.request().newBuilder()
+              .header("Authorization", credential)
+              .build();
+        }
+      });
+    }
 
     OkHttpClient authClient = clientBuilder.build();
     serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
