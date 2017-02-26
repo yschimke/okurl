@@ -459,7 +459,6 @@ public class Main extends HelpOption implements Runnable {
 
     OkHttpClient.Builder clientBuilder = createClientBuilder();
 
-    // TODO consider if user should
     if (user != null) {
       String[] userParts = user.split(":", 2);
       if (userParts.length < 2) {
@@ -467,19 +466,17 @@ public class Main extends HelpOption implements Runnable {
       }
       String credential = Credentials.basic(userParts[0], userParts[1]);
 
-      clientBuilder.authenticator(new Authenticator() {
-        @Override public Request authenticate(Route route, Response response) throws IOException {
-          logger.fine("Challenges: " + response.challenges());
+      clientBuilder.authenticator((route, response) -> {
+        logger.fine("Challenges: " + response.challenges());
 
-          // authenticate once
-          if (response.request().header("Authorization") != null) {
-            return null;
-          }
-
-          return response.request().newBuilder()
-              .header("Authorization", credential)
-              .build();
+        // authenticate once
+        if (response.request().header("Authorization") != null) {
+          return null;
         }
+
+        return response.request().newBuilder()
+            .header("Authorization", credential)
+            .build();
       });
     }
 
