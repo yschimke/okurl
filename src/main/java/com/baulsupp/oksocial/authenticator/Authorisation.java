@@ -54,6 +54,10 @@ public class Authorisation {
   private <T> void authRequest(AuthInterceptor<T> auth, List<String> authArguments)
       throws Exception {
 
+    auth.serviceDefinition().accountsLink().ifPresent(accountsLink -> {
+      outputHandler.info("Accounts: " + accountsLink);
+    });
+
     T credentials = auth.authorize(client, outputHandler, authArguments);
 
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition());

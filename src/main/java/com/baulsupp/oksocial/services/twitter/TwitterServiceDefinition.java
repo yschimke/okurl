@@ -26,7 +26,7 @@ public class TwitterServiceDefinition implements ServiceDefinition<TwitterCreden
   }
 
   @Override public Optional<String> accountsLink() {
-    return of("");
+    return of("https://apps.twitter.com/");
   }
 
   public TwitterCredentials parseCredentialsString(String s) {
