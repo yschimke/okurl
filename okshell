@@ -23,6 +23,8 @@ if [ $? -ne 0 ]; then
 
   ALPN=$(ls target/alpn/alpn-boot-*.jar)
   BCP="-J-Xbootclasspath/p:$ALPN"
+else
+  VMOPTS="-J--add-opens=java.base/sun.net.dns=ALL-UNNAMED -J--add-opens=java.base/java.lang.reflect=ALL-UNNAMED -J--add-opens=java.base/java.nio=ALL-UNNAMED -J--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
 fi
 
 CLASSPATH=$(JARS=(target/dependency/*.jar); IFS=:; echo "${JARS[*]}")
@@ -36,4 +38,4 @@ else
   shift
 fi
 
-$JAVA_HOME/bin/jjs $BCP -classpath $MAIN_JAR:$CLASSPATH -scripting ./src/main/resources/oksocial.js $input -- "$@"
+$JAVA_HOME/bin/jjs -Dio.netty.processId=$$ $VMOPTS $BCP -classpath $MAIN_JAR:$CLASSPATH -scripting ./src/main/resources/oksocial.js $input -- "$@"
