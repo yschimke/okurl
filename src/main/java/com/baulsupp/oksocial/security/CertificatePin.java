@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.security;
 
-import com.baulsupp.oksocial.util.UsageException;
+import ee.schimke.oksocial.output.util.UsageException;
 import java.util.List;
 import okhttp3.CertificatePinner;
 

@@ -2,11 +2,13 @@ package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.List;
+import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CompletionTest {
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
   private TestCompletionVariableCache completionCache = new TestCompletionVariableCache();
 

@@ -2,6 +2,8 @@ package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
+import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -10,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpsCompletion {
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
 
   {

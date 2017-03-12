@@ -1,13 +1,13 @@
 package com.baulsupp.oksocial.credentials;
 
-import com.baulsupp.oksocial.util.Util;
 import com.mcdermottroe.apple.OSXKeychainException;
+import ee.schimke.oksocial.output.util.PlatformUtil;
 import java.util.Optional;
 
 public class CredentialFactory {
   public static CredentialsStore createCredentialsStore(Optional<String> tokenSet)
       throws OSXKeychainException {
-    if (Util.isOSX()) {
+    if (PlatformUtil.isOSX()) {
       return new OSXCredentialsStore(tokenSet);
     } else {
       return new PreferencesCredentialsStore(tokenSet);

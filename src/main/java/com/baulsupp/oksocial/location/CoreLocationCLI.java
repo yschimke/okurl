@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.location;
 
-import com.baulsupp.oksocial.util.UsageException;
-import com.baulsupp.oksocial.util.Util;
+import ee.schimke.oksocial.output.util.PlatformUtil;
+import ee.schimke.oksocial.output.util.UsageException;
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +14,7 @@ public class CoreLocationCLI implements LocationSource {
   public static final String LOCATION_APP = "/usr/local/bin/CoreLocationCLI";
 
   public Optional<Location> read() {
-    if (Util.isOSX()) {
+    if (PlatformUtil.isOSX()) {
       if (!new File(LOCATION_APP).exists()) {
         throw new UsageException("Missing " + LOCATION_APP);
       }

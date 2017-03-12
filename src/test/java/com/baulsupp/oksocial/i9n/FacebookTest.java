@@ -6,8 +6,10 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter;
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
 import java.io.IOException;
 import java.util.List;
+import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FacebookTest {
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
 
   {
     main.outputHandler = output;

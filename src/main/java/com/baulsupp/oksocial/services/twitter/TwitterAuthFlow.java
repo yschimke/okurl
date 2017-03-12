@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.twitter;
 
 import com.baulsupp.oksocial.authenticator.AuthUtil;
-import com.baulsupp.oksocial.output.OutputHandler;
 import com.twitter.joauth.keyvalue.KeyValueHandler;
 import com.twitter.joauth.keyvalue.KeyValueParser;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;

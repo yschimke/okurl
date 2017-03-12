@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.apidocs;
 
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.i9n.TestOutputHandler;
+import ee.schimke.oksocial.output.TestOutputHandler;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;

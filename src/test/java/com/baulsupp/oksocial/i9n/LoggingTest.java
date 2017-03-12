@@ -2,8 +2,10 @@ package com.baulsupp.oksocial.i9n;
 
 import com.baulsupp.oksocial.Main;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
 import java.util.logging.LogManager;
 import okhttp3.Protocol;
+import okhttp3.Response;
 import okhttp3.internal.tls.SslClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -23,7 +25,7 @@ public class LoggingTest {
   private Main main = new Main();
 
   private SslClient sslClient = SslClient.localhost();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
 
   {
     main.outputHandler = output;
@@ -49,7 +51,7 @@ public class LoggingTest {
 
   @Test
   public void version() throws Exception {
-    TestOutputHandler output = new TestOutputHandler();
+    TestOutputHandler<Response> output = new TestOutputHandler<Response>();
 
     main.version = true;
 

@@ -4,6 +4,8 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor;
+import ee.schimke.oksocial.output.TestOutputHandler;
+import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -12,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GithubTest {
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
   private Oauth2ServiceDefinition service = new GithubAuthInterceptor().serviceDefinition();
 

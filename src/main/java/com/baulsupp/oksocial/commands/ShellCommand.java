@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.commands;
 
 import com.baulsupp.oksocial.completion.ArgumentCompleter;
-import com.baulsupp.oksocial.completion.UrlCompleter;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.OkHttpClient;

@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.network;
 
-import com.baulsupp.oksocial.util.UsageException;
+import ee.schimke.oksocial.output.util.UsageException;
 
 public enum DnsMode {
   JAVA,

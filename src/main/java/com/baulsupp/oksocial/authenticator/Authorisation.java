@@ -2,9 +2,9 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
-import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.secrets.Secrets;
-import com.baulsupp.oksocial.util.UsageException;
+import ee.schimke.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.util.UsageException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;

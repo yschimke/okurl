@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.network;
 
-import com.baulsupp.oksocial.util.UsageException;
 import com.google.common.collect.Maps;
+import ee.schimke.oksocial.output.util.UsageException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
