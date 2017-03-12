@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.services.google;
 
-import com.baulsupp.oksocial.i9n.TestOutputHandler;
+import ee.schimke.oksocial.output.TestOutputHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class DiscoveryApiDocPresenterTest {
-  private TestOutputHandler outputHandler = new TestOutputHandler();
+  private TestOutputHandler<Response> outputHandler = new TestOutputHandler<Response>();
   private OkHttpClient client = new OkHttpClient();
 
   private DiscoveryApiDocPresenter p;

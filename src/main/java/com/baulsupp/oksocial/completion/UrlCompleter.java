@@ -2,8 +2,8 @@ package com.baulsupp.oksocial.completion;
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.util.FutureUtil;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.util.FutureUtil;
 import java.io.IOException;
 import java.time.Clock;
 import java.util.List;

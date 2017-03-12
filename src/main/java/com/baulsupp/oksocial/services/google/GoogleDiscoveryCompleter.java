@@ -7,11 +7,9 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.function.Function;
 import okhttp3.HttpUrl;
 
-import static com.baulsupp.oksocial.util.FutureUtil.join;
+import static ee.schimke.oksocial.output.util.FutureUtil.join;
 import static java.util.stream.Collectors.toList;
 
 public class GoogleDiscoveryCompleter implements ApiCompleter {

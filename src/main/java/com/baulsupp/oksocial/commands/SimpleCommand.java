@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.commands;
 
-import com.baulsupp.oksocial.util.UsageException;
+import ee.schimke.oksocial.output.util.UsageException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

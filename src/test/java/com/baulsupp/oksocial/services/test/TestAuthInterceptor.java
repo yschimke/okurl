@@ -6,7 +6,7 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
-import com.baulsupp.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;

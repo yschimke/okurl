@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.google;
 
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
-import com.baulsupp.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.OkHttpClient;
 
-import static com.baulsupp.oksocial.util.FutureUtil.ioSafeGet;
-import static com.baulsupp.oksocial.util.FutureUtil.join;
+import static ee.schimke.oksocial.output.util.FutureUtil.ioSafeGet;
+import static ee.schimke.oksocial.output.util.FutureUtil.join;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 

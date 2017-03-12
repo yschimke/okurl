@@ -2,8 +2,9 @@ package com.baulsupp.oksocial.services.google;
 
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.i9n.TestCredentialsStore;
-import com.baulsupp.oksocial.i9n.TestOutputHandler;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
+import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GoogleCompletionTest {
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
 
   {

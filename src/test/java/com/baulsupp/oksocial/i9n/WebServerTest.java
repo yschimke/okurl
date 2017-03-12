@@ -3,8 +3,10 @@ package com.baulsupp.oksocial.i9n;
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
+import okhttp3.Response;
 import okhttp3.internal.tls.SslClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -25,7 +27,7 @@ public class WebServerTest {
   public MockWebServer server = new MockWebServer();
 
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
 
   {
     main.outputHandler = output;

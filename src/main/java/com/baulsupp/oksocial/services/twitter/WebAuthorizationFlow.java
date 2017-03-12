@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.twitter;
 
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
-import com.baulsupp.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;

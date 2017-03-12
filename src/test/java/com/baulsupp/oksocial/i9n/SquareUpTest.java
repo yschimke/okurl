@@ -4,6 +4,8 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor;
 import com.google.common.collect.Lists;
+import ee.schimke.oksocial.output.TestOutputHandler;
+import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -13,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class SquareUpTest {
 
   private Main main = new Main();
-  private TestOutputHandler output = new TestOutputHandler();
+  private TestOutputHandler<Response> output = new TestOutputHandler<Response>();
   private TestCompletionVariableCache completionCache = new TestCompletionVariableCache();
   private TestCredentialsStore credentialsStore = new TestCredentialsStore();
 

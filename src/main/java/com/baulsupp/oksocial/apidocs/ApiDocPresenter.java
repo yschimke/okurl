@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.apidocs;
 
-import com.baulsupp.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
 

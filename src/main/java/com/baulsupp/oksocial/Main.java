@@ -27,10 +27,8 @@ import com.baulsupp.oksocial.network.DnsSelector;
 import com.baulsupp.oksocial.network.IPvMode;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.network.NettyDns;
+import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor;
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
-import com.baulsupp.oksocial.output.ConsoleHandler;
-import com.baulsupp.oksocial.output.DownloadHandler;
-import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.baulsupp.oksocial.security.CertificateUtils;
 import com.baulsupp.oksocial.security.ConsoleCallbackHandler;
@@ -43,13 +41,17 @@ import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
-import com.baulsupp.oksocial.util.UsageException;
-import com.baulsupp.oksocial.util.Util;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
 import com.moczul.ok2curl.CurlInterceptor;
+import ee.schimke.oksocial.output.ConsoleHandler;
+import ee.schimke.oksocial.output.DownloadHandler;
+import ee.schimke.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.ResponseExtractor;
+import ee.schimke.oksocial.output.util.PlatformUtil;
+import ee.schimke.oksocial.output.util.UsageException;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.HelpOption;
@@ -75,7 +77,6 @@ import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509TrustManager;
-import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Credentials;
@@ -86,7 +87,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
@@ -269,7 +269,7 @@ public class Main extends HelpOption implements Runnable {
   private NioEventLoopGroup eventLoopGroup;
 
   private String versionString() {
-    return Util.versionString("/oksocial-version.properties");
+    return PlatformUtil.versionString(Main.class, "/oksocial-version.properties");
   }
 
   @Override public void run() {
@@ -505,7 +505,7 @@ public class Main extends HelpOption implements Runnable {
       return new FixedTokenCredentialsStore(token);
     }
 
-    if (Util.isOSX()) {
+    if (PlatformUtil.isOSX()) {
       return new OSXCredentialsStore(ofNullable(tokenSet));
     } else {
       return new PreferencesCredentialsStore(ofNullable(tokenSet));
@@ -524,12 +524,14 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private OutputHandler buildHandler() {
+    ResponseExtractor responseExtractor = new OkHttpResponseExtractor();
+
     if (outputDirectory != null) {
-      return new DownloadHandler(outputDirectory);
+      return new DownloadHandler(responseExtractor, outputDirectory);
     } else if (rawOutput) {
-      return new DownloadHandler(new File("-"));
+      return new DownloadHandler(responseExtractor, new File("-"));
     } else {
-      return ConsoleHandler.instance();
+      return ConsoleHandler.instance(responseExtractor);
     }
   }
 
@@ -556,13 +558,23 @@ public class Main extends HelpOption implements Runnable {
         responseFuture.cancel(true);
       } else {
         try (Response response = responseFuture.get()) {
-          outputHandler.showOutput(response, showHeaders);
+          showOutput(outputHandler, response);
         } catch (ExecutionException ee) {
           outputHandler.showError("request failed", ee.getCause());
           failed = true;
         }
       }
     }
+  }
+
+  private void showOutput(OutputHandler outputHandler, Response response)
+      throws IOException {
+    if (showHeaders) {
+      // TODO
+      throw new UnsupportedOperationException();
+    }
+
+    outputHandler.showOutput(response);
   }
 
   private List<Future<Response>> enqueueRequests(List<Request> requests, OkHttpClient client) {

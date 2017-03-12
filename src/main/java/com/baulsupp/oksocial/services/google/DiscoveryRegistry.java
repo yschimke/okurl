@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.google;
 
 import com.baulsupp.oksocial.authenticator.AuthUtil;
-import com.baulsupp.oksocial.util.JsonUtil;
+import ee.schimke.oksocial.output.util.JsonUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;

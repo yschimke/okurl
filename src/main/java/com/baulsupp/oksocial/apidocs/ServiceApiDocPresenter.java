@@ -2,8 +2,8 @@ package com.baulsupp.oksocial.apidocs;
 
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor;
 import com.baulsupp.oksocial.credentials.CredentialsStore;
-import com.baulsupp.oksocial.output.OutputHandler;
 import com.google.common.base.Throwables;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.Optional;
 import okhttp3.OkHttpClient;

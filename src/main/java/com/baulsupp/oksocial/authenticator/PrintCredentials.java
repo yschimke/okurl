@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
-import com.baulsupp.oksocial.output.OutputHandler;
+import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-import static com.baulsupp.oksocial.util.Util.optionalStream;
+import static ee.schimke.oksocial.output.util.FutureUtil.optionalStream;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
