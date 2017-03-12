@@ -81,12 +81,14 @@ import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Credentials;
 import okhttp3.Dns;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http.StatusLine;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
@@ -570,8 +572,14 @@ public class Main extends HelpOption implements Runnable {
   private void showOutput(OutputHandler outputHandler, Response response)
       throws IOException {
     if (showHeaders) {
-      // TODO
-      throw new UnsupportedOperationException();
+      outputHandler.info(StatusLine.get(response).toString());
+      Headers headers = response.headers();
+      for (int i = 0, size = headers.size(); i < size; i++) {
+        outputHandler.info(headers.name(i) + ": " + headers.value(i));
+      }
+      outputHandler.info("");
+    } else if (!response.isSuccessful()) {
+      outputHandler.showError(StatusLine.get(response).toString(), null);
     }
 
     outputHandler.showOutput(response);

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
