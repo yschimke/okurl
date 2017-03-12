@@ -70,7 +70,7 @@
     <dependency>
       <groupId>com.baulsupp</groupId>
       <artifactId>oksocial-output</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
