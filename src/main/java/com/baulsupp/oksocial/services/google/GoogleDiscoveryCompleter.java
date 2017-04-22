@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google;
 
+import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.completion.ApiCompleter;
 import com.baulsupp.oksocial.completion.CompletionMappings;
 import com.baulsupp.oksocial.completion.UrlList;
@@ -7,12 +8,16 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import okhttp3.HttpUrl;
 
 import static ee.schimke.oksocial.output.util.FutureUtil.join;
 import static java.util.stream.Collectors.toList;
 
 public class GoogleDiscoveryCompleter implements ApiCompleter {
+  private static Logger logger = Logger.getLogger(GoogleDiscoveryCompleter.class.getName());
+
   private DiscoveryRegistry discoveryRegistry;
   private final List<String> discoveryDocPaths;
   private CompletionMappings mappings = new CompletionMappings();
@@ -46,7 +51,10 @@ public class GoogleDiscoveryCompleter implements ApiCompleter {
   }
 
   private CompletableFuture<List<String>> singleFuture(String discoveryDocPath) {
-    return discoveryRegistry.load(discoveryDocPath).thenApply(s -> s.getUrls());
+    return discoveryRegistry.load(discoveryDocPath).thenApply(s -> s.getUrls()).exceptionally(t -> {
+      logger.log(Level.FINE, "failed request for " + discoveryDocPath, t);
+      return Lists.newArrayList();
+    });
   }
 
   public static GoogleDiscoveryCompleter forApis(DiscoveryRegistry discoveryRegistry,
