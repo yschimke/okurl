@@ -797,7 +797,7 @@ public class Main extends HelpOption implements Runnable {
     return "GET";
   }
 
-  private RequestBody getRequestBody() throws IOException {
+  private RequestBody getRequestBody() {
     if (data == null) {
       return null;
     }
@@ -814,10 +814,14 @@ public class Main extends HelpOption implements Runnable {
       }
     }
 
-    return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
+    try {
+      return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
+    } catch (IOException e) {
+      throw new UsageException(e.getMessage());
+    }
   }
 
-  public Request.Builder createRequestBuilder() throws IOException {
+  public Request.Builder createRequestBuilder() {
     Request.Builder requestBuilder = new Request.Builder();
 
     requestBuilder.method(getRequestMethod(), getRequestBody());

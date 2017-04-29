@@ -2,14 +2,23 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.util.ClientException;
+import com.google.common.util.concurrent.Futures;
 import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.chrono.IsoChronology;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -22,6 +31,7 @@ public class PrintCredentials {
   private final OkHttpClient client;
   private final CredentialsStore credentialsStore;
   private final ServiceInterceptor serviceInterceptor;
+  private final ZonedDateTime started;
 
   public PrintCredentials(OkHttpClient client, CredentialsStore credentialsStore,
       OutputHandler outputHandler, ServiceInterceptor serviceInterceptor) {
@@ -29,31 +39,23 @@ public class PrintCredentials {
     this.credentialsStore = credentialsStore;
     this.outputHandler = outputHandler;
     this.serviceInterceptor = serviceInterceptor;
+
+    this.started = ZonedDateTime.now();
   }
 
-  public <T> void printKnownCredentials(Request.Builder requestBuilder, AuthInterceptor<T> a,
-      boolean full) {
+  public <T> void printKnownCredentials(Future<Optional<ValidatedCredentials>> future,
+      AuthInterceptor<T> a) {
     ServiceDefinition<T> sd = a.serviceDefinition();
-    Optional<T> credentials = credentialsStore.readDefaultCredentials(sd);
 
-    Optional<String> credentialsString = credentials.map(sd::formatCredentialsString);
+    try {
+      long left = 5000l - ZonedDateTime.now().until(started, ChronoUnit.MILLIS);
+      Optional<ValidatedCredentials> validated = future.get(left, TimeUnit.MILLISECONDS);
 
-    if (credentials.isPresent()) {
-      try {
-        Optional<ValidatedCredentials> validated =
-            a.validate(client, requestBuilder, credentials.get()).get(5, TimeUnit.SECONDS);
-
-        printSuccess(sd, validated);
-      } catch (IOException | InterruptedException | TimeoutException e) {
-        printFailed(sd, e);
-      } catch (ExecutionException e) {
-        printFailed(sd, e.getCause());
-      }
-    } else {
-      printSuccess(sd, empty());
-    }
-    if (full) {
-      outputHandler.info(credentialsString.orElse("-"));
+      printSuccess(sd, validated);
+    } catch (InterruptedException | TimeoutException e) {
+      printFailed(sd, e);
+    } catch (ExecutionException e) {
+      printFailed(sd, e.getCause());
     }
   }
 
@@ -66,10 +68,18 @@ public class PrintCredentials {
 
   private <T> void printFailed(ServiceDefinition<T> sd,
       Throwable e) {
-    outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.toString()));
+    if (e instanceof TimeoutException) {
+      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), "timeout"));
+    } else if (e instanceof ClientException) {
+      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.getMessage()));
+    } else if (e instanceof IOException) {
+      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.toString()));
+    } else {
+      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.toString()));
+    }
   }
 
-  public void showCredentials(List<String> arguments, Callable<Request.Builder> requestBuilder)
+  public void showCredentials(List<String> arguments, Supplier<Request.Builder> requestBuilder)
       throws Exception {
     Iterable<AuthInterceptor<?>> services = serviceInterceptor.services();
 
@@ -81,8 +91,53 @@ public class PrintCredentials {
           toList());
     }
 
-    for (AuthInterceptor a : services) {
-      printKnownCredentials(requestBuilder.call(), a, full);
+    Map<String, Future<Optional<ValidatedCredentials>>> futures =
+        validate(services, requestBuilder);
+
+    for (AuthInterceptor<?> service : services) {
+      Future<Optional<ValidatedCredentials>> future = futures.get(service.name());
+
+      if (future != null) {
+        printKnownCredentials(future, service);
+      } else {
+        printSuccess(service.serviceDefinition(), empty());
+      }
+      if (full) {
+        printCredentials(service);
+      }
+    }
+  }
+
+  private <T> void printCredentials(AuthInterceptor<T> service) {
+    ServiceDefinition<T> sd = service.serviceDefinition();
+    Optional<String> credentialsString = credentialsStore.readDefaultCredentials(
+        sd).map(sd::formatCredentialsString);
+    outputHandler.info(credentialsString.orElse("-"));
+  }
+
+  private Map<String, Future<Optional<ValidatedCredentials>>> validate(
+      Iterable<AuthInterceptor<?>> services, Supplier<Request.Builder> requestBuilder) {
+    Map<String, Future<Optional<ValidatedCredentials>>> result = new HashMap<>();
+
+    for (AuthInterceptor<?> sv : services) {
+      validate(requestBuilder, result, sv);
+    }
+
+    return result;
+  }
+
+  private <T> void validate(Supplier<Request.Builder> requestBuilder,
+      Map<String, Future<Optional<ValidatedCredentials>>> result, AuthInterceptor<T> sv) {
+    Optional<T> credentials = credentialsStore.readDefaultCredentials(sv.serviceDefinition());
+
+    if (credentials.isPresent()) {
+      try {
+        Future<Optional<ValidatedCredentials>> future =
+            sv.validate(client, requestBuilder.get(), credentials.get());
+        result.put(sv.name(), future);
+      } catch (IOException ioe) {
+        result.put(sv.name(), Futures.immediateFailedFuture(ioe));
+      }
     }
   }
 }
