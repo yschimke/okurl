@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.location.Location;
 import com.baulsupp.oksocial.util.FileContent;
-import ee.schimke.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.util.Optional;
 import javax.script.ScriptEngine;

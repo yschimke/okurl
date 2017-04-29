@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.google;
 
-import ee.schimke.oksocial.output.util.JsonUtil;
+import com.baulsupp.oksocial.output.util.JsonUtil;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;

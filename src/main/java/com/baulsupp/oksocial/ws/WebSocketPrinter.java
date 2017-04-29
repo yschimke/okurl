@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.ws;
 
-import ee.schimke.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.util.concurrent.CountDownLatch;
 import okhttp3.Response;
 import okhttp3.WebSocket;

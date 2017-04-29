@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static ee.schimke.oksocial.output.util.FutureUtil.or;
+import static com.baulsupp.oksocial.output.util.FutureUtil.or;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;

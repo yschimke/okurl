@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.stackexchange;
 
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
-import ee.schimke.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Set;

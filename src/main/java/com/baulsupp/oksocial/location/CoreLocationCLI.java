@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.location;
 
-import ee.schimke.oksocial.output.util.PlatformUtil;
-import ee.schimke.oksocial.output.util.UsageException;
+import com.baulsupp.oksocial.output.util.PlatformUtil;
+import com.baulsupp.oksocial.output.util.UsageException;
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
