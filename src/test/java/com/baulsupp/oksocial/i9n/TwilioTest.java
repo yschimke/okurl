@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.BasicCredentials;
 import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition;
 import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor;
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 

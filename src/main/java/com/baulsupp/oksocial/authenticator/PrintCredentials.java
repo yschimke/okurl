@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.util.ClientException;
 import com.google.common.util.concurrent.Futures;
-import ee.schimke.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.chrono.IsoChronology;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-import static ee.schimke.oksocial.output.util.FutureUtil.optionalStream;
+import static com.baulsupp.oksocial.output.util.FutureUtil.optionalStream;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 

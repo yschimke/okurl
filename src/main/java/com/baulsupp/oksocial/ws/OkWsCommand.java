@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.google.common.collect.Lists;
-import ee.schimke.oksocial.output.util.UsageException;
+import com.baulsupp.oksocial.output.util.UsageException;
 import java.util.List;
 import java.util.Scanner;
 import okhttp3.OkHttpClient;

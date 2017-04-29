@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.credentials;
 
 import com.mcdermottroe.apple.OSXKeychainException;
-import ee.schimke.oksocial.output.util.PlatformUtil;
+import com.baulsupp.oksocial.output.util.PlatformUtil;
 import java.util.Optional;
 
 public class CredentialFactory {

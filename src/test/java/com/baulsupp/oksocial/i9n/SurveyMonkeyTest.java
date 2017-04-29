@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor;
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken;
 import com.google.common.collect.Lists;
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 

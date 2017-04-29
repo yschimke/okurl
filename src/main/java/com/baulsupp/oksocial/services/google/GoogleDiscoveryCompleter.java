@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.HttpUrl;
 
-import static ee.schimke.oksocial.output.util.FutureUtil.join;
+import static com.baulsupp.oksocial.output.util.FutureUtil.join;
 import static java.util.stream.Collectors.toList;
 
 public class GoogleDiscoveryCompleter implements ApiCompleter {

@@ -6,7 +6,7 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter;
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor;
 import com.google.common.collect.Lists;
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import java.io.IOException;
 import java.util.List;
 import okhttp3.Response;

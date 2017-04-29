@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.google;
 
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
