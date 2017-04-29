@@ -184,7 +184,7 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--dns"}, description = "DNS (netty, java)",
       allowedValues = {"java", "netty"})
-  public DnsMode dnsMode = DnsMode.NETTY;
+  public DnsMode dnsMode = DnsMode.JAVA;
 
   @Option(name = {"--dnsServers"}, description = "Specific DNS Servers (csv, google)")
   public String dnsServers = null;
