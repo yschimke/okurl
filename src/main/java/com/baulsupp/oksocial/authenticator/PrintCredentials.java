@@ -2,9 +2,14 @@ package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.credentials.CredentialsStore;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
+import com.baulsupp.oksocial.util.ClientException;
 import com.google.common.util.concurrent.Futures;
 import ee.schimke.oksocial.output.OutputHandler;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.chrono.IsoChronology;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +31,7 @@ public class PrintCredentials {
   private final OkHttpClient client;
   private final CredentialsStore credentialsStore;
   private final ServiceInterceptor serviceInterceptor;
+  private final ZonedDateTime started;
 
   public PrintCredentials(OkHttpClient client, CredentialsStore credentialsStore,
       OutputHandler outputHandler, ServiceInterceptor serviceInterceptor) {
@@ -33,6 +39,8 @@ public class PrintCredentials {
     this.credentialsStore = credentialsStore;
     this.outputHandler = outputHandler;
     this.serviceInterceptor = serviceInterceptor;
+
+    this.started = ZonedDateTime.now();
   }
 
   public <T> void printKnownCredentials(Future<Optional<ValidatedCredentials>> future,
@@ -40,7 +48,8 @@ public class PrintCredentials {
     ServiceDefinition<T> sd = a.serviceDefinition();
 
     try {
-      Optional<ValidatedCredentials> validated = future.get(5, TimeUnit.SECONDS);
+      long left = 5000l - ZonedDateTime.now().until(started, ChronoUnit.MILLIS);
+      Optional<ValidatedCredentials> validated = future.get(left, TimeUnit.MILLISECONDS);
 
       printSuccess(sd, validated);
     } catch (InterruptedException | TimeoutException e) {
@@ -61,8 +70,10 @@ public class PrintCredentials {
       Throwable e) {
     if (e instanceof TimeoutException) {
       outputHandler.info(String.format("%-20s	%s", sd.serviceName(), "timeout"));
+    } else if (e instanceof ClientException) {
+      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.getMessage()));
     } else if (e instanceof IOException) {
-      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.getCause()));
+      outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.toString()));
     } else {
       outputHandler.info(String.format("%-20s	%s", sd.serviceName(), e.toString()));
     }
