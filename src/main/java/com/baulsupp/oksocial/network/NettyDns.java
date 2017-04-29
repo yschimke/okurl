@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.network;
 
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.resolver.ResolvedAddressTypes;
 import io.netty.resolver.dns.DnsNameResolver;
 import io.netty.resolver.dns.DnsNameResolverBuilder;
 import io.netty.resolver.dns.DnsServerAddresses;
@@ -30,7 +30,7 @@ public class NettyDns implements Dns {
   private final EventLoopGroup group;
   private final Iterable<InetSocketAddress> dnsServers;
 
-  public NettyDns(EventLoopGroup group, Iterable<InternetProtocolFamily> addressTypes,
+  public NettyDns(EventLoopGroup group, ResolvedAddressTypes addressTypes,
       Iterable<InetSocketAddress> dnsServers) {
     this.group = group;
     this.dnsServers = dnsServers;
@@ -75,7 +75,7 @@ public class NettyDns implements Dns {
   }
 
   public static Dns byName(IPvMode ipMode, EventLoopGroup eventLoopGroup, String dnsServers) {
-    List<InternetProtocolFamily> types = getInternetProtocolFamilies(ipMode);
+    ResolvedAddressTypes types = getInternetProtocolFamilies(ipMode);
 
     return new NettyDns(eventLoopGroup, types, getDnsServers(dnsServers));
   }
@@ -93,16 +93,16 @@ public class NettyDns implements Dns {
     return stream(dnsServers.split(",")).map(s -> new InetSocketAddress(s, 53)).collect(toList());
   }
 
-  private static List<InternetProtocolFamily> getInternetProtocolFamilies(IPvMode ipMode) {
+  private static ResolvedAddressTypes getInternetProtocolFamilies(IPvMode ipMode) {
     switch (ipMode) {
       case IPV6_FIRST:
-        return Arrays.asList(IPv6, IPv4);
+        return ResolvedAddressTypes.IPV6_PREFERRED;
       case IPV4_FIRST:
-        return Arrays.asList(IPv4, IPv6);
+        return ResolvedAddressTypes.IPV4_PREFERRED;
       case IPV6_ONLY:
-        return Arrays.asList(IPv6);
+        return ResolvedAddressTypes.IPV6_ONLY;
       case IPV4_ONLY:
-        return Arrays.asList(IPv4);
+        return ResolvedAddressTypes.IPV4_ONLY;
       default:
         return null;
     }

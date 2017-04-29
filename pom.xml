@@ -168,12 +168,12 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
-      <version>4.1.8.Final</version>
+      <version>4.1.9.Final</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-resolver-dns</artifactId>
-      <version>4.1.8.Final</version>
+      <version>4.1.9.Final</version>
     </dependency>
     <dependency>
       <groupId>us.physion</groupId>
