@@ -723,7 +723,7 @@ public class Main extends HelpOption implements Runnable {
   private NioEventLoopGroup getEventLoopGroup() {
     if (eventLoopGroup == null) {
       ThreadFactory threadFactory = new DefaultThreadFactory("netty", true);
-      eventLoopGroup = new NioEventLoopGroup(1, threadFactory);
+      eventLoopGroup = new NioEventLoopGroup(5, threadFactory);
     }
 
     return eventLoopGroup;
