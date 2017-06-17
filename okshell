@@ -38,4 +38,4 @@ else
   shift
 fi
 
-$JAVA_HOME/bin/jjs -Dio.netty.processId=$$ $VMOPTS $BCP -classpath $MAIN_JAR:$CLASSPATH -scripting ./src/main/resources/oksocial.js $input -- "$@"
+$JAVA_HOME/bin/jjs -Dokhttp.platform=conscrypt $VMOPTS $BCP -classpath $MAIN_JAR:$CLASSPATH -scripting ./src/main/resources/oksocial.js $input -- "$@"
