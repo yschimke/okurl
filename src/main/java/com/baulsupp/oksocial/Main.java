@@ -89,6 +89,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.http.StatusLine;
+import okhttp3.internal.platform.Platform;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
@@ -571,6 +572,14 @@ public class Main extends HelpOption implements Runnable {
 
   private void showOutput(OutputHandler outputHandler, Response response)
       throws IOException {
+    if (logger.isLoggable(Level.FINE)) {
+      logger.fine("OkHttp Platform: " + Platform.get().getClass().getSimpleName());
+      logger.fine("TLS Version: " + response.handshake().tlsVersion());
+      logger.fine("Protocol: " + response.protocol());
+      logger.fine("Cipher: " + response.handshake().cipherSuite());
+      logger.fine("Peer Principal: " + response.handshake().peerPrincipal());
+    }
+
     if (showHeaders) {
       outputHandler.info(StatusLine.get(response).toString());
       Headers headers = response.headers();
