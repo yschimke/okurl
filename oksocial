@@ -17,24 +17,10 @@ if [ ! -f "target/cached-$SHA.jar" ]; then
   mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
 fi
 
-BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
-#DEBUG="-Djavax.net.debug=ssl:handshake -Djava.security.debug=sunpkcs11"
-
-JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
-
-if [ $? -ne 0 ]; then
-  JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-
-  if [ $? -eq 0 ]; then
-    ALPN=$(ls target/alpn/alpn-boot-*.jar)
-    BCP="-Xbootclasspath/p:$ALPN"
-  fi
-else
-  VMOPTS="--add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED  --add-opens=java.base/java.nio=ALL-UNNAMED  --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
-fi
+DEBUG="-Djavax.net.debug=ssl:handshake"
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
 MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_HOME/bin/java -Dokhttp.platform=conscrypt $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
+$JAVA_HOME/bin/java -Dokhttp.platform=conscrypt $VMOPTS $DEBUG -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"

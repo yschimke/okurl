@@ -21,6 +21,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import okhttp3.internal.platform.Platform;
 
 public class KeystoreUtils {
   public static KeyManager[] keyManagerArray(List<KeyManager> keyManagers) {
@@ -33,7 +34,7 @@ public class KeystoreUtils {
 
   public static SSLSocketFactory createSslSocketFactory(KeyManager[] keyManagers,
       X509TrustManager trustManagers) throws NoSuchAlgorithmException, KeyManagementException {
-    SSLContext context = SSLContext.getInstance("TLS");
+    SSLContext context = Platform.get().getSSLContext();
 
     context.init(keyManagers, new TrustManager[] {trustManagers}, null);
 
