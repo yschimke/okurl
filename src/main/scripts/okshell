@@ -3,17 +3,7 @@
 export INSTALLDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 PLUGINDIR=/dev/null
 
-if [ -x /usr/libexec/java_home ]; then
-  JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
-
-  if [ $? -ne 0 ]; then
-    JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-    ALPN=$(ls $INSTALLDIR/alpn/alpn-boot-*.jar)
-    BCP="-J-Xbootclasspath/p:$ALPN"
-  else
-    VMOPTS="-J--add-opens=java.base/sun.net.dns=ALL-UNNAMED -J--add-opens=java.base/java.lang.reflect=ALL-UNNAMED  -J--add-opens=java.base/java.nio=ALL-UNNAMED  -J--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
-  fi
-fi
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 CLASSPATH=$(JARS=($INSTALLDIR/lib/*.jar); IFS=:; echo "${JARS[*]}")
 
