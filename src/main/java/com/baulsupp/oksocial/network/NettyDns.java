@@ -5,7 +5,10 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.resolver.ResolvedAddressTypes;
 import io.netty.resolver.dns.DnsNameResolver;
 import io.netty.resolver.dns.DnsNameResolverBuilder;
+import io.netty.resolver.dns.DnsServerAddressStreamProvider;
 import io.netty.resolver.dns.DnsServerAddresses;
+import io.netty.resolver.dns.MultiDnsServerAddressStreamProvider;
+import io.netty.resolver.dns.SingletonDnsServerAddressStreamProvider;
 import io.netty.util.concurrent.Future;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -17,8 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.Dns;
 
-import static io.netty.channel.socket.InternetProtocolFamily.IPv4;
-import static io.netty.channel.socket.InternetProtocolFamily.IPv6;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -31,7 +32,7 @@ public class NettyDns implements Dns {
   private final Iterable<InetSocketAddress> dnsServers;
 
   public NettyDns(EventLoopGroup group, ResolvedAddressTypes addressTypes,
-      Iterable<InetSocketAddress> dnsServers) {
+      List<InetSocketAddress> dnsServers) {
     this.group = group;
     this.dnsServers = dnsServers;
     DnsNameResolverBuilder builder = new DnsNameResolverBuilder(this.group.next())
@@ -45,7 +46,11 @@ public class NettyDns implements Dns {
     }
 
     if (this.dnsServers != null) {
-      builder.nameServerAddresses(DnsServerAddresses.sequential(this.dnsServers));
+      if (dnsServers.size() == 1) {
+        builder.nameServerProvider(singleProvider(dnsServers.get(0)));
+      } else {
+        builder.nameServerProvider(multiProvider(dnsServers));
+      }
     }
 
     if (addressTypes != null) {
@@ -53,6 +58,16 @@ public class NettyDns implements Dns {
     }
 
     r = builder.build();
+  }
+
+  private DnsServerAddressStreamProvider multiProvider(List<InetSocketAddress> dnsServers) {
+    List<DnsServerAddressStreamProvider> providers =
+        dnsServers.stream().map(s -> singleProvider(s)).collect(toList());
+    return new MultiDnsServerAddressStreamProvider(providers);
+  }
+
+  private SingletonDnsServerAddressStreamProvider singleProvider(InetSocketAddress address) {
+    return new SingletonDnsServerAddressStreamProvider(address);
   }
 
   @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
