@@ -18,7 +18,7 @@ if [ ! -f "target/cached-$SHA.jar" ]; then
 fi
 
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
-DEBUG="-Djavax.net.debug=ssl:handshake"
+#DEBUG="-Djavax.net.debug=ssl:handshake"
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
