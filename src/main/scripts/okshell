@@ -30,4 +30,4 @@ else
   shift
 fi
 
-$JAVA_HOME/bin/jjs $VMOPTS $BCP -classpath "$CLASSPATH$PLUGINS" -scripting $INSTALLDIR/scripts/oksocial.js $input -- "$@"
+$JAVA_HOME/bin/jjs -Dokhttp.platform=conscrypt $VMOPTS $BCP -classpath "$CLASSPATH$PLUGINS" -scripting $INSTALLDIR/scripts/oksocial.js $input -- "$@"
