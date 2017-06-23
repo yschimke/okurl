@@ -17,6 +17,7 @@ public class DebugEventListener extends EventListener {
   private long callStart;
   private long dnsStart;
   private long connectStart;
+  private long secureConnectStart;
 
   public DebugEventListener(Call call) {
     this.call = call;
@@ -51,12 +52,12 @@ public class DebugEventListener extends EventListener {
   }
 
   @Override public void secureConnectStart(Call call) {
-    connectStart = System.currentTimeMillis();
+    secureConnectStart = System.currentTimeMillis();
     logger.info("Secure Connect Start " + describe());
   }
 
   @Override public void secureConnectEnd(Call call, Handshake handshake, Throwable throwable) {
-    logger.log(Level.INFO, "Secure Connect End " + describe() + " " + handshake + " " + elapsed(connectStart), throwable);
+    logger.log(Level.INFO, "Secure Connect End " + describe() + " " + handshake + " " + elapsed(secureConnectStart), throwable);
   }
 
   @Override public void connectEnd(Call call, InetAddress address, int port, String protocol,
