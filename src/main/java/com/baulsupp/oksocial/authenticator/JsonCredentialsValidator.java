@@ -1,8 +1,9 @@
 package com.baulsupp.oksocial.authenticator;
 
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
-import ee.schimke.oksocial.output.util.FutureUtil;
-import ee.schimke.oksocial.output.util.JsonUtil;
+import com.baulsupp.oksocial.util.ClientException;
+import com.baulsupp.oksocial.output.util.FutureUtil;
+import com.baulsupp.oksocial.output.util.JsonUtil;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -66,8 +67,12 @@ public class JsonCredentialsValidator {
       Map<String, Object> map = JsonUtil.map(response.body().string());
 
       if (response.code() != 200) {
-        return FutureUtil.failedFuture(new IOException(
-            "verify failed with " + response.code() + ": " + map.get("error")));
+        String error = "verify failed";
+        if (map.containsKey("error")) {
+          error += ": " + map.get("error");
+        }
+        return FutureUtil.failedFuture(new ClientException(
+            error, response.code()));
       }
 
       String name = responseExtractor.apply(map);

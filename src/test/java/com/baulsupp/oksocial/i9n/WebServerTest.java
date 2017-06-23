@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.i9n;
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.google.common.collect.Lists;
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import okhttp3.Response;

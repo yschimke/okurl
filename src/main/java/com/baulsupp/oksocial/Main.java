@@ -46,12 +46,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
 import com.moczul.ok2curl.CurlInterceptor;
-import ee.schimke.oksocial.output.ConsoleHandler;
-import ee.schimke.oksocial.output.DownloadHandler;
-import ee.schimke.oksocial.output.OutputHandler;
-import ee.schimke.oksocial.output.ResponseExtractor;
-import ee.schimke.oksocial.output.util.PlatformUtil;
-import ee.schimke.oksocial.output.util.UsageException;
+import com.baulsupp.oksocial.output.ConsoleHandler;
+import com.baulsupp.oksocial.output.DownloadHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.ResponseExtractor;
+import com.baulsupp.oksocial.output.util.PlatformUtil;
+import com.baulsupp.oksocial.output.util.UsageException;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.HelpOption;
@@ -184,7 +184,7 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--dns"}, description = "DNS (netty, java)",
       allowedValues = {"java", "netty"})
-  public DnsMode dnsMode = DnsMode.NETTY;
+  public DnsMode dnsMode = DnsMode.JAVA;
 
   @Option(name = {"--dnsServers"}, description = "Specific DNS Servers (csv, google)")
   public String dnsServers = null;
@@ -725,7 +725,7 @@ public class Main extends HelpOption implements Runnable {
   private NioEventLoopGroup getEventLoopGroup() {
     if (eventLoopGroup == null) {
       ThreadFactory threadFactory = new DefaultThreadFactory("netty", true);
-      eventLoopGroup = new NioEventLoopGroup(1, threadFactory);
+      eventLoopGroup = new NioEventLoopGroup(5, threadFactory);
     }
 
     return eventLoopGroup;
@@ -799,7 +799,7 @@ public class Main extends HelpOption implements Runnable {
     return "GET";
   }
 
-  private RequestBody getRequestBody() throws IOException {
+  private RequestBody getRequestBody() {
     if (data == null) {
       return null;
     }
@@ -816,10 +816,14 @@ public class Main extends HelpOption implements Runnable {
       }
     }
 
-    return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
+    try {
+      return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
+    } catch (IOException e) {
+      throw new UsageException(e.getMessage());
+    }
   }
 
-  public Request.Builder createRequestBuilder() throws IOException {
+  public Request.Builder createRequestBuilder() {
     Request.Builder requestBuilder = new Request.Builder();
 
     requestBuilder.method(getRequestMethod(), getRequestBody());

@@ -3,7 +3,7 @@
 var a = query("https://api.stackexchange.com/2.2/questions/unanswered/my-tags?order=desc&sort=creation&site=stackoverflow");
 
 a.items.forEach(function(question) {
-   var title = padRight(Math.max(50, terminalWidth - 79), question.title);
+   var title = padRight(Math.max(50, terminalWidth - 80), question.title);
    var url = question.link.replace(/(.*)\/.*/, "$1");
    var tags = padRight(20, question.tags.join(','));
    var answers = padRight(4, String(question.answer_count));

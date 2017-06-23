@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.okhttp;
 
-import ee.schimke.oksocial.output.ResponseExtractor;
-import ee.schimke.oksocial.output.util.JsonUtil;
+import com.baulsupp.oksocial.output.ResponseExtractor;
+import com.baulsupp.oksocial.output.util.JsonUtil;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.Response;

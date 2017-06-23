@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.services.google;
 import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.i9n.TestCredentialsStore;
 import com.google.common.collect.Lists;
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 

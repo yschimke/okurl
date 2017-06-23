@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.apidocs.ApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.credentials.ServiceDefinition;
 import com.google.common.base.Throwables;
-import ee.schimke.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.concurrent.ExecutionException;

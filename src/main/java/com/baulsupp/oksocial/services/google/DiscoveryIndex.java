@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.services.google;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
-import ee.schimke.oksocial.output.util.JsonUtil;
+import com.baulsupp.oksocial.output.util.JsonUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;

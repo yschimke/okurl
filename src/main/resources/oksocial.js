@@ -27,7 +27,7 @@ var credentials = function(s) {
   return okshell.credentials(s);
 }
 
-var UsageException = Java.type("com.baulsupp.oksocial.util.UsageException");
+var UsageException = Java.type("com.baulsupp.oksocial.output.util.UsageException");
 
 var usage = function(error) {
   throw new UsageException(error);

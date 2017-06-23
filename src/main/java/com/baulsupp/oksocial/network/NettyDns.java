@@ -1,11 +1,14 @@
 package com.baulsupp.oksocial.network;
 
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.resolver.ResolvedAddressTypes;
 import io.netty.resolver.dns.DnsNameResolver;
 import io.netty.resolver.dns.DnsNameResolverBuilder;
+import io.netty.resolver.dns.DnsServerAddressStreamProvider;
 import io.netty.resolver.dns.DnsServerAddresses;
+import io.netty.resolver.dns.MultiDnsServerAddressStreamProvider;
+import io.netty.resolver.dns.SingletonDnsServerAddressStreamProvider;
 import io.netty.util.concurrent.Future;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -17,8 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.Dns;
 
-import static io.netty.channel.socket.InternetProtocolFamily.IPv4;
-import static io.netty.channel.socket.InternetProtocolFamily.IPv6;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -30,8 +31,8 @@ public class NettyDns implements Dns {
   private final EventLoopGroup group;
   private final Iterable<InetSocketAddress> dnsServers;
 
-  public NettyDns(EventLoopGroup group, Iterable<InternetProtocolFamily> addressTypes,
-      Iterable<InetSocketAddress> dnsServers) {
+  public NettyDns(EventLoopGroup group, ResolvedAddressTypes addressTypes,
+      List<InetSocketAddress> dnsServers) {
     this.group = group;
     this.dnsServers = dnsServers;
     DnsNameResolverBuilder builder = new DnsNameResolverBuilder(this.group.next())
@@ -45,7 +46,11 @@ public class NettyDns implements Dns {
     }
 
     if (this.dnsServers != null) {
-      builder.nameServerAddresses(DnsServerAddresses.sequential(this.dnsServers));
+      if (dnsServers.size() == 1) {
+        builder.nameServerProvider(singleProvider(dnsServers.get(0)));
+      } else {
+        builder.nameServerProvider(multiProvider(dnsServers));
+      }
     }
 
     if (addressTypes != null) {
@@ -53,6 +58,16 @@ public class NettyDns implements Dns {
     }
 
     r = builder.build();
+  }
+
+  private DnsServerAddressStreamProvider multiProvider(List<InetSocketAddress> dnsServers) {
+    List<DnsServerAddressStreamProvider> providers =
+        dnsServers.stream().map(s -> singleProvider(s)).collect(toList());
+    return new MultiDnsServerAddressStreamProvider(providers);
+  }
+
+  private SingletonDnsServerAddressStreamProvider singleProvider(InetSocketAddress address) {
+    return new SingletonDnsServerAddressStreamProvider(address);
   }
 
   @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
@@ -75,7 +90,7 @@ public class NettyDns implements Dns {
   }
 
   public static Dns byName(IPvMode ipMode, EventLoopGroup eventLoopGroup, String dnsServers) {
-    List<InternetProtocolFamily> types = getInternetProtocolFamilies(ipMode);
+    ResolvedAddressTypes types = getInternetProtocolFamilies(ipMode);
 
     return new NettyDns(eventLoopGroup, types, getDnsServers(dnsServers));
   }
@@ -93,16 +108,16 @@ public class NettyDns implements Dns {
     return stream(dnsServers.split(",")).map(s -> new InetSocketAddress(s, 53)).collect(toList());
   }
 
-  private static List<InternetProtocolFamily> getInternetProtocolFamilies(IPvMode ipMode) {
+  private static ResolvedAddressTypes getInternetProtocolFamilies(IPvMode ipMode) {
     switch (ipMode) {
       case IPV6_FIRST:
-        return Arrays.asList(IPv6, IPv4);
+        return ResolvedAddressTypes.IPV6_PREFERRED;
       case IPV4_FIRST:
-        return Arrays.asList(IPv4, IPv6);
+        return ResolvedAddressTypes.IPV4_PREFERRED;
       case IPV6_ONLY:
-        return Arrays.asList(IPv6);
+        return ResolvedAddressTypes.IPV6_ONLY;
       case IPV4_ONLY:
-        return Arrays.asList(IPv4);
+        return ResolvedAddressTypes.IPV4_ONLY;
       default:
         return null;
     }

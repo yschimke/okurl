@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor;
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 

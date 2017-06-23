@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.google;
 
-import ee.schimke.oksocial.output.TestOutputHandler;
+import com.baulsupp.oksocial.output.TestOutputHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class DiscoveryApiDocPresenterTest {
         "url: https://people.googleapis.com/v1/{+resourceName}",
         "scopes: https://www.googleapis.com/auth/contacts, https://www.googleapis.com/auth/contacts.readonly, https://www.googleapis.com/auth/plus.login, https://www.googleapis.com/auth/user.addresses.read, https://www.googleapis.com/auth/user.birthday.read, https://www.googleapis.com/auth/user.emails.read, https://www.googleapis.com/auth/user.phonenumbers.read, https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile",
         "",
-        "Provides information about a person resource for a resource name. Use\n"
+        "Provides information about a person for a resource name. Use\n"
             + "`people/me` to indicate the authenticated user."
     );
 

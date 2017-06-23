@@ -6,7 +6,7 @@ import com.baulsupp.oksocial.commands.MainAware;
 import com.baulsupp.oksocial.commands.ShellCommand;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import ee.schimke.oksocial.output.util.UsageException;
+import com.baulsupp.oksocial.output.util.UsageException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;

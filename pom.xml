@@ -5,7 +5,7 @@
 
   <groupId>com.baulsupp</groupId>
   <artifactId>oksocial</artifactId>
-  <version>1.0.50-SNAPSHOT</version>
+  <version>1.0.52-SNAPSHOT</version>
   <name>OkHttp Social Authentication</name>
   <description>OkHttp Social Authentication - library and command line</description>
   <url>https://github.com/yschimke/oksocial</url>
@@ -19,7 +19,7 @@
   </developers>
 
   <properties>
-    <okhttp.version>3.8.0-SNAPSHOT</okhttp.version>
+    <okhttp.version>3.9.0-SNAPSHOT</okhttp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -70,7 +70,7 @@
     <dependency>
       <groupId>com.baulsupp</groupId>
       <artifactId>oksocial-output</artifactId>
-      <version>0.3</version>
+      <version>0.4</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
@@ -168,12 +168,12 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
-      <version>4.1.8.Final</version>
+      <version>4.1.12.Final</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-resolver-dns</artifactId>
-      <version>4.1.8.Final</version>
+      <version>4.1.12.Final</version>
     </dependency>
     <dependency>
       <groupId>us.physion</groupId>
