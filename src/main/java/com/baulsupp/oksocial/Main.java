@@ -689,7 +689,7 @@ public class Main extends HelpOption implements Runnable {
     if (debug) {
       builder.networkInterceptors().add(new HttpLoggingInterceptor(logger::info));
 
-      builder.eventListener(new DebugEventListener());
+      builder.eventListenerFactory(call -> new DebugEventListener(call));
     }
 
     if (socksProxy != null) {
