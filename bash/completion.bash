@@ -55,7 +55,7 @@ function _oksocial_complete ()
             return
             ;;
         --dns)
-            COMPREPLY=( $( compgen -W "java netty" -- "$cur" ) )
+            COMPREPLY=( $( compgen -W "java netty dnsgoogle" -- "$cur" ) )
             return
             ;;
         --networkInterface)

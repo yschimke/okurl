@@ -17,10 +17,12 @@ import okhttp3.Request;
 
 public class GoogleDns implements Dns {
   private List<InetAddress> dnsHosts;
+  private IPvMode mode;
   private Supplier<OkHttpClient> client;
 
-  public GoogleDns(List<InetAddress> dnsHosts, Supplier<OkHttpClient> client) {
+  public GoogleDns(List<InetAddress> dnsHosts, IPvMode mode, Supplier<OkHttpClient> client) {
     this.dnsHosts = dnsHosts;
+    this.mode = mode;
     this.client = client;
   }
 
@@ -32,7 +34,7 @@ public class GoogleDns implements Dns {
 
     try {
       // TODO map punycode here?
-      HttpUrl url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host);
+      HttpUrl url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host + "&type=" + type(mode));
       Request request = new Request.Builder().url(url).header("Accept", "application/dns+json").build();
       Map<String, Object> result = AuthUtil.makeJsonMapRequest(client.get(), request);
 
@@ -45,6 +47,16 @@ public class GoogleDns implements Dns {
     }
   }
 
+  private String type(IPvMode mode) {
+    // TODO support IPv6 preferred etc, e.g. two queries
+    switch (mode) {
+      case IPV6_ONLY:
+        return "AAAA";
+      default:
+        return "A";
+    }
+  }
+
   private List<InetAddress> responseToList(Map<String, Object> result) throws UnknownHostException {
     if (!result.get("Status").equals(0)) {
       // TODO response codes
@@ -53,8 +65,10 @@ public class GoogleDns implements Dns {
 
     List<Map<String, Object>> answer = (List<Map<String, Object>>) result.get("Answer");
 
+    System.out.println(answer);
+
     return answer.stream()
-        .filter(a -> a.get("type").equals(1))
+        .filter(a -> a.get("type").equals(1) || a.get("type").equals(28))
         .map(a -> InetAddresses.forString((String) a.get("data")))
         .collect(
             Collectors.toList());
@@ -64,13 +78,13 @@ public class GoogleDns implements Dns {
     throw new UnsupportedOperationException();
   }
 
-  public static GoogleDns fromHosts(Supplier<OkHttpClient> clientSupplier, String... ips) {
+  public static GoogleDns fromHosts(Supplier<OkHttpClient> clientSupplier, IPvMode mode, String... ips) {
     List<InetAddress> hosts = new ArrayList<>();
 
     for (String ip : ips) {
       hosts.add(InetAddresses.forString(ip));
     }
 
-    return new GoogleDns(hosts, clientSupplier);
+    return new GoogleDns(hosts, mode, clientSupplier);
   }
 }

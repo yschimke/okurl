@@ -716,7 +716,7 @@ public class Main extends HelpOption implements Runnable {
       dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
     } else if (dnsMode == DnsMode.DNSGOOGLE) {
       dns = new DnsSelector(ipMode,
-          GoogleDns.fromHosts(() -> Main.this.client, "216.58.216.142", "216.239.34.10"));
+          GoogleDns.fromHosts(() -> Main.this.client, ipMode, "216.58.216.142", "216.239.34.10", "2607:f8b0:400a:809::200e"));
     } else {
       if (dnsServers != null) {
         throw new UsageException("unable to set dns servers with java DNS");
