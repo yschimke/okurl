@@ -16,13 +16,15 @@ public class DnsSelector implements Dns {
   private static Logger logger = Logger.getLogger(DnsSelector.class.getName());
 
   private IPvMode mode;
+  private Dns delegate;
 
-  public DnsSelector(IPvMode mode) {
+  public DnsSelector(IPvMode mode, Dns delegate) {
     this.mode = mode;
+    this.delegate = delegate;
   }
 
   @Override public List<InetAddress> lookup(String hostname) throws UnknownHostException {
-    List<InetAddress> addresses = Dns.SYSTEM.lookup(hostname);
+    List<InetAddress> addresses = delegate.lookup(hostname);
 
     switch (mode) {
       case IPV6_FIRST:
