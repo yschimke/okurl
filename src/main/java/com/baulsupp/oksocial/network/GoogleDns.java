@@ -65,8 +65,6 @@ public class GoogleDns implements Dns {
 
     List<Map<String, Object>> answer = (List<Map<String, Object>>) result.get("Answer");
 
-    System.out.println(answer);
-
     return answer.stream()
         .filter(a -> a.get("type").equals(1) || a.get("type").equals(28))
         .map(a -> InetAddresses.forString((String) a.get("data")))
