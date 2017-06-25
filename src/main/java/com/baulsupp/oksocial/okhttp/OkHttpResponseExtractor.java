@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.output.ResponseExtractor;
 import com.baulsupp.oksocial.output.util.JsonUtil;
 import java.util.List;
 import java.util.Optional;
+import okhttp3.MediaType;
 import okhttp3.Response;
 import okio.BufferedSource;
 
@@ -11,16 +12,22 @@ import static java.util.Optional.of;
 
 public class OkHttpResponseExtractor implements ResponseExtractor<Response> {
   @Override public Optional<String> mimeType(Response response) {
-    if (response.body() == null || response.body().contentType() == null) {
+    if (response.body() == null) {
       return Optional.empty();
     }
 
-    if (response.request().url().host().equals("graph.facebook.com") &&
-        response.body().contentType().toString().equals("text/javascript")) {
+    String host = response.request().url().host();
+    MediaType mediaType = response.body().contentType();
+
+    if (mediaType == null) {
+      return Optional.empty();
+    }
+
+    if (host.equals("graph.facebook.com") && mediaType.subtype().equals("javascript")) {
       return of(JsonUtil.JSON);
     }
 
-    return of(response.body().contentType().toString());
+    return of(mediaType.toString());
   }
 
   @Override public BufferedSource source(Response response) {
