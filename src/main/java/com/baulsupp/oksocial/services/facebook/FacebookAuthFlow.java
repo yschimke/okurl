@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.facebook;
 
-import com.baulsupp.oksocial.authenticator.AuthUtil;
 import com.baulsupp.oksocial.authenticator.SimpleWebServer;
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token;
 import com.baulsupp.oksocial.output.OutputHandler;
@@ -10,7 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import okhttp3.OkHttpClient;
 
-import static com.baulsupp.oksocial.authenticator.AuthUtil.makeSimpleGetRequest;
+import static com.baulsupp.oksocial.authenticator.AuthUtil.makeJsonMapRequest;
+import static com.baulsupp.oksocial.authenticator.AuthUtil.uriGetRequest;
 import static java.util.stream.Collectors.joining;
 
 public class FacebookAuthFlow {
@@ -39,7 +39,7 @@ public class FacebookAuthFlow {
           + "&code=" + code;
 
       Map<String, Object> map =
-          AuthUtil.makeJsonMapRequest(client, AuthUtil.uriGetRequest(tokenUrl));
+          makeJsonMapRequest(client, uriGetRequest(tokenUrl));
 
       String shortToken = (String) map.get("access_token");
 
@@ -49,23 +49,9 @@ public class FacebookAuthFlow {
           + "&client_secret=" + clientSecret
           + "&fb_exchange_token=" + shortToken;
 
-      String longTokenBody = makeSimpleGetRequest(client, exchangeUrl);
+      Map<String, Object> longTokenBody = makeJsonMapRequest(client, uriGetRequest(exchangeUrl));
 
-      return new Oauth2Token(parseExchangeRequest(longTokenBody));
+      return new Oauth2Token((String) longTokenBody.get("access_token"));
     }
-  }
-
-  private static String parseExchangeRequest(String body) {
-    String[] params = body.split("&");
-
-    for (String p : params) {
-      String[] parts = p.split("=");
-
-      if (parts[0].equals("access_token")) {
-        return parts[1];
-      }
-    }
-
-    return null;
   }
 }
