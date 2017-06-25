@@ -31,8 +31,9 @@ public class GoogleDns implements Dns {
     }
 
     try {
+      // TODO map punycode here?
       HttpUrl url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host);
-      Request request = new Request.Builder().url(url).build();
+      Request request = new Request.Builder().url(url).header("Accept", "application/dns+json").build();
       Map<String, Object> result = AuthUtil.makeJsonMapRequest(client.get(), request);
 
       return responseToList(result);
