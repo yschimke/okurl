@@ -24,6 +24,7 @@ import com.baulsupp.oksocial.location.LocationSource;
 import com.baulsupp.oksocial.network.DnsMode;
 import com.baulsupp.oksocial.network.DnsOverride;
 import com.baulsupp.oksocial.network.DnsSelector;
+import com.baulsupp.oksocial.network.GoogleDns;
 import com.baulsupp.oksocial.network.IPvMode;
 import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.network.NettyDns;
@@ -707,12 +708,14 @@ public class Main extends HelpOption implements Runnable {
     Dns dns;
     if (dnsMode == DnsMode.NETTY) {
       dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
+    } else if (dnsMode == DnsMode.DNSGOOGLE) {
+      dns = new DnsSelector(ipMode, GoogleDns.fromHosts("216.58.216.142", "216.239.34.10"));
     } else {
       if (dnsServers != null) {
         throw new UsageException("unable to set dns servers with java DNS");
       }
 
-      dns = new DnsSelector(ipMode);
+      dns = new DnsSelector(ipMode, Dns.SYSTEM);
     }
     if (resolve != null) {
       dns = DnsOverride.build(dns, resolve);
