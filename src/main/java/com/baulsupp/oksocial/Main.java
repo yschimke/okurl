@@ -30,6 +30,12 @@ import com.baulsupp.oksocial.network.InterfaceSocketFactory;
 import com.baulsupp.oksocial.network.NettyDns;
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor;
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture;
+import com.baulsupp.oksocial.output.ConsoleHandler;
+import com.baulsupp.oksocial.output.DownloadHandler;
+import com.baulsupp.oksocial.output.OutputHandler;
+import com.baulsupp.oksocial.output.ResponseExtractor;
+import com.baulsupp.oksocial.output.util.PlatformUtil;
+import com.baulsupp.oksocial.output.util.UsageException;
 import com.baulsupp.oksocial.security.CertificatePin;
 import com.baulsupp.oksocial.security.CertificateUtils;
 import com.baulsupp.oksocial.security.ConsoleCallbackHandler;
@@ -47,12 +53,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mcdermottroe.apple.OSXKeychainException;
 import com.moczul.ok2curl.CurlInterceptor;
-import com.baulsupp.oksocial.output.ConsoleHandler;
-import com.baulsupp.oksocial.output.DownloadHandler;
-import com.baulsupp.oksocial.output.OutputHandler;
-import com.baulsupp.oksocial.output.ResponseExtractor;
-import com.baulsupp.oksocial.output.util.PlatformUtil;
-import com.baulsupp.oksocial.output.util.UsageException;
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.HelpOption;
@@ -60,6 +60,7 @@ import io.airlift.airline.Option;
 import io.airlift.airline.SingleCommand;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
@@ -91,6 +92,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.internal.http.StatusLine;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.apache.commons.io.IOUtils;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -270,6 +272,8 @@ public class Main extends HelpOption implements Runnable {
   public LocationSource locationSource = new BestLocation();
 
   private NioEventLoopGroup eventLoopGroup;
+
+  private List<Closeable> closeables = Lists.newArrayList();
 
   private String versionString() {
     return PlatformUtil.versionString(Main.class, "/oksocial-version.properties");
@@ -460,6 +464,13 @@ public class Main extends HelpOption implements Runnable {
       credentialsStore = createCredentialsStore();
     }
 
+    closeables.add(() -> {
+      if (client != null) {
+        client.dispatcher().executorService().shutdown();
+        client.connectionPool().evictAll();
+      }
+    });
+
     OkHttpClient.Builder clientBuilder = createClientBuilder();
 
     if (user != null) {
@@ -516,13 +527,8 @@ public class Main extends HelpOption implements Runnable {
   }
 
   private void closeClients() {
-    if (client != null) {
-      client.dispatcher().executorService().shutdown();
-      client.connectionPool().evictAll();
-    }
-
-    if (eventLoopGroup != null) {
-      eventLoopGroup.shutdownGracefully(0, 0, TimeUnit.SECONDS);
+    for (Closeable c : closeables) {
+      IOUtils.closeQuietly(c);
     }
   }
 
@@ -709,7 +715,8 @@ public class Main extends HelpOption implements Runnable {
     if (dnsMode == DnsMode.NETTY) {
       dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
     } else if (dnsMode == DnsMode.DNSGOOGLE) {
-      dns = new DnsSelector(ipMode, GoogleDns.fromHosts("216.58.216.142", "216.239.34.10"));
+      dns = new DnsSelector(ipMode,
+          GoogleDns.fromHosts(() -> Main.this.client, "216.58.216.142", "216.239.34.10"));
     } else {
       if (dnsServers != null) {
         throw new UsageException("unable to set dns servers with java DNS");
@@ -727,6 +734,10 @@ public class Main extends HelpOption implements Runnable {
     if (eventLoopGroup == null) {
       ThreadFactory threadFactory = new DefaultThreadFactory("netty", true);
       eventLoopGroup = new NioEventLoopGroup(5, threadFactory);
+
+      closeables.add(() -> {
+        eventLoopGroup.shutdownGracefully(0, 0, TimeUnit.SECONDS);
+      });
     }
 
     return eventLoopGroup;

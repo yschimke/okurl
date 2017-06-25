@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import okhttp3.Dns;
 import okhttp3.HttpUrl;
@@ -16,11 +17,11 @@ import okhttp3.Request;
 
 public class GoogleDns implements Dns {
   private List<InetAddress> dnsHosts;
-  private OkHttpClient client;
+  private Supplier<OkHttpClient> client;
 
-  public GoogleDns(List<InetAddress> dnsHosts) {
+  public GoogleDns(List<InetAddress> dnsHosts, Supplier<OkHttpClient> client) {
     this.dnsHosts = dnsHosts;
-    this.client = new OkHttpClient.Builder().dns(this).build();
+    this.client = client;
   }
 
   @Override public List<InetAddress> lookup(String host) throws UnknownHostException {
@@ -31,7 +32,7 @@ public class GoogleDns implements Dns {
     try {
       HttpUrl url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host);
       Request request = new Request.Builder().url(url).build();
-      Map<String, Object> result = AuthUtil.makeJsonMapRequest(client, request);
+      Map<String, Object> result = AuthUtil.makeJsonMapRequest(client.get(), request);
 
       return responseToList(result);
     } catch (IOException e) {
@@ -58,13 +59,13 @@ public class GoogleDns implements Dns {
     throw new UnsupportedOperationException();
   }
 
-  public static GoogleDns fromHosts(String... ips) {
+  public static GoogleDns fromHosts(Supplier<OkHttpClient> clientSupplier, String... ips) {
     List<InetAddress> hosts = new ArrayList<>();
 
     for (String ip : ips) {
       hosts.add(InetAddresses.forString(ip));
     }
 
-    return new GoogleDns(hosts);
+    return new GoogleDns(hosts, clientSupplier);
   }
 }
