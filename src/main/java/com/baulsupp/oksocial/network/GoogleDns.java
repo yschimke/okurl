@@ -24,6 +24,7 @@ public class GoogleDns implements Dns {
     this.client = client;
   }
 
+  // TODO implement DnsMode internally
   @Override public List<InetAddress> lookup(String host) throws UnknownHostException {
     if (host.equals("dns.google.com")) {
       return dnsHosts;
@@ -51,8 +52,11 @@ public class GoogleDns implements Dns {
 
     List<Map<String, Object>> answer = (List<Map<String, Object>>) result.get("Answer");
 
-    return answer.stream().map(a -> InetAddresses.forString((String) a.get("data"))).collect(
-        Collectors.toList());
+    return answer.stream()
+        .filter(a -> a.get("type").equals(1))
+        .map(a -> InetAddresses.forString((String) a.get("data")))
+        .collect(
+            Collectors.toList());
   }
 
   public static GoogleDns fromResourceList() {
