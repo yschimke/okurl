@@ -34,15 +34,15 @@ public class DiscoveryApiDocPresenterTest {
     List<String> es = newArrayList("name: Google People API",
         "docs: https://developers.google.com/people/", "endpoint id: people.people.get",
         "url: https://people.googleapis.com/v1/{+resourceName}",
-        "scopes: https://www.googleapis.com/auth/contacts, https://www.googleapis.com/auth/contacts.readonly, https://www.googleapis.com/auth/plus.login, https://www.googleapis.com/auth/user.addresses.read, https://www.googleapis.com/auth/user.birthday.read, https://www.googleapis.com/auth/user.emails.read, https://www.googleapis.com/auth/user.phonenumbers.read, https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile",
-        "",
-        "Provides information about a person for a resource name. Use\n"
-            + "`people/me` to indicate the authenticated user."
+        "scopes: https://www.googleapis.com/auth/contacts, https://www.googleapis.com/auth/contacts.readonly, https://www.googleapis.com/auth/plus.login, https://www.googleapis.com/auth/user.addresses.read, https://www.googleapis.com/auth/user.birthday.read, https://www.googleapis.com/auth/user.emails.read, https://www.googleapis.com/auth/user.phonenumbers.read, https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile"
     );
 
-    for (String l: es) {
+    for (String l : es) {
       assertTrue(outputHandler.stdout.contains(l), l);
     }
+
+    assertTrue(outputHandler.stdout.stream()
+        .anyMatch(c -> c.startsWith("Provides information about a person")));
   }
 
   @Test public void testExplainsExpandedUrl() throws IOException {
