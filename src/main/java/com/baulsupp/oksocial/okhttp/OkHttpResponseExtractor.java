@@ -27,6 +27,10 @@ public class OkHttpResponseExtractor implements ResponseExtractor<Response> {
       return of(JsonUtil.JSON);
     }
 
+    if (host.equals("dns.google.com") && mediaType.subtype().equals("x-javascript")) {
+      return of(JsonUtil.JSON);
+    }
+
     return of(mediaType.toString());
   }
 
