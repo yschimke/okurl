@@ -49,6 +49,7 @@ import com.baulsupp.oksocial.security.InsecureTrustManager;
 import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
+import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor;
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener;
 import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
@@ -518,11 +519,11 @@ public class Main extends HelpOption implements Runnable {
       OkHttpSender sender = OkHttpSender.create("http://localhost:9411/api/v1/spans");
       AsyncReporter<zipkin.Span> reporter = AsyncReporter.create(sender);
 
-      LoggingReporter loggingReporter = new LoggingReporter();
+      //LoggingReporter loggingReporter = new LoggingReporter();
 
       Tracing tracing = Tracing.newBuilder()
           .localServiceName("oksocial")
-          .reporter(loggingReporter)
+          .reporter(reporter)
           .sampler(Sampler.ALWAYS_SAMPLE)
           .build();
 
@@ -530,27 +531,10 @@ public class Main extends HelpOption implements Runnable {
 
       Tracer tracer = tracing.tracer();
 
-      clientBuilder.addInterceptor(chain -> {
-        Span span = tracer.newTrace().name("http").start();
-        span.tag("http.path", chain.request().url().encodedPath());
-        span.tag("Server Address", chain.request().url().host());
-        try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
-          return chain.proceed(chain.request());
-        } finally {
-          span.finish();
-        }
-      });
-      clientBuilder.addNetworkInterceptor(chain -> {
-        Span child = tracer.newChild(tracing.currentTraceContext().get()).name("request").start();
-        try {
-          return chain.proceed(chain.request());
-        } finally {
-          child.finish();
-        }
-      });
-
       clientBuilder.eventListenerFactory(
           call -> new ZipkinTracingListener(call, tracer, httpTracing));
+
+      clientBuilder.addNetworkInterceptor(new ZipkinTracingInterceptor(tracing));
 
       closeables.add(() -> {
         tracing.close();
@@ -626,7 +610,7 @@ public class Main extends HelpOption implements Runnable {
         responseFuture.cancel(true);
       } else {
         try (Response response = responseFuture.get()) {
-          //showOutput(outputHandler, response);
+          showOutput(outputHandler, response);
         } catch (ExecutionException ee) {
           outputHandler.showError("request failed", ee.getCause());
           failed = true;
