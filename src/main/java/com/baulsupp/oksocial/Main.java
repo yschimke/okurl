@@ -93,6 +93,7 @@ import okhttp3.Response;
 import okhttp3.internal.http.StatusLine;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.io.IOUtils;
+import zipkin.reporter.okhttp3.OkHttpSender;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -180,6 +181,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
+
+  @Option(name = {"--zipkin", "-z"}, description = "Activate Zipkin Tracing")
+  public boolean zipkin = false;
 
   @Option(name = {"--ip"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
       allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
@@ -491,6 +495,14 @@ public class Main extends HelpOption implements Runnable {
         return response.request().newBuilder()
             .header("Authorization", credential)
             .build();
+      });
+    }
+
+    if (zipkin) {
+      OkHttpSender sender = OkHttpSender.create("http://localhost:9411/api/v1/spans");
+
+      closeables.add(() -> {
+        sender.
       });
     }
 

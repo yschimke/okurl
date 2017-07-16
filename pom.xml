@@ -19,7 +19,7 @@
   </developers>
 
   <properties>
-    <okhttp.version>3.8.1</okhttp.version>
+    <okhttp.version>3.9.0-SNAPSHOT</okhttp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -67,6 +67,21 @@
   </distributionManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>io.zipkin.reporter</groupId>
+      <artifactId>zipkin-sender-okhttp3</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-okhttp</artifactId>
+      <version>3.13.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-spancollector-http</artifactId>
+      <version>3.13.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>com.baulsupp</groupId>
       <artifactId>oksocial-output</artifactId>
