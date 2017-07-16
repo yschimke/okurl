@@ -75,12 +75,27 @@
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-okhttp</artifactId>
-      <version>3.13.1-SNAPSHOT</version>
+      <version>4.5.1</version>
     </dependency>
     <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave-spancollector-http</artifactId>
-      <version>3.13.1-SNAPSHOT</version>
+      <version>4.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-instrumentation-okhttp3</artifactId>
+      <version>4.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave-okhttp</artifactId>
+      <version>4.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.brave</groupId>
+      <artifactId>brave</artifactId>
+      <version>4.5.1</version>
     </dependency>
     <dependency>
       <groupId>com.baulsupp</groupId>

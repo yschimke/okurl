@@ -1,5 +1,10 @@
 package com.baulsupp.oksocial;
 
+import brave.Span;
+import brave.Tracer;
+import brave.Tracing;
+import brave.http.HttpTracing;
+import brave.sampler.Sampler;
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.Authorisation;
@@ -44,10 +49,12 @@ import com.baulsupp.oksocial.security.InsecureTrustManager;
 import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
+import com.baulsupp.oksocial.tracing.ZipkinTracingListener;
 import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
+import com.github.kristofa.brave.LoggingReporter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -93,6 +100,7 @@ import okhttp3.Response;
 import okhttp3.internal.http.StatusLine;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.io.IOUtils;
+import zipkin.reporter.AsyncReporter;
 import zipkin.reporter.okhttp3.OkHttpSender;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
@@ -498,14 +506,6 @@ public class Main extends HelpOption implements Runnable {
       });
     }
 
-    if (zipkin) {
-      OkHttpSender sender = OkHttpSender.create("http://localhost:9411/api/v1/spans");
-
-      closeables.add(() -> {
-        sender.
-      });
-    }
-
     OkHttpClient authClient = clientBuilder.build();
     serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
 
@@ -513,6 +513,53 @@ public class Main extends HelpOption implements Runnable {
         new Authorisation(serviceInterceptor, credentialsStore, authClient, outputHandler);
 
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
+
+    if (zipkin) {
+      OkHttpSender sender = OkHttpSender.create("http://localhost:9411/api/v1/spans");
+      AsyncReporter<zipkin.Span> reporter = AsyncReporter.create(sender);
+
+      LoggingReporter loggingReporter = new LoggingReporter();
+
+      Tracing tracing = Tracing.newBuilder()
+          .localServiceName("oksocial")
+          .reporter(loggingReporter)
+          .sampler(Sampler.ALWAYS_SAMPLE)
+          .build();
+
+      HttpTracing httpTracing = HttpTracing.create(tracing);
+
+      Tracer tracer = tracing.tracer();
+
+      clientBuilder.addInterceptor(chain -> {
+        Span span = tracer.newTrace().name("http").start();
+        span.tag("http.path", chain.request().url().encodedPath());
+        span.tag("Server Address", chain.request().url().host());
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
+          return chain.proceed(chain.request());
+        } finally {
+          span.finish();
+        }
+      });
+      clientBuilder.addNetworkInterceptor(chain -> {
+        Span child = tracer.newChild(tracing.currentTraceContext().get()).name("request").start();
+        try {
+          return chain.proceed(chain.request());
+        } finally {
+          child.finish();
+        }
+      });
+
+      clientBuilder.eventListenerFactory(
+          call -> new ZipkinTracingListener(call, tracer, httpTracing));
+
+      closeables.add(() -> {
+        tracing.close();
+        reporter.flush();
+        reporter.close();
+        sender.close();
+      });
+    }
+
     client = clientBuilder.build();
 
     requestBuilder = createRequestBuilder();
@@ -579,7 +626,7 @@ public class Main extends HelpOption implements Runnable {
         responseFuture.cancel(true);
       } else {
         try (Response response = responseFuture.get()) {
-          showOutput(outputHandler, response);
+          //showOutput(outputHandler, response);
         } catch (ExecutionException ee) {
           outputHandler.showError("request failed", ee.getCause());
           failed = true;
@@ -728,7 +775,8 @@ public class Main extends HelpOption implements Runnable {
       dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
     } else if (dnsMode == DnsMode.DNSGOOGLE) {
       dns = new DnsSelector(ipMode,
-          GoogleDns.fromHosts(() -> Main.this.client, ipMode, "216.58.216.142", "216.239.34.10", "2607:f8b0:400a:809::200e"));
+          GoogleDns.fromHosts(() -> Main.this.client, ipMode, "216.58.216.142", "216.239.34.10",
+              "2607:f8b0:400a:809::200e"));
     } else {
       if (dnsServers != null) {
         throw new UsageException("unable to set dns servers with java DNS");
