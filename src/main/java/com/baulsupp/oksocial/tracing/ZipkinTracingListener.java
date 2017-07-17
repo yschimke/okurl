@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Connection;
 import okhttp3.EventListener;
+import okhttp3.Handshake;
 import okhttp3.Protocol;
 import zipkin.TraceKeys;
 
@@ -27,6 +28,7 @@ public class ZipkinTracingListener extends EventListener {
   private Tracer.SpanInScope spanInScope;
   private Span requestSpan;
   private Span responseSpan;
+  private Span secureConnectSpan;
 
   public ZipkinTracingListener(Call call, Tracer tracer, HttpTracing tracing) {
     this.call = call;
@@ -81,6 +83,8 @@ public class ZipkinTracingListener extends EventListener {
     if (throwable == null) {
       dnsSpan.tag("dns results",
           inetAddressList.stream().map(Object::toString).collect(Collectors.joining(", ")));
+    } else {
+      dnsSpan.annotate(throwable.toString());
     }
 
     dnsSpan.finish();
@@ -104,6 +108,8 @@ public class ZipkinTracingListener extends EventListener {
     if (throwable == null) {
       connectSpan.tag("host", inetSocketAddress.toString());
       connectSpan.tag("protocol", protocol.toString());
+    } else {
+      connectSpan.annotate(throwable.toString());
     }
 
     connectSpan.finish();
@@ -122,6 +128,30 @@ public class ZipkinTracingListener extends EventListener {
           .name("connect")
           .finish();
     }
+  }
+
+  @Override public void secureConnectStart(Call call) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
+    secureConnectSpan =
+        tracer.newChild(callSpan.context()).start().name("tls");
+  }
+
+  @Override public void secureConnectEnd(Call call, @Nullable Handshake handshake,
+      @Nullable Throwable throwable) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
+    if (throwable == null) {
+      secureConnectSpan.tag("handshake", handshake.toString());
+    } else {
+      secureConnectSpan.annotate(throwable.toString());
+    }
+
+    secureConnectSpan.finish();
   }
 
   @Override public void requestHeadersStart(Call call) {
