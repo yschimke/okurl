@@ -97,4 +97,8 @@ public class DiscoveryEndpoint {
 
     return Pattern.compile(pathPattern + (hasQueryParams ? "(\\?.*)?" : ""));
   }
+
+  public String httpMethod() {
+    return (String) map.getOrDefault("httpMethod", "GET");
+  }
 }
