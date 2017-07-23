@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial;
 
-import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.http.HttpTracing;
+import brave.propagation.TraceContext;
 import brave.sampler.Sampler;
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
@@ -55,7 +55,6 @@ import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.LoggingUtil;
 import com.baulsupp.oksocial.util.ProtocolUtil;
-import com.github.kristofa.brave.LoggingReporter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -82,6 +81,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
@@ -519,8 +519,6 @@ public class Main extends HelpOption implements Runnable {
       OkHttpSender sender = OkHttpSender.create("http://localhost:9411/api/v1/spans");
       AsyncReporter<zipkin.Span> reporter = AsyncReporter.create(sender);
 
-      //LoggingReporter loggingReporter = new LoggingReporter();
-
       Tracing tracing = Tracing.newBuilder()
           .localServiceName("oksocial")
           .reporter(reporter)
@@ -531,8 +529,12 @@ public class Main extends HelpOption implements Runnable {
 
       Tracer tracer = tracing.tracer();
 
+      Consumer<TraceContext> opener =
+          tc -> closeables.add(
+              () -> openLink("http://localhost:9411/zipkin/traces/" + tc.traceIdString()));
+
       clientBuilder.eventListenerFactory(
-          call -> new ZipkinTracingListener(call, tracer, httpTracing));
+          call -> new ZipkinTracingListener(call, tracer, httpTracing, opener));
 
       clientBuilder.addNetworkInterceptor(new ZipkinTracingInterceptor(tracing));
 
@@ -550,6 +552,14 @@ public class Main extends HelpOption implements Runnable {
 
     if (completionVariableCache == null) {
       completionVariableCache = new TmpCompletionVariableCache();
+    }
+  }
+
+  private void openLink(String link) {
+    try {
+      outputHandler.openLink(link);
+    } catch (IOException e) {
+      outputHandler.showError("Can't open link", e);
     }
   }
 

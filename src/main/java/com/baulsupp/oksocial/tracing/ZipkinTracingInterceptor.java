@@ -11,28 +11,27 @@ import okhttp3.Response;
 
 public class ZipkinTracingInterceptor implements Interceptor {
   private Tracing tracing;
+  private final TraceContext.Injector<Request.Builder> injector;
 
   public ZipkinTracingInterceptor(Tracing tracing) {
-
     this.tracing = tracing;
+    injector = tracing.propagation().injector(
+            (request, header, value) -> request.header(header, value));
   }
 
   @Override public Response intercept(Chain chain) throws IOException {
     Request request = chain.request();
 
     TraceContext traceContext = tracing.currentTraceContext().get();
-    if (traceContext != null) {
-      Request.Builder newRequest = request.newBuilder();
-
-      TraceContext.Injector<Request.Builder> i =
-          B3Propagation.create(Propagation.KeyFactory.STRING).injector(
-              (request1, header, value) -> request1.header(header, value));
-
-      i.inject(traceContext, newRequest);
-
-      return chain.proceed(newRequest.build());
-    } else {
+    if (traceContext == null) {
+      // expect an existing trace
       return chain.proceed(request);
     }
+
+    Request.Builder newRequest = request.newBuilder();
+
+    injector.inject(traceContext, newRequest);
+
+    return chain.proceed(newRequest.build());
   }
 }

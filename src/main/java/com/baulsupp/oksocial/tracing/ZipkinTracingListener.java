@@ -3,10 +3,12 @@ package com.baulsupp.oksocial.tracing;
 import brave.Span;
 import brave.Tracer;
 import brave.http.HttpTracing;
+import brave.propagation.TraceContext;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import okhttp3.Call;
@@ -20,6 +22,7 @@ public class ZipkinTracingListener extends EventListener {
   private final Call call;
   private final Tracer tracer;
   private final HttpTracing tracing;
+  private Consumer<TraceContext> opener;
 
   private Span connectSpan;
   private Span dnsSpan;
@@ -30,23 +33,23 @@ public class ZipkinTracingListener extends EventListener {
   private Span responseSpan;
   private Span secureConnectSpan;
 
-  public ZipkinTracingListener(Call call, Tracer tracer, HttpTracing tracing) {
+  public ZipkinTracingListener(Call call, Tracer tracer, HttpTracing tracing,
+      Consumer<TraceContext> opener) {
     this.call = call;
     this.tracer = tracer;
     this.tracing = tracing;
+    this.opener = opener;
   }
 
   @Override public void fetchStart(Call call) {
     callSpan = tracer.newTrace().name("http").start();
 
-    if (callSpan.isNoop()) {
-      return;
+    if (!callSpan.isNoop()) {
+      callSpan.tag(TraceKeys.HTTP_PATH, call.request().url().encodedPath());
+      callSpan.tag(TraceKeys.HTTP_METHOD, call.request().method());
+      callSpan.tag(TraceKeys.HTTP_HOST, call.request().url().host());
+      callSpan.kind(Span.Kind.CLIENT);
     }
-
-    callSpan.tag(TraceKeys.HTTP_PATH, call.request().url().encodedPath());
-    callSpan.tag(TraceKeys.HTTP_METHOD, call.request().method());
-    callSpan.tag(TraceKeys.HTTP_HOST, call.request().url().host());
-    callSpan.kind(Span.Kind.CLIENT);
 
     spanInScope = tracer.withSpanInScope(callSpan);
   }
@@ -60,14 +63,17 @@ public class ZipkinTracingListener extends EventListener {
     spanInScope.close();
 
     if (throwable != null) {
-      callSpan.annotate(throwable.toString());
+      callSpan.tag("error", throwable.toString());
     }
+
+    opener.accept(callSpan.context());
   }
 
   @Override public void dnsStart(Call call, String domainName) {
     if (callSpan.isNoop()) {
       return;
     }
+
 
     dnsSpan =
         tracer.newChild(callSpan.context()).start().name("dns");
@@ -81,10 +87,10 @@ public class ZipkinTracingListener extends EventListener {
     }
 
     if (throwable == null) {
-      dnsSpan.tag("dns results",
+      dnsSpan.tag("dns.results",
           inetAddressList.stream().map(Object::toString).collect(Collectors.joining(", ")));
     } else {
-      dnsSpan.annotate(throwable.toString());
+      dnsSpan.tag("error", throwable.toString());
     }
 
     dnsSpan.finish();
@@ -109,7 +115,7 @@ public class ZipkinTracingListener extends EventListener {
       connectSpan.tag("host", inetSocketAddress.toString());
       connectSpan.tag("protocol", protocol.toString());
     } else {
-      connectSpan.annotate(throwable.toString());
+      connectSpan.tag("error", throwable.toString());
     }
 
     connectSpan.finish();
@@ -123,10 +129,7 @@ public class ZipkinTracingListener extends EventListener {
     }
 
     if (!connectionEvent) {
-      tracer.newChild(callSpan.context())
-          .start()
-          .name("connect")
-          .finish();
+      callSpan.annotate(connection.toString());
     }
   }
 
@@ -148,7 +151,7 @@ public class ZipkinTracingListener extends EventListener {
     if (throwable == null) {
       secureConnectSpan.tag("handshake", handshake.toString());
     } else {
-      secureConnectSpan.annotate(throwable.toString());
+      secureConnectSpan.tag("error", throwable.toString());
     }
 
     secureConnectSpan.finish();
@@ -166,6 +169,10 @@ public class ZipkinTracingListener extends EventListener {
   @Override public void requestBodyEnd(Call call, Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
+    }
+
+    if (throwable != null) {
+      secureConnectSpan.tag("error", throwable.toString());
     }
 
     requestSpan.finish();
