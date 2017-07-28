@@ -74,7 +74,6 @@ public class ZipkinTracingListener extends EventListener {
       return;
     }
 
-
     dnsSpan =
         tracer.newChild(callSpan.context()).start().name("dns");
   }
@@ -123,7 +122,7 @@ public class ZipkinTracingListener extends EventListener {
     connectionEvent = true;
   }
 
-  @Override public void connectionFound(Call call, Connection connection) {
+  @Override public void connectionAcquired(Call call, Connection connection) {
     if (callSpan.isNoop()) {
       return;
     }
