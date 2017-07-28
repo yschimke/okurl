@@ -73,7 +73,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,6 +85,7 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Credentials;
+import okhttp3.Dispatcher;
 import okhttp3.Dns;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -247,6 +250,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--user"}, description = "user:password for basic auth")
   public String user;
+
+  @Option(name = {"--maxrequests"}, description = "Concurrency Level")
+  private int maxRequests = 16;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -495,6 +501,11 @@ public class Main extends HelpOption implements Runnable {
             .build();
       });
     }
+
+    Dispatcher dispatcher = new Dispatcher();
+    dispatcher.setMaxRequests(maxRequests);
+    dispatcher.setMaxRequestsPerHost(maxRequests);
+    clientBuilder.dispatcher(dispatcher);
 
     OkHttpClient authClient = clientBuilder.build();
     serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
