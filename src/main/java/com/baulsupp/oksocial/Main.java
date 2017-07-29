@@ -112,7 +112,7 @@ import static java.util.stream.Collectors.joining;
 
 @SuppressWarnings({"WeakerAccess", "CanBeFinal", "unused"})
 @Command(name = Main.NAME, description = "A curl for social apis.")
-public class Main extends HelpOption implements Runnable {
+public class Main extends HelpOption {
   private static Logger logger = Logger.getLogger(Main.class.getName());
 
   static final String NAME = "oksocial";
@@ -122,7 +122,8 @@ public class Main extends HelpOption implements Runnable {
   }
 
   public static void main(String... args) {
-    fromArgs(args).run();
+    int result = fromArgs(args).run();
+    System.exit(result);
   }
 
   @Option(name = {"-X", "--request"}, description = "Specify request command to use")
@@ -287,7 +288,7 @@ public class Main extends HelpOption implements Runnable {
     return PlatformUtil.versionString(Main.class, "/oksocial-version.properties");
   }
 
-  @Override public void run() {
+  public int run() {
     if (sslDebug) {
       System.setProperty("javax.net.debug", "ssl,handshake");
     }
@@ -299,13 +300,13 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (showHelpIfRequested()) {
-      return;
+      return 0;
     }
 
     try {
       if (version) {
         outputHandler.info(NAME + " " + versionString());
-        return;
+        return 0;
       }
 
       initialise();
@@ -313,42 +314,46 @@ public class Main extends HelpOption implements Runnable {
       if (showCredentials) {
         new PrintCredentials(client, credentialsStore, outputHandler,
             serviceInterceptor).showCredentials(arguments, this::createRequestBuilder);
-        return;
+        return 0;
       }
 
       if (aliasNames) {
         printAliasNames();
-        return;
+        return 0;
       }
 
       if (serviceNames) {
         outputHandler.info(serviceInterceptor.names().stream().collect(joining(" ")));
-        return;
+        return 0;
       }
 
       if (urlComplete) {
         outputHandler.info(urlCompletionList());
-        return;
+        return 0;
       }
 
       if (apiDoc) {
         showApiDocs();
-        return;
+        return 0;
       }
 
       if (authorize) {
         authorize();
-        return;
+        return 0;
       }
 
       if (renew) {
         renew();
-        return;
+        return 0;
       }
 
-      executeRequests(outputHandler);
+      return executeRequests(outputHandler);
+    } catch (UsageException e) {
+      outputHandler.showError("error: " + e.getMessage(), null);
+      return -1;
     } catch (Exception e) {
       outputHandler.showError("unknown error", e);
+      return -2;
     } finally {
       closeClients();
     }
@@ -557,7 +562,7 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private void executeRequests(OutputHandler outputHandler) throws Exception {
+  private int executeRequests(OutputHandler outputHandler) throws Exception {
     ShellCommand command = getShellCommand();
 
     List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
@@ -568,11 +573,14 @@ public class Main extends HelpOption implements Runnable {
       }
 
       List<Future<Response>> responseFutures = enqueueRequests(requests, client);
-      processResponses(outputHandler, responseFutures);
+      boolean failed = processResponses(outputHandler, responseFutures);
+      return failed ? -5 : 0;
     }
+
+    return 0;
   }
 
-  private void processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
+  private boolean processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
       throws IOException, InterruptedException {
     boolean failed = false;
     for (Future<Response> responseFuture : responseFutures) {
@@ -587,6 +595,7 @@ public class Main extends HelpOption implements Runnable {
         }
       }
     }
+    return failed;
   }
 
   private void showOutput(OutputHandler outputHandler, Response response)
