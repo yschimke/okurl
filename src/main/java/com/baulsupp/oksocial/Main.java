@@ -75,11 +75,14 @@ import java.net.SocketException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -90,6 +93,7 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Credentials;
+import okhttp3.Dispatcher;
 import okhttp3.Dns;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -109,6 +113,7 @@ import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createSslSocketFactory;
 import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.keyManagerArray;
+import static com.baulsupp.oksocial.util.HeaderUtil.headerMap;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -258,6 +263,9 @@ public class Main extends HelpOption implements Runnable {
 
   @Option(name = {"--user"}, description = "user:password for basic auth")
   public String user;
+
+  @Option(name = {"--maxrequests"}, description = "Concurrency Level")
+  private int maxRequests = 16;
 
   public String commandName = System.getProperty("command.name", "oksocial");
 
@@ -507,6 +515,11 @@ public class Main extends HelpOption implements Runnable {
       });
     }
 
+    Dispatcher dispatcher = new Dispatcher();
+    dispatcher.setMaxRequests(maxRequests);
+    dispatcher.setMaxRequestsPerHost(maxRequests);
+    clientBuilder.dispatcher(dispatcher);
+
     OkHttpClient authClient = clientBuilder.build();
     serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
 
@@ -747,7 +760,9 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (debug) {
-      builder.networkInterceptors().add(new HttpLoggingInterceptor(logger::info));
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(logger::info);
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      builder.networkInterceptors().add(loggingInterceptor);
     }
 
     if (socksProxy != null) {
@@ -865,20 +880,17 @@ public class Main extends HelpOption implements Runnable {
     return "GET";
   }
 
-  private RequestBody getRequestBody() {
+  private RequestBody getRequestBody(Map<String, String> headerMap) {
     if (data == null) {
       return null;
     }
 
     String mimeType = "application/x-www-form-urlencoded";
-    if (headers != null) {
-      for (String header : headers) {
-        String[] parts = header.split(":", -1);
-        if ("Content-Type".equalsIgnoreCase(parts[0])) {
-          mimeType = parts[1].trim();
-          headers.remove(header);
-          break;
-        }
+
+    for (String k : headerMap.keySet()) {
+      if ("Content-Type".equalsIgnoreCase(k)) {
+        mimeType = headerMap.remove(k);
+        break;
       }
     }
 
@@ -892,13 +904,12 @@ public class Main extends HelpOption implements Runnable {
   public Request.Builder createRequestBuilder() {
     Request.Builder requestBuilder = new Request.Builder();
 
-    requestBuilder.method(getRequestMethod(), getRequestBody());
+    Map<String, String> headerMap = headerMap(headers);
+
+    requestBuilder.method(getRequestMethod(), getRequestBody(headerMap));
 
     if (headers != null) {
-      for (String header : headers) {
-        String[] parts = header.split(":", 2);
-        requestBuilder.header(parts[0], parts[1]);
-      }
+      headerMap.forEach((k, v) -> requestBuilder.header(k, v));
     }
     if (referer != null) {
       requestBuilder.header("Referer", referer);
