@@ -106,7 +106,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void connectEnd(Call call, InetSocketAddress inetSocketAddress,
-      @Nullable Protocol protocol, @Nullable Throwable throwable) {
+      @Nullable Protocol protocol, Proxy proxy, @Nullable Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
     }
@@ -114,6 +114,7 @@ public class ZipkinTracingListener extends EventListener {
     if (throwable == null) {
       connectSpan.tag("host", inetSocketAddress.toString());
       connectSpan.tag("protocol", protocol.toString());
+      connectSpan.tag("proxy", proxy.toString());
     } else {
       connectSpan.tag("error", throwable.toString());
     }
@@ -123,7 +124,7 @@ public class ZipkinTracingListener extends EventListener {
     connectionEvent = true;
   }
 
-  @Override public void connectionFound(Call call, Connection connection) {
+  @Override public void connectionAcquired(Call call, Connection connection) {
     if (callSpan.isNoop()) {
       return;
     }
