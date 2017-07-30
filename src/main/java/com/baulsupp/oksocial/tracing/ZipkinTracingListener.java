@@ -102,18 +102,20 @@ public class ZipkinTracingListener extends EventListener {
 
     connectSpan =
         tracer.newChild(callSpan.context()).start().name("connect");
+
+    connectSpan.tag("host", inetSocketAddress.toString());
+    connectSpan.tag("proxy", proxy.toString());
   }
 
-  @Override public void connectEnd(Call call, InetSocketAddress inetSocketAddress,
-      @Nullable Protocol protocol, Proxy proxy, @Nullable Throwable throwable) {
+  @Override
+  public void connectEnd(Call call, InetSocketAddress inetSocketAddress, @Nullable Proxy proxy,
+      @Nullable Protocol protocol, @Nullable Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
     }
 
     if (throwable == null) {
-      connectSpan.tag("host", inetSocketAddress.toString());
       connectSpan.tag("protocol", protocol.toString());
-      connectSpan.tag("proxy", proxy.toString());
     } else {
       connectSpan.tag("error", throwable.toString());
     }

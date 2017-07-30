@@ -49,6 +49,8 @@ import com.baulsupp.oksocial.security.InsecureTrustManager;
 import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
+import com.baulsupp.oksocial.tracing.UriTransportRegistry;
+import com.baulsupp.oksocial.tracing.ZipkinConfig;
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor;
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener;
 import com.baulsupp.oksocial.util.FileContent;
@@ -85,6 +87,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
@@ -106,6 +109,7 @@ import okhttp3.internal.http.StatusLine;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.io.IOUtils;
 import zipkin.reporter.AsyncReporter;
+import zipkin.reporter.Sender;
 import zipkin.reporter.okhttp3.OkHttpSender;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
@@ -534,7 +538,8 @@ public class Main extends HelpOption {
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
 
     if (zipkin) {
-      OkHttpSender sender = OkHttpSender.create("http://localhost:9411/api/v1/spans");
+      ZipkinConfig config = ZipkinConfig.load();
+      Sender sender = UriTransportRegistry.forUri(config.zipkinSenderUri());
       AsyncReporter<zipkin.Span> reporter = AsyncReporter.create(sender);
 
       Tracing tracing = Tracing.newBuilder()
@@ -547,9 +552,8 @@ public class Main extends HelpOption {
 
       Tracer tracer = tracing.tracer();
 
-      Consumer<TraceContext> opener =
-          tc -> closeables.add(
-              () -> openLink("http://localhost:9411/zipkin/traces/" + tc.traceIdString()));
+      Function<TraceContext, String> openFn = config.openFunction();
+      Consumer<TraceContext> opener = tc -> closeables.add(() -> openLink(openFn.apply(tc)));
 
       clientBuilder.eventListenerFactory(
           call -> new ZipkinTracingListener(call, tracer, httpTracing, opener));
