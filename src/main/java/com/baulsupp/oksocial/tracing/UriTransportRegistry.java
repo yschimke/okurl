@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import zipkin.reporter.Sender;
+import zipkin.Span;
+import zipkin.reporter.Reporter;
 
 import static com.baulsupp.oksocial.tracing.UriHandler.loadServices;
 
@@ -29,15 +30,15 @@ public class UriTransportRegistry {
     return new UriTransportRegistry(services);
   }
 
-  public static Sender forUri(String uri) {
+  public static Reporter<Span> forUri(String uri) {
     return UriTransportRegistry.fromServices().findClient(uri);
   }
 
-  private Sender findClient(String uriString) {
+  private Reporter<Span> findClient(String uriString) {
     URI uri = URI.create(uriString);
 
     for (UriHandler h : handlers) {
-      Optional<Sender> r = h.buildSender(uri);
+      Optional<Reporter<Span>> r = h.buildSender(uri);
       if (r.isPresent()) {
         return r.get();
       }

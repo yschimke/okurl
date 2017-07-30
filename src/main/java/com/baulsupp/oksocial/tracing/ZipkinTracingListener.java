@@ -23,6 +23,7 @@ public class ZipkinTracingListener extends EventListener {
   private final Tracer tracer;
   private final HttpTracing tracing;
   private Consumer<TraceContext> opener;
+  private boolean detailed;
 
   private Span connectSpan;
   private Span dnsSpan;
@@ -34,11 +35,12 @@ public class ZipkinTracingListener extends EventListener {
   private Span connectionSpan;
 
   public ZipkinTracingListener(Call call, Tracer tracer, HttpTracing tracing,
-      Consumer<TraceContext> opener) {
+      Consumer<TraceContext> opener, boolean detailed) {
     this.call = call;
     this.tracer = tracer;
     this.tracing = tracing;
     this.opener = opener;
+    this.detailed = detailed;
   }
 
   @Override public void fetchStart(Call call) {
@@ -70,7 +72,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void dnsStart(Call call, String domainName) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -81,7 +83,7 @@ public class ZipkinTracingListener extends EventListener {
   @Override
   public void dnsEnd(Call call, String domainName, @Nullable List<InetAddress> inetAddressList,
       @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -96,7 +98,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void connectStart(Call call, InetSocketAddress inetSocketAddress, Proxy proxy) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -110,7 +112,7 @@ public class ZipkinTracingListener extends EventListener {
   @Override
   public void connectEnd(Call call, InetSocketAddress inetSocketAddress, @Nullable Proxy proxy,
       @Nullable Protocol protocol, @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -130,7 +132,16 @@ public class ZipkinTracingListener extends EventListener {
 
     connectionSpan =
         tracer.newChild(callSpan.context()).start().name("connection");
-    connectionSpan.annotate(connection.toString());
+    connectionSpan.tag("route", connection.route().socketAddress().toString());
+    if (connection.route().proxy().type() != Proxy.Type.DIRECT) {
+      connectionSpan.tag("proxy", connection.route().proxy().toString());
+    }
+    if (connection.handshake() != null) {
+      connectionSpan.tag("cipher", connection.handshake().cipherSuite().toString());
+      connectionSpan.tag("peer", connection.handshake().peerPrincipal().toString());
+      connectionSpan.tag("tls", connection.handshake().tlsVersion().toString());
+    }
+    connectionSpan.tag("protocol", connection.protocol().toString());
   }
 
   @Override public void connectionReleased(Call call, Connection connection) {
@@ -142,7 +153,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void secureConnectStart(Call call) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -152,7 +163,7 @@ public class ZipkinTracingListener extends EventListener {
 
   @Override public void secureConnectEnd(Call call, @Nullable Handshake handshake,
       @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -166,7 +177,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void requestHeadersStart(Call call) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -175,7 +186,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void requestHeadersEnd(Call call, Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -193,7 +204,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void responseHeadersStart(Call call) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -204,7 +215,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void responseHeadersEnd(Call call, Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -215,11 +226,15 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void responseBodyStart(Call call) {
-    super.responseBodyStart(call);
+    if (callSpan.isNoop() || !detailed) {
+      return;
+    }
+
+    // TODO placeholder
   }
 
   @Override public void responseBodyEnd(Call call, Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
