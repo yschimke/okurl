@@ -15,6 +15,7 @@ com.baulsupp.oksocial.services.microsoft.MicrosoftAuthInterceptor
 com.baulsupp.oksocial.services.paypal.PaypalAuthInterceptor
 com.baulsupp.oksocial.services.paypal.PaypalSandboxAuthInterceptor
 com.baulsupp.oksocial.services.slack.SlackAuthInterceptor
+com.baulsupp.oksocial.services.spotify.SpotifyAuthInterceptor
 com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor
 com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
