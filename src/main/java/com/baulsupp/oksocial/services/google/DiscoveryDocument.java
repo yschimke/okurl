@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.google;
 import com.baulsupp.oksocial.output.util.JsonUtil;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,7 +81,25 @@ public class DiscoveryDocument {
   }
 
   public Optional<DiscoveryEndpoint> findEndpoint(String url) {
-    return getEndpoints().stream().filter(e -> matches(url, e)).findAny();
+    Stream<DiscoveryEndpoint> endpointStream =
+        getEndpoints().stream().filter(e -> matches(url, e));
+
+    return endpointStream.sorted(methodFirst("GET")).findFirst();
+  }
+
+  private Comparator<? super DiscoveryEndpoint> methodFirst(String method) {
+    return (Comparator<DiscoveryEndpoint>) (o1, o2) -> {
+      String m1 = o1.httpMethod();
+      String m2 = o2.httpMethod();
+
+      if (m1.equals(method) && !m2.equals(method)) {
+        return -1;
+      } else if (m2.equals(method)) {
+        return 1;
+      }
+
+      return 0;
+    };
   }
 
   private boolean matches(String url, DiscoveryEndpoint e) {

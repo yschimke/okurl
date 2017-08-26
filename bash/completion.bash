@@ -120,6 +120,7 @@ complete -F _oksocial_complete lyftapi
 complete -F _oksocial_complete mapboxapi
 complete -F _oksocial_complete msftapi
 complete -F _oksocial_complete slackapi
+complete -F _oksocial_complete spotifyapi
 complete -F _oksocial_complete squareapi
 complete -F _oksocial_complete stackexchangeapi
 complete -F _oksocial_complete surveymonkeyapi

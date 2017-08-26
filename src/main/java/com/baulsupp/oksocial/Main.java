@@ -75,11 +75,14 @@ import java.net.SocketException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -90,6 +93,7 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Credentials;
+import okhttp3.Dispatcher;
 import okhttp3.Dns;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -109,6 +113,7 @@ import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createSslSocketFactory;
 import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.keyManagerArray;
+import static com.baulsupp.oksocial.util.HeaderUtil.headerMap;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -117,7 +122,7 @@ import static java.util.stream.Collectors.joining;
 
 @SuppressWarnings({"WeakerAccess", "CanBeFinal", "unused"})
 @Command(name = Main.NAME, description = "A curl for social apis.")
-public class Main extends HelpOption implements Runnable {
+public class Main extends HelpOption {
   private static Logger logger = Logger.getLogger(Main.class.getName());
 
   static final String NAME = "oksocial";
@@ -127,7 +132,8 @@ public class Main extends HelpOption implements Runnable {
   }
 
   public static void main(String... args) {
-    fromArgs(args).run();
+    int result = fromArgs(args).run();
+    System.exit(result);
   }
 
   @Option(name = {"-X", "--request"}, description = "Specify request command to use")
@@ -259,6 +265,9 @@ public class Main extends HelpOption implements Runnable {
   @Option(name = {"--user"}, description = "user:password for basic auth")
   public String user;
 
+  @Option(name = {"--maxrequests"}, description = "Concurrency Level")
+  private int maxRequests = 16;
+
   public String commandName = System.getProperty("command.name", "oksocial");
 
   public String completionFile = System.getenv("COMPLETION_FILE");
@@ -292,7 +301,7 @@ public class Main extends HelpOption implements Runnable {
     return PlatformUtil.versionString(Main.class, "/oksocial-version.properties");
   }
 
-  @Override public void run() {
+  public int run() {
     if (sslDebug) {
       System.setProperty("javax.net.debug", "ssl,handshake");
     }
@@ -304,13 +313,13 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (showHelpIfRequested()) {
-      return;
+      return 0;
     }
 
     try {
       if (version) {
         outputHandler.info(NAME + " " + versionString());
-        return;
+        return 0;
       }
 
       initialise();
@@ -318,42 +327,46 @@ public class Main extends HelpOption implements Runnable {
       if (showCredentials) {
         new PrintCredentials(client, credentialsStore, outputHandler,
             serviceInterceptor).showCredentials(arguments, this::createRequestBuilder);
-        return;
+        return 0;
       }
 
       if (aliasNames) {
         printAliasNames();
-        return;
+        return 0;
       }
 
       if (serviceNames) {
         outputHandler.info(serviceInterceptor.names().stream().collect(joining(" ")));
-        return;
+        return 0;
       }
 
       if (urlComplete) {
         outputHandler.info(urlCompletionList());
-        return;
+        return 0;
       }
 
       if (apiDoc) {
         showApiDocs();
-        return;
+        return 0;
       }
 
       if (authorize) {
         authorize();
-        return;
+        return 0;
       }
 
       if (renew) {
         renew();
-        return;
+        return 0;
       }
 
-      executeRequests(outputHandler);
+      return executeRequests(outputHandler);
+    } catch (UsageException e) {
+      outputHandler.showError("error: " + e.getMessage(), null);
+      return -1;
     } catch (Exception e) {
       outputHandler.showError("unknown error", e);
+      return -2;
     } finally {
       closeClients();
     }
@@ -507,6 +520,11 @@ public class Main extends HelpOption implements Runnable {
       });
     }
 
+    Dispatcher dispatcher = new Dispatcher();
+    dispatcher.setMaxRequests(maxRequests);
+    dispatcher.setMaxRequestsPerHost(maxRequests);
+    clientBuilder.dispatcher(dispatcher);
+
     OkHttpClient authClient = clientBuilder.build();
     serviceInterceptor = new ServiceInterceptor(authClient, credentialsStore);
 
@@ -597,7 +615,7 @@ public class Main extends HelpOption implements Runnable {
     }
   }
 
-  private void executeRequests(OutputHandler outputHandler) throws Exception {
+  private int executeRequests(OutputHandler outputHandler) throws Exception {
     ShellCommand command = getShellCommand();
 
     List<Request> requests = command.buildRequests(client, requestBuilder, arguments);
@@ -608,11 +626,14 @@ public class Main extends HelpOption implements Runnable {
       }
 
       List<Future<Response>> responseFutures = enqueueRequests(requests, client);
-      processResponses(outputHandler, responseFutures);
+      boolean failed = processResponses(outputHandler, responseFutures);
+      return failed ? -5 : 0;
     }
+
+    return 0;
   }
 
-  private void processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
+  private boolean processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
       throws IOException, InterruptedException {
     boolean failed = false;
     for (Future<Response> responseFuture : responseFutures) {
@@ -627,6 +648,7 @@ public class Main extends HelpOption implements Runnable {
         }
       }
     }
+    return failed;
   }
 
   private void showOutput(OutputHandler outputHandler, Response response)
@@ -747,7 +769,9 @@ public class Main extends HelpOption implements Runnable {
     }
 
     if (debug) {
-      builder.networkInterceptors().add(new HttpLoggingInterceptor(logger::info));
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(logger::info);
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      builder.networkInterceptors().add(loggingInterceptor);
     }
 
     if (socksProxy != null) {
@@ -865,20 +889,17 @@ public class Main extends HelpOption implements Runnable {
     return "GET";
   }
 
-  private RequestBody getRequestBody() {
+  private RequestBody getRequestBody(Map<String, String> headerMap) {
     if (data == null) {
       return null;
     }
 
     String mimeType = "application/x-www-form-urlencoded";
-    if (headers != null) {
-      for (String header : headers) {
-        String[] parts = header.split(":", -1);
-        if ("Content-Type".equalsIgnoreCase(parts[0])) {
-          mimeType = parts[1].trim();
-          headers.remove(header);
-          break;
-        }
+
+    for (String k : headerMap.keySet()) {
+      if ("Content-Type".equalsIgnoreCase(k)) {
+        mimeType = headerMap.remove(k);
+        break;
       }
     }
 
@@ -892,13 +913,12 @@ public class Main extends HelpOption implements Runnable {
   public Request.Builder createRequestBuilder() {
     Request.Builder requestBuilder = new Request.Builder();
 
-    requestBuilder.method(getRequestMethod(), getRequestBody());
+    Map<String, String> headerMap = headerMap(headers);
+
+    requestBuilder.method(getRequestMethod(), getRequestBody(headerMap));
 
     if (headers != null) {
-      for (String header : headers) {
-        String[] parts = header.split(":", 2);
-        requestBuilder.header(parts[0], parts[1]);
-      }
+      headerMap.forEach((k, v) -> requestBuilder.header(k, v));
     }
     if (referer != null) {
       requestBuilder.header("Referer", referer);
