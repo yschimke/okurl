@@ -141,7 +141,9 @@ public class ZipkinTracingListener extends EventListener {
       connectionSpan.tag("peer", connection.handshake().peerPrincipal().toString());
       connectionSpan.tag("tls", connection.handshake().tlsVersion().toString());
     }
-    connectionSpan.tag("protocol", connection.protocol().toString());
+    if (connection.protocol() != null) {
+      connectionSpan.tag("protocol", connection.protocol().toString());
+    }
   }
 
   @Override public void connectionReleased(Call call, Connection connection) {
