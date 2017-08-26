@@ -41,7 +41,7 @@ public class ZipkinTracingListener extends EventListener {
     this.opener = opener;
   }
 
-  @Override public void fetchStart(Call call) {
+  @Override public void callStart(Call call) {
     callSpan = tracer.newTrace().name("http").start();
 
     if (!callSpan.isNoop()) {
@@ -54,7 +54,7 @@ public class ZipkinTracingListener extends EventListener {
     spanInScope = tracer.withSpanInScope(callSpan);
   }
 
-  @Override public void fetchEnd(Call call, Throwable throwable) {
+  @Override public void callEnd(Call call, Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
     }
@@ -104,8 +104,9 @@ public class ZipkinTracingListener extends EventListener {
         tracer.newChild(callSpan.context()).start().name("connect");
   }
 
-  @Override public void connectEnd(Call call, InetSocketAddress inetSocketAddress,
-      @Nullable Protocol protocol, @Nullable Throwable throwable) {
+  @Override
+  public void connectEnd(Call call, InetSocketAddress inetSocketAddress, @Nullable Proxy proxy,
+                         @Nullable Protocol protocol, @Nullable Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
     }
@@ -165,13 +166,29 @@ public class ZipkinTracingListener extends EventListener {
         tracer.newChild(callSpan.context()).start().name("request");
   }
 
-  @Override public void requestBodyEnd(Call call, Throwable throwable) {
+  @Override
+  public void requestHeadersEnd(Call call, long headerLength, @Nullable Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
     }
 
     if (throwable != null) {
-      secureConnectSpan.tag("error", throwable.toString());
+      requestSpan.tag("error", throwable.toString());
+    } else {
+      requestSpan.tag("requestHeaderLength", "" + headerLength);
+    }
+  }
+
+  @Override
+  public void requestBodyEnd(Call call, long bytesWritten, @Nullable Throwable throwable) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
+    if (throwable != null) {
+      requestSpan.tag("error", throwable.toString());
+    } else {
+      requestSpan.tag("requestBodyBytes", "" + bytesWritten);
     }
 
     requestSpan.finish();
@@ -186,11 +203,32 @@ public class ZipkinTracingListener extends EventListener {
         tracer.newChild(callSpan.context()).start().name("response");
   }
 
-  @Override public void responseBodyEnd(Call call, Throwable throwable) {
+  @Override
+  public void responseHeadersEnd(Call call, long headerLength, @Nullable Throwable throwable) {
     if (callSpan.isNoop()) {
       return;
     }
 
+    if (throwable != null) {
+      responseSpan.tag("error", throwable.toString());
+    } else {
+      responseSpan.tag("responseHeaderLength", "" + headerLength);
+    }
+  }
+
+  @Override public void responseBodyEnd(Call call, long bytesRead, @Nullable Throwable throwable) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
+    if (throwable != null) {
+      responseSpan.tag("error", throwable.toString());
+    } else {
+      responseSpan.tag("responseBodyBytes", "" + bytesRead);
+    }
+
     responseSpan.finish();
   }
+
+
 }
