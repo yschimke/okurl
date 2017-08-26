@@ -23,22 +23,24 @@ public class ZipkinTracingListener extends EventListener {
   private final Tracer tracer;
   private final HttpTracing tracing;
   private Consumer<TraceContext> opener;
+  private boolean detailed;
 
   private Span connectSpan;
   private Span dnsSpan;
-  private boolean connectionEvent = false;
   private Span callSpan;
   private Tracer.SpanInScope spanInScope;
   private Span requestSpan;
   private Span responseSpan;
   private Span secureConnectSpan;
+  private Span connectionSpan;
 
   public ZipkinTracingListener(Call call, Tracer tracer, HttpTracing tracing,
-      Consumer<TraceContext> opener) {
+      Consumer<TraceContext> opener, boolean detailed) {
     this.call = call;
     this.tracer = tracer;
     this.tracing = tracing;
     this.opener = opener;
+    this.detailed = detailed;
   }
 
   @Override public void callStart(Call call) {
@@ -70,7 +72,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void dnsStart(Call call, String domainName) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -81,7 +83,7 @@ public class ZipkinTracingListener extends EventListener {
   @Override
   public void dnsEnd(Call call, String domainName, @Nullable List<InetAddress> inetAddressList,
       @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -96,31 +98,31 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void connectStart(Call call, InetSocketAddress inetSocketAddress, Proxy proxy) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
     connectSpan =
         tracer.newChild(callSpan.context()).start().name("connect");
+
+    connectSpan.tag("host", inetSocketAddress.toString());
+    connectSpan.tag("proxy", proxy.toString());
   }
 
   @Override
   public void connectEnd(Call call, InetSocketAddress inetSocketAddress, @Nullable Proxy proxy,
-                         @Nullable Protocol protocol, @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+      @Nullable Protocol protocol, @Nullable Throwable throwable) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
     if (throwable == null) {
-      connectSpan.tag("host", inetSocketAddress.toString());
       connectSpan.tag("protocol", protocol.toString());
     } else {
       connectSpan.tag("error", throwable.toString());
     }
 
     connectSpan.finish();
-
-    connectionEvent = true;
   }
 
   @Override public void connectionAcquired(Call call, Connection connection) {
@@ -128,13 +130,30 @@ public class ZipkinTracingListener extends EventListener {
       return;
     }
 
-    if (!connectionEvent) {
-      callSpan.annotate(connection.toString());
+    connectionSpan =
+        tracer.newChild(callSpan.context()).start().name("connection");
+    connectionSpan.tag("route", connection.route().socketAddress().toString());
+    if (connection.route().proxy().type() != Proxy.Type.DIRECT) {
+      connectionSpan.tag("proxy", connection.route().proxy().toString());
     }
+    if (connection.handshake() != null) {
+      connectionSpan.tag("cipher", connection.handshake().cipherSuite().toString());
+      connectionSpan.tag("peer", connection.handshake().peerPrincipal().toString());
+      connectionSpan.tag("tls", connection.handshake().tlsVersion().toString());
+    }
+    connectionSpan.tag("protocol", connection.protocol().toString());
+  }
+
+  @Override public void connectionReleased(Call call, Connection connection) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
+    connectionSpan.finish();
   }
 
   @Override public void secureConnectStart(Call call) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -144,7 +163,7 @@ public class ZipkinTracingListener extends EventListener {
 
   @Override public void secureConnectEnd(Call call, @Nullable Handshake handshake,
       @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -158,7 +177,7 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override public void requestHeadersStart(Call call) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -168,7 +187,7 @@ public class ZipkinTracingListener extends EventListener {
 
   @Override
   public void requestHeadersEnd(Call call, long headerLength, @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -191,13 +210,22 @@ public class ZipkinTracingListener extends EventListener {
       requestSpan.tag("requestBodyBytes", "" + bytesWritten);
     }
 
-    requestSpan.finish();
+    requestSpan = finish(requestSpan);
+  }
+
+  private Span finish(Span span) {
+    if (span != null) {
+      span.finish();
+    }
+    return null;
   }
 
   @Override public void responseHeadersStart(Call call) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
+
+    requestSpan = finish(requestSpan);
 
     responseSpan =
         tracer.newChild(callSpan.context()).start().name("response");
@@ -205,19 +233,20 @@ public class ZipkinTracingListener extends EventListener {
 
   @Override
   public void responseHeadersEnd(Call call, long headerLength, @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
     if (throwable != null) {
       responseSpan.tag("error", throwable.toString());
+      responseSpan = finish(responseSpan);
     } else {
       responseSpan.tag("responseHeaderLength", "" + headerLength);
     }
   }
 
   @Override public void responseBodyEnd(Call call, long bytesRead, @Nullable Throwable throwable) {
-    if (callSpan.isNoop()) {
+    if (callSpan.isNoop() || !detailed) {
       return;
     }
 
@@ -227,8 +256,14 @@ public class ZipkinTracingListener extends EventListener {
       responseSpan.tag("responseBodyBytes", "" + bytesRead);
     }
 
-    responseSpan.finish();
+    responseSpan = finish(responseSpan);
   }
 
+  @Override public void responseBodyStart(Call call) {
+    if (callSpan.isNoop() || !detailed) {
+      return;
+    }
 
+    // TODO placeholder
+  }
 }

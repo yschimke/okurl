@@ -1,8 +1,6 @@
 package com.baulsupp.oksocial.tracing;
 
 import brave.Tracing;
-import brave.propagation.B3Propagation;
-import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import java.io.IOException;
 import okhttp3.Interceptor;
