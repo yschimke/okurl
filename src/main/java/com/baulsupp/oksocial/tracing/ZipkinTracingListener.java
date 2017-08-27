@@ -169,9 +169,7 @@ public class ZipkinTracingListener extends EventListener {
       return;
     }
 
-    if (throwable == null) {
-      secureConnectSpan.tag("handshake", handshake.toString());
-    } else {
+    if (throwable != null) {
       secureConnectSpan.tag("error", throwable.toString());
     }
 
