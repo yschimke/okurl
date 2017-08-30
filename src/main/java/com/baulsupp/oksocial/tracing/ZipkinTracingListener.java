@@ -4,13 +4,13 @@ import brave.Span;
 import brave.Tracer;
 import brave.http.HttpTracing;
 import brave.propagation.TraceContext;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Connection;
 import okhttp3.EventListener;
@@ -56,19 +56,25 @@ public class ZipkinTracingListener extends EventListener {
     spanInScope = tracer.withSpanInScope(callSpan);
   }
 
-  @Override public void callEnd(Call call, Throwable throwable) {
+  @Override public void callEnd(Call call) {
     if (callSpan.isNoop()) {
       return;
     }
 
-    callSpan.finish();
     spanInScope.close();
-
-    if (throwable != null) {
-      callSpan.tag("error", throwable.toString());
-    }
+    callSpan.finish();
 
     opener.accept(callSpan.context());
+  }
+
+  @Override public void callFailed(Call call, IOException ioe) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
+    callSpan.tag("error", ioe.toString());
+
+    callEnd(call);
   }
 
   @Override public void dnsStart(Call call, String domainName) {
@@ -81,18 +87,13 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override
-  public void dnsEnd(Call call, String domainName, @Nullable List<InetAddress> inetAddressList,
-      @Nullable Throwable throwable) {
+  public void dnsEnd(Call call, String domainName, List<InetAddress> inetAddressList) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    if (throwable == null) {
-      dnsSpan.tag("dns.results",
-          inetAddressList.stream().map(Object::toString).collect(Collectors.joining(", ")));
-    } else {
-      dnsSpan.tag("error", throwable.toString());
-    }
+    dnsSpan.tag("dns.results",
+        inetAddressList.stream().map(Object::toString).collect(Collectors.joining(", ")));
 
     dnsSpan.finish();
   }
@@ -110,17 +111,13 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override
-  public void connectEnd(Call call, InetSocketAddress inetSocketAddress, @Nullable Proxy proxy,
-      @Nullable Protocol protocol, @Nullable Throwable throwable) {
+  public void connectEnd(Call call, InetSocketAddress inetSocketAddress, Proxy proxy,
+      Protocol protocol) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    if (throwable == null) {
-      connectSpan.tag("protocol", protocol.toString());
-    } else {
-      connectSpan.tag("error", throwable.toString());
-    }
+    connectSpan.tag("protocol", protocol.toString());
 
     connectSpan.finish();
   }
@@ -163,14 +160,9 @@ public class ZipkinTracingListener extends EventListener {
         tracer.newChild(callSpan.context()).start().name("tls");
   }
 
-  @Override public void secureConnectEnd(Call call, @Nullable Handshake handshake,
-      @Nullable Throwable throwable) {
+  @Override public void secureConnectEnd(Call call, Handshake handshake) {
     if (callSpan.isNoop() || !detailed) {
       return;
-    }
-
-    if (throwable != null) {
-      secureConnectSpan.tag("error", throwable.toString());
     }
 
     secureConnectSpan.finish();
@@ -186,29 +178,21 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override
-  public void requestHeadersEnd(Call call, long headerLength, @Nullable Throwable throwable) {
+  public void requestHeadersEnd(Call call, long headerLength) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    if (throwable != null) {
-      requestSpan.tag("error", throwable.toString());
-    } else {
-      requestSpan.tag("requestHeaderLength", "" + headerLength);
-    }
+    requestSpan.tag("requestHeaderLength", "" + headerLength);
   }
 
   @Override
-  public void requestBodyEnd(Call call, long bytesWritten, @Nullable Throwable throwable) {
+  public void requestBodyEnd(Call call, long bytesWritten) {
     if (callSpan.isNoop()) {
       return;
     }
 
-    if (throwable != null) {
-      requestSpan.tag("error", throwable.toString());
-    } else {
-      requestSpan.tag("requestBodyBytes", "" + bytesWritten);
-    }
+    requestSpan.tag("requestBodyBytes", "" + bytesWritten);
 
     requestSpan = finish(requestSpan);
   }
@@ -232,29 +216,20 @@ public class ZipkinTracingListener extends EventListener {
   }
 
   @Override
-  public void responseHeadersEnd(Call call, long headerLength, @Nullable Throwable throwable) {
+  public void responseHeadersEnd(Call call, long headerLength) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    if (throwable != null) {
-      responseSpan.tag("error", throwable.toString());
-      responseSpan = finish(responseSpan);
-    } else {
-      responseSpan.tag("responseHeaderLength", "" + headerLength);
-    }
+    responseSpan.tag("responseHeaderLength", "" + headerLength);
   }
 
-  @Override public void responseBodyEnd(Call call, long bytesRead, @Nullable Throwable throwable) {
+  @Override public void responseBodyEnd(Call call, long bytesRead) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    if (throwable != null) {
-      responseSpan.tag("error", throwable.toString());
-    } else {
-      responseSpan.tag("responseBodyBytes", "" + bytesRead);
-    }
+    responseSpan.tag("responseBodyBytes", "" + bytesRead);
 
     responseSpan = finish(responseSpan);
   }
@@ -263,7 +238,5 @@ public class ZipkinTracingListener extends EventListener {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
-
-    // TODO placeholder
   }
 }

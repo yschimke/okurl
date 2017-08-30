@@ -56,6 +56,8 @@ public class ServiceInterceptor implements Interceptor {
         }
       }
 
+      // TODO retry request
+
       return result;
     } else {
       return chain.proceed(chain.request());
