@@ -130,6 +130,13 @@ public class ZipkinTracingListener extends EventListener {
     connectionSpan =
         tracer.newChild(callSpan.context()).start().name("connection");
     connectionSpan.tag("route", connection.route().socketAddress().toString());
+  }
+
+  @Override public void connectionReleased(Call call, Connection connection) {
+    if (callSpan.isNoop()) {
+      return;
+    }
+
     if (connection.route().proxy().type() != Proxy.Type.DIRECT) {
       connectionSpan.tag("proxy", connection.route().proxy().toString());
     }
@@ -140,12 +147,6 @@ public class ZipkinTracingListener extends EventListener {
     }
     if (connection.protocol() != null) {
       connectionSpan.tag("protocol", connection.protocol().toString());
-    }
-  }
-
-  @Override public void connectionReleased(Call call, Connection connection) {
-    if (callSpan.isNoop()) {
-      return;
     }
 
     connectionSpan.finish();
