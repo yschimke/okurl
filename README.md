@@ -27,7 +27,7 @@ $ twitterapi '/1.1/statuses/show.json?id=733545978398040064'
     - Facebook
     - Uber
 - Javascript scripting support
-- simple alias "./twitterapi /1.1/statuses/user_timeline.json"
+- simple alias "twitterapi /1.1/statuses/user_timeline.json"
 - OpenSC government smartcard support e.g. Estonian ID card
 - OSX integration e.g. launch Preview for images and homebrew install
 - HTTP/2 support and protocol selection
