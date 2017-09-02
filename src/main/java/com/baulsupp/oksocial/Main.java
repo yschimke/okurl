@@ -285,7 +285,7 @@ public class Main extends HelpOption {
   private List<Closeable> closeables = Lists.newArrayList();
 
   private String versionString() {
-    return PlatformUtil.versionString(Main.class, "/oksocial-version.properties");
+    return getClass().getPackage().getImplementationVersion();
   }
 
   public int run() {

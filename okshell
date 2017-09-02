@@ -2,17 +2,7 @@
 
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
-codesha() {
-  find pom.xml src/main -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
-}
-
-SHA=$(codesha)
-
-if [ ! -f "target/cached-$SHA.jar" ]; then
-  echo Building... >&1
-  mvn -B -DskipTests clean package dependency:copy-dependencies >&2 || exit
-  mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
-fi
+./gradlew -q installDist
 
 BCP=
 
@@ -27,9 +17,9 @@ else
   VMOPTS="-J--add-opens=java.base/sun.net.dns=ALL-UNNAMED -J--add-opens=java.base/java.lang.reflect=ALL-UNNAMED -J--add-opens=java.base/java.nio=ALL-UNNAMED -J--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
 fi
 
-CLASSPATH=$(JARS=(target/dependency/*.jar); IFS=:; echo "${JARS[*]}")
+CLASSPATH=$(JARS=(build/install/oksocial/lib/*.jar); IFS=:; echo "${JARS[*]}")
 
-MAIN_JAR=$(ls "target/cached-$SHA.jar")
+MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-1.*.jar)
 
 if [ -z "$1" ]; then
   input=-
