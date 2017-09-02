@@ -8,8 +8,12 @@ apply plugin: 'distribution'
 apply plugin: 'maven'
 
 group = 'com.baulsupp'
-version = versioning.info.full
-//version = '1.0.56-SNAPSHOT'
+
+versioning {
+  releaseMode = 'snapshot'
+}
+
+version = versioning.info.display
 
 description = """OkHttp Social Authentication"""
 
@@ -18,9 +22,6 @@ targetCompatibility = 1.8
 tasks.withType(JavaCompile) {
   options.encoding = 'UTF-8'
 }
-
-// TODO
-// add alpn-boot to assembly
 
 jar {
   manifest {
