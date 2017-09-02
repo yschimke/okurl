@@ -1,17 +1,17 @@
 plugins {
   id 'com.github.ben-manes.versions' version '0.15.0'
+  id 'net.nemerosa.versioning' version '2.0.0'
 }
 
 apply plugin: 'java'
-apply plugin: 'application'
+apply plugin: 'distribution'
 apply plugin: 'maven'
 
 group = 'com.baulsupp'
-version = '1.0.56-SNAPSHOT'
+version = versioning.info.full
+//version = '1.0.56-SNAPSHOT'
 
 description = """OkHttp Social Authentication"""
-
-mainClassName = "com.baulsupp.oksocial.Main"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -24,9 +24,12 @@ tasks.withType(JavaCompile) {
 
 jar {
   manifest {
-    attributes("Implementation-Title": "OkSocial",
-        "Implementation-Version": version)
+    attributes("Implementation-Title": "OkSocial", "Implementation-Version": version)
   }
+}
+
+distTar {
+  compression = Compression.GZIP
 }
 
 repositories {
@@ -68,6 +71,40 @@ dependencies {
   compile files('external/osxkeychain.jar')
   testCompile group: 'com.squareup.okhttp3', name: 'okhttp-testing-support', version: '3.8.1'
   testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.8.1'
+  runtime 'org.mortbay.jetty.alpn:alpn-boot:8.1.7.v20160121'
+}
+
+distributions {
+  main {
+    contents {
+      from("${rootProject.projectDir}") {
+        include "README.md", "LICENSE"
+      }
+      from("${rootProject.projectDir}/src/main/scripts") {
+        into "bin"
+      }
+      from("${rootProject.projectDir}/certificates") {
+        into "certificates"
+      }
+      from("${rootProject.projectDir}/commands") {
+        into "bin"
+      }
+      from("${rootProject.projectDir}/bash") {
+        into "bash"
+      }
+      from("${rootProject.projectDir}/src/main/resources") {
+        into "scripts"
+        include "oksocial.js"
+      }
+      into('lib') {
+        from jar
+        from(project.configurations.runtime).exclude("*alpn-boot*")
+      }
+      into('alpn') {
+        from(project.configurations.runtime).include("*alpn-boot*")
+      }
+    }
+  }
 }
 
 //packaging tests
@@ -77,3 +114,4 @@ task packageTests(type: Jar) {
 }
 
 artifacts.archives packageTests
+
