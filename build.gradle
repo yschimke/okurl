@@ -10,7 +10,7 @@ apply plugin: 'maven'
 group = 'com.baulsupp'
 
 versioning {
-  releaseMode = 'snapshot'
+  releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
 }
 
 version = versioning.info.display
