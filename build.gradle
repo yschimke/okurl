@@ -81,12 +81,14 @@ distributions {
         include "README.md", "LICENSE"
       }
       from("${rootProject.projectDir}/src/main/scripts") {
+        fileMode 0755
         into "bin"
       }
       from("${rootProject.projectDir}/certificates") {
         into "certificates"
       }
       from("${rootProject.projectDir}/commands") {
+        fileMode 0755
         into "bin"
       }
       from("${rootProject.projectDir}/bash") {
