@@ -3,12 +3,15 @@ plugins {
 }
 
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'maven'
 
 group = 'com.baulsupp'
 version = '1.0.56-SNAPSHOT'
 
 description = """OkHttp Social Authentication"""
+
+mainClassName = "com.baulsupp.oksocial.Main"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

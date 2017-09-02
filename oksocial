@@ -1,21 +1,11 @@
-#!/bin/sh
+#!/bin/sh -e
 
 CMD=$(basename "$0")
 
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 export INSTALLDIR=.
 
-codesha() {
-  find pom.xml src/main -type f | sort | xargs shasum | shasum | cut -f 1 -d ' '
-}
-
-SHA=$(codesha)
-
-if [ ! -f "target/cached-$SHA.jar" ]; then
-  echo Building... >&1
-  mvn -B -q -DskipTests clean package dependency:copy-dependencies >&2 || exit
-  mv target/oksocial-*SNAPSHOT.jar "target/cached-$SHA.jar"
-fi
+./gradlew -q installDist
 
 BCP=
 #DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
@@ -36,5 +26,5 @@ fi
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
-MAIN_JAR=$(ls "target/cached-$SHA.jar")
-$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:target/dependency/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
+MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-1.*.jar)
+$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
