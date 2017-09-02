@@ -1,0 +1,68 @@
+plugins {
+  id 'com.github.ben-manes.versions' version '0.15.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.baulsupp'
+version = '1.0.56-SNAPSHOT'
+
+description = """OkHttp Social Authentication"""
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+
+// TODO
+// add alpn-boot to assembly
+
+repositories {
+  maven { url "https://jitpack.io" }
+  maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+  compile group: 'com.baulsupp', name: 'oksocial-output', version: '0.6'
+  compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.8.1'
+  compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.8.1'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0'
+  compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml',
+      version: '2.9.0'
+  compile(group: 'com.twitter', name: 'joauth', version: '6.0.2') {
+    exclude(module: 'guava')
+  }
+  compile group: 'org.eclipse.jetty.aggregate', name: 'jetty-all', version: '9.4.7.RC0',
+      classifier: 'uber'
+  compile(group: 'com.github.mrmike', name: 'ok2curl', version: '0.3.1') {
+    exclude(module: 'okhttp')
+  }
+  compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+  compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+  compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+  compile group: 'org.slf4j', name: 'slf4j-jcl', version: '1.7.25'
+  compile group: 'org.zeroturnaround', name: 'zt-exec', version: '1.10'
+  compile group: 'com.google.guava', name: 'guava', version: '23.0'
+  compile group: 'com.jakewharton.byteunits', name: 'byteunits', version: '0.9.1'
+  compile group: 'io.netty', name: 'netty-all', version: '4.1.15.Final'
+  compile group: 'io.netty', name: 'netty-resolver-dns', version: '4.1.15.Final'
+  compile group: 'io.airlift', name: 'airline', version: '0.8'
+  compile group: 'org.junit.platform', name: 'junit-platform-surefire-provider', version: '1.0.0-M3'
+  compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-M3'
+  compile group: 'org.junit.jupiter', name: 'junit-jupiter-migration-support', version: '5.0.0-M3'
+  compile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.0-M3'
+  compile files('external/osxkeychain.jar')
+  testCompile group: 'com.squareup.okhttp3', name: 'okhttp-testing-support', version: '3.8.1'
+  testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.8.1'
+}
+
+//packaging tests
+task packageTests(type: Jar) {
+  from sourceSets.test.output
+  classifier = 'tests'
+}
+
+artifacts.archives packageTests
