@@ -8,7 +8,7 @@ apply plugin: 'distribution'
 apply plugin: 'maven'
 
 group = 'com.baulsupp'
-version = versioning.info.full
+version = versioning.info.display
 //version = '1.0.56-SNAPSHOT'
 
 description = """OkHttp Social Authentication"""
