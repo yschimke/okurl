@@ -19,7 +19,7 @@ public class GithubUtil {
 
   public static final Set<String> API_HOSTS =
       Collections.unmodifiableSet(Sets.newHashSet(
-          "api.github.com")
+          "api.github.com", "uploads.github.com")
       );
 
   public static Request apiRequest(String s, Request.Builder requestBuilder) {
