@@ -11,11 +11,14 @@ import java.net.Proxy;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Connection;
 import okhttp3.EventListener;
 import okhttp3.Handshake;
 import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
 import zipkin.TraceKeys;
 
 public class ZipkinTracingListener extends EventListener {
@@ -122,6 +125,21 @@ public class ZipkinTracingListener extends EventListener {
     connectSpan.finish();
   }
 
+  @Override
+  public void connectFailed(Call call, InetSocketAddress inetSocketAddress, @Nullable Proxy proxy,
+      @Nullable Protocol protocol, @Nullable IOException ioe) {
+    if (callSpan.isNoop() || !detailed) {
+      return;
+    }
+
+    if (protocol != null) {
+      connectSpan.tag("protocol", protocol.toString());
+    }
+    connectSpan.tag("failed", ioe.toString());
+
+    connectSpan.finish();
+  }
+
   @Override public void connectionAcquired(Call call, Connection connection) {
     if (callSpan.isNoop()) {
       return;
@@ -178,13 +196,12 @@ public class ZipkinTracingListener extends EventListener {
         tracer.newChild(callSpan.context()).start().name("request");
   }
 
-  @Override
-  public void requestHeadersEnd(Call call, long headerLength) {
+  @Override public void requestHeadersEnd(Call call, Request request) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    requestSpan.tag("requestHeaderLength", "" + headerLength);
+    requestSpan.tag("requestHeaderLength", "" + request.headers().byteCount());
   }
 
   @Override
@@ -216,13 +233,12 @@ public class ZipkinTracingListener extends EventListener {
         tracer.newChild(callSpan.context()).start().name("response");
   }
 
-  @Override
-  public void responseHeadersEnd(Call call, long headerLength) {
+  @Override public void responseHeadersEnd(Call call, Response response) {
     if (callSpan.isNoop() || !detailed) {
       return;
     }
 
-    responseSpan.tag("responseHeaderLength", "" + headerLength);
+    responseSpan.tag("responseHeaderLength", "" + response.headers().byteCount());
   }
 
   @Override public void responseBodyEnd(Call call, long bytesRead) {
