@@ -13,6 +13,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class FacebookUtil {
+  public static final String VERSION = "v2.8";
+
   private FacebookUtil() {
   }
 

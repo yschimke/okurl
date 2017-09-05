@@ -32,7 +32,7 @@ public class FacebookAuthFlow {
 
       String code = s.waitForCode();
 
-      String tokenUrl = "https://graph.facebook.com/v2.8/oauth/access_token"
+      String tokenUrl = "https://graph.facebook.com/v2.10/oauth/access_token"
           + "?client_id=" + clientId
           + "&redirect_uri=" + serverUri
           + "&client_secret=" + clientSecret

@@ -37,7 +37,7 @@ public class FacebookTest {
   @Test public void testExplainsUrl() throws IOException {
     assumeHasNetwork();
 
-    main.arguments = Lists.newArrayList("https://graph.facebook.com/v2.8/app/groups");
+    main.arguments = Lists.newArrayList("https://graph.facebook.com/v2.10/app/groups");
     main.apiDoc = true;
 
     main.run();

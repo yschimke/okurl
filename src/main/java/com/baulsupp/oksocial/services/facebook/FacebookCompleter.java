@@ -15,6 +15,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import static com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -51,7 +52,8 @@ public class FacebookCompleter extends HostUrlCompleter {
   }
 
   private CompletableFuture<List<String>> topLevel() {
-    HttpUrl url = HttpUrl.parse("https://graph.facebook.com/v2.8/me/accounts?fields=username");
+    HttpUrl url = HttpUrl.parse(
+        "https://graph.facebook.com/" + VERSION + "/me/accounts?fields=username");
     Request request = new Request.Builder().url(url).build();
 
     return AuthUtil.enqueueJsonMapRequest(client, request)
@@ -63,7 +65,7 @@ public class FacebookCompleter extends HostUrlCompleter {
   private CompletableFuture<UrlList> completePath(String path) {
     if (path.equals("/")) {
       return topLevel().thenApply(l -> {
-        l.add("v2.8");
+        l.add(VERSION);
         return l;
       }).thenApply(l -> new UrlList(UrlList.Match.EXACT,
           l.stream().map(addPath("https://graph.facebook.com/")).collect(toList())));
