@@ -49,7 +49,7 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return Arrays.asList("test.com", "api1.test.com")
   }
 
-  override fun apiDocPresenter(url: String): ApiDocPresenter {
-    return ApiDocPresenter { url, outputHandler, client -> outputHandler.info("Test: " + url) }
+  override fun apiDocPresenter(apiUrl: String): ApiDocPresenter {
+    return ApiDocPresenter { url, outputHandler, _ -> outputHandler.info("Test: " + url) }
   }
 }
