@@ -803,10 +803,10 @@ public class Main extends HelpOption {
   private Dns buildDns() {
     Dns dns;
     if (dnsMode == DnsMode.NETTY) {
-      dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers);
+      dns = NettyDns.Companion.byName(ipMode, getEventLoopGroup(), dnsServers);
     } else if (dnsMode == DnsMode.DNSGOOGLE) {
       dns = new DnsSelector(ipMode,
-          GoogleDns.fromHosts(() -> Main.this.client, ipMode, "216.58.216.142", "216.239.34.10",
+          GoogleDns.Companion.fromHosts(() -> Main.this.client, ipMode, "216.58.216.142", "216.239.34.10",
               "2607:f8b0:400a:809::200e"));
     } else {
       if (dnsServers != null) {
@@ -816,7 +816,7 @@ public class Main extends HelpOption {
       dns = new DnsSelector(ipMode, Dns.SYSTEM);
     }
     if (resolve != null) {
-      dns = DnsOverride.build(dns, resolve);
+      dns = DnsOverride.Companion.build(dns, resolve);
     }
     return dns;
   }
@@ -835,7 +835,7 @@ public class Main extends HelpOption {
   }
 
   private SocketFactory getSocketFactory() throws SocketException {
-    Optional<SocketFactory> socketFactory = InterfaceSocketFactory.byName(networkInterface);
+    Optional<SocketFactory> socketFactory = InterfaceSocketFactory.Companion.byName(networkInterface);
 
     if (!socketFactory.isPresent()) {
       throw new UsageException("networkInterface '" + networkInterface + "' not found");
