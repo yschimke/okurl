@@ -26,5 +26,5 @@ fi
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
-MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-1.*.jar)
+MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-*.jar | grep -v oksocial-output)
 $JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"

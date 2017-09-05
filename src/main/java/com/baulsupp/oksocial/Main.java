@@ -1,5 +1,11 @@
 package com.baulsupp.oksocial;
 
+import brave.Tracer;
+import brave.Tracing;
+import brave.http.HttpTracing;
+import brave.internal.Platform;
+import brave.propagation.TraceContext;
+import brave.sampler.Sampler;
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter;
 import com.baulsupp.oksocial.authenticator.AuthInterceptor;
 import com.baulsupp.oksocial.authenticator.Authorisation;
@@ -44,6 +50,10 @@ import com.baulsupp.oksocial.security.InsecureTrustManager;
 import com.baulsupp.oksocial.security.OpenSCUtil;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
+import com.baulsupp.oksocial.tracing.UriTransportRegistry;
+import com.baulsupp.oksocial.tracing.ZipkinConfig;
+import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor;
+import com.baulsupp.oksocial.tracing.ZipkinTracingListener;
 import com.baulsupp.oksocial.util.FileContent;
 import com.baulsupp.oksocial.util.InetAddressParam;
 import com.baulsupp.oksocial.util.LoggingUtil;
@@ -62,6 +72,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import java.io.Closeable;
 import java.io.File;
+import java.io.Flushable;
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.SocketException;
@@ -73,10 +84,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
@@ -97,6 +107,8 @@ import okhttp3.Response;
 import okhttp3.internal.http.StatusLine;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.io.IOUtils;
+import zipkin.Span;
+import zipkin.reporter.Reporter;
 
 import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
 import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
@@ -186,6 +198,12 @@ public class Main extends HelpOption {
 
   @Option(name = {"--curl"}, description = "Show curl commands")
   public boolean curl = false;
+
+  @Option(name = {"--zipkin", "-z"}, description = "Activate Zipkin Tracing")
+  public boolean zipkin = false;
+
+  @Option(name = {"--zipkinTrace"}, description = "Activate Detailed Zipkin Tracing")
+  public boolean zipkinTrace = false;
 
   @Option(name = {"--ip"}, description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
       allowedValues = {"system", "ipv4", "ipv6", "ipv4only", "ipv6only"})
@@ -519,12 +537,59 @@ public class Main extends HelpOption {
         new Authorisation(serviceInterceptor, credentialsStore, authClient, outputHandler);
 
     clientBuilder.networkInterceptors().add(0, serviceInterceptor);
+
+    if (zipkin || zipkinTrace) {
+      applyZipkin(clientBuilder);
+    }
+
     client = clientBuilder.build();
 
     requestBuilder = createRequestBuilder();
 
     if (completionVariableCache == null) {
       completionVariableCache = new TmpCompletionVariableCache();
+    }
+  }
+
+  private void applyZipkin(OkHttpClient.Builder clientBuilder) throws IOException {
+    ZipkinConfig config = ZipkinConfig.load();
+    Reporter<Span> reporter =
+        config.zipkinSenderUri().map(UriTransportRegistry::forUri).orElse(Platform.get());
+
+    Tracing tracing = Tracing.newBuilder()
+        .localServiceName("oksocial")
+        .reporter(reporter)
+        .sampler(Sampler.ALWAYS_SAMPLE)
+        .build();
+
+    HttpTracing httpTracing = HttpTracing.create(tracing);
+
+    Tracer tracer = tracing.tracer();
+
+    Consumer<TraceContext> opener =
+        tc -> closeables.add(() -> config.openFunction().apply(tc).ifPresent(this::openLink));
+
+    clientBuilder.eventListenerFactory(
+        call -> new ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace));
+
+    clientBuilder.addNetworkInterceptor(new ZipkinTracingInterceptor(tracing));
+
+    closeables.add(() -> {
+      tracing.close();
+      if (reporter instanceof Flushable) {
+        ((Flushable) reporter).flush();
+      }
+      if (reporter instanceof Closeable) {
+        ((Closeable) reporter).close();
+      }
+    });
+  }
+
+  private void openLink(String link) {
+    try {
+      outputHandler.openLink(link);
+    } catch (IOException e) {
+      outputHandler.showError("Can't open link", e);
     }
   }
 
@@ -580,7 +645,8 @@ public class Main extends HelpOption {
     return 0;
   }
 
-  private boolean processResponses(OutputHandler outputHandler, List<Future<Response>> responseFutures)
+  private boolean processResponses(OutputHandler outputHandler,
+      List<Future<Response>> responseFutures)
       throws IOException, InterruptedException {
     boolean failed = false;
     for (Future<Response> responseFuture : responseFutures) {
