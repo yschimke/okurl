@@ -1,6 +1,7 @@
 plugins {
   id 'com.github.ben-manes.versions' version '0.15.0'
   id 'net.nemerosa.versioning' version '2.6.1'
+  id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
 }
 
 apply plugin: 'java'
@@ -29,6 +30,10 @@ jar {
   }
 }
 
+compileKotlin {
+  kotlinOptions.jvmTarget = "1.8"
+}
+
 distTar {
   compression = Compression.GZIP
 }
@@ -39,6 +44,9 @@ repositories {
 }
 
 dependencies {
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.4-3"
+  compile "org.jetbrains.kotlin:kotlin-reflect:1.1.4-3"
+
   compile group: 'com.baulsupp', name: 'oksocial-output', version: '0.6'
   compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.0'
   compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.9.0'
@@ -75,10 +83,13 @@ dependencies {
   compile group: 'io.zipkin.brave', name: 'brave-instrumentation-okhttp3', version: '4.6.0'
   compile group: 'io.zipkin.brave', name: 'brave', version: '4.6.0'
 
+  testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
+  testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
+
   testCompile group: 'com.squareup.okhttp3', name: 'okhttp-testing-support', version: '3.9.0'
   testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.9.0'
 
-  runtime 'org.mortbay.jetty.alpn:alpn-boot:8.1.7.v20160121'
+  runtime 'org.mortbay.jetty.alpn:alpn-boot:8.1.11.v20170118'
 }
 
 distributions {
