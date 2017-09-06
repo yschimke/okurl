@@ -311,7 +311,7 @@ public class Main extends HelpOption {
       System.setProperty("javax.net.debug", "ssl,handshake");
     }
 
-    LoggingUtil.configureLogging(debug, showHttp2Frames);
+    LoggingUtil.INSTANCE.configureLogging(debug, showHttp2Frames);
 
     if (outputHandler == null) {
       outputHandler = buildHandler();
@@ -479,7 +479,7 @@ public class Main extends HelpOption {
           return Optional.of(newUrlCompletion);
         }
       }
-    } else if (UrlCompleter.isPossibleAddress(urlToComplete)) {
+    } else if (UrlCompleter.Companion.isPossibleAddress(urlToComplete)) {
       return Optional.of(urlToComplete);
     }
 
@@ -552,9 +552,9 @@ public class Main extends HelpOption {
   }
 
   private void applyZipkin(OkHttpClient.Builder clientBuilder) throws IOException {
-    ZipkinConfig config = ZipkinConfig.load();
+    ZipkinConfig config = ZipkinConfig.Companion.load();
     Reporter<Span> reporter =
-        config.zipkinSenderUri().map(UriTransportRegistry::forUri).orElse(Platform.get());
+        config.zipkinSenderUri().map(UriTransportRegistry.Companion::forUri).orElse(Platform.get());
 
     Tracing tracing = Tracing.newBuilder()
         .localServiceName("oksocial")
@@ -721,7 +721,7 @@ public class Main extends HelpOption {
 
     call.enqueue(result);
 
-    return result.future;
+    return result.getFuture();
   }
 
   private void authorize() throws Exception {
@@ -788,13 +788,13 @@ public class Main extends HelpOption {
     }
 
     if (socksProxy != null) {
-      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.getAddress()));
     } else if (proxy != null) {
-      builder.proxy(new Proxy(Proxy.Type.HTTP, proxy.address));
+      builder.proxy(new Proxy(Proxy.Type.HTTP, proxy.getAddress()));
     }
 
     if (protocols != null) {
-      builder.protocols(ProtocolUtil.parseProtocolList(protocols));
+      builder.protocols(ProtocolUtil.INSTANCE.parseProtocolList(protocols));
     }
 
     return builder;
@@ -857,7 +857,7 @@ public class Main extends HelpOption {
     List<KeyManager> keyManagers = Lists.newArrayList();
 
     if (opensc != null) {
-      keyManagers.addAll(asList(OpenSCUtil.getKeyManagers(callbackHandler, opensc)));
+      keyManagers.addAll(asList(OpenSCUtil.INSTANCE.getKeyManagers(callbackHandler, opensc)));
     } else if (clientAuth) {
       if (keystore == null) {
         throw new UsageException("--clientauth specified without --keystore");
@@ -878,17 +878,17 @@ public class Main extends HelpOption {
       }
 
       if (!serverCerts.isEmpty()) {
-        trustManagers.add(CertificateUtils.load(serverCerts));
+        trustManagers.add(CertificateUtils.INSTANCE.load(serverCerts));
       }
 
-      trustManager = CertificateUtils.combineTrustManagers(trustManagers);
+      trustManager = CertificateUtils.INSTANCE.combineTrustManagers(trustManagers);
     }
 
     builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager),
         trustManager);
 
     if (certificatePins != null) {
-      builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
+      builder.certificatePinner(CertificatePin.Companion.buildFromCommandLine(certificatePins));
     }
   }
 
@@ -917,7 +917,7 @@ public class Main extends HelpOption {
     }
 
     try {
-      return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
+      return RequestBody.create(MediaType.parse(mimeType), FileContent.INSTANCE.readParamBytes(data));
     } catch (IOException e) {
       throw new UsageException(e.getMessage());
     }
