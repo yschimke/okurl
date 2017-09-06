@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.jjs
 
 import com.baulsupp.oksocial.Main
-import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.ShellCommand
 import com.google.common.base.Throwables
@@ -10,9 +9,6 @@ import com.baulsupp.oksocial.output.util.UsageException
 import java.nio.charset.StandardCharsets
 import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Path
-import java.util.Collections
-import java.util.Optional
 import java.util.function.Function
 import java.util.stream.Collectors
 import javax.script.ScriptEngine

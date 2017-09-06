@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.output.util.UsageException
 import java.util.Scanner
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.WebSocket
 
 class OkWsCommand : ShellCommand, MainAware {
     private var main: Main? = null
