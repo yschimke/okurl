@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.google.common.collect.Maps
-import java.util.Optional
+import java.util.*
 
 class TestCompletionVariableCache : CompletionVariableCache {
   private val cache = Maps.newConcurrentMap<String, List<String>>()

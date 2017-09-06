@@ -8,19 +8,14 @@ import okhttp3.Response
 import okhttp3.internal.tls.SslClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.migrationsupport.rules.ExternalResourceSupport
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
 
-@ExtendWith(ExternalResourceSupport::class)
-@Ignore // TODO work out why failing in CI
 class WebServerTest {
   @Rule
   var server = MockWebServer()

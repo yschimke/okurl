@@ -1,12 +1,25 @@
+buildscript {
+  ext.junitJupiterVersion = '5.0.0-RC3'
+  ext.junitPlatformVersion = '1.0.0-RC3'
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3'
+  }
+}
+
 plugins {
   id 'com.github.ben-manes.versions' version '0.15.0'
   id 'net.nemerosa.versioning' version '2.6.1'
   id "org.jetbrains.kotlin.jvm" version "1.1.4-3"
+//  id "org.junit.platform.gradle.plugin" version "1.0.0-RC3"
 }
 
 apply plugin: 'java'
 apply plugin: 'distribution'
 apply plugin: 'maven'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'com.baulsupp'
 
@@ -31,6 +44,10 @@ jar {
 }
 
 compileKotlin {
+  kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
   kotlinOptions.jvmTarget = "1.8"
 }
 
@@ -72,16 +89,18 @@ dependencies {
   compile group: 'io.netty', name: 'netty-all', version: '4.1.15.Final'
   compile group: 'io.netty', name: 'netty-resolver-dns', version: '4.1.15.Final'
   compile group: 'io.airlift', name: 'airline', version: '0.8'
-  compile group: 'org.junit.platform', name: 'junit-platform-surefire-provider',
-      version: '1.0.0-RC3'
-  compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-RC3'
-  compile group: 'org.junit.jupiter', name: 'junit-jupiter-migration-support', version: '5.0.0-M4'
-  compile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.0-RC3'
   compile files('external/osxkeychain.jar')
   compile group: 'io.zipkin.reporter', name: 'zipkin-sender-okhttp3', version: '1.0.2'
   compile group: 'io.zipkin.brave', name: 'brave-okhttp', version: '4.6.0'
   compile group: 'io.zipkin.brave', name: 'brave-instrumentation-okhttp3', version: '4.6.0'
   compile group: 'io.zipkin.brave', name: 'brave', version: '4.6.0'
+
+  testCompile group: 'org.junit.platform', name: 'junit-platform-surefire-provider', version: '1.0.0-RC3'
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-migration-support', version: '5.0.0-RC3'
+
+  testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-RC3"
+  testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-RC3'
+  testRuntime group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.0-RC3'
 
   testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
   testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
@@ -125,6 +144,27 @@ distributions {
       }
     }
   }
+}
+
+compileTestJava {
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  options.compilerArgs += '-parameters'
+}
+
+junitPlatform {
+  platformVersion '1.0.0-RC3'
+  filters {
+    engines {
+       include 'junit-jupiter', 'junit-vintage'
+    }
+    tags {
+      exclude 'slow'
+    }
+    includeClassNamePattern '.*Test'
+  }
+  enableStandardTestTask true
+  logManager 'org.apache.logging.log4j.jul.LogManager'
 }
 
 //packaging tests

@@ -3,12 +3,7 @@ package com.baulsupp.oksocial.network
 import io.netty.channel.EventLoopGroup
 import io.netty.channel.socket.nio.NioDatagramChannel
 import io.netty.resolver.ResolvedAddressTypes
-import io.netty.resolver.dns.DnsNameResolver
-import io.netty.resolver.dns.DnsNameResolverBuilder
-import io.netty.resolver.dns.DnsServerAddressStreamProvider
-import io.netty.resolver.dns.DnsServerAddresses
-import io.netty.resolver.dns.MultiDnsServerAddressStreamProvider
-import io.netty.resolver.dns.SingletonDnsServerAddressStreamProvider
+import io.netty.resolver.dns.*
 import okhttp3.Dns
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -95,7 +90,7 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
 
     private fun getDnsServers(dnsServers: String?): List<InetSocketAddress> {
       if (dnsServers == null) {
-        return DnsServerAddresses.defaultAddressList()
+        return DefaultDnsServerAddressStreamProvider.defaultAddressList()
       }
 
       return if (dnsServers == "google") {

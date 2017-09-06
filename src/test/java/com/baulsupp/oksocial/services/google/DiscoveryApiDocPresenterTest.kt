@@ -103,8 +103,8 @@ class DiscoveryApiDocPresenterTest {
         s.startsWith(field + ": ")
       }.findFirst()
 
-      fail<Any>("expected '$expected' found " + found.map { s -> s.substring(field.length + 2) }
-          .orElse("nothing"))
+      val msg = "expected '$expected' found " + found.map { s -> s.substring(field.length + 2) }.orElse("nothing")
+      fail<String>(msg)
     }
 
     assertTrue(contains)
