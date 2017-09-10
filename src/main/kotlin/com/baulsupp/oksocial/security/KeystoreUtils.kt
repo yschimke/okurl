@@ -22,7 +22,7 @@ object KeystoreUtils {
     }
 
     @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
-    fun createSslSocketFactory(keyManagers: Array<KeyManager>,
+    fun createSslSocketFactory(keyManagers: Array<KeyManager>?,
                                trustManagers: X509TrustManager): SSLSocketFactory {
         val context = SSLContext.getInstance("TLS")
 
