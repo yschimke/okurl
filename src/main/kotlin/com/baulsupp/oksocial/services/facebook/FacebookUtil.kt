@@ -2,19 +2,16 @@ package com.baulsupp.oksocial.services.facebook
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.google.common.collect.Sets
-import java.util.Arrays
-import java.util.Collections
-import java.util.concurrent.CompletableFuture
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.*
+import java.util.concurrent.CompletableFuture
 
 object FacebookUtil {
     val VERSION = "v2.8"
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
-            "graph.facebook.com")
-    )
+    val API_HOSTS = setOf("graph.facebook.com")
 
     fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
         return requestBuilder.url("https://graph.facebook.com" + s).build()
@@ -29,7 +26,7 @@ object FacebookUtil {
                 .thenApply { m -> FacebookMetadata(m["metadata"] as Map<String, Any>) }
     }
 
-    var ALL_PERMISSIONS: Collection<String> = Arrays.asList(
+    val ALL_PERMISSIONS = listOf(
             "public_profile",
             "user_friends",
             "email",

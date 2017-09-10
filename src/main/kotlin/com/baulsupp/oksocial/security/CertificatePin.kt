@@ -30,10 +30,8 @@ class CertificatePin(patternAndPin: String) {
         fun buildFromCommandLine(pins: List<CertificatePin>): CertificatePinner {
             val builder = CertificatePinner.Builder()
 
-            pins.stream().collect<Map<String, List<CertificatePin>>, Any>(groupingBy(Function<CertificatePin, String> { it.getPattern() })).forEach { host, pinList ->
-                val pinArray = pinList.stream().map<String>(Function<CertificatePin, String> { it.getPin() }).toArray<String>(String[]::new  /* Currently unsupported in Kotlin */)
-
-                builder.add(host, *pinArray)
+            pins.groupBy { it.pattern }.forEach { (pattern, pins) ->
+                builder.add(pattern, *(pins.map { it.pin }.toTypedArray()))
             }
 
             return builder.build()

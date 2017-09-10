@@ -3,23 +3,23 @@ package com.baulsupp.oksocial.credentials
 import com.google.common.base.Throwables
 import com.mcdermottroe.apple.OSXKeychain
 import com.mcdermottroe.apple.OSXKeychainException
-import java.util.Optional
+import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
 class OSXCredentialsStore @Throws(OSXKeychainException::class)
-@JvmOverloads constructor(private val tokenSet: Optional<String> = Optional.empty()) : CredentialsStore {
+@JvmOverloads constructor(private val tokenSet: String? = null) : CredentialsStore {
     private val keychain: OSXKeychain
 
     init {
         this.keychain = OSXKeychain.getInstance()
     }
 
-    override fun <T> readDefaultCredentials(serviceDefinition: ServiceDefinition<T>): Optional<T> {
+    override fun <T> readDefaultCredentials(serviceDefinition: ServiceDefinition<T>): T? {
         try {
             val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey())
 
-            return Optional.ofNullable(serviceDefinition.parseCredentialsString(pw))
+            return serviceDefinition.parseCredentialsString(pw)
         } catch (e: OSXKeychainException) {
             if ("The specified item could not be found in the keychain." == e.message) {
                 logger.log(Level.FINE,
@@ -28,7 +28,7 @@ class OSXCredentialsStore @Throws(OSXKeychainException::class)
                 logger.log(Level.FINE, "Failed to read from keychain", e)
             }
 
-            return Optional.empty()
+            return null
         }
 
     }
@@ -52,7 +52,7 @@ class OSXCredentialsStore @Throws(OSXKeychainException::class)
     }
 
     private fun tokenKey(): String {
-        return "oauth" + tokenSet.map { s -> "." + s }.orElse("")
+        return "oauth${tokenSet?.let { "." + it } ?: ""}"
     }
 
     companion object {

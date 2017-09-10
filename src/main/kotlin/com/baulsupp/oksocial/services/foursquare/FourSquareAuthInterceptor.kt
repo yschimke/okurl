@@ -5,18 +5,17 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.HttpUrl
+import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.concurrent.Future
 
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -42,8 +41,8 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising FourSquare API")
 
         val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
@@ -54,16 +53,16 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
                 FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
-                Function<Map<String, Any>, String> { this.getName(it) }).validate(client)
+                { this.getName(it) }).validate(client)
     }
 
     private fun getName(map: Map<String, Any>): String {
         val user = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
 
-        return user["firstName"].toString() + " " + user["lastName"]
+        return "${user["firstName"]} ${user["lastName"]}"
     }
 
     override fun hosts(): Collection<String> {

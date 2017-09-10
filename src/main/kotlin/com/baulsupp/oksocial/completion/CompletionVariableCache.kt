@@ -1,34 +1,35 @@
 package com.baulsupp.oksocial.completion
 
-import java.util.Optional
+import com.spotify.futures.CompletableFutures
+import io.github.vjames19.futures.jdk8.ImmediateFuture
+import io.github.vjames19.futures.jdk8.map
+import io.github.vjames19.futures.jdk8.onSuccess
+import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.function.Supplier
-
 import java.util.concurrent.CompletableFuture.completedFuture
+import java.util.function.Supplier
 
 interface CompletionVariableCache {
 
-    operator fun get(service: String, key: String): Optional<List<String>>
+    operator fun get(service: String, key: String): List<String>?
 
     fun store(service: String, key: String, values: List<String>)
 
     fun compute(service: String, key: String,
-                s: Supplier<CompletableFuture<List<String>>>): CompletableFuture<List<String>> {
+                s: () -> CompletableFuture<List<String>>): CompletableFuture<List<String>> {
         val values = get(service, key)
 
-        if (values.isPresent) {
-            return completedFuture(values.get())
+        return if (values != null) {
+            ImmediateFuture { values!! }
         } else {
-            val x = s.get()
-            x.thenAccept { l -> store(service, key, l) }
-            return x
+            s().onSuccess { store(service, key, it) }
         }
     }
 
     companion object {
         val NONE: CompletionVariableCache = object : CompletionVariableCache {
-            override fun get(service: String, key: String): Optional<List<String>> {
-                return Optional.empty()
+            override fun get(service: String, key: String): List<String>? {
+                return null
             }
 
             override fun store(service: String, key: String, values: List<String>) {}

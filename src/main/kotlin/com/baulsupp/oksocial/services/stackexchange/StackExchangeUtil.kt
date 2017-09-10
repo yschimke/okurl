@@ -1,9 +1,8 @@
 package com.baulsupp.oksocial.services.stackexchange
 
 import com.google.common.collect.Sets
-import java.util.Arrays
-import java.util.Collections
 import okhttp3.Request
+import java.util.*
 
 object StackExchangeUtil {
     val SCOPES: Collection<String> = Arrays.asList("read_inbox",

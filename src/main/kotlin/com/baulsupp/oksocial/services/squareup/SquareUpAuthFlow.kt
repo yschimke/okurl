@@ -5,31 +5,24 @@ import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.JsonUtil
-import java.io.IOException
-import java.net.URLEncoder
-import java.util.HashMap
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-
-import java.util.stream.Collectors.joining
+import java.io.IOException
+import java.net.URLEncoder
+import java.util.*
 
 object SquareUpAuthFlow {
 
     @Throws(IOException::class)
     fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              clientSecret: String, scopes: Set<String>): Oauth2Token {
+              clientSecret: String, scopes: Iterable<String>): Oauth2Token {
         SimpleWebServer.forCode().use { s ->
 
             val serverUri = s.redirectUri
 
-            val loginUrl = "https://connect.squareup.com/oauth2/authorize"
-            +"?client_id=" + clientId
-            +"&redirect_uri=" + URLEncoder.encode(serverUri, "UTF-8")
-            +"&response_type=code"
-            +"&scope=" + URLEncoder.encode(scopes.stream().collect<String, *>(joining(" ")),
-                    "UTF-8")
+            val loginUrl = "https://connect.squareup.com/oauth2/authorize?client_id=$clientId&redirect_uri=${URLEncoder.encode(serverUri, "UTF-8")}&response_type=code&scope=" + URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
             outputHandler.openLink(loginUrl)
 

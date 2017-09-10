@@ -4,17 +4,18 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Sets
-import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
+import com.spotify.futures.CompletableFutures
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 /**
  * https://developer.paypal.com/docs/authentication
@@ -49,14 +50,14 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         // TODO
-        return CompletableFuture.completedFuture(Optional.empty())
+        return CompletableFutures.exceptionallyCompletedFuture(TODO())
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Paypal API")
 
         val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)

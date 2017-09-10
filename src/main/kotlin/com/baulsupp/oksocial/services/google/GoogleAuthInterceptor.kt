@@ -12,28 +12,22 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.secrets.Secrets
+import okhttp3.*
 import java.io.IOException
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.Future
-import okhttp3.FormBody
-import okhttp3.HttpUrl
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor
-import java.util.stream.Collectors.toSet
 
 /**
  * https://developer.google.com/docs/authentication
  */
 class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
-    private var hosts: Set<String>? = null
-    private var discoveryIndex: DiscoveryIndex? = null
+    private val foundHosts by lazy {
+        val urlList = UrlList.fromResource(name())
+        urlList.get().getUrls("").map { HttpUrl.parse(it)!!.host() }
+    }
+    private val discoveryIndex by lazy { DiscoveryIndex.loadStatic() }
 
     override fun serviceDefinition(): Oauth2ServiceDefinition {
         return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
@@ -58,8 +52,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Google API")
 
         val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
@@ -71,23 +65,19 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
                 requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
-                AuthInterceptor.Companion.fieldExtractor("name")).validate(client)
+                { it["name"] as String }).validate(client)
     }
 
-    override fun canRenew(credentials: Oauth2Token): Boolean {
-        return credentials.refreshToken.isPresent
-                && credentials.clientId.isPresent
-                && credentials.clientSecret.isPresent
-    }
+    override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
     @Throws(IOException::class)
-    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Optional<Oauth2Token> {
-        val body = FormBody.Builder().add("client_id", credentials.clientId.get())
-                .add("refresh_token", credentials.refreshToken.get())
-                .add("client_secret", credentials.clientSecret.get())
+    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+        val body = FormBody.Builder().add("client_id", credentials.clientId)
+                .add("refresh_token", credentials.refreshToken)
+                .add("client_secret", credentials.clientSecret)
                 .add("grant_type", "refresh_token")
                 .build()
 
@@ -97,25 +87,10 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        return Optional.of(Oauth2Token(responseMap["access_token"] as String,
-                credentials.refreshToken.get(), credentials.clientId.get(),
-                credentials.clientSecret.get()))
-    }
-
-    @Synchronized
-    @Throws(IOException::class)
-    override fun hosts(): Collection<String> {
-        if (hosts == null) {
-            val urlList = UrlList.fromResource(name())
-
-            hosts = urlList.get().getUrls("").stream().map<String>(Function<String, String> { this.extractHost(it) }).collect<Set<String>, Any>(toSet())
-        }
-
-        return hosts
-    }
-
-    private fun <R> extractHost(s: String): String {
-        return HttpUrl.parse(s)!!.host()
+        // TODO check if refresh token in response?
+        return Oauth2Token(responseMap["access_token"] as String,
+                credentials.refreshToken!!, credentials.clientId!!,
+                credentials.clientSecret!!)
     }
 
     @Throws(IOException::class)
@@ -133,22 +108,14 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
         }
     }
 
+    override fun hosts(): Collection<String> = foundHosts
+
     private fun isPastHost(prefix: String): Boolean {
         return prefix.matches("https://.*/.*".toRegex())
     }
 
     @Throws(IOException::class)
     override fun apiDocPresenter(url: String): ApiDocPresenter {
-        return DiscoveryApiDocPresenter(discoveryIndex())
-    }
-
-    @Synchronized
-    @Throws(IOException::class)
-    private fun discoveryIndex(): DiscoveryIndex {
-        if (discoveryIndex == null) {
-            discoveryIndex = DiscoveryIndex.loadStatic()
-        }
-
-        return discoveryIndex
+        return DiscoveryApiDocPresenter(discoveryIndex)
     }
 }

@@ -17,38 +17,38 @@ import java.util.concurrent.CompletableFuture.completedFuture
 import java.util.concurrent.Future
 
 class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
-  @Throws(IOException::class)
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    return chain.proceed(chain.request())
-  }
-
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-      authArguments: List<String>): Oauth2Token {
-    return if (authArguments.isEmpty()) {
-      Oauth2Token("testToken")
-    } else {
-      Oauth2Token(authArguments[0])
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+        return chain.proceed(chain.request())
     }
-  }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-      requestBuilder: Request.Builder,
-      credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
-    return completedFuture(Optional.empty())
-  }
+    @Throws(IOException::class)
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
+        return if (authArguments.isEmpty()) {
+            Oauth2Token("testToken")
+        } else {
+            Oauth2Token(authArguments[0])
+        }
+    }
 
-  override fun serviceDefinition(): ServiceDefinition<Oauth2Token> {
-    return Oauth2ServiceDefinition("localhost", "Test Service", "test",
-        "https://docs.test.com", "https://apps.test.com")
-  }
+    @Throws(IOException::class)
+    override fun validate(client: OkHttpClient,
+                          requestBuilder: Request.Builder,
+                          credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+        return completedFuture(Optional.empty())
+    }
 
-  override fun hosts(): Collection<String> {
-    return Arrays.asList("test.com", "api1.test.com")
-  }
+    override fun serviceDefinition(): ServiceDefinition<Oauth2Token> {
+        return Oauth2ServiceDefinition("localhost", "Test Service", "test",
+                "https://docs.test.com", "https://apps.test.com")
+    }
 
-  override fun apiDocPresenter(apiUrl: String): ApiDocPresenter {
-    return ApiDocPresenter { url, outputHandler, _ -> outputHandler.info("Test: " + url) }
-  }
+    override fun hosts(): Collection<String> {
+        return Arrays.asList("test.com", "api1.test.com")
+    }
+
+    override fun apiDocPresenter(apiUrl: String): ApiDocPresenter {
+        return ApiDocPresenter { url, outputHandler, _ -> outputHandler.info("Test: " + url) }
+    }
 }

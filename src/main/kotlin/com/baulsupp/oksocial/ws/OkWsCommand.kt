@@ -3,11 +3,11 @@ package com.baulsupp.oksocial.ws
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.ShellCommand
-import com.google.common.collect.Lists
 import com.baulsupp.oksocial.output.util.UsageException
-import java.util.Scanner
+import com.google.common.collect.Lists
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.*
 
 class OkWsCommand : ShellCommand, MainAware {
     private var main: Main? = null

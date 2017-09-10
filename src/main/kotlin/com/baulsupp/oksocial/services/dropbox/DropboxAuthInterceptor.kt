@@ -5,20 +5,11 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.secrets.Secrets
+import okhttp3.*
 import java.io.IOException
-import java.util.Optional
 import java.util.concurrent.Future
-import okhttp3.FormBody
-import okhttp3.Interceptor
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor
 
 /**
  * https://developer.dropbox.com/docs/authentication
@@ -41,9 +32,8 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
         return chain.proceed(request)
     }
 
-    @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Dropbox API")
 
         val clientId = Secrets.prompt("Dropbox Client Id", "dropbox.clientId", "", false)
@@ -52,16 +42,15 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
         return DropboxAuthFlow.login(client, outputHandler, clientId, clientSecret)
     }
 
-    @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         val body = FormBody.create(MediaType.parse("application/json"), "null")
         return JsonCredentialsValidator(
                 DropboxUtil.apiRequest("/2/users/get_current_account", requestBuilder)
                         .newBuilder()
                         .post(body)
                         .build(),
-                AuthInterceptor.Companion.fieldExtractor("email")).validate(client)
+                { it["email"]?.toString() ?: "unknown" }).validate(client)
     }
 
     override fun hosts(): Set<String> {

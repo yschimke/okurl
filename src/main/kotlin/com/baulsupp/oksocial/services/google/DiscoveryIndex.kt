@@ -1,13 +1,11 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.output.util.JsonUtil
 import com.google.common.collect.Lists
 import com.google.common.io.Resources
-import com.baulsupp.oksocial.output.util.JsonUtil
 import java.io.IOException
-import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.Optional
-
+import java.util.*
 import java.util.stream.Collectors.toList
 
 /*
@@ -16,21 +14,19 @@ import java.util.stream.Collectors.toList
 class DiscoveryIndex(private val map: Map<String, List<String>>) {
 
     /*
-   * Exact search
-   */
+     * Exact search
+     */
     fun getDiscoveryUrlForApi(api: String): List<String> {
         return Optional.ofNullable(map[api]).orElse(Lists.newArrayList())
     }
 
     /*
-   * Prefix search (returns longest)
-   */
+     * Prefix search (returns longest)
+     */
     fun getDiscoveryUrlForPrefix(prefix: String): List<String> {
         return map.entries
-                .stream()
                 .filter { s1 -> match(prefix, s1.key) }
-                .flatMap { s -> s.value.stream() }
-                .collect<List<String>, Any>(toList())
+                .flatMap { s -> s.value }
     }
 
     internal fun match(prefix: String, indexKey: String): Boolean {
@@ -51,7 +47,7 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
         @Throws(IOException::class)
         fun parse(definition: String): DiscoveryIndex {
             val m = JsonUtil.map(definition)
-            return DiscoveryIndex(m)
+            return DiscoveryIndex(m as Map<String, List<String>>)
         }
     }
 }

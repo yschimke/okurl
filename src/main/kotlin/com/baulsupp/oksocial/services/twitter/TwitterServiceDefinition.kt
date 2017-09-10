@@ -2,9 +2,7 @@ package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.google.common.base.Splitter
-import java.util.Optional
-import java.util.StringJoiner
-
+import java.util.*
 import java.util.Optional.of
 
 class TwitterServiceDefinition : ServiceDefinition<TwitterCredentials> {

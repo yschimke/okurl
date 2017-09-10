@@ -6,21 +6,13 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Lists
-import com.baulsupp.oksocial.output.OutputHandler
+import okhttp3.*
 import java.io.IOException
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.Future
-import okhttp3.Credentials
-import okhttp3.Interceptor
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor
 
 /**
  * https://developer.lyft.com/docs/authentication
@@ -43,8 +35,8 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Lyft API")
 
         val clientId = Secrets.prompt("Lyft Client Id", "lyft.clientId", "", false)
@@ -61,25 +53,23 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
-                LyftUtil.apiRequest("/v1/profile", requestBuilder), AuthInterceptor.Companion.fieldExtractor("id")).validate(
+                LyftUtil.apiRequest("/v1/profile", requestBuilder), { it["id"] as String }).validate(
                 client)
     }
 
     override fun canRenew(credentials: Oauth2Token): Boolean {
-        return credentials.refreshToken.isPresent
-                && credentials.clientId.isPresent
-                && credentials.clientSecret.isPresent
+        return credentials.isRenewable()
     }
 
     @Throws(IOException::class)
-    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Optional<Oauth2Token> {
+    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
         val body = RequestBody.create(MediaType.parse("application/json"),
                 "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""
-                        + credentials.refreshToken.get() + "\"}")
-        val basic = Credentials.basic(credentials.clientId.get(), credentials.clientSecret.get())
+                        + credentials.refreshToken + "\"}")
+        val basic = Credentials.basic(credentials.clientId, credentials.clientSecret)
         val request = Request.Builder().url("https://api.lyft.com/oauth/token")
                 .post(body)
                 .header("Authorization", basic)
@@ -87,9 +77,10 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        return Optional.of(Oauth2Token(responseMap["access_token"] as String,
-                credentials.refreshToken.get(), credentials.clientId.get(),
-                credentials.clientSecret.get()))
+        // TODO check if refresh token in response?
+        return Oauth2Token(responseMap["access_token"] as String,
+                credentials.refreshToken, credentials.clientId,
+                credentials.clientSecret)
     }
 
     override fun hosts(): Set<String> {

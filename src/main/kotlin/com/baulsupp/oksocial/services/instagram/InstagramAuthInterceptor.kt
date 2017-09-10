@@ -5,17 +5,15 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Arrays
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.HttpUrl
+import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.Future
 
 class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -38,8 +36,8 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Instagram API")
 
         val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
@@ -53,10 +51,9 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
-                InstagramUtil.apiRequest("/v1/users/self", requestBuilder),
-                Function<Map<String, Any>, String> { this.getName(it) }).validate(client)
+                InstagramUtil.apiRequest("/v1/users/self", requestBuilder), this::getName).validate(client)
     }
 
     private fun getName(map: Map<String, Any>): String {

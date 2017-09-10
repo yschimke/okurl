@@ -1,9 +1,7 @@
 package com.baulsupp.oksocial.commands
 
 import com.google.common.collect.Lists
-import java.util.Optional
-import java.util.ServiceLoader
-import java.util.stream.Collectors
+import java.util.*
 
 class CommandRegistry {
     private val commands: List<ShellCommand>
@@ -13,7 +11,7 @@ class CommandRegistry {
     }
 
     fun names(): List<String> {
-        return commands.stream().map<String>(Function<ShellCommand, String> { it.name() }).collect<List<String>, Any>(Collectors.toList())
+        return commands.map { it.name() }
     }
 
     fun getCommandByName(name: String): Optional<ShellCommand> {

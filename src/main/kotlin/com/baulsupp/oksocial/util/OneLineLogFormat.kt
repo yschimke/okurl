@@ -3,18 +3,11 @@ package com.baulsupp.oksocial.util
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.time.Instant
-import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField.*
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
-
-import java.time.temporal.ChronoField.HOUR_OF_DAY
-import java.time.temporal.ChronoField.MINUTE_OF_HOUR
-import java.time.temporal.ChronoField.NANO_OF_SECOND
-import java.time.temporal.ChronoField.SECOND_OF_MINUTE
 
 /**
  * Is Java8 Data and Time really this bad, or is writing this on a plane from just javadocs a bad

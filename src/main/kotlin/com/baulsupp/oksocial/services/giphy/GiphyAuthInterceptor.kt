@@ -4,17 +4,17 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
-import okhttp3.HttpUrl
+import com.baulsupp.oksocial.secrets.Secrets
+import io.github.vjames19.futures.jdk8.ImmediateFuture
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -22,8 +22,8 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
                 "https://github.com/Giphy/GiphyAPI", null!!)
     }
 
-    override fun defaultCredentials(): Optional<Oauth2Token> {
-        return Optional.of(Oauth2Token("dc6zaTOxFJmzC"))
+    override fun defaultCredentials(): Oauth2Token? {
+        return Oauth2Token("dc6zaTOxFJmzC")
     }
 
     @Throws(IOException::class)
@@ -40,8 +40,8 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Giphy API")
 
         val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
@@ -51,8 +51,8 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
-        return CompletableFuture.completedFuture(Optional.of(ValidatedCredentials("?", null!!)))
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+        return ImmediateFuture { ValidatedCredentials("?", null) }
     }
 
     override fun hosts(): Collection<String> {

@@ -16,16 +16,10 @@ class Oauth2ServiceDefinition(apiHost: String, serviceName: String, shortName: S
     }
 
     override fun formatCredentialsString(credentials: Oauth2Token): String {
-        if (credentials.refreshToken.isPresent
-                && credentials.clientId.isPresent
-                && credentials.clientSecret.isPresent) {
-            return credentials.accessToken
-            +":"
-            +credentials.refreshToken.get()
-            +":"
-            +credentials.clientId.get()
-            +":"
-            +credentials.clientSecret.get()
+        if (credentials.refreshToken != null
+                && credentials.clientId != null
+                && credentials.clientSecret != null) {
+            return "${credentials.accessToken}:${credentials.refreshToken}:${credentials.clientId}:${credentials.clientSecret}"
         } else {
             return credentials.accessToken
         }

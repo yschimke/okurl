@@ -1,28 +1,28 @@
 package com.baulsupp.oksocial.completion
 
-import com.google.common.collect.Lists
+import io.github.vjames19.futures.jdk8.ImmediateFuture
+import io.github.vjames19.futures.jdk8.flatMap
+import io.github.vjames19.futures.jdk8.map
 import java.util.concurrent.CompletableFuture
-import java.util.function.Function
-import java.util.function.Supplier
-
 import java.util.concurrent.CompletableFuture.completedFuture
 
 class CompletionMappings {
-    private val mappings = Lists.newArrayList<Function<UrlList, CompletableFuture<UrlList>>>()
+    private val mappings = mutableListOf<(UrlList) -> CompletableFuture<UrlList>>()
 
     fun withVariable(name: String, values: List<String>) {
         withVariable(name, { completedFuture(values) })
     }
 
-    fun withVariable(name: String, values: Supplier<CompletableFuture<List<String>>>) {
-        mappings.add({ ul -> values.get().thenApply<UrlList> { l -> ul.replace(name, l, true) } })
+    fun withVariable(name: String, values: () -> CompletableFuture<List<String>>) {
+        val element = { ul: UrlList -> values().map { l -> ul.replace(name, l, true) } }
+        mappings.add(element)
     }
 
     fun replaceVariables(urlList: UrlList): CompletableFuture<UrlList> {
-        var future = CompletableFuture.completedFuture(urlList)
+        var future = ImmediateFuture { urlList }
 
         for (s in mappings) {
-            future = future.thenCompose(s)
+            future = future.flatMap { s(it) }
         }
 
         return future

@@ -1,8 +1,7 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import java.util.Optional
-
+import java.util.*
 import java.util.Optional.of
 
 class SurveyMonkeyServiceDefinition : ServiceDefinition<SurveyMonkeyToken> {

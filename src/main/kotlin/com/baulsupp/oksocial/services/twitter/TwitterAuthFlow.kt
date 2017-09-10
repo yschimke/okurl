@@ -1,15 +1,13 @@
 package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
+import com.baulsupp.oksocial.output.OutputHandler
 import com.twitter.joauth.keyvalue.KeyValueHandler
 import com.twitter.joauth.keyvalue.KeyValueParser
-import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Collections
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import java.io.IOException
 
 abstract class TwitterAuthFlow(protected val client: OkHttpClient, protected val outputHandler: OutputHandler<*>) {
 

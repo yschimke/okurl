@@ -4,20 +4,13 @@ import brave.Span
 import brave.Tracer
 import brave.http.HttpTracing
 import brave.propagation.TraceContext
+import okhttp3.*
+import zipkin.TraceKeys
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.function.Consumer
-import java.util.stream.Collectors
-import okhttp3.Call
-import okhttp3.Connection
-import okhttp3.EventListener
-import okhttp3.Handshake
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
-import zipkin.TraceKeys
 
 class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, private val tracing: HttpTracing,
                             private val opener: Consumer<TraceContext>, private val detailed: Boolean) : EventListener() {
@@ -79,7 +72,7 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
         }
 
         dnsSpan!!.tag("dns.results",
-                inetAddressList!!.stream().map<String>(Function<InetAddress, String> { it.toString() }).collect<String, *>(Collectors.joining(", ")))
+                inetAddressList!!.map({ it.toString() }).joinToString(", "))
 
         dnsSpan!!.finish()
     }

@@ -1,8 +1,7 @@
 package com.baulsupp.oksocial
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import java.util.Optional
-
+import java.util.*
 import java.util.Optional.ofNullable
 
 abstract class AbstractServiceDefinition<T>(private val apiHost: String, private val serviceName: String, private val shortName: String,

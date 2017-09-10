@@ -3,24 +3,17 @@ package com.baulsupp.oksocial.services.surveymonkey
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.completion.ApiCompleter
-import com.baulsupp.oksocial.completion.BaseUrlCompleter
-import com.baulsupp.oksocial.completion.CompletionQuery
-import com.baulsupp.oksocial.completion.CompletionVariableCache
-import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.completion.*
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.HttpUrl
+import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.Future
 
 /**
  * https://developer.surveymonkey.com/docs/authentication
@@ -43,8 +36,8 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): SurveyMonkeyToken {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): SurveyMonkeyToken {
         System.err.println("Authorising SurveyMonkey API")
 
         val apiKey = Secrets.prompt("SurveyMonkey API Key", "surveymonkey.apiKey", "", false)
@@ -54,10 +47,10 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
                 SurveyMonkeyUtil.apiRequest("/v3/users/me", requestBuilder),
-                AuthInterceptor.Companion.fieldExtractor("username")).validate(client)
+                { it["username"] as String }).validate(client)
     }
 
     @Throws(IOException::class)
@@ -69,7 +62,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
 
         val completer = BaseUrlCompleter(urlList.get(), hosts())
 
-        credentials.ifPresent { surveyMonkeyToken ->
+        if (credentials != null) {
             completer.withVariable("survey",
                     {
                         completionVariableCache.compute(name(), "surveys",

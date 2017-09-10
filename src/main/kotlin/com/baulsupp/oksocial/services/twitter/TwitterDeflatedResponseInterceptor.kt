@@ -1,13 +1,12 @@
 package com.baulsupp.oksocial.services.twitter
 
-import java.io.IOException
-import java.util.zip.Inflater
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody
-import okio.BufferedSource
 import okio.InflaterSource
 import okio.Okio
+import java.io.IOException
+import java.util.zip.Inflater
 
 class TwitterDeflatedResponseInterceptor : Interceptor {
     @Throws(IOException::class)

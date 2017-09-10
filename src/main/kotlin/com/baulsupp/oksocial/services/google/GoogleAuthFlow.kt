@@ -4,35 +4,24 @@ import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.UUID
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
-
-import java.util.stream.Collectors.joining
+import java.io.IOException
+import java.util.*
 
 object GoogleAuthFlow {
     @Throws(IOException::class)
     fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              clientSecret: String, scopes: Set<String>): Oauth2Token {
+              clientSecret: String, scopes: Iterable<String>): Oauth2Token {
         SimpleWebServer.forCode().use { s ->
 
-            val scopesString = scopes.stream().map<String>(Function<String, String> { GoogleUtil.fullScope(it) }).collect<String, *>(joining("+"))
+            val scopesString = scopes.map({ GoogleUtil.fullScope(it) }).joinToString("+")
 
             val redirectUri = s.redirectUri
             val uuid = UUID.randomUUID().toString()
 
-            val loginUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-            +"?client_id=" + clientId
-            +"&response_type=code"
-            +"&scope=" + scopesString
-            +"&state=" + uuid
-            +"&access_type=offline"
-            +"&redirect_uri=" + redirectUri
-            +"&prompt=consent"
-            +"&include_granted_scopes=true"
+            val loginUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=$clientId&response_type=code&scope=$scopesString&state=$uuid&access_type=offline&redirect_uri=$redirectUri&prompt=consent&include_granted_scopes=true"
 
             outputHandler.openLink(loginUrl)
 

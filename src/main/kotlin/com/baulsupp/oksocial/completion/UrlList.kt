@@ -5,25 +5,20 @@ import com.google.common.io.Files
 import com.google.common.io.Resources
 import java.io.File
 import java.io.IOException
-import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.Optional
-import java.util.function.Function
-import java.util.stream.Stream
-
+import java.util.*
 import java.util.stream.Collectors.joining
-import java.util.stream.Collectors.toList
 
-class UrlList(private val match: Match, private val urls: List<String>) {
+data class UrlList(val match: Match, val urls: List<String>) {
     enum class Match {
         EXACT, SITE, HOSTS
     }
 
     fun getUrls(prefix: String): List<String> {
-        return urls.stream().filter { u -> u.startsWith(prefix) }.collect<List<String>, Any>(toList())
+        return urls.filter { u -> u.startsWith(prefix) }
     }
 
-    fun replace(variable: String, replacements: MutableList<String>, keepTemplate: Boolean): UrlList {
+    fun replace(variable: String, replacements: List<String>, keepTemplate: Boolean): UrlList {
         if (replacements.isEmpty()) {
             return this
         }
@@ -31,7 +26,7 @@ class UrlList(private val match: Match, private val urls: List<String>) {
         val regexToken = "\\{$variable\\}"
         val literalToken = "{$variable}"
 
-        val replacementList: MutableList<String>
+        val replacementList: List<String>
         if (keepTemplate) {
             replacementList = Lists.newArrayList(replacements)
             if (keepTemplate) {
@@ -41,14 +36,12 @@ class UrlList(private val match: Match, private val urls: List<String>) {
             replacementList = replacements
         }
 
-        val replacementFunction = { url ->
+        val newUrls = urls.flatMap { url ->
             if (url.contains("{"))
-                replacementList.stream().map { s -> url.replace(regexToken.toRegex(), s) }
+                replacementList.map { s -> url.replace(regexToken.toRegex(), s) }
             else
-                Stream.of<String>(url)
+                listOf(url)
         }
-
-        val newUrls = urls.stream().flatMap(replacementFunction).collect<List<String>, Any>(toList())
 
         return UrlList(match, newUrls)
     }
@@ -57,7 +50,7 @@ class UrlList(private val match: Match, private val urls: List<String>) {
     fun toFile(file: File, strip: Int, prefix: String) {
         val content = regex(prefix) + "\n" + urls.stream()
                 .map { u -> u.substring(strip) }
-                .collect<String, *>(joining("\n"))
+                .collect(joining("\n"))
 
         Files.write(content, file, StandardCharsets.UTF_8)
     }
@@ -87,26 +80,9 @@ class UrlList(private val match: Match, private val urls: List<String>) {
         return UrlList(newMatch, newUrls)
     }
 
-    override fun toString(): String {
-        return urls.stream().collect<String, *>(joining("\n"))
-    }
-
-    override fun equals(obj: Any?): Boolean {
-        if (obj !is UrlList) {
-            return false
-        }
-
-        val other = obj as UrlList?
-
-        return other.match == this.match && other.urls == this.urls
-    }
-
-    override fun hashCode(): Int {
-        return match.hashCode() xor urls.hashCode()
-    }
+    override fun toString() = urls.joinToString("\n")
 
     companion object {
-
         @Throws(IOException::class)
         fun fromResource(serviceName: String): Optional<UrlList> {
             val url = UrlList::class.java.getResource("/urls/$serviceName.txt")

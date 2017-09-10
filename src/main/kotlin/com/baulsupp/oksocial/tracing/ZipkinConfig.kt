@@ -4,20 +4,16 @@ import brave.propagation.TraceContext
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
-import java.util.Optional
-import java.util.Properties
-import java.util.function.Function
-
-import java.util.Optional.ofNullable
+import java.util.*
 
 class ZipkinConfig(private val senderUri: String?, private val displayUrl: String?) {
 
-    fun zipkinSenderUri(): Optional<String> {
-        return ofNullable(senderUri)
+    fun zipkinSenderUri(): String? {
+        return senderUri
     }
 
-    fun openFunction(): Function<TraceContext, Optional<String>> {
-        return { traceContext -> ofNullable(displayUrl).map<String> { url -> url.replace("\\{traceid\\}".toRegex(), traceContext.traceIdString()) } }
+    fun openFunction(): (TraceContext) -> String? {
+        return { traceContext -> displayUrl?.let { it.replace(Regex("""\{traceid\}"""), traceContext.traceIdString()) } }
     }
 
     companion object {

@@ -4,12 +4,11 @@ import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import java.io.IOException
 
 object TransferwiseAuthFlow {
     @Throws(IOException::class)
@@ -18,11 +17,7 @@ object TransferwiseAuthFlow {
         SimpleWebServer.forCode().use { s ->
             val serverUri = s.redirectUri
 
-            val loginUrl = "https://$host/oauth/authorize"
-            +"?client_id=" + clientId
-            +"&response_type=code"
-            +"&scope=transfers"
-            +"&redirect_uri=" + serverUri
+            val loginUrl = "https://$host/oauth/authorize?client_id=$clientId&response_type=code&scope=transfers&redirect_uri=$serverUri"
 
             outputHandler.openLink(loginUrl)
 

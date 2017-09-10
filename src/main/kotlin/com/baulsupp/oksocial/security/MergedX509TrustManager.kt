@@ -1,11 +1,10 @@
 package com.baulsupp.oksocial.security
 
+import com.google.common.collect.Lists.newArrayList
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import javax.net.ssl.X509TrustManager
-
-import com.google.common.collect.Lists.newArrayList
 import java.util.Arrays.asList
+import javax.net.ssl.X509TrustManager
 
 class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X509TrustManager {
 

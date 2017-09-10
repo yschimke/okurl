@@ -1,29 +1,22 @@
 package com.baulsupp.oksocial.authenticator
 
+import org.eclipse.jetty.server.Request
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.handler.AbstractHandler
 import java.io.Closeable
 import java.io.IOException
-import java.io.PrintWriter
-import java.util.Arrays
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import java.util.function.Function
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import org.eclipse.jetty.server.Connector
-import org.eclipse.jetty.server.Request
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.AbstractHandler
-
-import java.util.stream.Collectors.joining
 
 class SimpleWebServer<T> @Throws(IOException::class)
-constructor(private val codeReader: Function<HttpServletRequest, T>) : AbstractHandler(), Closeable {
+constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler(), Closeable {
     private val port = 3000
     private val f = CompletableFuture<T>()
-    private val server: Server
 
     init {
         org.eclipse.jetty.util.log.Log.initialized()
@@ -83,7 +76,7 @@ constructor(private val codeReader: Function<HttpServletRequest, T>) : AbstractH
         if (error != null) {
             f.completeExceptionally(IOException(error))
         } else {
-            f.complete(codeReader.apply(request))
+            f.complete(codeReader(request))
         }
 
         baseRequest.isHandled = true
@@ -95,7 +88,7 @@ constructor(private val codeReader: Function<HttpServletRequest, T>) : AbstractH
 
     private fun shutdown() {
         try {
-            for (c in getServer().connectors) {
+            for (c in server.connectors) {
                 c.shutdown()
             }
             server.stop()
@@ -107,31 +100,22 @@ constructor(private val codeReader: Function<HttpServletRequest, T>) : AbstractH
 
     private fun generateSuccessBody(request: HttpServletRequest): String {
 
-        return "<html>\n"
-        +"<body background=\"http://win.blogadda.com/wp-content/uploads/2015/08/inspire-win-15.jpg\">\n"
-        +"<h1>Authorization Token Received!</h1>\n"
-        +"</body>\n"
-        +"</html>"
+        return """<html>
+<body background="http://win.blogadda.com/wp-content/uploads/2015/08/inspire-win-15.jpg">
+<h1>Authorization Token Received!</h1>
+</body>
+</html>"""
     }
 
     private fun generateFailBody(request: HttpServletRequest, error: String): String {
         val params = request.parameterMap
-                .entries
-                .stream()
-                .map { e -> e.key + " = " + Arrays.stream(e.value).collect<String, *>(joining(", ")) }
-                .collect<String, *>(joining("<br/>"))
+                .entries.joinToString("<br/>") { e -> e.key + " = " + e.value.joinToString(", ") }
 
-        return "<html>\n"
-        +"<body background=\"http://adsoftheworld.com/sites/default/files/fail_moon_aotw.jpg\">\n"
-        +"<h1>Authorization Error!</h1>\n"
-        +"<p style=\"font-size: 600%; font-family: Comic Sans, Comic Sans MS, cursive;\">"
-        +error
-        +"</p>"
-        +"<p>"
-        +params
-        +"</p>"
-        +"</body>\n"
-        +"</html>"
+        return """<html>
+<body background="http://adsoftheworld.com/sites/default/files/fail_moon_aotw.jpg">
+<h1>Authorization Error!</h1>
+<p style="font-size: 600%; font-family: Comic Sans, Comic Sans MS, cursive;">$error</p><p>$params</p></body>
+</html>"""
     }
 
     override fun close() {

@@ -1,55 +1,36 @@
 package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture
-import com.baulsupp.oksocial.util.ClientException
-import com.baulsupp.oksocial.output.util.FutureUtil
 import com.baulsupp.oksocial.output.util.JsonUtil
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionStage
-import java.util.concurrent.Future
-import java.util.function.Function
+import com.baulsupp.oksocial.util.ClientException
+import io.github.vjames19.futures.jdk8.ImmediateFuture
+import io.github.vjames19.futures.jdk8.flatMap
+import io.github.vjames19.futures.jdk8.map
+import io.github.vjames19.futures.jdk8.toCompletableFuture
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
+import java.util.concurrent.CompletableFuture
 
-import java.util.Optional.empty
-import java.util.Optional.of
-import java.util.concurrent.CompletableFuture.completedFuture
-
-class JsonCredentialsValidator {
-    private var request: Request? = null
-    private var extractor: Function<Map<String, Any>, String>? = null
-    private var appRequest: Optional<Request>? = null
-    private var appExtractor: Optional<Function<Map<String, Any>, String>>? = null
-
-    constructor(request: Request,
-                extractor: Function<Map<String, Any>, String>) {
-        this.request = request
-        this.extractor = extractor
-        this.appRequest = empty()
-        this.appExtractor = empty()
-    }
-
-    constructor(request: Request,
-                extractor: Function<Map<String, Any>, String>, appRequest: Request,
-                appExtractor: Function<Map<String, Any>, String>) {
-        this.request = request
-        this.extractor = extractor
-        this.appRequest = Optional.of(appRequest)
-        this.appExtractor = Optional.of(appExtractor)
+class JsonCredentialsValidator(
+        private var request: Request,
+        private var extractor: (Map<String, Any>) -> String,
+        private var appRequest: Request? = null,
+        private var appExtractor: ((Map<String, Any>) -> String)? = null) {
+    init {
+        if (appRequest == null) {
+            appExtractor!!
+        }
     }
 
     @Throws(IOException::class)
-    fun validate(client: OkHttpClient): Future<Optional<ValidatedCredentials>> {
-        val nameCallback = enqueue(client, request).thenCompose { n -> extractString(n, extractor) }
+    fun validate(client: OkHttpClient): CompletableFuture<ValidatedCredentials> {
+        val nameCallback = enqueue(client, request).flatMap { extractString(it, extractor) }
 
-        val appCallback = appRequest!!.map { r -> enqueue(client, r).thenCompose { response -> extractString(response, appExtractor!!.get()) } }
-                .orElse(completedFuture(empty()))
+        val appCallback = appRequest?.let { r -> enqueue(client, r).flatMap { response -> extractString(response, appExtractor!!) } } ?: ImmediateFuture { null }
 
-        return nameCallback.thenCombine(appCallback
-        ) { n, c -> n.map { a -> ValidatedCredentials(n, c) } }
+        return nameCallback.flatMap { name -> appCallback.map { app -> ValidatedCredentials(name, app) } }
     }
 
     private fun enqueue(client: OkHttpClient, r: Request?): CompletableFuture<Response> {
@@ -59,7 +40,7 @@ class JsonCredentialsValidator {
     }
 
     private fun extractString(response: Response,
-                              responseExtractor: Function<Map<String, Any>, String>?): CompletionStage<Optional<String>> {
+                              responseExtractor: (Map<String, Any>) -> String): CompletableFuture<String?> {
         try {
             val map = JsonUtil.map(response.body()!!.string())
 
@@ -68,24 +49,18 @@ class JsonCredentialsValidator {
                 if (map.containsKey("error")) {
                     error += ": " + map["error"]
                 }
-                return FutureUtil.failedFuture(ClientException(
-                        error, response.code()))
+                return ClientException(error, response.code()).toCompletableFuture()
             }
 
-            val name = responseExtractor!!.apply(map)
-
-            return completedFuture(of(name))
+            return ImmediateFuture { responseExtractor(map) }
         } catch (e: IOException) {
-            return FutureUtil.failedFuture(e)
+            return e.toCompletableFuture()
         } finally {
             response.close()
         }
     }
 
     companion object {
-
-        fun fieldExtractor(name: String): Function<Map<String, Any>, String> {
-            return { map -> map.get(name) }
-        }
+        fun fieldExtractor(name: String) = { map: Map<String, Any> -> map[name] }
     }
 }

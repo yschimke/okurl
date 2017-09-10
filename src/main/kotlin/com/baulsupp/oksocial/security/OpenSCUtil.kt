@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.security
 
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-import java.lang.reflect.Constructor
 import java.nio.charset.StandardCharsets
 import java.security.KeyStore
 import java.security.Provider

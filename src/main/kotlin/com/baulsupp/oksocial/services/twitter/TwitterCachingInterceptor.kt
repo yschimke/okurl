@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.twitter
 
 import com.google.common.collect.Sets
-import java.io.IOException
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.io.IOException
 
 class TwitterCachingInterceptor : Interceptor {
 

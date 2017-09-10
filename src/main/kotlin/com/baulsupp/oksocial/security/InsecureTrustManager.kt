@@ -14,6 +14,6 @@ class InsecureTrustManager : X509TrustManager {
     }
 
     override fun getAcceptedIssuers(): Array<X509Certificate> {
-        return arrayOfNulls(0)
+        return arrayOf()
     }
 }

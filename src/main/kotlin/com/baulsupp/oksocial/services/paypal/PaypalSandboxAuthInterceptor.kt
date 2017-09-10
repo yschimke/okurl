@@ -5,10 +5,8 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import java.io.IOException
 import okhttp3.OkHttpClient
-
-import java.util.stream.Collectors.toList
+import java.io.IOException
 
 class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
     override fun shortName(): String {
@@ -25,9 +23,7 @@ class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
         val urlList = UrlList.fromResource("paypal").get()
 
         val testUrls = urlList.getUrls("")
-                .stream()
                 .map { s -> s.replace("api.paypal.com", host()) }
-                .collect<List<String>, Any>(toList())
 
         return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts())
     }

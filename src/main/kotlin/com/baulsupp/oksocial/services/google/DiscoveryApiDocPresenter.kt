@@ -2,16 +2,12 @@ package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Comparator
-import java.util.Optional
-import java.util.concurrent.CompletableFuture
+import com.spotify.futures.CompletableFutures
+import io.github.vjames19.futures.jdk8.map
 import okhttp3.OkHttpClient
-
-import com.baulsupp.oksocial.output.util.FutureUtil.ioSafeGet
-import com.baulsupp.oksocial.output.util.FutureUtil.join
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors.joining
-import java.util.stream.Collectors.toList
 
 class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
 
@@ -21,52 +17,47 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
 
         val registry = DiscoveryRegistry.instance(client)
 
-        val docs = join(discoveryPaths.stream().map { p -> registry.load(p) }.collect<List<CompletableFuture<DiscoveryDocument>>, Any>(toList()))
+        val docs = CompletableFutures.allAsList(discoveryPaths.map { p -> registry.load(p) })
 
-        val bestDoc = ioSafeGet(docs.thenApply { d ->
-            val exactMatch = d.stream().filter { x -> matches(url, x) }.findFirst()
+        val bestDoc = docs.map { d ->
+            val exactMatch = d.firstOrNull { x -> matches(url, x) }
 
-            if (exactMatch.isPresent) {
-                return@docs.thenApply exactMatch
+            if (exactMatch != null) {
+                exactMatch
+            } else {
+                // requested url may be a substring of longest baseUrl
+                // assume that this means that single unique service owns this base url
+                val best = d.filter { service -> url.startsWith(service.baseUrl) }.maxBy { dd -> dd.baseUrl.length }
+
+                if (best != null) {
+                    best
+                } else {
+                    // multiple services sharing baseurl - return first
+                    outputHandler.info("Multiple services for path " + url)
+                    null
+                }
             }
+        }.get(5, TimeUnit.SECONDS)
 
-            // requested url may be a substring of longest baseUrl
-            // assume that this means that single unique service owns this base url
-            val best = d.stream()
-                    .filter { service -> url.startsWith(service.baseUrl) }
-                    .max(Comparator.comparing<DiscoveryDocument, Int> { dd -> dd.baseUrl.length })
+        if (bestDoc != null) {
+            outputHandler.info("name: " + bestDoc.apiName)
+            outputHandler.info("docs: " + bestDoc.docLink)
 
-            if (best.isPresent) {
-                return@docs.thenApply best
-            }
+            val e = bestDoc.findEndpoint(url)
 
-            // multiple services sharing baseurl - return first
-            outputHandler.info("Multiple services for path " + url)
-            Optional.empty<DiscoveryDocument>()
-        })
-
-        if (bestDoc.isPresent) {
-            val s = bestDoc.get()
-            outputHandler.info("name: " + s.apiName)
-            outputHandler.info("docs: " + s.docLink)
-
-            val e = s.findEndpoint(url)
-
-            e.ifPresent { de ->
-                outputHandler.info("endpoint id: " + de.id())
-                outputHandler.info("url: " + de.url())
-                outputHandler.info("scopes: " + de.scopeNames().stream().collect<String, *>(joining(", ")))
+            if (e != null) {
+                outputHandler.info("endpoint id: " + e.id())
+                outputHandler.info("url: " + e.url())
+                outputHandler.info("scopes: " + e.scopeNames().joinToString(", "))
                 outputHandler.info("")
-                outputHandler.info(de.description())
+                outputHandler.info(e.description())
                 outputHandler.info("")
-                de.parameters().forEach { p ->
+                e.parameters().forEach { p ->
                     outputHandler.info("parameter: " + p.name() + " (" + p.type() + ")")
                     outputHandler.info(p.description())
                 }
-            }
-
-            if (!e.isPresent) {
-                outputHandler.info("base: " + s.baseUrl)
+            } else {
+                outputHandler.info("base: " + bestDoc.baseUrl)
             }
         } else {
             outputHandler.info("No specific API found")

@@ -3,22 +3,22 @@ package com.baulsupp.oksocial.jjs
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.ShellCommand
+import com.baulsupp.oksocial.output.util.UsageException
 import com.google.common.base.Throwables
 import com.google.common.collect.Lists
-import com.baulsupp.oksocial.output.util.UsageException
+import jdk.nashorn.api.scripting.ScriptObjectMirror
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.nio.charset.StandardCharsets
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.util.function.Function
 import java.util.stream.Collectors
+import java.util.stream.Collectors.joining
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 import javax.script.ScriptException
-import jdk.nashorn.api.scripting.ScriptObjectMirror
-import okhttp3.OkHttpClient
-import okhttp3.Request
-
-import java.util.stream.Collectors.joining
+import kotlin.streams.toList
 
 class JavascriptApiCommand : ShellCommand, MainAware {
     private var main: Main? = null
@@ -33,8 +33,9 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
     @Throws(Exception::class)
     override fun buildRequests(client: OkHttpClient,
-                               requestBuilder: Request.Builder, arguments: MutableList<String>): List<Request> {
+                               requestBuilder: Request.Builder, args: List<String>): List<Request> {
         var multiple = false
+        val arguments = args.toMutableList()
 
         if (arguments[0] == "-m") {
             multiple = true
@@ -51,9 +52,9 @@ class JavascriptApiCommand : ShellCommand, MainAware {
         engine.put("client", client)
         engine.put("clientBuilder", client.newBuilder())
         engine.put("requestBuilder", requestBuilder)
-        engine.put("credentials", Function<String, Any> { this.credentials(it) })
+        engine.put("credentials", this::credentials)
 
-        val lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect<String, *>(joining("\n"))
+        val lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect(joining("\n"))
 
         if (multiple) {
             // TODO how to do this without engine.eval
@@ -71,7 +72,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
                 val result = eval(engine, lines)
 
                 toRequest(requestBuilder, result)
-            }.collect<List<Request>, Any>(Collectors.toList())
+            }.toList()
         }
     }
 
@@ -79,10 +80,10 @@ class JavascriptApiCommand : ShellCommand, MainAware {
         if (main != null) {
             val interceptor = main!!.serviceInterceptor.getByName(name)
 
-            if (interceptor.isPresent) {
-                val credentials = main!!.credentialsStore.readDefaultCredentials<*>(interceptor.get().serviceDefinition())
+            if (interceptor != null) {
+                val credentials = main!!.credentialsStore.readDefaultCredentials(interceptor.serviceDefinition())
 
-                return credentials.orElse(null)
+                return credentials
             }
         }
 

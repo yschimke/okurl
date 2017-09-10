@@ -1,37 +1,28 @@
 package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.credentials.ServiceDefinition
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
-import java.io.IOException
-import java.util.Optional
+import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.OkHttpClient
-
-import java.util.stream.Collectors.joining
+import java.io.IOException
+import java.util.*
 
 class Authorisation(private val interceptor: ServiceInterceptor, private val credentialsStore: CredentialsStore,
                     private val client: OkHttpClient, private val outputHandler: OutputHandler<*>) {
 
     @Throws(Exception::class)
-    fun authorize(auth: Optional<AuthInterceptor<*>>, token: Optional<String>,
+    fun authorize(auth: AuthInterceptor<*>?, token: Optional<String>,
                   authArguments: List<String>) {
-        failIfNoAuthInterceptor(auth.isPresent)
+        if (auth == null) {
+            throw UsageException(
+                    "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        }
 
         if (token.isPresent) {
-            storeCredentials<*>(auth.get(), token.get())
+            storeCredentials(auth, token.get())
         } else {
-            authRequest<*>(auth.get(), authArguments)
-        }
-    }
-
-    private fun failIfNoAuthInterceptor(present: Boolean) {
-        if (!present) {
-            throw UsageException(
-                    "unable to find authenticator. Specify name from " + interceptor.names()
-                            .stream()
-                            .collect<String, *>(joining(", ")))
+            authRequest(auth, authArguments)
         }
     }
 
@@ -49,32 +40,28 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
         credentialsStore.storeCredentials(credentials, auth.serviceDefinition())
 
-        Secrets.instance().saveIfNeeded()
+        Secrets.instance.saveIfNeeded()
 
         // TODO validate credentials
     }
 
     @Throws(IOException::class)
-    fun <T> renew(auth: Optional<AuthInterceptor<T>>) {
-        failIfNoAuthInterceptor(auth.isPresent)
-
-        val serviceDefinition = auth.get().serviceDefinition()
-        val credentials = credentialsStore.readDefaultCredentials(serviceDefinition)
-
-        if (!credentials.isPresent) {
-            throw UsageException("no existing credentials")
+    fun <T> renew(auth: AuthInterceptor<T>?) {
+        if (auth == null) {
+            throw UsageException(
+                    "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
         }
 
-        if (!auth.get().canRenew(credentials.get())) {
+        val serviceDefinition = auth.serviceDefinition()
+
+        val credentials = credentialsStore.readDefaultCredentials(serviceDefinition) ?: throw UsageException("no existing credentials")
+
+        if (!auth.canRenew(credentials)) {
             throw UsageException("credentials not renewable")
         }
 
-        val newCredentials = auth.get().renew(client, credentials.get())
+        val newCredentials = auth.renew(client, credentials) ?: throw UsageException("failed to renew")
 
-        if (newCredentials.isPresent) {
-            credentialsStore.storeCredentials(newCredentials.get(), serviceDefinition)
-        } else {
-            throw UsageException("failed to renew")
-        }
+        credentialsStore.storeCredentials(newCredentials, serviceDefinition)
     }
 }

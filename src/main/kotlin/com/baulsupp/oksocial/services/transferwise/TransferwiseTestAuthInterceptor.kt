@@ -6,9 +6,8 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import java.io.IOException
 import okhttp3.OkHttpClient
-
+import java.io.IOException
 import java.util.stream.Collectors.toList
 
 class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
@@ -28,9 +27,7 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
         val urlList = UrlList.fromResource("transferwise").get()
 
         val testUrls = urlList.getUrls("")
-                .stream()
                 .map { s -> s.replace("api.transferwise.com", host()) }
-                .collect<List<String>, Any>(toList())
 
         return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts())
     }

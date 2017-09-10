@@ -1,36 +1,21 @@
 package com.baulsupp.oksocial.secrets
 
-import java.io.BufferedReader
+import com.google.common.collect.Sets.newHashSet
 import java.io.IOException
-import java.io.InputStream
-import java.io.Writer
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.HashMap
-import java.util.Optional
-import java.util.Properties
-import java.util.function.Function
-
-import com.google.common.collect.Sets.newHashSet
-import com.baulsupp.oksocial.output.util.FutureUtil.or
+import java.util.*
 import java.util.Arrays.asList
-import java.util.Optional.empty
-import java.util.Optional.ofNullable
-import java.util.stream.Collectors.joining
 
-class Secrets(private val secrets: MutableMap<String, String>, private val file: Optional<Path>,
-              private val defaults: Function<String, Optional<String>>) {
+class Secrets(private val secrets: MutableMap<String, String>, private val file: Path?,
+              private val defaults: (String) -> String?) {
     private var changed = false
 
-    operator fun get(key: String): Optional<String> {
-        var result = ofNullable(secrets[key])
+    operator fun get(key: String): String? {
+        var result = secrets[key] ?: defaults(key)
 
-        if (!result.isPresent) {
-            result = defaults.apply(key)
-        }
-
-        return result.filter { s -> !s.isEmpty() }
+        return result?.let { if (it.isEmpty()) null else it }
     }
 
     private fun put(key: String, value: String) {
@@ -40,16 +25,16 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
 
     @Throws(IOException::class)
     fun saveIfNeeded() {
-        if (changed && file.isPresent) {
+        if (changed && file != null) {
             val p = Properties()
             p.putAll(secrets)
 
-            Files.newBufferedWriter(file.get()).use { w -> p.store(w, null) }
+            Files.newBufferedWriter(file).use { w -> p.store(w, null) }
         }
     }
 
     companion object {
-        private var instance: Secrets? = null
+        val instance: Secrets by lazy { loadSecrets() }
 
         fun loadSecrets(): Secrets {
             val classPathSecrets = loadClasspathDefaults()
@@ -66,31 +51,27 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
 
             }
 
-            return Secrets(HashMap(p), Optional.of(configFile), Function { classPathSecrets[it] })
+            return Secrets(p.toMutableStringMap(), configFile, { classPathSecrets[it] })
         }
 
         fun loadClasspathDefaults(): Secrets {
             val p = Properties()
 
             try {
-                Secrets::class.java.getResourceAsStream("/oksocial-secrets.properties").use { `is` ->
-                    if (`is` != null) {
-                        p.load(`is`)
+                Secrets::class.java.getResourceAsStream("/oksocial-secrets.properties").use { s ->
+                    if (s != null) {
+                        p.load(s)
                     }
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
 
-            return Secrets(HashMap(p), empty(), { k -> empty<String>() })
-        }
-
-        fun getDefined(key: String): Optional<String> {
-            return instance()[key]
+            return Secrets(p.toMutableStringMap(), null, { _ -> null })
         }
 
         fun prompt(name: String, key: String, defaultValue: String, password: Boolean): String {
-            val defaulted = or(instance().getDefined(key)) { ofNullable(defaultValue) }
+            val defaulted = instance[key] ?: defaultValue
 
             val prompt = name + defaultDisplay(defaulted, password) + ": "
 
@@ -107,35 +88,30 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
             }
 
             if (value.isEmpty()) {
-                value = defaulted.orElse("")
+                value = defaulted
             } else {
-                instance().put(key, value)
+                instance.put(key, value)
             }
 
             return value
         }
 
-        fun promptArray(name: String, key: String, defaults: Collection<String>): Set<String> {
-            val valueString = prompt(name, key, defaults.stream().collect<String, *>(joining(",")), false)
-            return newHashSet(asList(*valueString.split("\\s*,\\s*".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
+        fun promptArray(name: String, key: String, defaults: Iterable<String>): List<String> {
+            val valueString = prompt(name, key, defaults.joinToString(","), false)
+            return valueString.split("\\s*,\\s*".toRegex()).dropLastWhile { it.isEmpty() }
         }
 
-        private fun defaultDisplay(defaultValue: Optional<String>, password: Boolean): String {
-            var defaultValue = defaultValue
-            if (password) {
-                defaultValue = defaultValue.map { s -> s.replace(".".toRegex(), "\\*") }
+        private fun defaultDisplay(defaultValue: String, password: Boolean): String {
+            var display = if (password) {
+                defaultValue.replace(".".toRegex(), "\\*")
+            } else {
+                defaultValue
             }
 
-            return defaultValue.map { s -> " [$s]" }.orElse("")
-        }
-
-        @Synchronized
-        fun instance(): Secrets {
-            if (instance == null) {
-                instance = loadSecrets()
-            }
-
-            return instance
+            return " [$display]"
         }
     }
 }
+
+private fun Properties.toMutableStringMap(): MutableMap<String, String> =
+        this.entries.associate { it.key.toString() to it.value.toString() }.toMutableMap()

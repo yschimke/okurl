@@ -1,8 +1,7 @@
 package com.baulsupp.oksocial.services.stackexchange
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import java.util.Optional
-
+import java.util.*
 import java.util.Optional.of
 
 class StackExchangeServiceDefinition : ServiceDefinition<StackExchangeToken> {

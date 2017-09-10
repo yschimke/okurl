@@ -11,21 +11,14 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Sets
-import com.baulsupp.oksocial.output.OutputHandler
+import okhttp3.*
 import java.io.IOException
-import java.util.Collections
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.FormBody
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-
+import java.util.*
 import java.util.Optional.of
+import java.util.concurrent.Future
 
 class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -50,8 +43,8 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Uber API")
 
         val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
@@ -68,10 +61,10 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
                 UberUtil.apiRequest("/v1/me", requestBuilder),
-                { map -> map.get("first_name") + " " + map.get("last_name") }).validate(client)
+                { map -> "${map["first_name"]} ${map["last_name"]}" }).validate(client)
     }
 
     override fun hosts(): Collection<String> {
@@ -81,19 +74,17 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     override fun canRenew(credentials: Oauth2Token): Boolean {
-        return credentials.refreshToken.isPresent
-                && credentials.clientId.isPresent
-                && credentials.clientSecret.isPresent
+        return credentials.isRenewable()
     }
 
     @Throws(IOException::class)
-    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Optional<Oauth2Token> {
+    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
         val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
-        val body = FormBody.Builder().add("client_id", credentials.clientId.get())
+        val body = FormBody.Builder().add("client_id", credentials.clientId)
                 //.add("redirect_uri", s.getRedirectUri())
-                .add("client_secret", credentials.clientSecret.get())
-                .add("refresh_token", credentials.refreshToken.get())
+                .add("client_secret", credentials.clientSecret)
+                .add("refresh_token", credentials.refreshToken)
                 .add("grant_type", "refresh_token")
                 .build()
 
@@ -101,8 +92,8 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        return of(Oauth2Token(responseMap["access_token"] as String,
-                responseMap["refresh_token"] as String, credentials.clientId.get(),
-                credentials.clientSecret.get()))
+        return Oauth2Token(responseMap["access_token"] as String,
+                responseMap["refresh_token"] as String, credentials.clientId,
+                credentials.clientSecret)
     }
 }

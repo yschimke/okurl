@@ -10,26 +10,26 @@ import java.util.stream.Collectors.joining
 
 class DnsSelector(private val mode: IPvMode, private val delegate: Dns) : Dns {
 
-  @Throws(UnknownHostException::class)
-  override fun lookup(hostname: String): List<InetAddress> {
-    var addresses = delegate.lookup(hostname)
+    @Throws(UnknownHostException::class)
+    override fun lookup(hostname: String): List<InetAddress> {
+        var addresses = delegate.lookup(hostname)
 
-    addresses = when (mode) {
-      IPvMode.IPV6_FIRST -> addresses.sortedBy { Inet4Address::class.java.isInstance(it) }
-      IPvMode.IPV4_FIRST -> addresses.sortedBy { Inet6Address::class.java.isInstance(it) }
-      IPvMode.IPV6_ONLY -> addresses.filter({ Inet6Address::class.java.isInstance(it) })
-      IPvMode.IPV4_ONLY -> addresses.filter({ Inet4Address::class.java.isInstance(it) })
-      IPvMode.SYSTEM -> addresses
+        addresses = when (mode) {
+            IPvMode.IPV6_FIRST -> addresses.sortedBy { Inet4Address::class.java.isInstance(it) }
+            IPvMode.IPV4_FIRST -> addresses.sortedBy { Inet6Address::class.java.isInstance(it) }
+            IPvMode.IPV6_ONLY -> addresses.filter({ Inet6Address::class.java.isInstance(it) })
+            IPvMode.IPV4_ONLY -> addresses.filter({ Inet4Address::class.java.isInstance(it) })
+            IPvMode.SYSTEM -> addresses
+        }
+
+        logger.fine("Dns ($hostname): " + addresses.stream()
+                .map { it.toString() }
+                .collect(joining(", ")))
+
+        return addresses
     }
 
-    logger.fine("Dns ($hostname): " + addresses.stream()
-        .map { it.toString() }
-        .collect(joining(", ")))
-
-    return addresses
-  }
-
-  companion object {
-    private val logger = Logger.getLogger(DnsSelector::class.java.name)
-  }
+    companion object {
+        private val logger = Logger.getLogger(DnsSelector::class.java.name)
+    }
 }

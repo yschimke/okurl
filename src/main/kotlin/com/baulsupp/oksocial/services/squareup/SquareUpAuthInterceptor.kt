@@ -5,23 +5,17 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.completion.ApiCompleter
-import com.baulsupp.oksocial.completion.BaseUrlCompleter
-import com.baulsupp.oksocial.completion.CompletionQuery
-import com.baulsupp.oksocial.completion.CompletionVariableCache
-import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.completion.*
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.Future
+import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.Future
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -46,15 +40,15 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
-                SquareUpUtil.apiRequest("/v1/me", requestBuilder), AuthInterceptor.Companion.fieldExtractor("name")).validate(
+                SquareUpUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
                 client)
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising SquareUp API")
 
         val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
@@ -73,7 +67,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val completer = BaseUrlCompleter(urlList.get(), hosts())
 
-        credentials.ifPresent { oauth2Token ->
+        credentials?.let {
             completer.withVariable("location",
                     {
                         completionVariableCache.compute(name(), "locations",

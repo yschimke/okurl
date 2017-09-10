@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.completion
 
+import okhttp3.HttpUrl
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
-import okhttp3.HttpUrl
 
 interface ApiCompleter {
     @Throws(IOException::class)

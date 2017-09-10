@@ -3,32 +3,22 @@ package com.baulsupp.oksocial.completion
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.google.common.collect.Lists
-import com.baulsupp.oksocial.output.util.FutureUtil
-import java.io.IOException
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import java.lang.Math.min
 import java.time.Clock
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 
-import java.lang.Math.min
-
-class UrlCompleter(services: List<AuthInterceptor<*>>, private val client: OkHttpClient,
+class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val client: OkHttpClient,
                    private val credentialsStore: CredentialsStore, private val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
-
-    private val services: Iterable<AuthInterceptor<*>>
     private val clock = Clock.systemDefaultZone()
 
-    init {
-        this.services = services
-    }
-
-    @Throws(IOException::class)
     override fun urlList(prefix: String): UrlList {
 
         val fullUrl = parseUrl(prefix)
@@ -38,9 +28,7 @@ class UrlCompleter(services: List<AuthInterceptor<*>>, private val client: OkHtt
 
             for (a in services) {
                 if (a.supportsUrl(u)) {
-                    return FutureUtil.ioSafeGet(
-                            a.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
-                                    .siteUrls(u))
+                    return a.apiCompleter(prefix, client, credentialsStore, completionVariableCache).siteUrls(u).get()
                 }
             }
 

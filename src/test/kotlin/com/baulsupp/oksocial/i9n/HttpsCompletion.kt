@@ -10,25 +10,25 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class HttpsCompletion {
-  private val main = Main()
-  private val output = TestOutputHandler<Response>()
-  private val credentialsStore = TestCredentialsStore()
+    private val main = Main()
+    private val output = TestOutputHandler<Response>()
+    private val credentialsStore = TestCredentialsStore()
 
-  init {
-    main.outputHandler = output
-    main.credentialsStore = credentialsStore
-  }
+    init {
+        main.outputHandler = output
+        main.credentialsStore = credentialsStore
+    }
 
-  @Test
-  @Throws(Throwable::class)
-  fun completePeopleEndpointSite() {
-    main.arguments = newArrayList("https://")
-    main.urlComplete = true
+    @Test
+    @Throws(Throwable::class)
+    fun completePeopleEndpointSite() {
+        main.arguments = newArrayList("https://")
+        main.urlComplete = true
 
-    main.run()
+        main.run()
 
-    assertEquals(Lists.newArrayList<Any>(), output.failures)
-    assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
-    assertTrue(output.stdout[0].contains("https://graph.facebook.com/"))
-  }
+        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
+        assertTrue(output.stdout[0].contains("https://graph.facebook.com/"))
+    }
 }

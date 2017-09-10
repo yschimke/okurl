@@ -1,9 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
-import com.google.common.collect.Lists
 import java.util.regex.Pattern
-
-import java.util.stream.Collectors.toList
 
 class DiscoveryEndpoint(private val baseUrl: String, private val map: Map<String, Any>) {
 
@@ -20,31 +17,19 @@ class DiscoveryEndpoint(private val baseUrl: String, private val map: Map<String
     }
 
     private fun getRequired(name: String): Any {
-        if (!map.containsKey(name)) {
-            throw NullPointerException("path not found")
-        }
-
-        return map[name]
+        return map[name] ?: throw NullPointerException("path not found")
     }
 
     fun description(): String {
         return getRequired("description") as String
     }
 
-    fun scopeNames(): List<String> {
-        val scopes = map["scopes"] as List<String>
-
-        return scopes ?: Lists.newArrayList()
-
-    }
+    fun scopeNames(): List<String> = map["scopes"] as List<String>
 
     fun parameters(): List<DiscoveryParameter> {
-        val o = map["parameters"] as Map<String, Map<String, Any>> ?: return Lists.newArrayList()
+        val o = map["parameters"] as Map<String, Map<String, Any>>
 
-        return o.entries
-                .stream()
-                .map { p -> DiscoveryParameter(p.key, p.value) }
-                .collect<List<DiscoveryParameter>, Any>(toList())
+        return o.entries.map { p -> DiscoveryParameter(p.key, p.value) }
     }
 
     fun matches(requestUrl: String): Boolean {

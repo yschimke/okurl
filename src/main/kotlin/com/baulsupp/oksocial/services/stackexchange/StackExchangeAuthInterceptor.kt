@@ -3,18 +3,16 @@ package com.baulsupp.oksocial.services.stackexchange
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.HttpUrl
+import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.stackexchange.StackExchangeUtil.apiRequest
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-
-import com.baulsupp.oksocial.services.stackexchange.StackExchangeUtil.apiRequest
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.Future
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
     override fun serviceDefinition(): StackExchangeServiceDefinition {
@@ -39,7 +37,7 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
     private fun extract(map: Map<String, Any>): String {
         val items = map["items"] as List<Map<String, Any>>
 
-        return if (items.size > 0) {
+        return if (items.isNotEmpty()) {
             "" + items[0]["display_name"]
         } else {
             "Unknown"
@@ -48,14 +46,14 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: StackExchangeToken): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: StackExchangeToken): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(apiRequest("/2.2/me?site=drupal", requestBuilder),
-                Function<Map<String, Any>, String> { this.extract(it) }).validate(client)
+                this::extract).validate(client)
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): StackExchangeToken {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): StackExchangeToken {
         System.err.println("Authorising StackExchange API")
 
         val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)

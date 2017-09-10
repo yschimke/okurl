@@ -8,17 +8,11 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import java.io.IOException
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.FormBody
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-
 import com.baulsupp.oksocial.services.imgur.ImgurUtil.apiRequest
+import okhttp3.*
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.Future
 
 class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -38,8 +32,8 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Imgur API")
 
         val clientId = Secrets.prompt("Imgur Client Id", "imgur.clientId", "", false)
@@ -50,10 +44,8 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
-        return JsonCredentialsValidator(
-                apiRequest("/3/account/me", requestBuilder),
-                Function<Map<String, Any>, String> { this.getName(it) }).validate(client)
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+        return JsonCredentialsValidator(apiRequest("/3/account/me", requestBuilder), this::getName).validate(client)
     }
 
     private fun getName(map: Map<String, Any>): String {
@@ -62,21 +54,15 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
         return data["url"] as String
     }
 
-    override fun canRenew(result: Response): Boolean {
-        return result.code() == 403
-    }
+    override fun canRenew(result: Response): Boolean = result.code() == 403
 
-    override fun canRenew(credentials: Oauth2Token): Boolean {
-        return credentials.refreshToken.isPresent
-                && credentials.clientId.isPresent
-                && credentials.clientSecret.isPresent
-    }
+    override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
     @Throws(IOException::class)
-    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Optional<Oauth2Token> {
-        val body = FormBody.Builder().add("refresh_token", credentials.refreshToken.get())
-                .add("client_id", credentials.clientId.get())
-                .add("client_secret", credentials.clientSecret.get())
+    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
+        val body = FormBody.Builder().add("refresh_token", credentials.refreshToken)
+                .add("client_id", credentials.clientId)
+                .add("client_secret", credentials.clientSecret)
                 .add("grant_type", "refresh_token")
                 .build()
         val request = Request.Builder().url("https://api.imgur.com/oauth2/token")
@@ -85,9 +71,10 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        return Optional.of(Oauth2Token(responseMap["access_token"] as String,
-                credentials.refreshToken.get(), credentials.clientId.get(),
-                credentials.clientSecret.get()))
+        // TODO check if refresh token in response?
+        return Oauth2Token(responseMap["access_token"] as String,
+                credentials.refreshToken, credentials.clientId,
+                credentials.clientSecret)
     }
 
     override fun hosts(): Collection<String> {

@@ -1,14 +1,11 @@
 package com.baulsupp.oksocial.tracing
 
 import com.baulsupp.oksocial.output.util.UsageException
-import java.net.URI
-import java.util.ArrayList
-import java.util.Optional
-import java.util.ServiceLoader
+import com.baulsupp.oksocial.tracing.UriHandler.Companion.loadServices
 import zipkin.Span
 import zipkin.reporter.Reporter
-
-import com.baulsupp.oksocial.tracing.UriHandler.loadServices
+import java.net.URI
+import java.util.*
 
 /**
  * Registry for looking up transports by URI.
@@ -21,7 +18,7 @@ class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
 
     init {
         handlers = ArrayList()
-        services.forEach(Consumer<UriHandler> { handlers.add(it) })
+        services.forEach { handlers.add(it) }
     }
 
     private fun findClient(uriString: String): Reporter<Span> {

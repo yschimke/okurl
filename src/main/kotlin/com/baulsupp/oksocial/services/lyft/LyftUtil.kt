@@ -1,9 +1,8 @@
 package com.baulsupp.oksocial.services.lyft
 
 import com.google.common.collect.Sets
-import java.util.Arrays
-import java.util.Collections
 import okhttp3.Request
+import java.util.*
 
 object LyftUtil {
     val SCOPES: Collection<String> = Arrays.asList("public",

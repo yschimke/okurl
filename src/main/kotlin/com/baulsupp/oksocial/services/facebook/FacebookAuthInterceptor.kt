@@ -9,19 +9,17 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.output.OutputHandler
-import java.io.IOException
-import java.util.Arrays
-import java.util.Optional
-import java.util.concurrent.Future
-import okhttp3.HttpUrl
+import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.facebook.FacebookUtil.ALL_PERMISSIONS
+import com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-
-import com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.Future
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -43,18 +41,17 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Facebook API")
 
         val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
         val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
-        val scopes = Secrets.promptArray("Scopes", "facebook.scopes",
-                Arrays.asList("public_profile", "user_friends", "email"))
+        var scopes = Secrets.promptArray("Scopes", "facebook.scopes",
+                listOf("public_profile", "user_friends", "email"))
 
         if (scopes.contains("all")) {
-            scopes.remove("all")
-            scopes.addAll(FacebookUtil.ALL_PERMISSIONS)
+            scopes = ALL_PERMISSIONS
         }
 
         return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
@@ -66,9 +63,9 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
-        return JsonCredentialsValidator(apiRequest("/me", requestBuilder), Function<Map<String, Any>, String> { this.extract(it) },
-                apiRequest("/app", requestBuilder), Function<Map<String, Any>, String> { this.extract(it) }).validate(client)
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+        return JsonCredentialsValidator(apiRequest("/me", requestBuilder), { extract(it) },
+                apiRequest("/app", requestBuilder), { this.extract(it) }).validate(client)
     }
 
     override fun hosts(): Collection<String> {

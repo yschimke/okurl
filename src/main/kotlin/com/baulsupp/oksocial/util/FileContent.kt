@@ -1,10 +1,10 @@
 package com.baulsupp.oksocial.util
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 
 object FileContent {
 

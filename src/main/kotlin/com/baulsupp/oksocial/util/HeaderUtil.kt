@@ -1,16 +1,13 @@
 package com.baulsupp.oksocial.util
 
 import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.util.FileUtil.expectedFile
 import com.google.common.base.Charsets
-import com.google.common.io.CharSource
 import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.Collections
-import java.util.LinkedHashMap
-
-import com.baulsupp.oksocial.util.FileUtil.expectedFile
+import java.util.*
 
 // TODO handle duplicate header keys
 object HeaderUtil {

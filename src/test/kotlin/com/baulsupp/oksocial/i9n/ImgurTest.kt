@@ -8,24 +8,24 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class ImgurTest {
-  private val main = Main()
-  private val output = TestOutputHandler<Response>()
-  private val credentialsStore = TestCredentialsStore()
+    private val main = Main()
+    private val output = TestOutputHandler<Response>()
+    private val credentialsStore = TestCredentialsStore()
 
-  init {
-    main.outputHandler = output
-    main.credentialsStore = credentialsStore
-  }
+    init {
+        main.outputHandler = output
+        main.credentialsStore = credentialsStore
+    }
 
-  @Test
-  @Throws(Exception::class)
-  fun setToken() {
-    main.authorize = true
-    main.token = "abc"
-    main.arguments = Lists.newArrayList("imgur")
+    @Test
+    @Throws(Exception::class)
+    fun setToken() {
+        main.authorize = true
+        main.token = "abc"
+        main.arguments = Lists.newArrayList("imgur")
 
-    main.run()
+        main.run()
 
-    assertEquals("abc", credentialsStore.tokens["api.imgur.com"])
-  }
+        assertEquals("abc", credentialsStore.tokens["api.imgur.com"])
+    }
 }

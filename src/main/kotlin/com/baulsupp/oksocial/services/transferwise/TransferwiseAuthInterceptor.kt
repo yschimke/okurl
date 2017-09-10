@@ -6,21 +6,13 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Sets
-import com.baulsupp.oksocial.output.OutputHandler
+import okhttp3.*
 import java.io.IOException
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.Future
-import okhttp3.Credentials
-import okhttp3.FormBody
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator.fieldExtractor
 
 open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -45,8 +37,8 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                  authArguments: List<String>): Oauth2Token {
+    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                           authArguments: List<String>): Oauth2Token {
         System.err.println("Authorising Transferwise API")
 
         val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
@@ -57,26 +49,24 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
+                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
         return JsonCredentialsValidator(
-                TransferwiseUtil.apiRequest("/v1/me", requestBuilder), AuthInterceptor.Companion.fieldExtractor("name")).validate(
+                TransferwiseUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
                 client)
     }
 
     override fun canRenew(credentials: Oauth2Token): Boolean {
-        return credentials.refreshToken.isPresent
-                && credentials.clientId.isPresent
-                && credentials.clientSecret.isPresent
+        return credentials.isRenewable()
     }
 
     @Throws(IOException::class)
-    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Optional<Oauth2Token> {
+    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
         val body = FormBody.Builder()
                 .add("grant_type", "refresh_token")
-                .add("refresh_token", credentials.refreshToken.get())
+                .add("refresh_token", credentials.refreshToken)
                 .build()
-        val basic = Credentials.basic(credentials.clientId.get(), credentials.clientSecret.get())
+        val basic = Credentials.basic(credentials.clientId, credentials.clientSecret)
         val request = Request.Builder().url("https://" + host() + "/oauth/token")
                 .post(body)
                 .header("Authorization", basic)
@@ -84,9 +74,10 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        return Optional.of(Oauth2Token(responseMap["access_token"] as String,
-                responseMap["refresh_token"] as String, credentials.clientId.get(),
-                credentials.clientSecret.get()))
+        // TODO check if refresh token in response?
+        return Oauth2Token(responseMap["access_token"] as String,
+                responseMap["refresh_token"] as String, credentials.clientId,
+                credentials.clientSecret)
     }
 
     override fun hosts(): Set<String> {

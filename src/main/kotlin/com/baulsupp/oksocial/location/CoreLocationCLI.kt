@@ -2,17 +2,16 @@ package com.baulsupp.oksocial.location
 
 import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
-import java.io.File
-import java.util.Optional
-import java.util.concurrent.TimeUnit
 import org.zeroturnaround.exec.ProcessExecutor
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 /**
  * https://github.com/fulldecent/corelocationcli
  */
 class CoreLocationCLI : LocationSource {
 
-    override fun read(): Optional<Location> {
+    override fun read(): Location? {
         if (PlatformUtil.isOSX()) {
             if (!File(LOCATION_APP).exists()) {
                 throw UsageException("Missing " + LOCATION_APP)
@@ -25,14 +24,14 @@ class CoreLocationCLI : LocationSource {
 
                 val parts = line.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-                return Location.latLong(java.lang.Double.parseDouble(parts[0]), java.lang.Double.parseDouble(parts[1]))
+                return Location(parts[0].toDouble(), parts[1].toDouble())
             } catch (e: Exception) {
                 e.printStackTrace()
-                return Optional.empty()
+                return null
             }
 
         } else {
-            return Optional.empty()
+            return null
         }
     }
 

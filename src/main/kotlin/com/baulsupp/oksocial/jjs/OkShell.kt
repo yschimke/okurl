@@ -2,16 +2,12 @@ package com.baulsupp.oksocial.jjs
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.location.Location
-import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.util.FileContent
+import okhttp3.*
 import java.io.IOException
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 
 class OkShell @Throws(Exception::class)
 private constructor() {
@@ -19,7 +15,7 @@ private constructor() {
     val requestBuilder: Request.Builder
     private val engine: ScriptEngine
     private val main: Main?
-    val outputHandler: OutputHandler<*>
+    val outputHandler: OutputHandler<Response>
 
     init {
         main = Main()
@@ -111,10 +107,8 @@ private constructor() {
         if (main != null) {
             val interceptor = main.serviceInterceptor.getByName(name)
 
-            if (interceptor.isPresent) {
-                val credentials = main.credentialsStore.readDefaultCredentials<*>(interceptor.get().serviceDefinition())
-
-                return credentials.orElse(null)
+            if (interceptor != null) {
+                return main.credentialsStore.readDefaultCredentials(interceptor.serviceDefinition())
             }
         }
 
@@ -122,8 +116,8 @@ private constructor() {
     }
 
     @Throws(IOException::class)
-    fun location(): Location {
-        return main!!.locationSource.read().get()
+    fun location(): Location? {
+        return main!!.locationSource.read()
     }
 
     private fun close() {

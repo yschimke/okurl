@@ -1,9 +1,8 @@
 package com.baulsupp.oksocial.services.twitter.twurlrc
 
-import com.baulsupp.oksocial.services.twitter.TwitterCredentials
 import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.services.twitter.TwitterCredentials
 import java.io.File
-import java.util.Optional
 
 object TwurlrcImport {
     fun authorize(authArguments: List<String>): TwitterCredentials {

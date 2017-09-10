@@ -1,10 +1,10 @@
 package com.baulsupp.oksocial.okhttp
 
-import java.io.IOException
-import java.util.concurrent.CompletableFuture
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
+import java.io.IOException
+import java.util.concurrent.CompletableFuture
 
 class OkHttpResponseFuture : Callback {
     val future = CompletableFuture<Response>()

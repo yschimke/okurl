@@ -10,27 +10,27 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 
 class ServiceApiDocPresenterTest {
-  private val outputHandler = TestOutputHandler<Any>()
-  private val client = OkHttpClient()
-  private val credentialsStore = CredentialsStore.NONE
-  private val presenter = ServiceApiDocPresenter(ServiceInterceptor(client, credentialsStore),
-      client,
-      credentialsStore)
+    private val outputHandler = TestOutputHandler<Any>()
+    private val client = OkHttpClient()
+    private val credentialsStore = CredentialsStore.NONE
+    private val presenter = ServiceApiDocPresenter(ServiceInterceptor(client, credentialsStore),
+            client,
+            credentialsStore)
 
-  @Test
-  @Throws(IOException::class)
-  fun returnsAllUrls() {
-    presenter.explainApi("https://api1.test.com/me", outputHandler, client)
+    @Test
+    @Throws(IOException::class)
+    fun returnsAllUrls() {
+        presenter.explainApi("https://api1.test.com/me", outputHandler, client)
 
-    assertEquals(newArrayList("Test: https://api1.test.com/me"), outputHandler.stdout)
-  }
+        assertEquals(newArrayList("Test: https://api1.test.com/me"), outputHandler.stdout)
+    }
 
-  @Test
-  @Throws(IOException::class)
-  fun errorForUnknown() {
-    presenter.explainApi("https://api1.blah.com/me", outputHandler, client)
+    @Test
+    @Throws(IOException::class)
+    fun errorForUnknown() {
+        presenter.explainApi("https://api1.blah.com/me", outputHandler, client)
 
-    assertEquals(newArrayList("No documentation for: https://api1.blah.com/me"),
-        outputHandler.stdout)
-  }
+        assertEquals(newArrayList("No documentation for: https://api1.blah.com/me"),
+                outputHandler.stdout)
+    }
 }

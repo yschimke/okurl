@@ -5,13 +5,13 @@ import com.google.common.collect.Maps
 import java.util.*
 
 class TestCompletionVariableCache : CompletionVariableCache {
-  private val cache = Maps.newConcurrentMap<String, List<String>>()
+    private val cache = Maps.newConcurrentMap<String, List<String>>()
 
-  override fun get(service: String, key: String): Optional<List<String>> {
-    return Optional.ofNullable(cache[service + "-" + key])
-  }
+    override fun get(service: String, key: String): Optional<List<String>> {
+        return Optional.ofNullable(cache[service + "-" + key])
+    }
 
-  override fun store(service: String, key: String, values: List<String>) {
-    cache.put(service + "-" + key, values)
-  }
+    override fun store(service: String, key: String, values: List<String>) {
+        cache.put(service + "-" + key, values)
+    }
 }

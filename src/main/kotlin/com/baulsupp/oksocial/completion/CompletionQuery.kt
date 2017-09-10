@@ -1,11 +1,9 @@
 package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import java.util.concurrent.CompletableFuture
 import okhttp3.OkHttpClient
 import okhttp3.Request
-
-import java.util.stream.Collectors.toList
+import java.util.concurrent.CompletableFuture
 
 object CompletionQuery {
     fun getIds(client: OkHttpClient, urlString: String,
@@ -16,7 +14,7 @@ object CompletionQuery {
         return AuthUtil.enqueueJsonMapRequest(client, request)
                 .thenApply { map ->
                     val surveys = map[path] as List<Map<String, Any>>
-                    surveys.stream().map { m -> m[key] as String }.collect<List<String>, Any>(toList())
+                    surveys.map { m -> m[key] as String }
                 }
     }
 }

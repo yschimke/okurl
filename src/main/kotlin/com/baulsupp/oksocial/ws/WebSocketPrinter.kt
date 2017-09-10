@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.ws
 
 import com.baulsupp.oksocial.output.OutputHandler
-import java.util.concurrent.CountDownLatch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
+import java.util.concurrent.CountDownLatch
 
 class WebSocketPrinter(private val outputHandler: OutputHandler<*>) : WebSocketListener() {
     private val latch = CountDownLatch(1)

@@ -8,47 +8,47 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class TwitterTest {
-  private val main = Main()
-  private val output = TestOutputHandler<Response>()
-  private val credentialsStore = TestCredentialsStore()
+    private val main = Main()
+    private val output = TestOutputHandler<Response>()
+    private val credentialsStore = TestCredentialsStore()
 
-  init {
-    main.outputHandler = output
-    main.credentialsStore = credentialsStore
-    main.resolve = Lists.newArrayList()
-  }
-
-  @Test
-  @Throws(Throwable::class)
-  fun setToken() {
-    main.authorize = true
-    main.token = "PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET"
-    main.arguments = Lists.newArrayList("twitter")
-
-    main.run()
-
-    if (!output.failures.isEmpty()) {
-      throw output.failures[0]
+    init {
+        main.outputHandler = output
+        main.credentialsStore = credentialsStore
+        main.resolve = Lists.newArrayList()
     }
 
-    assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
-        credentialsStore.tokens["api.twitter.com"])
-  }
+    @Test
+    @Throws(Throwable::class)
+    fun setToken() {
+        main.authorize = true
+        main.token = "PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET"
+        main.arguments = Lists.newArrayList("twitter")
 
-  @Test
-  @Throws(Throwable::class)
-  fun importFromTwurl() {
-    main.authorize = true
-    main.arguments = Lists.newArrayList("twitter", "--twurlrc",
-        "src/test/resources/single_twurlrc.yaml")
+        main.run()
 
-    main.run()
+        if (!output.failures.isEmpty()) {
+            throw output.failures[0]
+        }
 
-    if (!output.failures.isEmpty()) {
-      throw output.failures[0]
+        assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
+                credentialsStore.tokens["api.twitter.com"])
     }
 
-    assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
-        credentialsStore.tokens["api.twitter.com"])
-  }
+    @Test
+    @Throws(Throwable::class)
+    fun importFromTwurl() {
+        main.authorize = true
+        main.arguments = Lists.newArrayList("twitter", "--twurlrc",
+                "src/test/resources/single_twurlrc.yaml")
+
+        main.run()
+
+        if (!output.failures.isEmpty()) {
+            throw output.failures[0]
+        }
+
+        assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
+                credentialsStore.tokens["api.twitter.com"])
+    }
 }

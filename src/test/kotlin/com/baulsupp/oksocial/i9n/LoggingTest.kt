@@ -15,49 +15,49 @@ import org.junit.jupiter.api.Test
 import java.util.logging.LogManager
 
 class LoggingTest {
-  @Rule
-  var server = MockWebServer()
+    @Rule
+    var server = MockWebServer()
 
-  private val main = Main()
+    private val main = Main()
 
-  private val sslClient = SslClient.localhost()
-  private val output = TestOutputHandler<Response>()
+    private val sslClient = SslClient.localhost()
+    private val output = TestOutputHandler<Response>()
 
-  init {
-    main.outputHandler = output
-  }
-
-  @Test
-  @Throws(Exception::class)
-  fun logsData() {
-    server.useHttps(sslClient.socketFactory, false)
-    server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1))
-    server.enqueue(MockResponse().setBody("Isla Sorna"))
-    main.allowInsecure = true
-
-    main.arguments = Lists.newArrayList(server.url("/").toString())
-    main.debug = true
-
-    main.run()
-  }
-
-  @Test
-  @Throws(Exception::class)
-  fun version() {
-    val output = TestOutputHandler<Response>()
-
-    main.version = true
-
-    main.run()
-
-    assertEquals(0, output.failures.size)
-  }
-
-  companion object {
-
-    @AfterAll
-    fun resetLogging() {
-      LogManager.getLogManager().reset()
+    init {
+        main.outputHandler = output
     }
-  }
+
+    @Test
+    @Throws(Exception::class)
+    fun logsData() {
+        server.useHttps(sslClient.socketFactory, false)
+        server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1))
+        server.enqueue(MockResponse().setBody("Isla Sorna"))
+        main.allowInsecure = true
+
+        main.arguments = Lists.newArrayList(server.url("/").toString())
+        main.debug = true
+
+        main.run()
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun version() {
+        val output = TestOutputHandler<Response>()
+
+        main.version = true
+
+        main.run()
+
+        assertEquals(0, output.failures.size)
+    }
+
+    companion object {
+
+        @AfterAll
+        fun resetLogging() {
+            LogManager.getLogManager().reset()
+        }
+    }
 }

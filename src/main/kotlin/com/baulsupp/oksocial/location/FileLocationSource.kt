@@ -5,23 +5,20 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Maps
 import java.io.File
 import java.io.IOException
-import java.util.Optional
 
 class FileLocationSource(private val file: File) : LocationSource {
 
     @Throws(IOException::class)
-    override fun read(): Optional<Location> {
+    override fun read(): Location? {
         if (file.isFile) {
             val mapper = ObjectMapper()
 
-            val values = mapper.readValue<Map<String, Double>>(file, object : TypeReference<Map<String, Double>>() {
+            val values = mapper.readValue<Map<String, Double>>(file, object : TypeReference<Map<String, Double>>() {})
 
-            })
-
-            return Optional.of(Location(values["latitude"], values["longitude"]))
+            return Location(values["latitude"]!!, values["longitude"]!!)
         }
 
-        return Optional.empty()
+        return null
     }
 
     @Throws(IOException::class)
