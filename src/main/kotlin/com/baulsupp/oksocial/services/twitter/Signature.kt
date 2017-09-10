@@ -19,7 +19,7 @@ import java.util.function.Supplier
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class Signature @JvmOverloads constructor(private val clock: Clock = Clock.systemDefaultZone(), private val random: Supplier<Long> = Supplier { SecureRandom().nextLong() }) {
+class Signature @JvmOverloads constructor(private val clock: Clock = Clock.systemDefaultZone(), private val random: () -> Long = { SecureRandom().nextLong() }) {
 
     private fun quoted(str: String): String {
         return "\"" + str + "\""
@@ -31,7 +31,7 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
     }
 
     private fun generateNonce(): String {
-        return java.lang.Long.toString(Math.abs(random.get())) + clock.millis()
+        return java.lang.Long.toString(Math.abs(random())) + clock.millis()
     }
 
     fun generateAuthorization(request: Request, credentials: TwitterCredentials): String {

@@ -29,7 +29,7 @@ class GoogleAuthInterceptorTest {
     @Test
     @Throws(IOException::class)
     fun supportsAnyGoogleApi() {
-        assertTrue(interceptor.supportsUrl(HttpUrl.parse("https://altrightfanfiction.googleapis.com")))
+        assertTrue(interceptor.supportsUrl(HttpUrl.parse("https://altrightfanfiction.googleapis.com")!!))
     }
 
     @Test
@@ -49,7 +49,7 @@ class GoogleAuthInterceptorTest {
         val hostCompleter = interceptor.apiCompleter("https://people.googleapis.com", client,
                 credentialsStore, cache)
 
-        val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com"))
+        val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!)
                 .get()
                 .getUrls("https://people.googleapis.com")
 
@@ -67,7 +67,7 @@ class GoogleAuthInterceptorTest {
                 credentialsStore, cache)
 
         val urlList = hostCompleter.siteUrls(
-                HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url"))
+                HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!)
                 .get()
 
         val urls = urlList
@@ -86,7 +86,7 @@ class GoogleAuthInterceptorTest {
         val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/", client,
                 credentialsStore, cache)
 
-        val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/"))
+        val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!)
                 .get()
 
         val urls = urlList

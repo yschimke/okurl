@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import java.io.IOException
 
-@FunctionalInterface
 interface ApiDocPresenter {
 
     @Throws(IOException::class)

@@ -7,6 +7,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
+import io.github.vjames19.futures.jdk8.ImmediateFuture
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -35,8 +36,8 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
                           requestBuilder: Request.Builder,
-                          credentials: Oauth2Token): Future<Optional<ValidatedCredentials>> {
-        return completedFuture(Optional.empty())
+                          credentials: Oauth2Token): Future<ValidatedCredentials> {
+        return ImmediateFuture { ValidatedCredentials("aaa", null) }
     }
 
     override fun serviceDefinition(): ServiceDefinition<Oauth2Token> {
@@ -49,6 +50,10 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     override fun apiDocPresenter(apiUrl: String): ApiDocPresenter {
-        return ApiDocPresenter { url, outputHandler, _ -> outputHandler.info("Test: " + url) }
+        return object : ApiDocPresenter {
+            override fun explainApi(url: String, outputHandler: OutputHandler<*>, client: OkHttpClient) {
+                outputHandler.info("Test: " + url)
+            }
+        }
     }
 }

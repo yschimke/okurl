@@ -31,7 +31,7 @@ object TestUtil {
             }
 
             try {
-                credentialsStore = CredentialFactory.createCredentialsStore(empty())
+                credentialsStore = CredentialFactory.createCredentialsStore(null)
             } catch (e: OSXKeychainException) {
             }
 
@@ -46,6 +46,6 @@ object TestUtil {
 
         val token = credentialsStore!!.readDefaultCredentials(serviceDefinition)
 
-        Assume.assumeTrue(token.isPresent)
+        Assume.assumeTrue(token != null)
     }
 }
