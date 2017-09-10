@@ -47,16 +47,11 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
         r = builder.build()
     }
 
-    private fun multiProvider(dnsServers: List<InetSocketAddress>): DnsServerAddressStreamProvider {
-        val providers = dnsServers.stream().map { s ->
-            singleProvider(s)
-        }.toList()
-        return MultiDnsServerAddressStreamProvider(providers)
-    }
+    private fun multiProvider(dnsServers: List<InetSocketAddress>): DnsServerAddressStreamProvider =
+            MultiDnsServerAddressStreamProvider(dnsServers.map { s -> singleProvider(s) })
 
-    private fun singleProvider(address: InetSocketAddress): SingletonDnsServerAddressStreamProvider {
-        return SingletonDnsServerAddressStreamProvider(address)
-    }
+    private fun singleProvider(address: InetSocketAddress): SingletonDnsServerAddressStreamProvider =
+            SingletonDnsServerAddressStreamProvider(address)
 
     @Throws(UnknownHostException::class)
     override fun lookup(hostname: String): List<InetAddress> {

@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.AbstractServiceDefinition
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 
 class BasicAuthServiceDefinition(apiHost: String, serviceName: String, shortName: String,
-                                 apiDocs: String, accountsLink: String) : AbstractServiceDefinition<BasicCredentials>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
+                                 apiDocs: String, accountsLink: String?) : AbstractServiceDefinition<BasicCredentials>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
 
     override fun parseCredentialsString(s: String): BasicCredentials {
         val parts = s.split(":".toRegex(), 2).toTypedArray()

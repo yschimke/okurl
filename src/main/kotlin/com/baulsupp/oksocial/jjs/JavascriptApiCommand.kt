@@ -67,12 +67,12 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
             return toRequestList(requestBuilder, result)
         } else {
-            return arguments.stream().map { item ->
+            return arguments.map { item ->
                 engine.put("item", item)
                 val result = eval(engine, lines)
 
                 toRequest(requestBuilder, result)
-            }.toList()
+            }
         }
     }
 

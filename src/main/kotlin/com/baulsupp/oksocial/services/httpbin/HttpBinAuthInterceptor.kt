@@ -42,7 +42,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
 
     override fun serviceDefinition(): ServiceDefinition<BasicCredentials> {
         return BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
-                "https://httpbin.org/", null!!)
+                "https://httpbin.org/", null)
     }
 
     @Throws(IOException::class)

@@ -14,7 +14,7 @@ class CommandRegistry {
         return commands.map { it.name() }
     }
 
-    fun getCommandByName(name: String): Optional<ShellCommand> {
-        return commands.stream().filter { c -> c.name() == name }.findFirst()
+    fun getCommandByName(name: String): ShellCommand? {
+        return commands.firstOrNull { c -> c.name() == name }
     }
 }

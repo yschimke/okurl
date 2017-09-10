@@ -1,12 +1,12 @@
 buildscript {
   ext.kotlin_version = '1.1.4-3'
-  ext.junitJupiterVersion = '5.0.0-RC3'
-  ext.junitPlatformVersion = '1.0.0-RC3'
+//  ext.junitJupiterVersion = '5.0.0-RC3'
+//  ext.junitPlatformVersion = '1.0.0-RC3'
   repositories {
     mavenCentral()
   }
   dependencies {
-    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3'
+//    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
@@ -22,7 +22,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'distribution'
 apply plugin: 'maven'
-apply plugin: 'org.junit.platform.gradle.plugin'
+//apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'com.baulsupp'
 
@@ -101,12 +101,12 @@ dependencies {
   compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
   compile 'com.spotify:completable-futures:0.3.1'
 
-  testCompile group: 'org.junit.platform', name: 'junit-platform-surefire-provider', version: '1.0.0-RC3'
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-migration-support', version: '5.0.0-RC3'
-
-  testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-RC3"
-  testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-RC3'
-  testRuntime group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.0-RC3'
+//  testCompile group: 'org.junit.platform', name: 'junit-platform-surefire-provider', version: '1.0.0-RC3'
+//  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-migration-support', version: '5.0.0-RC3'
+//
+//  testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-RC3"
+//  testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-RC3'
+//  testRuntime group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.0-RC3'
 
   testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
   testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
@@ -159,20 +159,20 @@ compileTestJava {
   options.compilerArgs += '-parameters'
 }
 
-junitPlatform {
-  platformVersion '1.0.0-RC3'
-  filters {
-    engines {
-       include 'junit-jupiter', 'junit-vintage'
-    }
-    tags {
-      exclude 'slow'
-    }
-    includeClassNamePattern '.*Test'
-  }
-  enableStandardTestTask true
-  logManager 'org.apache.logging.log4j.jul.LogManager'
-}
+//junitPlatform {
+//  platformVersion '1.0.0-RC3'
+//  filters {
+//    engines {
+//       include 'junit-jupiter', 'junit-vintage'
+//    }
+//    tags {
+//      exclude 'slow'
+//    }
+//    includeClassNamePattern '.*Test'
+//  }
+//  enableStandardTestTask true
+//  logManager 'org.apache.logging.log4j.jul.LogManager'
+//}
 
 //packaging tests
 task packageTests(type: Jar) {

@@ -99,12 +99,11 @@ class DiscoveryApiDocPresenterTest {
         val contains = outputHandler.stdout.contains(field + ": " + expected)
 
         if (!contains) {
-            val found = outputHandler.stdout.stream().filter { s ->
+            val found = outputHandler.stdout.firstOrNull { s ->
                 s.startsWith(field + ": ")
-            }.findFirst()
+            }
 
-            val msg = "expected '$expected' found " + found.map { s -> s.substring(field.length + 2) }.orElse("nothing")
-            fail(msg)
+            fail("expected '$expected' found " + (found?.let { it.substring(field.length + 2) } ?: "nothing"))
         }
 
         assertTrue(contains)

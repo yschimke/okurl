@@ -22,9 +22,7 @@ class DnsSelector(private val mode: IPvMode, private val delegate: Dns) : Dns {
             IPvMode.SYSTEM -> addresses
         }
 
-        logger.fine("Dns ($hostname): " + addresses.stream()
-                .map { it.toString() }
-                .collect(joining(", ")))
+        logger.fine("Dns ($hostname): " + addresses.map { it.toString() }.joinToString(", "))
 
         return addresses
     }

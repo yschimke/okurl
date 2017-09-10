@@ -19,7 +19,7 @@ import java.util.concurrent.Future
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun serviceDefinition(): Oauth2ServiceDefinition {
         return Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
-                "https://github.com/Giphy/GiphyAPI", null!!)
+                "https://github.com/Giphy/GiphyAPI", null)
     }
 
     override fun defaultCredentials(): Oauth2Token? {

@@ -696,7 +696,11 @@ public class Main extends HelpOption {
 
   private ShellCommand getShellCommand() {
     ShellCommand shellCommand =
-        commandRegistry.getCommandByName(commandName).orElse(new OksocialCommand());
+        commandRegistry.getCommandByName(commandName);
+
+    if (shellCommand == null) {
+      shellCommand = new OksocialCommand();
+    }
 
     if (shellCommand instanceof MainAware) {
       ((MainAware) shellCommand).setMain(this);

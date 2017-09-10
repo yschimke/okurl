@@ -48,9 +48,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
     @Throws(IOException::class)
     fun toFile(file: File, strip: Int, prefix: String) {
-        val content = regex(prefix) + "\n" + urls.stream()
-                .map { u -> u.substring(strip) }
-                .collect(joining("\n"))
+        val content = regex(prefix) + "\n" + urls.map { u -> u.substring(strip) }.joinToString("\n")
 
         Files.write(content, file, StandardCharsets.UTF_8)
     }

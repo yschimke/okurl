@@ -5,7 +5,7 @@ import java.util.*
 import java.util.Optional.ofNullable
 
 abstract class AbstractServiceDefinition<T>(private val apiHost: String, private val serviceName: String, private val shortName: String,
-                                            private val apiDocs: String, private val accountsLink: String) : ServiceDefinition<T> {
+                                            private val apiDocs: String, private val accountsLink: String?) : ServiceDefinition<T> {
 
     override fun shortName(): String {
         return shortName
