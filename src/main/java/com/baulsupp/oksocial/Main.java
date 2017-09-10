@@ -42,22 +42,14 @@ import com.baulsupp.oksocial.output.OutputHandler;
 import com.baulsupp.oksocial.output.ResponseExtractor;
 import com.baulsupp.oksocial.output.util.PlatformUtil;
 import com.baulsupp.oksocial.output.util.UsageException;
-import com.baulsupp.oksocial.security.CertificatePin;
-import com.baulsupp.oksocial.security.CertificateUtils;
-import com.baulsupp.oksocial.security.ConsoleCallbackHandler;
-import com.baulsupp.oksocial.security.InsecureHostnameVerifier;
-import com.baulsupp.oksocial.security.InsecureTrustManager;
-import com.baulsupp.oksocial.security.OpenSCUtil;
+import com.baulsupp.oksocial.security.*;
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor;
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor;
 import com.baulsupp.oksocial.tracing.UriTransportRegistry;
 import com.baulsupp.oksocial.tracing.ZipkinConfig;
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor;
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener;
-import com.baulsupp.oksocial.util.FileContent;
-import com.baulsupp.oksocial.util.InetAddressParam;
-import com.baulsupp.oksocial.util.LoggingUtil;
-import com.baulsupp.oksocial.util.ProtocolUtil;
+import com.baulsupp.oksocial.util.*;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -89,6 +81,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nullable;
 import javax.net.SocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509TrustManager;
@@ -110,12 +103,6 @@ import org.apache.commons.io.IOUtils;
 import zipkin.Span;
 import zipkin.reporter.Reporter;
 
-import static com.baulsupp.oksocial.security.CertificateUtils.trustManagerForKeyStore;
-import static com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager;
-import static com.baulsupp.oksocial.security.KeystoreUtils.createSslSocketFactory;
-import static com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore;
-import static com.baulsupp.oksocial.security.KeystoreUtils.keyManagerArray;
-import static com.baulsupp.oksocial.util.HeaderUtil.headerMap;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -311,7 +298,7 @@ public class Main extends HelpOption {
       System.setProperty("javax.net.debug", "ssl,handshake");
     }
 
-    LoggingUtil.configureLogging(debug, showHttp2Frames);
+    LoggingUtil.Companion.configureLogging(debug, showHttp2Frames);
 
     if (outputHandler == null) {
       outputHandler = buildHandler();
@@ -479,7 +466,7 @@ public class Main extends HelpOption {
           return Optional.of(newUrlCompletion);
         }
       }
-    } else if (UrlCompleter.isPossibleAddress(urlToComplete)) {
+    } else if (UrlCompleter.Companion.isPossibleAddress(urlToComplete)) {
       return Optional.of(urlToComplete);
     }
 
@@ -552,9 +539,15 @@ public class Main extends HelpOption {
   }
 
   private void applyZipkin(OkHttpClient.Builder clientBuilder) throws IOException {
-    ZipkinConfig config = ZipkinConfig.load();
-    Reporter<Span> reporter =
-        config.zipkinSenderUri().map(UriTransportRegistry::forUri).orElse(Platform.get());
+    ZipkinConfig config = ZipkinConfig.Companion.load();
+    String zipkinSenderUri = config.zipkinSenderUri();
+    Reporter<Span> reporter;
+
+    if (zipkinSenderUri != null) {
+      reporter = UriTransportRegistry.Companion.forUri(zipkinSenderUri);
+    } else {
+      reporter = Platform.get();
+    }
 
     Tracing tracing = Tracing.newBuilder()
         .localServiceName("oksocial")
@@ -567,7 +560,13 @@ public class Main extends HelpOption {
     Tracer tracer = tracing.tracer();
 
     Consumer<TraceContext> opener =
-        tc -> closeables.add(() -> config.openFunction().apply(tc).ifPresent(this::openLink));
+        tc -> closeables.add(() -> {
+          String link = config.openFunction().invoke(tc);
+
+          if (link != null) {
+            openLink(link);
+          }
+        });
 
     clientBuilder.eventListenerFactory(
         call -> new ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace));
@@ -603,9 +602,9 @@ public class Main extends HelpOption {
     }
 
     if (PlatformUtil.isOSX()) {
-      return new OSXCredentialsStore(ofNullable(tokenSet));
+      return new OSXCredentialsStore(tokenSet);
     } else {
-      return new PreferencesCredentialsStore(ofNullable(tokenSet));
+      return new PreferencesCredentialsStore(tokenSet);
     }
   }
 
@@ -721,28 +720,29 @@ public class Main extends HelpOption {
 
     call.enqueue(result);
 
-    return result.future;
+    return result.getFuture();
   }
 
   private void authorize() throws Exception {
-    Optional<AuthInterceptor<?>> auth = findAuthInterceptor();
-
-    authorisation.authorize(auth, ofNullable(token), arguments);
+    authorisation.authorize(findAuthInterceptor(), ofNullable(token), arguments);
   }
 
   private void renew() throws Exception {
-    Optional auth = findAuthInterceptor();
-
-    authorisation.renew(auth);
+    authorisation.renew(findAuthInterceptor());
   }
 
-  private Optional<AuthInterceptor<?>> findAuthInterceptor() throws Exception {
+  private @Nullable
+  AuthInterceptor<?> findAuthInterceptor() throws Exception {
     ShellCommand command = getShellCommand();
 
-    Optional<AuthInterceptor<?>> auth =
-        command.authenticator().flatMap((authName) -> serviceInterceptor.getByName(authName));
+    String authenticator = command.authenticator();
+    @Nullable AuthInterceptor<?> auth = null;
 
-    if (!auth.isPresent() && !arguments.isEmpty()) {
+    if (authenticator != null) {
+      auth = serviceInterceptor.getByName(authenticator);
+    }
+
+    if (auth == null && !arguments.isEmpty()) {
       String name = arguments.remove(0);
 
       auth = serviceInterceptor.findAuthInterceptor(name);
@@ -788,13 +788,13 @@ public class Main extends HelpOption {
     }
 
     if (socksProxy != null) {
-      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.address));
+      builder.proxy(new Proxy(Proxy.Type.SOCKS, socksProxy.getAddress()));
     } else if (proxy != null) {
-      builder.proxy(new Proxy(Proxy.Type.HTTP, proxy.address));
+      builder.proxy(new Proxy(Proxy.Type.HTTP, proxy.getAddress()));
     }
 
     if (protocols != null) {
-      builder.protocols(ProtocolUtil.parseProtocolList(protocols));
+      builder.protocols(ProtocolUtil.INSTANCE.parseProtocolList(protocols));
     }
 
     return builder;
@@ -851,19 +851,19 @@ public class Main extends HelpOption {
     KeyStore keystore = null;
 
     if (keystoreFile != null) {
-      keystore = getKeyStore(keystoreFile);
+      keystore = KeystoreUtils.INSTANCE.getKeyStore(keystoreFile);
     }
 
     List<KeyManager> keyManagers = Lists.newArrayList();
 
     if (opensc != null) {
-      keyManagers.addAll(asList(OpenSCUtil.getKeyManagers(callbackHandler, opensc)));
+      keyManagers.addAll(asList(OpenSCUtil.INSTANCE.getKeyManagers(callbackHandler, opensc)));
     } else if (clientAuth) {
       if (keystore == null) {
         throw new UsageException("--clientauth specified without --keystore");
       }
 
-      keyManagers.add(createKeyManager(keystore, callbackHandler));
+      keyManagers.add(KeystoreUtils.INSTANCE.createKeyManager(keystore, callbackHandler));
     }
 
     X509TrustManager trustManager;
@@ -874,21 +874,21 @@ public class Main extends HelpOption {
       List<X509TrustManager> trustManagers = Lists.newArrayList();
 
       if (keystore != null) {
-        trustManagers.add(trustManagerForKeyStore(keystore));
+        trustManagers.add(CertificateUtils.INSTANCE.trustManagerForKeyStore(keystore));
       }
 
       if (!serverCerts.isEmpty()) {
-        trustManagers.add(CertificateUtils.load(serverCerts));
+        trustManagers.add(CertificateUtils.INSTANCE.load(serverCerts));
       }
 
-      trustManager = CertificateUtils.combineTrustManagers(trustManagers);
+      trustManager = CertificateUtils.INSTANCE.combineTrustManagers(trustManagers);
     }
 
-    builder.sslSocketFactory(createSslSocketFactory(keyManagerArray(keyManagers), trustManager),
+    builder.sslSocketFactory(KeystoreUtils.INSTANCE.createSslSocketFactory(KeystoreUtils.INSTANCE.keyManagerArray(keyManagers), trustManager),
         trustManager);
 
     if (certificatePins != null) {
-      builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins));
+      builder.certificatePinner(CertificatePin.Companion.buildFromCommandLine(certificatePins));
     }
   }
 
@@ -917,7 +917,7 @@ public class Main extends HelpOption {
     }
 
     try {
-      return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data));
+      return RequestBody.create(MediaType.parse(mimeType), FileContent.INSTANCE.readParamBytes(data));
     } catch (IOException e) {
       throw new UsageException(e.getMessage());
     }
@@ -926,7 +926,7 @@ public class Main extends HelpOption {
   public Request.Builder createRequestBuilder() {
     Request.Builder requestBuilder = new Request.Builder();
 
-    Map<String, String> headerMap = headerMap(headers);
+    Map<String, String> headerMap = HeaderUtil.INSTANCE.headerMap(headers);
 
     requestBuilder.method(getRequestMethod(), getRequestBody(headerMap));
 
