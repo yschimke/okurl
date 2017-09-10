@@ -5,9 +5,11 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.OkHttpClient
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.io.IOException
+import kotlin.test.assertEquals
 
 class ServiceApiDocPresenterTest {
     private val outputHandler = TestOutputHandler<Any>()

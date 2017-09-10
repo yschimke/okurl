@@ -5,11 +5,13 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Assertions.fail
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import org.junit.Test
+
+
 import java.io.IOException
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class DiscoveryApiDocPresenterTest {
     private val outputHandler = TestOutputHandler<Response>()
@@ -17,7 +19,7 @@ class DiscoveryApiDocPresenterTest {
 
     private var p: DiscoveryApiDocPresenter? = null
 
-    @BeforeEach
+    @Before
     @Throws(IOException::class)
     fun loadPresenter() {
         val discoveryIndex = DiscoveryIndex.loadStatic()

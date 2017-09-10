@@ -6,9 +6,10 @@ import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
 
 class GithubTest {
     private val main = Main()
@@ -32,7 +33,7 @@ class GithubTest {
 
         main.run()
 
-        assertEquals(newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("/user"))
     }
 
@@ -46,7 +47,7 @@ class GithubTest {
 
         main.run()
 
-        assertEquals(newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://api.github.com/user"))
     }
 }

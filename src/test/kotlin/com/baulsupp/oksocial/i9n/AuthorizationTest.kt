@@ -4,8 +4,9 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.google.common.collect.Lists
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+
 
 class AuthorizationTest {
     private val main = Main()

@@ -5,9 +5,11 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.services.test.TestAuthInterceptor
 import com.google.common.collect.Lists
 import okhttp3.OkHttpClient
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.io.IOException
+import kotlin.test.assertEquals
 
 class UrlCompleterTest {
     private val services = Lists.newArrayList<AuthInterceptor<*>>(TestAuthInterceptor())
@@ -31,7 +33,7 @@ class UrlCompleterTest {
         assertEquals(
                 Lists.newArrayList("https://api1.test.com", "https://api1.test.com/"),
                 completer.urlList("https://api1").getUrls("https://api1"))
-        assertEquals(Lists.newArrayList<Any>(),
+        assertEquals(listOf(),
                 completer.urlList("https://api2").getUrls("https://api2"))
     }
 

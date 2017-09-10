@@ -1,8 +1,9 @@
 package com.baulsupp.oksocial.completion
 
 import com.google.common.collect.Lists.newArrayList
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+
 
 class UrlListTest {
     @Test

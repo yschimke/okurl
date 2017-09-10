@@ -8,11 +8,14 @@ import okhttp3.Response
 import okhttp3.internal.tls.SslClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.AfterClass
 import org.junit.Rule
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.util.logging.LogManager
+import kotlin.test.assertEquals
 
 class LoggingTest {
     @Rule
@@ -55,7 +58,7 @@ class LoggingTest {
 
     companion object {
 
-        @AfterAll
+        @AfterClass
         fun resetLogging() {
             LogManager.getLogManager().reset()
         }

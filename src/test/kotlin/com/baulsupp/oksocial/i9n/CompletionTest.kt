@@ -5,14 +5,16 @@ import com.baulsupp.oksocial.output.TestOutputHandler
 import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import org.junit.Test
+
+
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.Files
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class CompletionTest {
     private val main = Main()
@@ -20,7 +22,7 @@ class CompletionTest {
     private val credentialsStore = TestCredentialsStore()
     private val completionCache = TestCompletionVariableCache()
 
-    @BeforeEach
+    @Before
     @Throws(IOException::class)
     fun setup() {
         main.outputHandler = output

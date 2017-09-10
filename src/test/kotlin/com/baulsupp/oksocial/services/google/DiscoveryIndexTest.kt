@@ -1,9 +1,13 @@
 package com.baulsupp.oksocial.services.google
 
 import com.google.common.collect.Lists.newArrayList
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class DiscoveryIndexTest {
     @Test

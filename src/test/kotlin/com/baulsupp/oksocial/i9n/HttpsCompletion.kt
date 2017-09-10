@@ -5,9 +5,10 @@ import com.baulsupp.oksocial.output.TestOutputHandler
 import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
 
 class HttpsCompletion {
     private val main = Main()
@@ -27,7 +28,7 @@ class HttpsCompletion {
 
         main.run()
 
-        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
         assertTrue(output.stdout[0].contains("https://graph.facebook.com/"))
     }

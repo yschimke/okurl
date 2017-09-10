@@ -8,10 +8,12 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import org.junit.Test
+
+
 import java.io.IOException
+import kotlin.test.assertEquals
 
 class FacebookTest {
     private val main = Main()
@@ -25,7 +27,7 @@ class FacebookTest {
     private val sd = FacebookAuthInterceptor().serviceDefinition()
     private var p: FacebookApiDocPresenter? = null
 
-    @BeforeEach
+    @Before
     @Throws(IOException::class)
     fun loadPresenter() {
         p = FacebookApiDocPresenter(sd)

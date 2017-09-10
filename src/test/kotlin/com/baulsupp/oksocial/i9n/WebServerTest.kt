@@ -8,13 +8,15 @@ import okhttp3.Response
 import okhttp3.internal.tls.SslClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.Ignore
 import org.junit.Rule
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class WebServerTest {
     @Rule
@@ -60,7 +62,7 @@ class WebServerTest {
     }
 
     @Test
-    @Disabled
+    @Ignore
     @Throws(Exception::class)
     fun httpsRequestSecure() {
         server.useHttps(sslClient.socketFactory, false)

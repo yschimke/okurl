@@ -3,14 +3,16 @@ package com.baulsupp.oksocial.services.twitter
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.io.IOException
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import kotlin.test.assertEquals
 
 class SignatureTest {
     @Test

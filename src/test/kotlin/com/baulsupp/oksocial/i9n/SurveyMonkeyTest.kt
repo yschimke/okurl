@@ -7,9 +7,10 @@ import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken
 import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
 
 class SurveyMonkeyTest {
 
@@ -35,7 +36,7 @@ class SurveyMonkeyTest {
 
         main.run()
 
-        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertEquals(1, output.stdout.size)
         assertTrue(output.stdout[0].contains("/v3/surveys/AA/details"))
         assertTrue(output.stdout[0].contains("/v3/surveys/BB/details"))

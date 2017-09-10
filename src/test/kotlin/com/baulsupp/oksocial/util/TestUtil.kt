@@ -5,7 +5,8 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.mcdermottroe.apple.OSXKeychainException
 import org.junit.Assume
-import org.junit.jupiter.api.Assumptions
+
+
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.Optional.empty
@@ -19,7 +20,7 @@ object TestUtil {
     fun assumeHasNetwork() {
         initialise()
 
-        Assumptions.assumeTrue(cachedException == null)
+        Assume.assumeTrue(cachedException == null)
     }
 
     private fun initialise() {

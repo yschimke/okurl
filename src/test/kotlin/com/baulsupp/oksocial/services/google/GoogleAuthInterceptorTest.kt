@@ -6,11 +6,13 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import com.google.common.collect.Lists
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.io.IOException
 import java.util.concurrent.ExecutionException
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class GoogleAuthInterceptorTest {
     private val interceptor = GoogleAuthInterceptor()

@@ -6,9 +6,10 @@ import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
 
 class TwilioTest {
     private val main = Main()
@@ -32,7 +33,7 @@ class TwilioTest {
 
         main.run()
 
-        assertEquals(newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("/Calls.json"))
     }
 
@@ -46,7 +47,7 @@ class TwilioTest {
 
         main.run()
 
-        assertEquals(newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("/Accounts/ABC/Calls.json"))
     }
 }

@@ -7,9 +7,10 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
 
 class GoogleCompletionTest {
     private val main = Main()
@@ -31,7 +32,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
     }
 
@@ -45,7 +46,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://people.googleapis.com/v1/people:batchGet"))
     }
 
@@ -59,7 +60,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(
                 output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/profile"))
     }
@@ -75,7 +76,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(Lists.newArrayList<Any>(), output.failures)
+        assertEquals(listOf(), output.failures)
         assertTrue(
                 output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/messages"))
     }

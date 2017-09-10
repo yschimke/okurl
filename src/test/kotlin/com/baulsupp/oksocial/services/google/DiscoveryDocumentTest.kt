@@ -2,16 +2,18 @@ package com.baulsupp.oksocial.services.google
 
 import com.google.common.collect.Lists.newArrayList
 import com.google.common.io.Resources
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Before
+import org.junit.Test
+
+
 import java.io.IOException
 import java.nio.charset.StandardCharsets
+import kotlin.test.assertEquals
 
 class DiscoveryDocumentTest {
     private var doc: DiscoveryDocument? = null
 
-    @BeforeEach
+    @Before
     @Throws(IOException::class)
     fun loadStaticIndex() {
         val url = DiscoveryDocumentTest::class.java.getResource("urlshortener.json")

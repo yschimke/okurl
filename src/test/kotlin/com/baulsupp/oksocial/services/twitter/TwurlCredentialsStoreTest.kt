@@ -1,10 +1,12 @@
 package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlCredentialsStore
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Test
+
+
 import java.io.File
 import java.io.IOException
+import kotlin.test.assertEquals
 
 class TwurlCredentialsStoreTest {
     @Test
