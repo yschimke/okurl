@@ -43,7 +43,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
         return AuthUtil.enqueueJsonMapRequest(client, request)
                 .map { m ->
                     (m["data"] as List<Map<String, String>>).map { it["username"]!! } + "me"
-                }
+                }.exceptionally { mutableListOf() }
     }
 
     private fun completePath(path: String): CompletableFuture<UrlList> {
