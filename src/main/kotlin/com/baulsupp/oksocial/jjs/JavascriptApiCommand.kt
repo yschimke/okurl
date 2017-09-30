@@ -85,7 +85,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
         return null
     }
 
-    fun eval(engine: ScriptEngine, script: String): Any {
+    fun eval(engine: ScriptEngine, script: String): Any? {
         return try {
             engine.eval(script)
         } catch (e: ScriptException) {
@@ -102,7 +102,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
     }
 
-    private fun toRequestList(requestBuilder: Request.Builder, result: Any): List<Request> {
+    private fun toRequestList(requestBuilder: Request.Builder, result: Any?): List<Request> {
         return if (result is ScriptObjectMirror) {
 
             val list = Lists.newArrayList<Request>()
