@@ -6,32 +6,32 @@ okshell.listenForMainExit();
 var query = function(url) {
   // TODO the response format to decide how to parse
   return JSON.parse(okshell.query(url));
-}
+};
 
 var execute = function(request) {
   // TODO the response format to decide how to parse
   return JSON.parse(okshell.execute(request));
-}
+};
 
 var show = function(url) {
   return okshell.show(url);
-}
+};
 
 var location = function() {
   return okshell.location();
-}
+};
 
 var readParam = Java.type("com.baulsupp.oksocial.jjs.OkShell").readParam;
 
 var credentials = function(s) {
   return okshell.credentials(s);
-}
+};
 
 var UsageException = Java.type("com.baulsupp.oksocial.output.util.UsageException");
 
 var usage = function(error) {
   throw new UsageException(error);
-}
+};
 
 var FormBuilder = Java.type("okhttp3.FormBody.Builder");
 

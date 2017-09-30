@@ -1,0 +1,63 @@
+package com.baulsupp.oksocial.authenticator
+
+import com.baulsupp.oksocial.credentials.CredentialsStore
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
+import java.io.IOException
+import java.util.*
+
+class ServiceInterceptor(authClient: OkHttpClient, private val credentialsStore: CredentialsStore) : Interceptor {
+    private val services = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader).toList()
+    private val authClient: OkHttpClient = authClient
+
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        services
+                .filter { it.supportsUrl(chain.request().url()) }
+                .forEach { return intercept(it, chain) }
+
+        return chain.proceed(chain.request())
+    }
+
+    @Throws(IOException::class)
+    private fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
+        val credentials = credentialsStore.readDefaultCredentials(interceptor.serviceDefinition()) ?: interceptor.defaultCredentials()
+
+        if (credentials != null) {
+            val result = interceptor.intercept(chain, credentials)
+
+            if (result.code() in 400..499) {
+                if (interceptor.canRenew(result) && interceptor.canRenew(credentials)) {
+                    val newCredentials = interceptor.renew(authClient, credentials)
+
+                    if (newCredentials != null) {
+                        credentialsStore.storeCredentials(newCredentials, interceptor.serviceDefinition())
+                    }
+                }
+            }
+
+            // TODO retry request
+
+            return result
+        } else {
+            return chain.proceed(chain.request())
+        }
+    }
+
+    fun services(): List<AuthInterceptor<*>> = services
+
+    fun getByName(authName: String): AuthInterceptor<*>? =
+            services.firstOrNull { n -> n.name() == authName }
+
+    fun getByUrl(url: String): AuthInterceptor<*>? {
+        val httpUrl = HttpUrl.parse(url)
+
+        return httpUrl?.let { services.firstOrNull { it.supportsUrl(httpUrl) } }
+    }
+
+    fun findAuthInterceptor(nameOrUrl: String): AuthInterceptor<*>? = getByName(nameOrUrl) ?: getByUrl(nameOrUrl)
+
+    fun names(): List<String> = services.map { it.name() }
+}
