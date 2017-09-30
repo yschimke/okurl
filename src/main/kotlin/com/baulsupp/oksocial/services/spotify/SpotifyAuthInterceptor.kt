@@ -94,7 +94,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
         val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
         return Oauth2Token(responseMap["access_token"] as String,
-                responseMap["refresh_token"] as String, credentials.clientId,
+                responseMap["refresh_token"] as String?, credentials.clientId,
                 credentials.clientSecret)
     }
 }

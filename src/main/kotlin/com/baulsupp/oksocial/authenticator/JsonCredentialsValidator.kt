@@ -19,7 +19,7 @@ class JsonCredentialsValidator(
         private var appRequest: Request? = null,
         private var appExtractor: ((Map<String, Any>) -> String)? = null) {
     init {
-        if (appRequest == null) {
+        if (appRequest != null) {
             appExtractor!!
         }
     }
