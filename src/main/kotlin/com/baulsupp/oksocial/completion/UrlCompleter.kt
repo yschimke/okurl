@@ -26,21 +26,15 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
         if (fullUrl.isPresent) {
             val u = fullUrl.get()
 
-            for (a in services) {
-                if (a.supportsUrl(u)) {
-                    return a.apiCompleter(prefix, client, credentialsStore, completionVariableCache).siteUrls(u).get()
-                }
-            }
-
             // won't match anything
-            return UrlList(UrlList.Match.EXACT, Lists.newArrayList())
+            return services
+                    .firstOrNull { it.supportsUrl(u) }
+                    ?.let { it.apiCompleter(prefix, client, credentialsStore, completionVariableCache).siteUrls(u).get() }
+                    ?: UrlList(UrlList.Match.EXACT, Lists.newArrayList())
         } else {
             val futures = Lists.newArrayList<Future<UrlList>>()
 
-            for (a in services) {
-                futures.add(
-                        a.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls())
-            }
+            services.mapTo(futures) { it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls() }
 
             return futuresToList(prefix, futures)
         }

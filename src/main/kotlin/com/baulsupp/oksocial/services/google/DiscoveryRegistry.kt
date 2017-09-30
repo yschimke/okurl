@@ -41,8 +41,8 @@ class DiscoveryRegistry(private val client: OkHttpClient, private val map: Map<S
             val request = Request.Builder().cacheControl(cacheControl).url(url).build()
             val response = client.newCall(request).execute()
 
-            try {
-                return DiscoveryRegistry(client, JsonUtil.map(response!!.body()!!.string()))
+            return try {
+                DiscoveryRegistry(client, JsonUtil.map(response!!.body()!!.string()))
             } finally {
                 response?.close()
             }

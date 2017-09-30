@@ -14,11 +14,11 @@ interface ServiceDefinition<T> {
 
     fun shortName(): String
 
-    open fun apiDocs(): Optional<String> {
+    fun apiDocs(): Optional<String> {
         return empty()
     }
 
-    open fun accountsLink(): Optional<String> {
+    fun accountsLink(): Optional<String> {
         return empty()
     }
 }

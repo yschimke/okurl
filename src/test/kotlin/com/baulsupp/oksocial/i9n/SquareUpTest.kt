@@ -31,12 +31,12 @@ class SquareUpTest {
         main.arguments = newArrayList("https://connect.squareup.com/")
         main.urlComplete = true
         completionCache.store("squareup", "locations", Lists.newArrayList("AA", "bb"))
-        credentialsStore.storeCredentials(Oauth2Token(""),
+        credentialsStore.storeCredentials(Oauth2Token("test"),
                 SquareUpAuthInterceptor().serviceDefinition())
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertEquals(1, output.stdout.size)
         assertTrue(output.stdout[0].contains("/v2/locations/AA/transactions"))
     }

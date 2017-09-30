@@ -10,7 +10,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.*
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
 
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
@@ -57,9 +56,9 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
     @Throws(IOException::class)
     override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
         val body = FormBody.Builder().add("grant_type", "refresh_token")
-                .add("refresh_token", credentials.refreshToken)
+                .add("refresh_token", credentials.refreshToken!!)
                 .build()
-        val basic = Credentials.basic(credentials.clientId, credentials.clientSecret)
+        val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
         val request = Request.Builder().url("https://api.fitbit.com/oauth2/token")
                 .post(body)
                 .header("Authorization", basic)

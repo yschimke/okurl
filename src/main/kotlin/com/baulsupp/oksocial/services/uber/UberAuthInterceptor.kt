@@ -13,11 +13,8 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.google.common.collect.Sets
 import okhttp3.*
 import java.io.IOException
-import java.util.*
-import java.util.Optional.of
 import java.util.concurrent.Future
 
 class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
@@ -27,7 +24,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
                 "https://developer.uber.com/dashboard/")
     }
 
-    protected fun host(): String {
+    private fun host(): String {
         return "api.uber.com"
     }
 
@@ -68,9 +65,9 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
 
     override fun hosts(): Collection<String> {
-        return Collections.unmodifiableSet(Sets.newHashSet(
+        return setOf(
                 "api.uber.com", "login.uber.com", "sandbox-api.uber.com")
-        )
+
     }
 
     override fun canRenew(credentials: Oauth2Token): Boolean {

@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.slack
 
-import com.google.common.collect.Sets
 import okhttp3.Request
 import java.util.*
 
@@ -41,7 +40,7 @@ object SlackUtil {
             "users:read",
             "users:write")
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "slack.com")
     )
 

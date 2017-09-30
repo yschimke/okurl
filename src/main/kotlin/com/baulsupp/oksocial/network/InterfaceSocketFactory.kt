@@ -44,14 +44,14 @@ class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFact
         @Throws(SocketException::class)
         fun byName(ipOrInterface: String): Optional<SocketFactory> {
             var localAddress: InetAddress
-            try {
+            localAddress = try {
                 // example 192.168.0.51
-                localAddress = InetAddress.getByName(ipOrInterface)
+                InetAddress.getByName(ipOrInterface)
             } catch (uhe: UnknownHostException) {
                 // example en0
                 val networkInterface = NetworkInterface.getByName(ipOrInterface) ?: return empty()
 
-                localAddress = networkInterface.inetAddresses.nextElement()
+                networkInterface.inetAddresses.nextElement()
             }
 
             return of(InterfaceSocketFactory(localAddress))

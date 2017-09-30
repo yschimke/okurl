@@ -5,14 +5,14 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.spotify.futures.CompletableFutures
 import io.github.vjames19.futures.jdk8.map
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import java.util.stream.Collectors.joining
 
 class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
 
     @Throws(IOException::class)
-    override fun explainApi(url: String, outputHandler: OutputHandler<*>, client: OkHttpClient) {
+    override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
         val discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url)
 
         val registry = DiscoveryRegistry.instance(client)
@@ -54,7 +54,7 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
                 outputHandler.info("")
                 e.parameters().forEach { p ->
                     outputHandler.info("parameter: " + p.name() + " (" + p.type() + ")")
-                    outputHandler.info(p.description())
+                    p.description()?.let(outputHandler::info)
                 }
             } else {
                 outputHandler.info("base: " + bestDoc.baseUrl)
@@ -68,12 +68,6 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
     private fun matches(url: String, x: DiscoveryDocument): Boolean {
         val eps = x.endpoints
 
-        for (ep in eps) {
-            if (ep.matches(url)) {
-                return true
-            }
-        }
-
-        return false
+        return eps.any { it.matches(url) }
     }
 }

@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.services.twitter
 
 import com.google.common.base.Joiner
-import com.google.common.base.Throwables
 import com.twitter.joauth.Normalizer
 import com.twitter.joauth.OAuthParams
 import com.twitter.joauth.Signer
@@ -15,7 +14,6 @@ import java.nio.charset.Charset
 import java.security.SecureRandom
 import java.time.Clock
 import java.util.*
-import java.util.function.Supplier
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -52,9 +50,9 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
         for (queryParam in queryParamNames) {
             val values = request.url().queryParameterValues(queryParam)
 
-            for (value in values) {
-                javaParams.add(com.twitter.joauth.Request.Pair(UrlCodec.encode(queryParam),
-                        UrlCodec.encode(value)))
+            values.mapTo(javaParams) {
+                com.twitter.joauth.Request.Pair(UrlCodec.encode(queryParam),
+                        UrlCodec.encode(it))
             }
         }
 
@@ -64,9 +62,9 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
             if (body is FormBody) {
                 val formBody = body as FormBody?
 
-                for (i in 0..formBody!!.size() - 1) {
-                    javaParams.add(com.twitter.joauth.Request.Pair(formBody.encodedName(i),
-                            formBody.encodedValue(i)))
+                (0 until formBody!!.size()).mapTo(javaParams) {
+                    com.twitter.joauth.Request.Pair(formBody.encodedName(it),
+                            formBody.encodedValue(it))
                 }
             } else if (isFormContentType(request)) {
                 val buffer = Buffer()

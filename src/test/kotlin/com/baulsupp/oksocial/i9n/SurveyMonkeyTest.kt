@@ -36,7 +36,7 @@ class SurveyMonkeyTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertEquals(1, output.stdout.size)
         assertTrue(output.stdout[0].contains("/v3/surveys/AA/details"))
         assertTrue(output.stdout[0].contains("/v3/surveys/BB/details"))

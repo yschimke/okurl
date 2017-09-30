@@ -32,7 +32,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
     }
 
@@ -46,7 +46,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://people.googleapis.com/v1/people:batchGet"))
     }
 
@@ -60,7 +60,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(
                 output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/profile"))
     }
@@ -76,7 +76,7 @@ class GoogleCompletionTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(
                 output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/messages"))
     }

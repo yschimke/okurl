@@ -3,8 +3,6 @@ package com.baulsupp.oksocial.security
 import com.baulsupp.oksocial.output.util.UsageException
 import okhttp3.CertificatePinner
 
-import java.util.stream.Collectors.groupingBy
-
 class CertificatePin(patternAndPin: String) {
     val pattern: String
     private val pin: String?

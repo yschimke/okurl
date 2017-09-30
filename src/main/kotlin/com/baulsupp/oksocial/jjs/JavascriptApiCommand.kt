@@ -12,13 +12,10 @@ import okhttp3.Request
 import java.nio.charset.StandardCharsets
 import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.util.function.Function
-import java.util.stream.Collectors
 import java.util.stream.Collectors.joining
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 import javax.script.ScriptException
-import kotlin.streams.toList
 
 class JavascriptApiCommand : ShellCommand, MainAware {
     private var main: Main? = null
@@ -78,12 +75,10 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
     fun credentials(name: String): Any? {
         if (main != null) {
-            val interceptor = main!!.serviceInterceptor.getByName(name)
+            val interceptor = main!!.serviceInterceptor!!.getByName(name)
 
             if (interceptor != null) {
-                val credentials = main!!.credentialsStore.readDefaultCredentials(interceptor.serviceDefinition())
-
-                return credentials
+                return main!!.credentialsStore!!.readDefaultCredentials(interceptor.serviceDefinition())
             }
         }
 
@@ -91,8 +86,8 @@ class JavascriptApiCommand : ShellCommand, MainAware {
     }
 
     fun eval(engine: ScriptEngine, script: String): Any {
-        try {
-            return engine.eval(script)
+        return try {
+            engine.eval(script)
         } catch (e: ScriptException) {
             var cause: Throwable? = e.cause
             while (cause != null) {
@@ -108,25 +103,23 @@ class JavascriptApiCommand : ShellCommand, MainAware {
     }
 
     private fun toRequestList(requestBuilder: Request.Builder, result: Any): List<Request> {
-        if (result is ScriptObjectMirror) {
+        return if (result is ScriptObjectMirror) {
 
             val list = Lists.newArrayList<Request>()
 
-            for (o in result.values) {
-                list.add(toRequest(requestBuilder, o))
-            }
+            result.values.mapTo(list) { toRequest(requestBuilder, it) }
 
-            return list
+            list
         } else {
-            return listOf(toRequest(requestBuilder, result))
+            listOf(toRequest(requestBuilder, result))
         }
     }
 
     private fun toRequest(requestBuilder: Request.Builder, o: Any?): Request {
-        if (o is Request) {
-            return o
+        return if (o is Request) {
+            o
         } else if (o is String) {
-            return requestBuilder.url((o as String?)!!).build()
+            requestBuilder.url((o as String?)!!).build()
         } else if (o == null) {
             throw NullPointerException()
         } else {

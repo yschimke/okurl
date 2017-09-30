@@ -19,13 +19,13 @@ object AuthUtil {
     @Throws(IOException::class)
     fun responseToString(response: Response): String {
         if (!response.isSuccessful) {
-            if (response.code() >= 400 && response.code() < 500) {
+            if (response.code() in 400..499) {
                 throw ClientException(response.message(), response.code())
             }
 
             var message = response.body()!!.string()
 
-            if (message.length == 0) {
+            if (message.isEmpty()) {
                 message = response.message()
             }
 

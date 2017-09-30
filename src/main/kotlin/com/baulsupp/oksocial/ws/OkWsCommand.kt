@@ -33,7 +33,7 @@ class OkWsCommand : ShellCommand, MainAware {
 
         val request = main!!.createRequestBuilder().url(arguments[0]).build()
 
-        val printer = WebSocketPrinter(main!!.outputHandler)
+        val printer = WebSocketPrinter(main!!.outputHandler!!)
         val websocket = client.newWebSocket(request, printer)
 
         val sc = Scanner(System.`in`)

@@ -28,7 +28,7 @@ class HttpsCompletion {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
         assertTrue(output.stdout[0].contains("https://graph.facebook.com/"))
     }

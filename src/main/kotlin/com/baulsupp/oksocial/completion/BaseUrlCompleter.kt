@@ -4,7 +4,6 @@ import okhttp3.HttpUrl
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.completedFuture
-import java.util.function.Supplier
 
 class BaseUrlCompleter(private val urlList: UrlList, hosts: Collection<String>) : HostUrlCompleter(hosts) {
     private val mappings = CompletionMappings()

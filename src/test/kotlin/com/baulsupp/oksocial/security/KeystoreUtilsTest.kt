@@ -37,8 +37,7 @@ class KeystoreUtilsTest {
         return CallbackHandler { callbacks ->
             for (c in callbacks) {
                 if (c is PasswordCallback && mypass != null) {
-                    val pw = c
-                    pw.password = mypass.toCharArray()
+                    c.password = mypass.toCharArray()
                 } else {
                     throw UnsupportedCallbackException(c)
                 }

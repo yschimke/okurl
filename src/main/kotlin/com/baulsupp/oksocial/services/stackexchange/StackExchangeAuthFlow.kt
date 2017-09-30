@@ -39,14 +39,9 @@ object StackExchangeAuthFlow {
     private fun parseExchangeRequest(body: String): String? {
         val params = body.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-        for (p in params) {
-            val parts = p.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-            if (parts[0] == "access_token") {
-                return parts[1]
-            }
-        }
-
-        return null
+        return params
+                .map { p -> p.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() }
+                .firstOrNull { it[0] == "access_token" }
+                ?.let { it[1] }
     }
 }

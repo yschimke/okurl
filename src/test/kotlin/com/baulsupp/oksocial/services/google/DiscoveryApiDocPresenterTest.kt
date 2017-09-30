@@ -105,7 +105,7 @@ class DiscoveryApiDocPresenterTest {
                 s.startsWith(field + ": ")
             }
 
-            fail("expected '$expected' found " + (found?.let { it.substring(field.length + 2) } ?: "nothing"))
+            fail("expected '$expected' found " + (found?.substring(field.length + 2) ?: "nothing"))
         }
 
         assertTrue(contains)

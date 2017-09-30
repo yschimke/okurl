@@ -20,9 +20,9 @@ private constructor() {
     init {
         main = Main()
         main.initialise()
-        client = main.getClient()
+        client = main.client!!
         requestBuilder = main.createRequestBuilder()
-        outputHandler = main.outputHandler
+        outputHandler = main.outputHandler!!
 
         val m = ScriptEngineManager()
         engine = m.getEngineByName("nashorn")
@@ -61,10 +61,10 @@ private constructor() {
 
             if (!response.isSuccessful) {
                 val msg: String
-                if (responseString.length > 0) {
-                    msg = responseString
+                msg = if (responseString.isNotEmpty()) {
+                    responseString
                 } else {
-                    msg = response.code().toString() + " " + response.message()
+                    response.code().toString() + " " + response.message()
                 }
 
                 throw RuntimeException(msg)
@@ -105,10 +105,10 @@ private constructor() {
 
     fun credentials(name: String): Any? {
         if (main != null) {
-            val interceptor = main.serviceInterceptor.getByName(name)
+            val interceptor = main.serviceInterceptor!!.getByName(name)
 
             if (interceptor != null) {
-                return main.credentialsStore.readDefaultCredentials(interceptor.serviceDefinition())
+                return main.credentialsStore!!.readDefaultCredentials(interceptor.serviceDefinition())
             }
         }
 

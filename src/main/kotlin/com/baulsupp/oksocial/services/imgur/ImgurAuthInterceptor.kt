@@ -11,7 +11,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.imgur.ImgurUtil.apiRequest
 import okhttp3.*
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
 
 class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {

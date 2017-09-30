@@ -11,7 +11,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Lists
 import okhttp3.*
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
 
 /**
@@ -42,12 +41,12 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
         val clientId = Secrets.prompt("Lyft Client Id", "lyft.clientId", "", false)
         val clientSecret = Secrets.prompt("Lyft Client Secret", "lyft.clientSecret", "", true)
 
-        if (authArguments == Lists.newArrayList("--client")) {
-            return LyftClientAuthFlow.login(client, clientId, clientSecret)
+        return if (authArguments == Lists.newArrayList("--client")) {
+            LyftClientAuthFlow.login(client, clientId, clientSecret)
         } else {
             val scopes = Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES)
 
-            return LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
+            LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
         }
     }
 

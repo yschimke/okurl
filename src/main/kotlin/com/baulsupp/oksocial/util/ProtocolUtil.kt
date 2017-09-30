@@ -9,9 +9,7 @@ object ProtocolUtil {
         val protocolValues = ArrayList<Protocol>()
 
         try {
-            for (protocol in protocols.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-                protocolValues.add(Protocol.get(protocol))
-            }
+            protocols.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().mapTo(protocolValues) { Protocol.get(it) }
         } catch (e: IOException) {
             throw IllegalArgumentException(e)
         }

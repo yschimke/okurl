@@ -16,7 +16,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.*
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
 
 /**
@@ -96,15 +95,15 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
     @Throws(IOException::class)
     override fun apiCompleter(prefix: String, client: OkHttpClient,
                               credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-        if (isPastHost(prefix)) {
+        return if (isPastHost(prefix)) {
             val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
 
-            return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
+            GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
                     discoveryPaths)
         } else {
             val urlList = UrlList.fromResource(name()).get()
 
-            return BaseUrlCompleter(urlList, hosts())
+            BaseUrlCompleter(urlList, hosts())
         }
     }
 

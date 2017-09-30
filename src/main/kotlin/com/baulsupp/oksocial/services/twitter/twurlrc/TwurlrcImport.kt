@@ -8,10 +8,10 @@ object TwurlrcImport {
     fun authorize(authArguments: List<String>): TwitterCredentials {
         val twurlStore: TwurlCredentialsStore
 
-        if (authArguments.size > 1) {
-            twurlStore = TwurlCredentialsStore(File(authArguments[1]))
+        twurlStore = if (authArguments.size > 1) {
+            TwurlCredentialsStore(File(authArguments[1]))
         } else {
-            twurlStore = TwurlCredentialsStore.TWURL_STORE
+            TwurlCredentialsStore.TWURL_STORE
         }
 
         val credentials = twurlStore.readCredentials()

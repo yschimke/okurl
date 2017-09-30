@@ -12,22 +12,22 @@ import java.util.concurrent.TimeUnit
 class CoreLocationCLI : LocationSource {
 
     override fun read(): Location? {
-        if (PlatformUtil.isOSX()) {
+        if (PlatformUtil.isOSX) {
             if (!File(LOCATION_APP).exists()) {
                 throw UsageException("Missing " + LOCATION_APP)
             }
 
-            try {
+            return try {
                 val line = ProcessExecutor().command(LOCATION_APP, "-format",
                         "%latitude,%longitude", "-once", "yes")
                         .readOutput(true).timeout(5, TimeUnit.SECONDS).execute().outputUTF8()
 
                 val parts = line.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-                return Location(parts[0].toDouble(), parts[1].toDouble())
+                Location(parts[0].toDouble(), parts[1].toDouble())
             } catch (e: Exception) {
                 e.printStackTrace()
-                return null
+                null
             }
 
         } else {

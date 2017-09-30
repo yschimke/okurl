@@ -1,12 +1,11 @@
 package com.baulsupp.oksocial.services.squareup
 
-import com.google.common.collect.Sets
 import okhttp3.Request
 import java.util.*
 
 object SquareUpUtil {
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "connect.squareup.com")
     )
 

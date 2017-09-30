@@ -6,7 +6,6 @@ import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.logging.Logger
-import java.util.stream.Collectors.joining
 
 class DnsSelector(private val mode: IPvMode, private val delegate: Dns) : Dns {
 
@@ -22,7 +21,7 @@ class DnsSelector(private val mode: IPvMode, private val delegate: Dns) : Dns {
             IPvMode.SYSTEM -> addresses
         }
 
-        logger.fine("Dns ($hostname): " + addresses.map { it.toString() }.joinToString(", "))
+        logger.fine("Dns ($hostname): " + addresses.joinToString(", ") { it.toString() })
 
         return addresses
     }

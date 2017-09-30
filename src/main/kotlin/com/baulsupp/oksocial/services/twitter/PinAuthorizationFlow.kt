@@ -7,7 +7,7 @@ import java.io.IOException
 class PinAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<*>) : TwitterAuthFlow(client, outputHandler) {
 
     @Throws(IOException::class)
-    protected fun promptForPin(newCredentials: TwitterCredentials): String {
+    private fun promptForPin(newCredentials: TwitterCredentials): String {
         System.err.println(
                 "Authorise by entering the PIN through a web browser")
 

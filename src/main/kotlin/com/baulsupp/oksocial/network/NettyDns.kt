@@ -57,14 +57,14 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
     override fun lookup(hostname: String): List<InetAddress> {
         val f = r.resolveAll(hostname)
 
-        try {
+        return try {
             val addresses = f.get()
 
             logger.fine("Dns ($hostname): " + addresses.stream()
                     .map<String>({ it.toString() })
                     .collect(joining(", ")))
 
-            return addresses
+            addresses
         } catch (e: InterruptedException) {
             throw UnknownHostException(e.toString())
         } catch (e: ExecutionException) {

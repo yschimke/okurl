@@ -9,10 +9,9 @@ import okhttp3.Request
 import java.io.IOException
 import java.net.InetAddress
 import java.net.UnknownHostException
-import java.util.function.Supplier
 
 class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMode,
-                private val client: Supplier<OkHttpClient>) : Dns {
+                private val client: () -> OkHttpClient) : Dns {
 
     // TODO implement DnsMode internally
     @Throws(UnknownHostException::class)
@@ -21,13 +20,13 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
             return dnsHosts
         }
 
-        try {
+        return try {
             // TODO map punycode here?
             val url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host + "&type=" + type(mode))
             val request = Request.Builder().url(url!!).header("Accept", "application/dns+json").build()
-            val result = AuthUtil.makeJsonMapRequest(client.get(), request)
+            val result = AuthUtil.makeJsonMapRequest(client(), request)
 
-            return responseToList(result)
+            responseToList(result)
         } catch (e: IOException) {
             val unknownHostException = UnknownHostException("failed to lookup $host via dns.google.com")
             unknownHostException.initCause(e)
@@ -38,9 +37,9 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
 
     private fun type(mode: IPvMode): String {
         // TODO support IPv6 preferred etc, e.g. two queries
-        when (mode) {
-            IPvMode.IPV6_ONLY -> return "AAAA"
-            else -> return "A"
+        return when (mode) {
+            IPvMode.IPV6_ONLY -> "AAAA"
+            else -> "A"
         }
     }
 
@@ -64,7 +63,7 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
             throw UnsupportedOperationException()
         }
 
-        fun fromHosts(clientSupplier: Supplier<OkHttpClient>, mode: IPvMode,
+        fun fromHosts(clientSupplier: () -> OkHttpClient, mode: IPvMode,
                       vararg ips: String): GoogleDns {
             val hosts = ips.map { InetAddresses.forString(it) }
 

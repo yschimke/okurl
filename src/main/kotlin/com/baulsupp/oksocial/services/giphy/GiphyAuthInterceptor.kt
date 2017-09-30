@@ -12,8 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.*
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {

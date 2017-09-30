@@ -7,12 +7,9 @@ import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.google.common.collect.Sets
 import io.github.vjames19.futures.jdk8.ImmediateFuture
 import okhttp3.*
 import java.io.IOException
-import java.util.*
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
 /**
@@ -52,7 +49,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
     }
 
     override fun hosts(): Collection<String> {
-        return Collections.unmodifiableSet(Sets.newHashSet(
+        return setOf((
                 "httpbin.org")
         )
     }

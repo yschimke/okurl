@@ -35,8 +35,8 @@ object HeaderUtil {
     }
 
     private fun headerFileMap(input: String): Map<out String, String> {
-        try {
-            return headerMap(Files.readLines(inputFile(input), Charsets.UTF_8))
+        return try {
+            headerMap(Files.readLines(inputFile(input), Charsets.UTF_8))
         } catch (ioe: IOException) {
             throw UsageException("failed to read header file", ioe)
         }

@@ -16,7 +16,7 @@ object GoogleAuthFlow {
               clientSecret: String, scopes: Iterable<String>): Oauth2Token {
         SimpleWebServer.forCode().use { s ->
 
-            val scopesString = scopes.map({ GoogleUtil.fullScope(it) }).joinToString("+")
+            val scopesString = scopes.joinToString("+", transform = { GoogleUtil.fullScope(it) })
 
             val redirectUri = s.redirectUri
             val uuid = UUID.randomUUID().toString()

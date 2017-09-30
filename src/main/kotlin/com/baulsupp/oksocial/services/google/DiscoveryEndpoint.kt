@@ -27,9 +27,9 @@ class DiscoveryEndpoint(private val baseUrl: String, private val map: Map<String
     fun scopeNames(): List<String> = map["scopes"] as List<String>
 
     fun parameters(): List<DiscoveryParameter> {
-        val o = map["parameters"] as Map<String, Map<String, Any>>
+        val o = map["parameters"] as Map<String, Map<String, Any>>?
 
-        return o.entries.map { p -> DiscoveryParameter(p.key, p.value) }
+        return o?.entries?.map { p -> DiscoveryParameter(p.key, p.value) }.orEmpty()
     }
 
     fun matches(requestUrl: String): Boolean {

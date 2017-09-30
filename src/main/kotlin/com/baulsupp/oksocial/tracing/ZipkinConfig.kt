@@ -13,7 +13,7 @@ class ZipkinConfig(private val senderUri: String?, private val displayUrl: Strin
     }
 
     fun openFunction(): (TraceContext) -> String? {
-        return { traceContext -> displayUrl?.let { it.replace(Regex("""\{traceid\}"""), traceContext.traceIdString()) } }
+        return { traceContext -> displayUrl?.replace(Regex("""\{traceid\}"""), traceContext.traceIdString()) }
     }
 
     companion object {

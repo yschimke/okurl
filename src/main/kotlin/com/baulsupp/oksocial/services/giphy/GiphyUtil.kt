@@ -1,12 +1,10 @@
 package com.baulsupp.oksocial.services.giphy
 
-import com.google.common.collect.Sets
 import okhttp3.Request
-import java.util.*
 
 object GiphyUtil {
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "api.giphy.com")
     )
 

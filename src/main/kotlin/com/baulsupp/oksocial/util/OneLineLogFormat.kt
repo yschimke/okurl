@@ -34,13 +34,13 @@ class OneLineLogFormat : Formatter() {
 
         val time = Instant.ofEpochMilli(record.millis).atZone(offset)
 
-        if (record.thrown != null) {
+        return if (record.thrown != null) {
             val sw = StringWriter(4096)
             val pw = PrintWriter(sw)
             record.thrown.printStackTrace(pw)
-            return String.format("%s\t%s%n%s%n", time.format(d), message, sw.toString())
+            String.format("%s\t%s%n%s%n", time.format(d), message, sw.toString())
         } else {
-            return String.format("%s\t%s%n", time.format(d), message)
+            String.format("%s\t%s%n", time.format(d), message)
         }
     }
 }

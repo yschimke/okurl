@@ -1,13 +1,8 @@
 package com.baulsupp.oksocial.completion
 
-import com.spotify.futures.CompletableFutures
 import io.github.vjames19.futures.jdk8.ImmediateFuture
-import io.github.vjames19.futures.jdk8.map
 import io.github.vjames19.futures.jdk8.onSuccess
-import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletableFuture.completedFuture
-import java.util.function.Supplier
 
 interface CompletionVariableCache {
 

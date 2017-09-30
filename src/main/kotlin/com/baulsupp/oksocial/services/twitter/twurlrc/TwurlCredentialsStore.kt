@@ -11,14 +11,14 @@ import java.util.*
 class TwurlCredentialsStore(val file: File) {
 
     fun readTwurlRc(): TwurlRc? {
-        try {
-            if (file.isFile) {
+        return try {
+            return if (file.isFile) {
                 val objectMapper = ObjectMapper(YAMLFactory())
                 objectMapper.propertyNamingStrategy = PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES
 
-                return objectMapper.readValue(file, TwurlRc::class.java)
+                objectMapper.readValue(file, TwurlRc::class.java)
             } else {
-                return null
+                null
             }
         } catch (e: Exception) {
             throw Throwables.propagate(e)
@@ -29,13 +29,13 @@ class TwurlCredentialsStore(val file: File) {
     fun readCredentials(): Optional<TwitterCredentials> {
         val twurlRc = readTwurlRc()
 
-        if (twurlRc != null) {
+        return if (twurlRc != null) {
             val username = twurlRc.defaultProfile()[0]
             val consumerKey = twurlRc.defaultProfile()[1]
 
-            return Optional.ofNullable(twurlRc.readCredentials(username, consumerKey))
+            Optional.ofNullable(twurlRc.readCredentials(username, consumerKey))
         } else {
-            return Optional.empty()
+            Optional.empty()
         }
     }
 

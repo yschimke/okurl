@@ -49,9 +49,9 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
         return Arrays.asList("test.com", "api1.test.com")
     }
 
-    override fun apiDocPresenter(apiUrl: String): ApiDocPresenter {
+    override fun apiDocPresenter(url: String): ApiDocPresenter {
         return object : ApiDocPresenter {
-            override fun explainApi(url: String, outputHandler: OutputHandler<*>, client: OkHttpClient) {
+            override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
                 outputHandler.info("Test: " + url)
             }
         }

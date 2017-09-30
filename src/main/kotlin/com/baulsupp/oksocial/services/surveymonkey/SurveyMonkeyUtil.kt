@@ -1,12 +1,10 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
-import com.google.common.collect.Sets
 import okhttp3.Request
-import java.util.*
 
 object SurveyMonkeyUtil {
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "api.surveymonkey.net")
     )
 

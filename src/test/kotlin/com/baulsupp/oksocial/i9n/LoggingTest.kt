@@ -18,7 +18,7 @@ import java.util.logging.LogManager
 import kotlin.test.assertEquals
 
 class LoggingTest {
-    @Rule
+    @Rule @JvmField
     var server = MockWebServer()
 
     private val main = Main()

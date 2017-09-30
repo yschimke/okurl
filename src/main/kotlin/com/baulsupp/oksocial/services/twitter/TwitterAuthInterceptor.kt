@@ -13,9 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
-import java.util.stream.Collectors.joining
 
 class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
 

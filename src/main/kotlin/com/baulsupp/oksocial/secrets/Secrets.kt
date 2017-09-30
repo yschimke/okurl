@@ -1,19 +1,17 @@
 package com.baulsupp.oksocial.secrets
 
-import com.google.common.collect.Sets.newHashSet
 import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
-import java.util.Arrays.asList
 
 class Secrets(private val secrets: MutableMap<String, String>, private val file: Path?,
               private val defaults: (String) -> String?) {
     private var changed = false
 
     operator fun get(key: String): String? {
-        var result = secrets[key] ?: defaults(key)
+        val result = secrets[key] ?: defaults(key)
 
         return result?.let { if (it.isEmpty()) null else it }
     }
@@ -78,10 +76,10 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
             var value = ""
 
             if (System.console() != null) {
-                if (password) {
-                    value = String(System.console().readPassword(prompt))
+                value = if (password) {
+                    String(System.console().readPassword(prompt))
                 } else {
-                    value = System.console().readLine(prompt)
+                    System.console().readLine(prompt)
                 }
             } else {
                 System.err.println("using default value for " + key)
@@ -102,7 +100,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
         }
 
         private fun defaultDisplay(defaultValue: String, password: Boolean): String {
-            var display = if (password) {
+            val display = if (password) {
                 defaultValue.replace(".".toRegex(), "\\*")
             } else {
                 defaultValue

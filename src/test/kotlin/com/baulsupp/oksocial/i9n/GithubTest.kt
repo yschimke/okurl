@@ -33,7 +33,7 @@ class GithubTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(output.stdout[0].contains("/user"))
     }
 
@@ -47,7 +47,7 @@ class GithubTest {
 
         main.run()
 
-        assertEquals(listOf(), output.failures)
+        assertEquals(mutableListOf(), output.failures)
         assertTrue(output.stdout[0].contains("https://api.github.com/user"))
     }
 }

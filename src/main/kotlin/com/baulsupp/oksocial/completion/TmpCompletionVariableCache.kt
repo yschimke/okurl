@@ -4,17 +4,12 @@ import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
 class TmpCompletionVariableCache : CompletionVariableCache {
 
-    private val dir: File
-
-    init {
-        this.dir = File(System.getProperty("java.io.tmpdir"))
-    }
+    private val dir: File = File(System.getProperty("java.io.tmpdir"))
 
     override fun get(service: String, key: String): List<String>? {
         val f = File(dir, "$service-$key.txt")

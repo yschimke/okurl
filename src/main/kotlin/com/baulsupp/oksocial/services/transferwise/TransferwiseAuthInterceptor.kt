@@ -11,7 +11,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Sets
 import okhttp3.*
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
 
 open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {

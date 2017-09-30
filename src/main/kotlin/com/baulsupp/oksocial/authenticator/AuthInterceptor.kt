@@ -18,11 +18,11 @@ interface AuthInterceptor<T> {
     }
 
     fun supportsUrl(url: HttpUrl): Boolean {
-        try {
-            return hosts().contains(url.host())
+        return try {
+            hosts().contains(url.host())
         } catch (e: IOException) {
             logger.log(Level.WARNING, "failed getting hosts", e)
-            return false
+            false
         }
 
     }
@@ -60,12 +60,12 @@ interface AuthInterceptor<T> {
         }
     }
 
-    open fun defaultCredentials(): T? = null
+    fun defaultCredentials(): T? = null
 
     @Throws(IOException::class)
-    open fun apiDocPresenter(url: String): ApiDocPresenter {
+    fun apiDocPresenter(url: String): ApiDocPresenter {
         return object : ApiDocPresenter {
-            override fun explainApi(url: String, outputHandler: OutputHandler<*>, client: OkHttpClient) {
+            override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
                 val sd = serviceDefinition()
 
                 outputHandler.info("service: " + sd.shortName())
@@ -77,9 +77,9 @@ interface AuthInterceptor<T> {
     }
 
     companion object {
-        val logger = Logger.getLogger(AuthInterceptor::class.java.name)
+        val logger = Logger.getLogger(AuthInterceptor::class.java.name)!!
     }
 
     // TODO fix up hackery
-    fun cast(credentials: Object): T = credentials as T
+    fun cast(credentials: Any): T = credentials as T
 }

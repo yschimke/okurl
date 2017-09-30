@@ -15,7 +15,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Lists
 import okhttp3.*
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.Future
 
 class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {

@@ -7,7 +7,6 @@ import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.*
-import java.util.stream.Collectors.joining
 
 data class UrlList(val match: Match, val urls: List<String>) {
     enum class Match {
@@ -48,16 +47,16 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
     @Throws(IOException::class)
     fun toFile(file: File, strip: Int, prefix: String) {
-        val content = regex(prefix) + "\n" + urls.map { u -> u.substring(strip) }.joinToString("\n")
+        val content = regex(prefix) + "\n" + urls.joinToString("\n") { u -> u.substring(strip) }
 
         Files.write(content, file, StandardCharsets.UTF_8)
     }
 
     private fun regex(prefix: String): String {
-        when (match) {
-            UrlList.Match.EXACT -> return prefix
-            UrlList.Match.HOSTS -> return "[^/]*:?/?/?[^/]*"
-            UrlList.Match.SITE -> return prefix + ".*"
+        return when (match) {
+            UrlList.Match.EXACT -> prefix
+            UrlList.Match.HOSTS -> "[^/]*:?/?/?[^/]*"
+            UrlList.Match.SITE -> prefix + ".*"
             else -> throw IllegalArgumentException()
         }
     }
@@ -69,10 +68,10 @@ data class UrlList(val match: Match, val urls: List<String>) {
         newUrls.addAll(b.urls)
 
         val newMatch: Match
-        if (match == b.match) {
-            newMatch = match
+        newMatch = if (match == b.match) {
+            match
         } else {
-            newMatch = Match.EXACT
+            Match.EXACT
         }
 
         return UrlList(newMatch, newUrls)

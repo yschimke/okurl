@@ -32,7 +32,7 @@ class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X50
 
     @Throws(CertificateException::class)
     fun bestException(exceptions: List<CertificateException>): CertificateException {
-        if (exceptions.size > 0) {
+        if (exceptions.isNotEmpty()) {
             // last is probably system keystore
             throw exceptions[exceptions.size - 1]
         } else {

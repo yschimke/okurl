@@ -47,20 +47,20 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     }
 
     private fun completePath(path: String): CompletableFuture<UrlList> {
-        if (path == "/") {
-            return topLevel().map { it + VERSION }.thenApply { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com/"))) }
-        } else if (path.matches("/v\\d.\\d/?".toRegex())) {
-            return topLevel().map { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com" + path))) }
-        } else {
-            val prefix = "https://graph.facebook.com" + path
+        when {
+            path == "/" -> return topLevel().map { it + VERSION }.thenApply { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com/"))) }
+            path.matches("/v\\d.\\d/?".toRegex()) -> return topLevel().map { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com" + path))) }
+            else -> {
+                val prefix = "https://graph.facebook.com" + path
 
-            val metadataFuture = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!)
+                val metadataFuture = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!)
 
-            return metadataFuture.map { metadata ->
-                UrlList(UrlList.Match.EXACT, metadata.connections().map(addPath(prefix)) + prefix)
-            }.exceptionally { e ->
-                logger.log(Level.FINE, "completion failure", e)
-                UrlList(UrlList.Match.EXACT, listOf())
+                return metadataFuture.map { metadata ->
+                    UrlList(UrlList.Match.EXACT, metadata.connections().map(addPath(prefix)) + prefix)
+                }.exceptionally { e ->
+                    logger.log(Level.FINE, "completion failure", e)
+                    UrlList(UrlList.Match.EXACT, listOf())
+                }
             }
         }
     }

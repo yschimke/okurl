@@ -1,12 +1,11 @@
 package com.baulsupp.oksocial.services.google
 
-import com.google.common.collect.Sets
 import java.util.*
 
 object GoogleUtil {
     val SCOPES: Collection<String> = Arrays.asList("plus.login", "plus.profile.emails.read")
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "api.google.com")
     )
 

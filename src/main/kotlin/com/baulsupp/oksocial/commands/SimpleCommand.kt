@@ -12,10 +12,10 @@ open class SimpleCommand(val name: String, private val prefix: String, val authe
 
     override fun buildRequests(clientBuilder: OkHttpClient,
                                requestBuilder: Request.Builder, urls: List<String>): List<Request> {
-        try {
-            return urls.map { u -> requestBuilder.url(prefix + u).build() }
+        return try {
+            urls.map { u -> requestBuilder.url(prefix + u).build() }
         } catch (iae: IllegalArgumentException) {
-            throw UsageException(iae.message)
+            throw UsageException(iae.message.orEmpty())
         }
     }
 }

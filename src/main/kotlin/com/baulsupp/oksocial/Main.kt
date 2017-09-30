@@ -3,7 +3,9 @@ package com.baulsupp.oksocial
 import brave.Tracing
 import brave.http.HttpTracing
 import brave.internal.Platform
+import brave.propagation.TraceContext
 import brave.sampler.Sampler
+import com.baulsupp.oksocial.Main.Companion.NAME
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.Authorisation
@@ -37,15 +39,11 @@ import com.baulsupp.oksocial.tracing.ZipkinConfig
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener
 import com.baulsupp.oksocial.util.*
-import com.google.common.base.Throwables
 import com.google.common.collect.Lists
 import com.google.common.collect.Sets
 import com.mcdermottroe.apple.OSXKeychainException
 import com.moczul.ok2curl.CurlInterceptor
-import io.airlift.airline.Arguments
-import io.airlift.airline.HelpOption
-import io.airlift.airline.Option
-import io.airlift.airline.SingleCommand
+import io.airlift.airline.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
 import okhttp3.*
@@ -65,16 +63,16 @@ import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
-class Main: HelpOption() {
+@Command(name = NAME, description = "A curl for social apis.")
+class Main : HelpOption() {
     private val logger = Logger.getLogger(Main::class.java.name)
-
-    internal val NAME = "oksocial"
 
     @Option(name = arrayOf("-X", "--request"), description = "Specify request command to use")
     var method: String? = null
@@ -167,7 +165,7 @@ class Main: HelpOption() {
     var keystoreFile: File? = null
 
     @Option(name = arrayOf("--cert"), description = "Use given server cert (Root CA)")
-    var serverCerts: List<File> = Lists.newArrayList()
+    var serverCerts: java.util.List<File>? = null
 
     @Option(name = arrayOf("--opensc"), description = "Send OpenSC Client Certificate (slot)")
     var opensc: Int? = null
@@ -208,7 +206,7 @@ class Main: HelpOption() {
     @Option(name = arrayOf("--maxrequests"), description = "Concurrency Level")
     private val maxRequests = 16
 
-    var commandName = System.getProperty("command.name", "oksocial")
+    var commandName = System.getProperty("command.name", "oksocial")!!
 
     var completionFile: String? = System.getenv("COMPLETION_FILE")
 
@@ -238,9 +236,8 @@ class Main: HelpOption() {
     private val closeables = Lists.newArrayList<Closeable>()
 
     private fun versionString(): String {
-        return javaClass.`package`.implementationVersion
+        return "1"
     }
-
 
     fun run(): Int {
         if (sslDebug) {
@@ -277,7 +274,7 @@ class Main: HelpOption() {
             }
 
             if (serviceNames) {
-                outputHandler!!.info(serviceInterceptor.names().joinToString(" "))
+                outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
                 return 0
             }
 
@@ -317,12 +314,8 @@ class Main: HelpOption() {
     private fun showApiDocs() {
         val docs = ServiceApiDocPresenter(serviceInterceptor!!, client!!, credentialsStore!!)
 
-        getFullCompletionUrl().ifPresent { u ->
-            try {
-                docs.explainApi(u, outputHandler!!, client!!)
-            } catch (e: IOException) {
-                throw Throwables.propagate(e)
-            }
+        getFullCompletionUrl()?.let { u ->
+            docs.explainApi(u, outputHandler!!, client!!)
         }
     }
 
@@ -347,20 +340,19 @@ class Main: HelpOption() {
         val completer = UrlCompleter(serviceInterceptor!!.services(), client!!, credentialsStore!!,
                 completionVariableCache!!)
 
-        val fullCompletionUrlOpt = getFullCompletionUrl()
+        val fullCompletionUrl = getFullCompletionUrl()
 
         // reload hack (in case changed for "" case)
         val originalCompletionUrl = arguments[arguments.size - 1]
 
-        if (fullCompletionUrlOpt.isPresent) {
-            val fullCompletionUrl = fullCompletionUrlOpt.get()
+        if (fullCompletionUrl != null) {
             val urls = completer.urlList(fullCompletionUrl)
 
             val strip: Int
-            if (fullCompletionUrl != originalCompletionUrl) {
-                strip = fullCompletionUrl.length - originalCompletionUrl.length
+            strip = if (fullCompletionUrl != originalCompletionUrl) {
+                fullCompletionUrl.length - originalCompletionUrl.length
             } else {
-                strip = 0
+                0
             }
 
             if (completionFile != null) {
@@ -386,9 +378,9 @@ class Main: HelpOption() {
    * n.b. arguments may be modified by this call.
    */
     @Throws(Exception::class)
-    private fun getFullCompletionUrl(): Optional<String> {
+    private fun getFullCompletionUrl(): String? {
         if (arguments.isEmpty()) {
-            return empty<String>()
+            return null
         }
 
         var urlToComplete = arguments[arguments.size - 1]
@@ -396,9 +388,9 @@ class Main: HelpOption() {
         val command = getShellCommand()
 
         if (command is JavascriptApiCommand) {
-            val requests = command.buildRequests(client, requestBuilder, arguments)
+            val requests = command.buildRequests(client!!, requestBuilder!!, arguments)
 
-            if (requests.size > 0) {
+            if (requests.isNotEmpty()) {
                 val newUrl = requests[0].url()
 
                 // support "" -> http://api.test.com
@@ -411,14 +403,14 @@ class Main: HelpOption() {
                 val newUrlCompletion = newUrl.toString()
 
                 if (newUrlCompletion.endsWith(urlToComplete)) {
-                    return Optional.of(newUrlCompletion)
+                    return newUrlCompletion
                 }
             }
         } else if (UrlCompleter.isPossibleAddress(urlToComplete)) {
-            return Optional.of(urlToComplete)
+            return urlToComplete
         }
 
-        return empty<String>()
+        return null
     }
 
     @Throws(Exception::class)
@@ -431,33 +423,33 @@ class Main: HelpOption() {
             credentialsStore = createCredentialsStore()
         }
 
-        closeables.add({
+        closeables.add(Closeable {
             if (client != null) {
-                client.dispatcher().executorService().shutdown()
-                client.connectionPool().evictAll()
+                client!!.dispatcher().executorService().shutdown()
+                client!!.connectionPool().evictAll()
             }
         })
 
         val clientBuilder = createClientBuilder()
 
         if (user != null) {
-            val userParts = user.split(":".toRegex(), 2).toTypedArray()
+            val userParts = user!!.split(":".toRegex(), 2).toTypedArray()
             if (userParts.size < 2) {
                 throw UsageException("--user should have user:password")
             }
             val credential = Credentials.basic(userParts[0], userParts[1])
 
-            clientBuilder.authenticator({ route, response ->
+            clientBuilder.authenticator({ _, response ->
                 logger.fine("Challenges: " + response.challenges())
 
                 // authenticate once
                 if (response.request().header("Authorization") != null) {
-                    return@clientBuilder.authenticator null
+                    null
+                } else {
+                    response.request().newBuilder()
+                            .header("Authorization", credential)
+                            .build()
                 }
-
-                response.request().newBuilder()
-                        .header("Authorization", credential)
-                        .build()
             })
         }
 
@@ -467,9 +459,9 @@ class Main: HelpOption() {
         clientBuilder.dispatcher(dispatcher)
 
         val authClient = clientBuilder.build()
-        serviceInterceptor = ServiceInterceptor(authClient, credentialsStore)
+        serviceInterceptor = ServiceInterceptor(authClient, credentialsStore!!)
 
-        authorisation = Authorisation(serviceInterceptor, credentialsStore, authClient, outputHandler)
+        authorisation = Authorisation(serviceInterceptor!!, credentialsStore!!, authClient, outputHandler!!)
 
         clientBuilder.networkInterceptors().add(0, serviceInterceptor)
 
@@ -487,7 +479,7 @@ class Main: HelpOption() {
     }
 
     fun createClientBuilder(): OkHttpClient.Builder {
-        var builder = OkHttpClient.Builder();
+        val builder = OkHttpClient.Builder()
         builder.followSslRedirects(!dontFollowRedirects)
         builder.followRedirects(!dontFollowRedirects)
         if (connectTimeout != null) {
@@ -506,34 +498,34 @@ class Main: HelpOption() {
         configureTls(builder)
 
         if (cacheDirectory != null) {
-            builder.cache(Cache(cacheDirectory, (64 * 1024 * 1024).toLong()))
+            builder.cache(Cache(cacheDirectory!!, (64 * 1024 * 1024).toLong()))
         }
 
         // TODO move behind AuthInterceptor API
-        builder.addNetworkInterceptor(TwitterCachingInterceptor());
-        builder.addNetworkInterceptor(TwitterDeflatedResponseInterceptor());
+        builder.addNetworkInterceptor(TwitterCachingInterceptor())
+        builder.addNetworkInterceptor(TwitterDeflatedResponseInterceptor())
 
         if (curl) {
-            builder.addNetworkInterceptor(CurlInterceptor(System.err::println));
+            builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
         }
 
         if (debug) {
-            val loggingInterceptor = HttpLoggingInterceptor(logger::info);
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-            builder.networkInterceptors().add(loggingInterceptor);
+            val loggingInterceptor = HttpLoggingInterceptor(logger::info)
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
+            builder.networkInterceptors().add(loggingInterceptor)
         }
 
         if (socksProxy != null) {
-            builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address));
+            builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
         } else if (proxy != null) {
-            builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address));
+            builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
         }
 
         if (protocols != null) {
-            builder.protocols(ProtocolUtil.parseProtocolList(protocols!!));
+            builder.protocols(ProtocolUtil.parseProtocolList(protocols!!))
         }
 
-        return builder;
+        return builder
     }
 
     @Throws(IOException::class)
@@ -542,10 +534,10 @@ class Main: HelpOption() {
         val zipkinSenderUri = config.zipkinSenderUri()
         val reporter: Reporter<Span>
 
-        if (zipkinSenderUri != null) {
-            reporter = UriTransportRegistry.forUri(zipkinSenderUri)
+        reporter = if (zipkinSenderUri != null) {
+            UriTransportRegistry.forUri(zipkinSenderUri)
         } else {
-            reporter = Platform.get()
+            Platform.get()
         }
 
         val tracing = Tracing.newBuilder()
@@ -558,8 +550,8 @@ class Main: HelpOption() {
 
         val tracer = tracing.tracer()
 
-        val opener = { tc ->
-            closeables.add({
+        val opener: Consumer<TraceContext> = Consumer { tc ->
+            closeables.add(Closeable {
                 val link = config.openFunction().invoke(tc)
 
                 if (link != null) {
@@ -572,7 +564,7 @@ class Main: HelpOption() {
 
         clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
 
-        closeables.add({
+        closeables.add(Closeable {
             tracing.close()
             if (reporter is Flushable) {
                 (reporter as Flushable).flush()
@@ -585,24 +577,20 @@ class Main: HelpOption() {
 
     private fun openLink(link: String) {
         try {
-            outputHandler.openLink(link)
+            outputHandler!!.openLink(link)
         } catch (e: IOException) {
-            outputHandler.showError("Can't open link", e)
+            outputHandler!!.showError("Can't open link", e)
         }
 
-    }
-
-    fun getClient(): OkHttpClient {
-        return client
     }
 
     @Throws(OSXKeychainException::class)
     private fun createCredentialsStore(): CredentialsStore {
         if (token != null && !authorize) {
-            return FixedTokenCredentialsStore(token)
+            return FixedTokenCredentialsStore(token!!)
         }
 
-        return if (PlatformUtil.isOSX()) {
+        return if (PlatformUtil.isOSX) {
             OSXCredentialsStore(tokenSet)
         } else {
             PreferencesCredentialsStore(tokenSet)
@@ -615,30 +603,30 @@ class Main: HelpOption() {
         }
     }
 
-    private fun buildHandler(): OutputHandler<*> {
+    private fun buildHandler(): OutputHandler<Response> {
         val responseExtractor = OkHttpResponseExtractor()
 
         return if (outputDirectory != null) {
-            DownloadHandler(responseExtractor, outputDirectory)
+            DownloadHandler(responseExtractor, outputDirectory!!)
         } else if (rawOutput) {
             DownloadHandler(responseExtractor, File("-"))
         } else {
-            ConsoleHandler.instance(responseExtractor)
+            ConsoleHandler.instance(responseExtractor) as OutputHandler<Response>
         }
     }
 
     @Throws(Exception::class)
-    private fun executeRequests(outputHandler: OutputHandler<*>): Int {
+    private fun executeRequests(outputHandler: OutputHandler<Response>): Int {
         val command = getShellCommand()
 
-        val requests = command.buildRequests(client, requestBuilder, arguments)
+        val requests = command.buildRequests(client!!, requestBuilder!!, arguments)
 
         if (!command.handlesRequests()) {
             if (requests.isEmpty()) {
                 throw UsageException("no urls specified")
             }
 
-            val responseFutures = enqueueRequests(requests, client)
+            val responseFutures = enqueueRequests(requests, client!!)
             val failed = processResponses(outputHandler, responseFutures)
             return if (failed) -5 else 0
         }
@@ -647,7 +635,7 @@ class Main: HelpOption() {
     }
 
     @Throws(IOException::class, InterruptedException::class)
-    private fun processResponses(outputHandler: OutputHandler<*>,
+    private fun processResponses(outputHandler: OutputHandler<Response>,
                                  responseFutures: List<Future<Response>>): Boolean {
         var failed = false
         for (responseFuture in responseFutures) {
@@ -667,7 +655,7 @@ class Main: HelpOption() {
     }
 
     @Throws(IOException::class)
-    private fun showOutput(outputHandler: OutputHandler<*>, response: Response) {
+    private fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
         if (showHeaders) {
             outputHandler.info(StatusLine.get(response).toString())
             val headers = response.headers()
@@ -717,7 +705,7 @@ class Main: HelpOption() {
     private fun printAliasNames() {
         val names = Sets.newTreeSet(commandRegistry.names())
 
-        names.forEach(Consumer<String> { outputHandler.info(it) })
+        names.forEach({ outputHandler!!.info(it) })
     }
 
     private fun makeRequest(client: OkHttpClient, request: Request): Future<Response> {
@@ -734,12 +722,12 @@ class Main: HelpOption() {
 
     @Throws(Exception::class)
     private fun authorize() {
-        authorisation.authorize(findAuthInterceptor(), ofNullable<String>(token), arguments)
+        authorisation!!.authorize(findAuthInterceptor(), token, arguments)
     }
 
     @Throws(Exception::class)
     private fun renew() {
-        authorisation.renew<*>(findAuthInterceptor())
+        authorisation!!.renew(findAuthInterceptor())
     }
 
     @Throws(Exception::class)
@@ -750,34 +738,34 @@ class Main: HelpOption() {
         var auth: AuthInterceptor<*>? = null
 
         if (authenticator != null) {
-            auth = serviceInterceptor.getByName(authenticator)
+            auth = serviceInterceptor!!.getByName(authenticator)
         }
 
         if (auth == null && !arguments.isEmpty()) {
             val name = arguments.removeAt(0)
 
-            auth = serviceInterceptor.findAuthInterceptor(name)
+            auth = serviceInterceptor!!.findAuthInterceptor(name)
         }
         return auth
     }
 
     private fun buildDns(): Dns {
         var dns: Dns
-        if (dnsMode === DnsMode.NETTY) {
-            dns = NettyDns.byName(ipMode, getEventLoopGroup(), dnsServers)
+        dns = if (dnsMode === DnsMode.NETTY) {
+            NettyDns.byName(ipMode, getEventLoopGroup(), this.dnsServers!!)
         } else if (dnsMode === DnsMode.DNSGOOGLE) {
-            dns = DnsSelector(ipMode,
-                    GoogleDns.fromHosts({ this@Main.client }, ipMode, "216.58.216.142", "216.239.34.10",
+            DnsSelector(ipMode,
+                    GoogleDns.fromHosts({ this@Main.client!! }, ipMode, "216.58.216.142", "216.239.34.10",
                             "2607:f8b0:400a:809::200e"))
         } else {
             if (dnsServers != null) {
                 throw UsageException("unable to set dns servers with java DNS")
             }
 
-            dns = DnsSelector(ipMode, Dns.SYSTEM)
+            DnsSelector(ipMode, Dns.SYSTEM)
         }
         if (resolve != null) {
-            dns = DnsOverride.build(dns, resolve)
+            dns = DnsOverride.build(dns, resolve!!)
         }
         return dns
     }
@@ -787,15 +775,15 @@ class Main: HelpOption() {
             val threadFactory = DefaultThreadFactory("netty", true)
             eventLoopGroup = NioEventLoopGroup(5, threadFactory)
 
-            closeables.add({ eventLoopGroup.shutdownGracefully(0, 0, TimeUnit.SECONDS) })
+            closeables.add(Closeable { eventLoopGroup!!.shutdownGracefully(0, 0, TimeUnit.SECONDS) })
         }
 
-        return eventLoopGroup
+        return eventLoopGroup!!
     }
 
     @Throws(SocketException::class)
     private fun getSocketFactory(): SocketFactory {
-        val socketFactory = InterfaceSocketFactory.byName(networkInterface)
+        val socketFactory = InterfaceSocketFactory.byName(networkInterface!!)
 
         if (!socketFactory.isPresent) {
             throw UsageException("networkInterface '$networkInterface' not found")
@@ -818,7 +806,7 @@ class Main: HelpOption() {
         val keyManagers = Lists.newArrayList<KeyManager>()
 
         if (opensc != null) {
-            keyManagers.addAll(asList<KeyManager>(*OpenSCUtil.getKeyManagers(callbackHandler, opensc)))
+            keyManagers.addAll(OpenSCUtil.getKeyManagers(callbackHandler, opensc!!).asIterable())
         } else if (clientAuth) {
             if (keystore == null) {
                 throw UsageException("--clientauth specified without --keystore")
@@ -838,8 +826,8 @@ class Main: HelpOption() {
                 trustManagers.add(CertificateUtils.trustManagerForKeyStore(keystore))
             }
 
-            if (!serverCerts.isEmpty()) {
-                trustManagers.add(CertificateUtils.load(serverCerts))
+            if (serverCerts != null) {
+                trustManagers.add(CertificateUtils.load(serverCerts!!.toList()))
             }
 
             trustManager = CertificateUtils.combineTrustManagers(trustManagers)
@@ -849,13 +837,13 @@ class Main: HelpOption() {
                 trustManager)
 
         if (certificatePins != null) {
-            builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins))
+            builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!))
         }
     }
 
     private fun getRequestMethod(): String {
         if (method != null) {
-            return method
+            return method!!
         }
         return if (data != null) {
             "POST"
@@ -871,15 +859,15 @@ class Main: HelpOption() {
 
         for (k in headerMap.keys) {
             if ("Content-Type".equals(k, ignoreCase = true)) {
-                mimeType = headerMap.remove(k)
+                mimeType = headerMap.remove(k)!!
                 break
             }
         }
 
-        try {
-            return RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data))
+        return try {
+            RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data!!))
         } catch (e: IOException) {
-            throw UsageException(e.message)
+            throw UsageException(e.message!!)
         }
 
     }
@@ -887,7 +875,7 @@ class Main: HelpOption() {
     fun createRequestBuilder(): Request.Builder {
         val requestBuilder = Request.Builder()
 
-        val headerMap = HeaderUtil.headerMap(headers)
+        val headerMap = HeaderUtil.headerMap(headers).toMutableMap()
 
         requestBuilder.method(getRequestMethod(), getRequestBody(headerMap))
 
@@ -895,20 +883,22 @@ class Main: HelpOption() {
             headerMap.forEach { k, v -> requestBuilder.header(k, v) }
         }
         if (referer != null) {
-            requestBuilder.header("Referer", referer)
+            requestBuilder.header("Referer", referer!!)
         }
-        requestBuilder.header("User-Agent", userAgent)
+        requestBuilder.header("User-Agent", userAgent!!)
 
         return requestBuilder
     }
 
     companion object {
+        const val NAME = "oksocial"
+
         private fun fromArgs(vararg args: String): Main {
             return SingleCommand.singleCommand(Main::class.java).parse(*args)
         }
 
         @JvmStatic
-        fun main(args: Array<String>) {
+        fun main(vararg args: String) {
             val result = fromArgs(*args).run()
             System.exit(result)
         }

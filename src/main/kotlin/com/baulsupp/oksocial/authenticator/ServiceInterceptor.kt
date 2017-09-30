@@ -14,18 +14,16 @@ class ServiceInterceptor(authClient: OkHttpClient, private val credentialsStore:
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        for (interceptor in services) {
-            if (interceptor.supportsUrl(chain.request().url())) {
-                return intercept(interceptor, chain)
-            }
-        }
+        services
+                .filter { it.supportsUrl(chain.request().url()) }
+                .forEach { return intercept(it, chain) }
 
         return chain.proceed(chain.request())
     }
 
     @Throws(IOException::class)
     private fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
-        var credentials = credentialsStore.readDefaultCredentials(interceptor.serviceDefinition()) ?: interceptor.defaultCredentials()
+        val credentials = credentialsStore.readDefaultCredentials(interceptor.serviceDefinition()) ?: interceptor.defaultCredentials()
 
         if (credentials != null) {
             val result = interceptor.intercept(chain, credentials)

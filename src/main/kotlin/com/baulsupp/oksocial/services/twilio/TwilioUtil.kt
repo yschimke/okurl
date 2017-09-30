@@ -1,13 +1,11 @@
 package com.baulsupp.oksocial.services.twilio
 
 import com.baulsupp.oksocial.authenticator.BasicCredentials
-import com.google.common.collect.Sets
 import okhttp3.Request
-import java.util.*
 
 object TwilioUtil {
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "api.twilio.com")
     )
 

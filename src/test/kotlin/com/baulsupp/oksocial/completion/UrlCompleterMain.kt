@@ -11,7 +11,7 @@ object UrlCompleterMain {
         main.initialise()
 
         main.arguments = newArrayList(
-                if (args.size > 0) args[0] else "https://graph.facebook.com/BooneStudio")
+                if (args.isNotEmpty()) args[0] else "https://graph.facebook.com/BooneStudio")
         return main.run()
     }
 }

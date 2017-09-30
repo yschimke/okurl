@@ -1,11 +1,9 @@
 package com.baulsupp.oksocial.services.facebook
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import com.google.common.collect.Sets
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 object FacebookUtil {

@@ -72,7 +72,7 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
         }
 
         dnsSpan!!.tag("dns.results",
-                inetAddressList!!.map({ it.toString() }).joinToString(", "))
+                inetAddressList!!.joinToString(", ", transform = { it.toString() }))
 
         dnsSpan!!.finish()
     }

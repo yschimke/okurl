@@ -2,9 +2,6 @@ package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.output.util.JsonUtil
 import java.io.IOException
-import java.util.*
-import java.util.stream.Collectors.toList
-import java.util.stream.Stream
 
 /**
  * https://developers.google.com/discovery/v1/using

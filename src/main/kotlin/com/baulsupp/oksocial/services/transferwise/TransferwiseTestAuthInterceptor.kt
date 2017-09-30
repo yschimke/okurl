@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import okhttp3.OkHttpClient
 import java.io.IOException
-import java.util.stream.Collectors.toList
 
 class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
     override fun host(): String {

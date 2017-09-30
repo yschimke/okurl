@@ -9,10 +9,10 @@ enum class DnsMode {
 
     companion object {
         fun fromString(dnsMode: String): DnsMode {
-            when (dnsMode) {
-                "java" -> return DnsMode.JAVA
-                "netty" -> return DnsMode.NETTY
-                "dnsgoogle" -> return DnsMode.DNSGOOGLE
+            return when (dnsMode) {
+                "java" -> DnsMode.JAVA
+                "netty" -> DnsMode.NETTY
+                "dnsgoogle" -> DnsMode.DNSGOOGLE
                 else -> throw UsageException("unknown dns mode '$dnsMode'")
             }
         }

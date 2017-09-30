@@ -13,7 +13,7 @@ import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class SimpleWebServer<T> @Throws(IOException::class)
+class SimpleWebServer<out T> @Throws(IOException::class)
 constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler(), Closeable {
     private val port = 3000
     private val f = CompletableFuture<T>()
@@ -39,8 +39,8 @@ constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler
 
     @Throws(IOException::class)
     fun waitForCode(): T {
-        try {
-            return f.get(60, TimeUnit.SECONDS)
+        return try {
+            f.get(60, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
             throw IOException(e)
         } catch (e: ExecutionException) {

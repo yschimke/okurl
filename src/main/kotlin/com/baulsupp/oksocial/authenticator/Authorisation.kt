@@ -6,21 +6,20 @@ import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.OkHttpClient
 import java.io.IOException
-import java.util.*
 
 class Authorisation(private val interceptor: ServiceInterceptor, private val credentialsStore: CredentialsStore,
                     private val client: OkHttpClient, private val outputHandler: OutputHandler<*>) {
 
     @Throws(Exception::class)
-    fun authorize(auth: AuthInterceptor<*>?, token: Optional<String>,
+    fun authorize(auth: AuthInterceptor<*>?, token: String?,
                   authArguments: List<String>) {
         if (auth == null) {
             throw UsageException(
                     "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
         }
 
-        if (token.isPresent) {
-            storeCredentials(auth, token.get())
+        if (token != null) {
+            storeCredentials(auth, token)
         } else {
             authRequest(auth, authArguments)
         }

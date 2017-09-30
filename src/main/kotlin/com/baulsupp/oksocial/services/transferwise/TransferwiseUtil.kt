@@ -1,12 +1,10 @@
 package com.baulsupp.oksocial.services.transferwise
 
-import com.google.common.collect.Sets
 import okhttp3.Request
-import java.util.*
 
 object TransferwiseUtil {
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "api.transferwise.com")
     )
 

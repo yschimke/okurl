@@ -13,11 +13,11 @@ interface ShellCommand {
     fun buildRequests(client: OkHttpClient, requestBuilder: Request.Builder,
                       arguments: List<String>): List<Request>
 
-    open fun authenticator(): String? {
+    fun authenticator(): String? {
         return null
     }
 
-    open fun handlesRequests(): Boolean {
+    fun handlesRequests(): Boolean {
         return false
     }
 

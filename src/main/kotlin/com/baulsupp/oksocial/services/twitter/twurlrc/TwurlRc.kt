@@ -11,6 +11,6 @@ class TwurlRc {
     }
 
     fun readCredentials(username: String, consumerKey: String): TwitterCredentials {
-        return profiles!![username]!!.get(consumerKey)!!
+        return profiles!![username]!![consumerKey]!!
     }
 }

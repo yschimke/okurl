@@ -14,7 +14,6 @@ import okhttp3.Response
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 import java.util.concurrent.Future
 
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {

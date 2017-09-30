@@ -1,12 +1,10 @@
 package com.baulsupp.oksocial.services.foursquare
 
-import com.google.common.collect.Sets
 import okhttp3.Request
-import java.util.*
 
 object FourSquareUtil {
 
-    val API_HOSTS = Collections.unmodifiableSet(Sets.newHashSet(
+    val API_HOSTS = setOf((
             "api.foursquare.com")
     )
 
