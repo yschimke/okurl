@@ -359,7 +359,7 @@ class Main : HelpOption() {
                 urls.toFile(File(completionFile), strip, originalCompletionUrl)
             }
 
-            return urls.getUrls(fullCompletionUrl).joinToString("\n")
+            return urls.getUrls(fullCompletionUrl).map { it.substring(strip) }.joinToString("\n")
         } else {
             return ""
         }
