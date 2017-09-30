@@ -12,6 +12,7 @@ import okhttp3.Request
 import java.nio.charset.StandardCharsets
 import java.nio.file.FileSystems
 import java.nio.file.Files
+import java.util.function.Function
 import java.util.stream.Collectors.joining
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
@@ -49,7 +50,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
         engine.put("client", client)
         engine.put("clientBuilder", client.newBuilder())
         engine.put("requestBuilder", requestBuilder)
-        engine.put("credentials", this::credentials)
+        engine.put("credentials", Function<String, Any?> { t -> credentials(t) })
 
         val lines = Files.lines(script, StandardCharsets.UTF_8).skip(1).collect(joining("\n"))
 
