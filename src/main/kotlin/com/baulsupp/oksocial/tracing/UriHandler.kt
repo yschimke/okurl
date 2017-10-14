@@ -3,7 +3,8 @@ package com.baulsupp.oksocial.tracing
 import zipkin.Span
 import zipkin.reporter.Reporter
 import java.net.URI
-import java.util.*
+import java.util.Optional
+import java.util.ServiceLoader
 
 interface UriHandler {
 

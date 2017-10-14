@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.credentials
 
-import java.util.*
+import java.util.Optional
 import java.util.Optional.empty
 
 interface ServiceDefinition<T> {

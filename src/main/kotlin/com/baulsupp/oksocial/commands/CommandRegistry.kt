@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.commands
 
 import com.google.common.collect.Lists
-import java.util.*
+import java.util.ServiceLoader
 
 class CommandRegistry {
     private val commands: List<ShellCommand>

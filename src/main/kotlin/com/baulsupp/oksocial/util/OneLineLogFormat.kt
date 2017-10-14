@@ -5,7 +5,10 @@ import java.io.StringWriter
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.ChronoField.*
+import java.time.temporal.ChronoField.HOUR_OF_DAY
+import java.time.temporal.ChronoField.MINUTE_OF_HOUR
+import java.time.temporal.ChronoField.NANO_OF_SECOND
+import java.time.temporal.ChronoField.SECOND_OF_MINUTE
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.fitbit
 
 import okhttp3.Request
-import java.util.*
+import java.util.Arrays
 
 object FitbitUtil {
     val SCOPES: Collection<String> = Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",

@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.i9n.TestCredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
-import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
 import org.junit.Test

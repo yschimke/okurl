@@ -6,9 +6,7 @@ import java.io.File
 
 object TwurlrcImport {
     fun authorize(authArguments: List<String>): TwitterCredentials {
-        val twurlStore: TwurlCredentialsStore
-
-        twurlStore = if (authArguments.size > 1) {
+        val twurlStore: TwurlCredentialsStore = if (authArguments.size > 1) {
             TwurlCredentialsStore(File(authArguments[1]))
         } else {
             TwurlCredentialsStore.TWURL_STORE

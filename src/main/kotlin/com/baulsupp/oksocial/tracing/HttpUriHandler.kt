@@ -5,7 +5,7 @@ import zipkin.reporter.AsyncReporter
 import zipkin.reporter.Reporter
 import zipkin.reporter.okhttp3.OkHttpSender
 import java.net.URI
-import java.util.*
+import java.util.Optional
 import java.util.Optional.empty
 import java.util.Optional.of
 

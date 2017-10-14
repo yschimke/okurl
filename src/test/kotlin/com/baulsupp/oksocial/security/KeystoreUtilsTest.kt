@@ -3,12 +3,17 @@ package com.baulsupp.oksocial.security
 import com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager
 import com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore
 import org.junit.Test
-
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.security.*
+import java.security.InvalidKeyException
+import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.KeyStoreException
+import java.security.NoSuchAlgorithmException
+import java.security.NoSuchProviderException
+import java.security.SignatureException
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory

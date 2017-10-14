@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.slack
 
 import okhttp3.Request
-import java.util.*
+import java.util.Arrays
 
 object SlackUtil {
     val SCOPES: Collection<String> = Arrays.asList("channels:history",

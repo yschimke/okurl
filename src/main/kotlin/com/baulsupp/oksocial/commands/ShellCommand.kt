@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.commands
 import com.baulsupp.oksocial.completion.ArgumentCompleter
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.*
+import java.util.Optional
 import java.util.Optional.empty
 
 interface ShellCommand {

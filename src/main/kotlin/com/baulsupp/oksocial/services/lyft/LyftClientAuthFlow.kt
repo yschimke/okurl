@@ -2,7 +2,11 @@ package com.baulsupp.oksocial.services.lyft
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import okhttp3.*
+import okhttp3.Credentials
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import java.io.IOException
 
 object LyftClientAuthFlow {

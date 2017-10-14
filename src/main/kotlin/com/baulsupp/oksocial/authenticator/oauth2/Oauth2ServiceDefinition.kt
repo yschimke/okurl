@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.authenticator.oauth2
 
 import com.baulsupp.oksocial.AbstractServiceDefinition
 
-    class Oauth2ServiceDefinition(apiHost: String, serviceName: String, shortName: String,
+class Oauth2ServiceDefinition(apiHost: String, serviceName: String, shortName: String,
                               apiDocs: String, accountsLink: String?) : AbstractServiceDefinition<Oauth2Token>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
 
     override fun parseCredentialsString(s: String): Oauth2Token {

@@ -42,14 +42,11 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
 
     private fun <T> printFailed(sd: ServiceDefinition<T>,
                                 e: Throwable) {
-        if (e is TimeoutException) {
-            outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
-        } else if (e is ClientException) {
-            outputHandler.info("%-20s	%s".format(sd.serviceName(), e.message))
-        } else if (e is IOException) {
-            outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
-        } else {
-            outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
+        when (e) {
+            is TimeoutException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
+            is ClientException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.message))
+            is IOException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
+            else -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
         }
     }
 

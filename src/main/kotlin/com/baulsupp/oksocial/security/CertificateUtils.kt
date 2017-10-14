@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import java.util.*
+import java.util.Arrays
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 

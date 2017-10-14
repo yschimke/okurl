@@ -6,13 +6,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.google.common.base.Throwables
 import java.io.File
-import java.util.*
+import java.util.Optional
 
 class TwurlCredentialsStore(val file: File) {
 
-    fun readTwurlRc(): TwurlRc? {
-        return try {
-            return if (file.isFile) {
+    fun readTwurlRc(): TwurlRc? = try {
+            if (file.isFile) {
                 val objectMapper = ObjectMapper(YAMLFactory())
                 objectMapper.propertyNamingStrategy = PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES
 
@@ -21,10 +20,8 @@ class TwurlCredentialsStore(val file: File) {
                 null
             }
         } catch (e: Exception) {
-            throw Throwables.propagate(e)
+            throw RuntimeException(e)
         }
-
-    }
 
     fun readCredentials(): Optional<TwitterCredentials> {
         val twurlRc = readTwurlRc()

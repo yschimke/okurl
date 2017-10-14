@@ -2,8 +2,9 @@ package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.google.common.base.Splitter
-import java.util.*
+import java.util.Optional
 import java.util.Optional.of
+import java.util.StringJoiner
 
 class TwitterServiceDefinition : ServiceDefinition<TwitterCredentials> {
     override fun apiHost(): String {

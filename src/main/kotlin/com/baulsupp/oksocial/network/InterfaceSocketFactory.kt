@@ -1,8 +1,13 @@
 package com.baulsupp.oksocial.network
 
 import java.io.IOException
-import java.net.*
-import java.util.*
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.NetworkInterface
+import java.net.Socket
+import java.net.SocketException
+import java.net.UnknownHostException
+import java.util.Optional
 import java.util.Optional.empty
 import java.util.Optional.of
 import javax.net.SocketFactory
@@ -43,8 +48,7 @@ class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFact
 
         @Throws(SocketException::class)
         fun byName(ipOrInterface: String): Optional<SocketFactory> {
-            var localAddress: InetAddress
-            localAddress = try {
+            val localAddress = try {
                 // example 192.168.0.51
                 InetAddress.getByName(ipOrInterface)
             } catch (uhe: UnknownHostException) {

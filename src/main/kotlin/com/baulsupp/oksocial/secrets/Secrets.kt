@@ -4,7 +4,7 @@ import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.*
+import java.util.Properties
 
 class Secrets(private val secrets: MutableMap<String, String>, private val file: Path?,
               private val defaults: (String) -> String?) {

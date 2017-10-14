@@ -7,7 +7,6 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.lang.Math.min
 import java.time.Clock
-import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -20,23 +19,22 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
     private val clock = Clock.systemDefaultZone()
 
     override fun urlList(prefix: String): UrlList {
-
         val fullUrl = parseUrl(prefix)
 
-        if (fullUrl.isPresent) {
-            val u = fullUrl.get()
-
+        return if (fullUrl != null) {
             // won't match anything
-            return services
-                    .firstOrNull { it.supportsUrl(u) }
-                    ?.let { it.apiCompleter(prefix, client, credentialsStore, completionVariableCache).siteUrls(u).get() }
+            services
+                    .firstOrNull { it.supportsUrl(fullUrl) }
+                    ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+                    ?.siteUrls(fullUrl)
+                    ?.get()
                     ?: UrlList(UrlList.Match.EXACT, Lists.newArrayList())
         } else {
             val futures = Lists.newArrayList<Future<UrlList>>()
 
             services.mapTo(futures) { it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls() }
 
-            return futuresToList(prefix, futures)
+            futuresToList(prefix, futures)
         }
     }
 
@@ -63,17 +61,13 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
         return UrlList(UrlList.Match.HOSTS, results)
     }
 
-    private fun parseUrl(prefix: String): Optional<HttpUrl> {
-        return if (isSingleApi(prefix)) {
-            Optional.ofNullable(HttpUrl.parse(prefix))
-        } else {
-            Optional.empty()
-        }
+    private fun parseUrl(prefix: String): HttpUrl? = if (isSingleApi(prefix)) {
+        HttpUrl.parse(prefix)
+    } else {
+        null
     }
 
-    private fun isSingleApi(prefix: String): Boolean {
-        return prefix.matches("https://[^/]+/.*".toRegex())
-    }
+    private fun isSingleApi(prefix: String): Boolean = prefix.matches("https://[^/]+/.*".toRegex())
 
     companion object {
         private val logger = Logger.getLogger(UrlCompleter::class.java.name)

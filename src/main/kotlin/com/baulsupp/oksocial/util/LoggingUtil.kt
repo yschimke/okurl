@@ -4,7 +4,12 @@ import com.google.common.collect.Lists
 import io.netty.util.internal.logging.InternalLoggerFactory
 import io.netty.util.internal.logging.JdkLoggerFactory
 import okhttp3.internal.http2.Http2
-import java.util.logging.*
+import java.util.logging.ConsoleHandler
+import java.util.logging.Level
+import java.util.logging.LogManager
+import java.util.logging.LogRecord
+import java.util.logging.Logger
+import java.util.logging.SimpleFormatter
 
 class LoggingUtil {
     companion object {

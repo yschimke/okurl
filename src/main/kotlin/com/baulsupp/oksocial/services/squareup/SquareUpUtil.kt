@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.squareup
 
 import okhttp3.Request
-import java.util.*
+import java.util.Arrays
 
 object SquareUpUtil {
 

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.spotify
 
 import okhttp3.Request
-import java.util.*
+import java.util.Arrays
 
 object SpotifyUtil {
     val SCOPES: Collection<String> = Arrays.asList("playlist-read-private",

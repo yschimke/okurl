@@ -8,7 +8,11 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import io.github.vjames19.futures.jdk8.ImmediateFuture
-import okhttp3.*
+import okhttp3.Credentials
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.Future
 

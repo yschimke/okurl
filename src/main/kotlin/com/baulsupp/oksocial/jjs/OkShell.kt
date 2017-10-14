@@ -4,7 +4,11 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.util.FileContent
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
@@ -60,8 +64,7 @@ private constructor() {
             val responseString = response.body()!!.string()
 
             if (!response.isSuccessful) {
-                val msg: String
-                msg = if (responseString.isNotEmpty()) {
+                val msg: String = if (responseString.isNotEmpty()) {
                     responseString
                 } else {
                     response.code().toString() + " " + response.message()

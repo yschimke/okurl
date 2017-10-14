@@ -3,8 +3,6 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.google.common.collect.Maps
-import java.util.*
-import java.util.Optional.ofNullable
 
 class TestCredentialsStore : CredentialsStore {
     var tokens: MutableMap<String, String> = Maps.newHashMap()

@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.util
 
 import okhttp3.Protocol
 import java.io.IOException
-import java.util.*
+import java.util.ArrayList
 
 object ProtocolUtil {
     fun parseProtocolList(protocols: String): List<Protocol> {

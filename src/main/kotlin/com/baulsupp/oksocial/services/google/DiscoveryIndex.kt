@@ -5,7 +5,7 @@ import com.google.common.collect.Lists
 import com.google.common.io.Resources
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Optional
 
 /*
  * API URL -> Discovery URL

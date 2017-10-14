@@ -15,7 +15,11 @@ import com.baulsupp.oksocial.commands.CommandRegistry
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.OksocialCommand
 import com.baulsupp.oksocial.commands.ShellCommand
-import com.baulsupp.oksocial.completion.*
+import com.baulsupp.oksocial.completion.ArgumentCompleter
+import com.baulsupp.oksocial.completion.CompletionVariableCache
+import com.baulsupp.oksocial.completion.TmpCompletionVariableCache
+import com.baulsupp.oksocial.completion.UrlCompleter
+import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore
@@ -23,7 +27,13 @@ import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore
 import com.baulsupp.oksocial.jjs.JavascriptApiCommand
 import com.baulsupp.oksocial.location.BestLocation
 import com.baulsupp.oksocial.location.LocationSource
-import com.baulsupp.oksocial.network.*
+import com.baulsupp.oksocial.network.DnsMode
+import com.baulsupp.oksocial.network.DnsOverride
+import com.baulsupp.oksocial.network.DnsSelector
+import com.baulsupp.oksocial.network.GoogleDns
+import com.baulsupp.oksocial.network.IPvMode
+import com.baulsupp.oksocial.network.InterfaceSocketFactory
+import com.baulsupp.oksocial.network.NettyDns
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
 import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture
 import com.baulsupp.oksocial.output.ConsoleHandler
@@ -31,22 +41,44 @@ import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
-import com.baulsupp.oksocial.security.*
+import com.baulsupp.oksocial.security.CertificatePin
+import com.baulsupp.oksocial.security.CertificateUtils
+import com.baulsupp.oksocial.security.ConsoleCallbackHandler
+import com.baulsupp.oksocial.security.InsecureHostnameVerifier
+import com.baulsupp.oksocial.security.InsecureTrustManager
+import com.baulsupp.oksocial.security.KeystoreUtils
+import com.baulsupp.oksocial.security.OpenSCUtil
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor
 import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor
 import com.baulsupp.oksocial.tracing.UriTransportRegistry
 import com.baulsupp.oksocial.tracing.ZipkinConfig
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener
-import com.baulsupp.oksocial.util.*
+import com.baulsupp.oksocial.util.FileContent
+import com.baulsupp.oksocial.util.HeaderUtil
+import com.baulsupp.oksocial.util.InetAddressParam
+import com.baulsupp.oksocial.util.LoggingUtil
+import com.baulsupp.oksocial.util.ProtocolUtil
 import com.google.common.collect.Lists
 import com.google.common.collect.Sets
 import com.mcdermottroe.apple.OSXKeychainException
 import com.moczul.ok2curl.CurlInterceptor
-import io.airlift.airline.*
+import io.airlift.airline.Arguments
+import io.airlift.airline.Command
+import io.airlift.airline.HelpOption
+import io.airlift.airline.Option
+import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
-import okhttp3.*
+import okhttp3.Cache
+import okhttp3.Credentials
+import okhttp3.Dispatcher
+import okhttp3.Dns
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.io.IOUtils
@@ -59,7 +91,7 @@ import java.io.IOException
 import java.net.Proxy
 import java.net.SocketException
 import java.security.KeyStore
-import java.util.*
+import java.util.ArrayList
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -348,8 +380,7 @@ class Main : HelpOption() {
         if (fullCompletionUrl != null) {
             val urls = completer.urlList(fullCompletionUrl)
 
-            val strip: Int
-            strip = if (fullCompletionUrl != originalCompletionUrl) {
+            val strip: Int = if (fullCompletionUrl != originalCompletionUrl) {
                 fullCompletionUrl.length - originalCompletionUrl.length
             } else {
                 0
@@ -359,7 +390,7 @@ class Main : HelpOption() {
                 urls.toFile(File(completionFile), strip, originalCompletionUrl)
             }
 
-            return urls.getUrls(fullCompletionUrl).map { it.substring(strip) }.joinToString("\n")
+            return urls.getUrls(fullCompletionUrl).joinToString("\n") { it.substring(strip) }
         } else {
             return ""
         }
@@ -606,12 +637,10 @@ class Main : HelpOption() {
     private fun buildHandler(): OutputHandler<Response> {
         val responseExtractor = OkHttpResponseExtractor()
 
-        return if (outputDirectory != null) {
-            DownloadHandler(responseExtractor, outputDirectory!!)
-        } else if (rawOutput) {
-            DownloadHandler(responseExtractor, File("-"))
-        } else {
-            ConsoleHandler.instance(responseExtractor) as OutputHandler<Response>
+        return when {
+            outputDirectory != null -> DownloadHandler(responseExtractor, outputDirectory!!)
+            rawOutput -> DownloadHandler(responseExtractor, File("-"))
+            else -> ConsoleHandler.instance(responseExtractor) as OutputHandler<Response>
         }
     }
 
@@ -751,18 +780,18 @@ class Main : HelpOption() {
 
     private fun buildDns(): Dns {
         var dns: Dns
-        dns = if (dnsMode === DnsMode.NETTY) {
-            NettyDns.byName(ipMode, getEventLoopGroup(), this.dnsServers!!)
-        } else if (dnsMode === DnsMode.DNSGOOGLE) {
-            DnsSelector(ipMode,
+        dns = when {
+            dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, getEventLoopGroup(), this.dnsServers!!)
+            dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
                     GoogleDns.fromHosts({ this@Main.client!! }, ipMode, "216.58.216.142", "216.239.34.10",
                             "2607:f8b0:400a:809::200e"))
-        } else {
-            if (dnsServers != null) {
-                throw UsageException("unable to set dns servers with java DNS")
-            }
+            else -> {
+                if (dnsServers != null) {
+                    throw UsageException("unable to set dns servers with java DNS")
+                }
 
-            DnsSelector(ipMode, Dns.SYSTEM)
+                DnsSelector(ipMode, Dns.SYSTEM)
+            }
         }
         if (resolve != null) {
             dns = DnsOverride.build(dns, resolve!!)
@@ -855,14 +884,10 @@ class Main : HelpOption() {
             return null
         }
 
-        var mimeType = "application/x-www-form-urlencoded"
-
-        for (k in headerMap.keys) {
-            if ("Content-Type".equals(k, ignoreCase = true)) {
-                mimeType = headerMap.remove(k)!!
-                break
-            }
-        }
+        val mimeType = headerMap.keys
+                .firstOrNull { "Content-Type".equals(it, ignoreCase = true) }
+                ?.let { headerMap.remove(it)!! }
+                ?: "application/x-www-form-urlencoded"
 
         return try {
             RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data!!))
@@ -885,7 +910,7 @@ class Main : HelpOption() {
         if (referer != null) {
             requestBuilder.header("Referer", referer!!)
         }
-        requestBuilder.header("User-Agent", userAgent!!)
+        requestBuilder.header("User-Agent", userAgent)
 
         return requestBuilder
     }

@@ -19,7 +19,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class WebServerTest {
-    @Rule @JvmField
+    @Rule
+    @JvmField
     var server = MockWebServer()
 
     private val main = Main()

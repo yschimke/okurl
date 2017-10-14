@@ -8,7 +8,7 @@ import java.io.IOException
 interface ApiDocPresenter {
 
     @Throws(IOException::class)
-    fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient): Unit
+    fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient)
 
     companion object {
         val NONE = object : ApiDocPresenter {

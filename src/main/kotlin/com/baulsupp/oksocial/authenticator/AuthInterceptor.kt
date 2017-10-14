@@ -1,11 +1,19 @@
 package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
-import com.baulsupp.oksocial.completion.*
+import com.baulsupp.oksocial.completion.ApiCompleter
+import com.baulsupp.oksocial.completion.BaseUrlCompleter
+import com.baulsupp.oksocial.completion.CompletionVariableCache
+import com.baulsupp.oksocial.completion.HostUrlCompleter
+import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
-import okhttp3.*
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.Future
 import java.util.logging.Level

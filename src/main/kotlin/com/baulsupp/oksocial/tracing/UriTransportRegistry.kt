@@ -5,7 +5,8 @@ import com.baulsupp.oksocial.tracing.UriHandler.Companion.loadServices
 import zipkin.Span
 import zipkin.reporter.Reporter
 import java.net.URI
-import java.util.*
+import java.util.ArrayList
+import java.util.ServiceLoader
 
 /**
  * Registry for looking up transports by URI.

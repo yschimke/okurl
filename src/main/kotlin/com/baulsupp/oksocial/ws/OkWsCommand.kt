@@ -7,7 +7,7 @@ import com.baulsupp.oksocial.output.util.UsageException
 import com.google.common.collect.Lists
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.*
+import java.util.Scanner
 
 class OkWsCommand : ShellCommand, MainAware {
     private var main: Main? = null

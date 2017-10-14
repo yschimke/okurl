@@ -3,10 +3,19 @@ package com.baulsupp.oksocial.security
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.security.*
+import java.security.KeyManagementException
+import java.security.KeyStore
+import java.security.KeyStoreException
+import java.security.NoSuchAlgorithmException
+import java.security.UnrecoverableKeyException
 import java.security.cert.CertificateException
-import java.util.*
-import javax.net.ssl.*
+import java.util.Arrays
+import javax.net.ssl.KeyManager
+import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import javax.security.auth.callback.Callback
 import javax.security.auth.callback.CallbackHandler
 import javax.security.auth.callback.PasswordCallback
@@ -56,10 +65,10 @@ object KeystoreUtils {
 
     @Throws(KeyStoreException::class, IOException::class, NoSuchAlgorithmException::class, CertificateException::class, UnsupportedCallbackException::class)
     fun getKeyStore(keystore: File?): KeyStore {
-        val keystore_client = KeyStore.getInstance("JKS")
+        val keystoreClient = KeyStore.getInstance("JKS")
 
-        keystore_client.load(if (keystore != null) FileInputStream(keystore) else null, null)
+        keystoreClient.load(if (keystore != null) FileInputStream(keystore) else null, null)
 
-        return keystore_client
+        return keystoreClient
     }
 }

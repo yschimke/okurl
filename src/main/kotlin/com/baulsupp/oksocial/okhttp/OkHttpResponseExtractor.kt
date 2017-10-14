@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.output.ResponseExtractor
 import com.baulsupp.oksocial.output.util.JsonUtil
 import okhttp3.Response
 import okio.BufferedSource
-import java.util.*
+import java.util.Optional
 import java.util.Optional.of
 
 class OkHttpResponseExtractor : ResponseExtractor<Response> {

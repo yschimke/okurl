@@ -1,15 +1,13 @@
 package com.baulsupp.oksocial.util
 
+
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.mcdermottroe.apple.OSXKeychainException
 import org.junit.Assume
-
-
 import java.net.InetAddress
 import java.net.UnknownHostException
-import java.util.Optional.empty
 
 object TestUtil {
     private var cachedException: UnknownHostException? = null

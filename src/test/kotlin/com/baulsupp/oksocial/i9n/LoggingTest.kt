@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.i9n
 
+
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.google.common.collect.Lists
@@ -8,17 +9,15 @@ import okhttp3.Response
 import okhttp3.internal.tls.SslClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.Rule
 import org.junit.Test
-
-
 import java.util.logging.LogManager
 import kotlin.test.assertEquals
 
 class LoggingTest {
-    @Rule @JvmField
+    @Rule
+    @JvmField
     var server = MockWebServer()
 
     private val main = Main()

@@ -117,14 +117,11 @@ class JavascriptApiCommand : ShellCommand, MainAware {
     }
 
     private fun toRequest(requestBuilder: Request.Builder, o: Any?): Request {
-        return if (o is Request) {
-            o
-        } else if (o is String) {
-            requestBuilder.url((o as String?)!!).build()
-        } else if (o == null) {
-            throw NullPointerException()
-        } else {
-            throw IllegalStateException("unable to use result " + o + " " + o.javaClass)
+        return when (o) {
+            is Request -> o
+            is String -> requestBuilder.url((o as String?)!!).build()
+            null -> throw NullPointerException()
+            else -> throw IllegalStateException("unable to use result " + o + " " + o.javaClass)
         }
     }
 }

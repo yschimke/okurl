@@ -5,7 +5,11 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.completion.*
+import com.baulsupp.oksocial.completion.ApiCompleter
+import com.baulsupp.oksocial.completion.BaseUrlCompleter
+import com.baulsupp.oksocial.completion.CompletionQuery
+import com.baulsupp.oksocial.completion.CompletionVariableCache
+import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets

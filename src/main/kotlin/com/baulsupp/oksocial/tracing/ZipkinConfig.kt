@@ -4,7 +4,7 @@ import brave.propagation.TraceContext
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
-import java.util.*
+import java.util.Properties
 
 class ZipkinConfig(private val senderUri: String?, private val displayUrl: String?) {
 

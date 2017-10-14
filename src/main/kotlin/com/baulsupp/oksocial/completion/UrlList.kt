@@ -6,7 +6,7 @@ import com.google.common.io.Resources
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Optional
 
 data class UrlList(val match: Match, val urls: List<String>) {
     enum class Match {
@@ -67,8 +67,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
         newUrls.addAll(urls)
         newUrls.addAll(b.urls)
 
-        val newMatch: Match
-        newMatch = if (match == b.match) {
+        val newMatch: Match = if (match == b.match) {
             match
         } else {
             Match.EXACT
