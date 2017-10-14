@@ -7,31 +7,25 @@ import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.LinkedHashMap
 
 // TODO handle duplicate header keys
 object HeaderUtil {
     fun headerMap(headers: List<String>?): Map<String, String> {
-        if (headers == null) {
-            return emptyMap()
-        }
+        val headerMap = mutableMapOf<String, String>()
 
-        val headerMap = LinkedHashMap<String, String>()
-
-        if (headers != null) {
-            for (header in headers) {
-                if (header.startsWith("@")) {
-                    headerMap.putAll(headerFileMap(header))
-                } else {
-                    val parts = header.split(":".toRegex(), 2).toTypedArray()
-                    // TODO: consider better strategy than simple trim
-                    val name = parts[0].trim { it <= ' ' }
-                    val value = stringValue(parts[1].trim { it <= ' ' })
-                    headerMap.put(name, value)
-                }
+        headers?.forEach {
+            if (it.startsWith("@")) {
+                headerMap.putAll(headerFileMap(it))
+            } else {
+                val parts = it.split(":".toRegex(), 2).toTypedArray()
+                // TODO: consider better strategy than simple trim
+                val name = parts[0].trim { it <= ' ' }
+                val value = stringValue(parts[1].trim { it <= ' ' })
+                headerMap.put(name, value)
             }
         }
-        return headerMap
+
+        return headerMap.toMap()
     }
 
     private fun headerFileMap(input: String): Map<out String, String> {

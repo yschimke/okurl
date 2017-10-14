@@ -74,7 +74,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
         val body = RequestBody.create(MediaType.parse("application/json"),
                 "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""
                         + credentials.refreshToken + "\"}")
-        val basic = Credentials.basic(credentials.clientId, credentials.clientSecret)
+        val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
         val request = Request.Builder().url("https://api.lyft.com/oauth/token")
                 .post(body)
                 .header("Authorization", basic)

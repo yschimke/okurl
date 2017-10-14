@@ -56,7 +56,6 @@ data class UrlList(val match: Match, val urls: List<String>) {
             UrlList.Match.EXACT -> prefix
             UrlList.Match.HOSTS -> "[^/]*:?/?/?[^/]*"
             UrlList.Match.SITE -> prefix + ".*"
-            else -> throw IllegalArgumentException()
         }
     }
 

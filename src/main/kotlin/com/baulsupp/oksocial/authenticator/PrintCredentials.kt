@@ -63,11 +63,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
         val futures = validate(services, requestBuilder)
 
         for ((service, future) in futures) {
-            if (future != null) {
-                printKnownCredentials(future, service)
-            } else {
-                printSuccess(service.serviceDefinition(), null)
-            }
+            printKnownCredentials(future, service)
             if (full) {
                 printCredentials(service)
             }
@@ -94,5 +90,5 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
 
     // TODO fix up hackery
     private fun <T> v(sv: AuthInterceptor<T>, requestBuilder: () -> Request.Builder, credentials: Any?) =
-            sv.validate(client, requestBuilder(), sv.cast(credentials as Object))
+            sv.validate(client, requestBuilder(), credentials as T)
 }

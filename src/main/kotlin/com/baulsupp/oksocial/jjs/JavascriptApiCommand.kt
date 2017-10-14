@@ -98,7 +98,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
                 cause = cause.cause
             }
 
-            throw Throwables.propagate(e)
+            throw RuntimeException(e)
         }
 
     }

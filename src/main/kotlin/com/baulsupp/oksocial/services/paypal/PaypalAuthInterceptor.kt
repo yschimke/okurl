@@ -1,11 +1,13 @@
 package com.baulsupp.oksocial.services.paypal
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
+import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.twilio.TwilioUtil
 import com.google.common.collect.Sets
 import com.spotify.futures.CompletableFutures
 import okhttp3.Interceptor
@@ -49,8 +51,9 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
     @Throws(IOException::class)
     override fun validate(client: OkHttpClient,
                           requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
-        // TODO
-        return CompletableFutures.exceptionallyCompletedFuture(TODO())
+        return JsonCredentialsValidator(
+                PaypalUtil.apiRequest("/v1/oauth2/token/userinfo?schema=openid", requestBuilder),
+                { it -> it["name"].toString() }).validate(client)
     }
 
     @Throws(IOException::class)

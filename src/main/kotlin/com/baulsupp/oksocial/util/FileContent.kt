@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.IOException
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
 object FileContent {
@@ -23,10 +24,10 @@ object FileContent {
     @Throws(IOException::class)
     fun readParamString(param: String): String {
         if (param == "@-") {
-            return IOUtils.toString(System.`in`)
+            return IOUtils.toString(System.`in`, Charset.defaultCharset())
         }
         return if (param.startsWith("@")) {
-            FileUtils.readFileToString(File(param.substring(1)))
+            FileUtils.readFileToString(File(param.substring(1)), StandardCharsets.UTF_8)
         } else {
             param
         }

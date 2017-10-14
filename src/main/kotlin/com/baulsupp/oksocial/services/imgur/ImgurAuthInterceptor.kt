@@ -63,9 +63,9 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
-        val body = FormBody.Builder().add("refresh_token", credentials.refreshToken)
-                .add("client_id", credentials.clientId)
-                .add("client_secret", credentials.clientSecret)
+        val body = FormBody.Builder().add("refresh_token", credentials.refreshToken!!)
+                .add("client_id", credentials.clientId!!)
+                .add("client_secret", credentials.clientSecret!!)
                 .add("grant_type", "refresh_token")
                 .build()
         val request = Request.Builder().url("https://api.imgur.com/oauth2/token")

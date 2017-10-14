@@ -58,9 +58,9 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val body = FormBody.Builder().add("grant_type", "refresh_token")
                 .add("redirect_uri", "http://localhost:3000/callback")
-                .add("client_id", credentials.clientId)
-                .add("client_secret", credentials.clientSecret)
-                .add("refresh_token", credentials.refreshToken)
+                .add("client_id", credentials.clientId!!)
+                .add("client_secret", credentials.clientSecret!!)
+                .add("refresh_token", credentials.refreshToken!!)
                 .add("resource", "https://graph.microsoft.com/")
                 .build()
 

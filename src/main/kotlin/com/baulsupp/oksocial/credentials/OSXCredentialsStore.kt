@@ -41,7 +41,7 @@ class OSXCredentialsStore @Throws(OSXKeychainException::class)
             keychain.addGenericPassword(serviceDefinition.apiHost(), tokenKey(), credentialsString)
         } catch (e: OSXKeychainException) {
             logger.log(Level.WARNING, "Failed to write to keychain", e)
-            throw Throwables.propagate(e)
+            throw RuntimeException(e)
         }
 
     }
