@@ -25,12 +25,7 @@ class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
     private fun findClient(uriString: String): Reporter<Span> {
         val uri = URI.create(uriString)
 
-        handlers
-                .map { it.buildSender(uri) }
-                .filter { it.isPresent }
-                .forEach { return it.get() }
-
-        throw UsageException("unknown zipkin sender: " + uriString)
+        return handlers.mapNotNull { it.buildSender(uri) }.firstOrNull() ?: throw UsageException("unknown zipkin sender: " + uriString)
     }
 
     companion object {

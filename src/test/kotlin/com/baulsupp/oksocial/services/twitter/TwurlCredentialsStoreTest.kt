@@ -15,7 +15,7 @@ class TwurlCredentialsStoreTest {
         val file = File(TwurlCredentialsStoreTest::class.java.getResource("/single_twurlrc.yaml").file)
         val store = TwurlCredentialsStore(file)
 
-        val credentials = store.readCredentials().get()
+        val credentials = store.readCredentials()!!
 
         assertEquals("PROFILE", credentials.username)
         assertEquals("CONSUMER_KEY", credentials.consumerKey)

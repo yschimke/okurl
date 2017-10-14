@@ -6,7 +6,6 @@ import com.google.common.io.Resources
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.Optional
 
 data class UrlList(val match: Match, val urls: List<String>) {
     enum class Match {
@@ -80,13 +79,9 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
     companion object {
         @Throws(IOException::class)
-        fun fromResource(serviceName: String): Optional<UrlList> {
-            val url = UrlList::class.java.getResource("/urls/$serviceName.txt")
-            return if (url != null) {
-                Optional.of(
-                        UrlList(Match.SITE, Resources.readLines(url, StandardCharsets.UTF_8)))
-            } else {
-                Optional.empty()
+        fun fromResource(serviceName: String): UrlList? {
+            return UrlList::class.java.getResource("/urls/$serviceName.txt")?.let {
+                UrlList(Match.SITE, Resources.readLines(it, StandardCharsets.UTF_8))
             }
         }
     }

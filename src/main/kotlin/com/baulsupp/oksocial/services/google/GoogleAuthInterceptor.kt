@@ -28,8 +28,7 @@ import java.util.concurrent.Future
  */
 class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
     private val foundHosts by lazy {
-        val urlList = UrlList.fromResource(name())
-        urlList.get().getUrls("").map { HttpUrl.parse(it)!!.host() }
+        UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }
     }
     private val discoveryIndex by lazy { DiscoveryIndex.loadStatic() }
 
@@ -79,9 +78,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
-        val body = FormBody.Builder().add("client_id", credentials.clientId)
-                .add("refresh_token", credentials.refreshToken)
-                .add("client_secret", credentials.clientSecret)
+        val body = FormBody.Builder().add("client_id", credentials.clientId!!)
+                .add("refresh_token", credentials.refreshToken!!)
+                .add("client_secret", credentials.clientSecret!!)
                 .add("grant_type", "refresh_token")
                 .build()
 
@@ -99,27 +98,20 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     @Throws(IOException::class)
     override fun apiCompleter(prefix: String, client: OkHttpClient,
-                              credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-        return if (isPastHost(prefix)) {
-            val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
+                              credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
+            if (isPastHost(prefix)) {
+                val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
 
-            GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-                    discoveryPaths)
-        } else {
-            val urlList = UrlList.fromResource(name()).get()
-
-            BaseUrlCompleter(urlList, hosts())
-        }
-    }
+                GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
+                        discoveryPaths)
+            } else {
+                BaseUrlCompleter(UrlList.fromResource(name())!!, hosts())
+            }
 
     override fun hosts(): Collection<String> = foundHosts
 
-    private fun isPastHost(prefix: String): Boolean {
-        return prefix.matches("https://.*/.*".toRegex())
-    }
+    private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 
     @Throws(IOException::class)
-    override fun apiDocPresenter(url: String): ApiDocPresenter {
-        return DiscoveryApiDocPresenter(discoveryIndex)
-    }
+    override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(discoveryIndex)
 }

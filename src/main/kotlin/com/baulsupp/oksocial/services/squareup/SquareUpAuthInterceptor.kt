@@ -68,7 +68,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
 
-        val completer = BaseUrlCompleter(urlList.get(), hosts())
+        val completer = BaseUrlCompleter(urlList!!, hosts())
 
         credentials?.let {
             completer.withVariable("location",

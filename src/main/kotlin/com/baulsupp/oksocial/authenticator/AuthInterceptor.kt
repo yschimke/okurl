@@ -20,19 +20,13 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 interface AuthInterceptor<T> {
+    fun name(): String = serviceDefinition().shortName()
 
-    fun name(): String {
-        return serviceDefinition().shortName()
-    }
-
-    fun supportsUrl(url: HttpUrl): Boolean {
-        return try {
-            hosts().contains(url.host())
-        } catch (e: IOException) {
-            logger.log(Level.WARNING, "failed getting hosts", e)
-            false
-        }
-
+    fun supportsUrl(url: HttpUrl): Boolean = try {
+        hosts().contains(url.host())
+    } catch (e: IOException) {
+        logger.log(Level.WARNING, "failed getting hosts", e)
+        false
     }
 
     @Throws(IOException::class)
@@ -58,15 +52,10 @@ interface AuthInterceptor<T> {
 
     @Throws(IOException::class)
     fun apiCompleter(prefix: String, client: OkHttpClient,
-                     credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-        val urlList = UrlList.fromResource(name())
-
-        return if (urlList.isPresent) {
-            BaseUrlCompleter(urlList.get(), hosts())
-        } else {
-            HostUrlCompleter(hosts())
-        }
-    }
+                     credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
+            UrlList.fromResource(name())?.let {
+                BaseUrlCompleter(it, hosts())
+            } ?: HostUrlCompleter(hosts())
 
     fun defaultCredentials(): T? = null
 
@@ -78,8 +67,8 @@ interface AuthInterceptor<T> {
 
                 outputHandler.info("service: " + sd.shortName())
                 outputHandler.info("name: " + sd.serviceName())
-                sd.apiDocs().ifPresent { d -> outputHandler.info("docs: " + d) }
-                sd.accountsLink().ifPresent { d -> outputHandler.info("apps: " + d) }
+                sd.apiDocs()?.let { outputHandler.info("docs: " + it) }
+                sd.accountsLink()?.let { outputHandler.info("apps: " + it) }
             }
         }
     }

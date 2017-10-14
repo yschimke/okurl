@@ -33,7 +33,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
     @Throws(Exception::class)
     private fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>) {
 
-        auth.serviceDefinition().accountsLink().ifPresent { accountsLink -> outputHandler.info("Accounts: " + accountsLink) }
+        auth.serviceDefinition().accountsLink()?.let { outputHandler.info("Accounts: " + it) }
 
         val credentials = auth.authorize(client, outputHandler, authArguments)
 

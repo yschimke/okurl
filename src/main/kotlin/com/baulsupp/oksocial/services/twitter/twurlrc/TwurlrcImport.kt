@@ -12,12 +12,6 @@ object TwurlrcImport {
             TwurlCredentialsStore.TWURL_STORE
         }
 
-        val credentials = twurlStore.readCredentials()
-
-        if (!credentials.isPresent) {
-            throw UsageException("No credentials found in " + twurlStore.file)
-        }
-
-        return credentials.get()
+        return twurlStore.readCredentials() ?: throw UsageException("No credentials found in " + twurlStore.file)
     }
 }

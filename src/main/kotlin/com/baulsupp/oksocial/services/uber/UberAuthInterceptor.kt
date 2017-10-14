@@ -57,7 +57,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     @Throws(IOException::class)
     override fun apiCompleter(prefix: String, client: OkHttpClient,
                               credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-        return BaseUrlCompleter(UrlList.fromResource(name()).get(), hosts())
+        return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts())
     }
 
     @Throws(IOException::class)

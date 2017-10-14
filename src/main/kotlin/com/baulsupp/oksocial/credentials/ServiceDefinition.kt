@@ -1,8 +1,5 @@
 package com.baulsupp.oksocial.credentials
 
-import java.util.Optional
-import java.util.Optional.empty
-
 interface ServiceDefinition<T> {
     fun apiHost(): String
 
@@ -14,11 +11,7 @@ interface ServiceDefinition<T> {
 
     fun shortName(): String
 
-    fun apiDocs(): Optional<String> {
-        return empty()
-    }
+    fun apiDocs(): String? = null
 
-    fun accountsLink(): Optional<String> {
-        return empty()
-    }
+    fun accountsLink(): String? = null
 }

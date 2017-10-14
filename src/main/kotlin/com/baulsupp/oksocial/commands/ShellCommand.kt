@@ -3,8 +3,6 @@ package com.baulsupp.oksocial.commands
 import com.baulsupp.oksocial.completion.ArgumentCompleter
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.Optional
-import java.util.Optional.empty
 
 interface ShellCommand {
     fun name(): String
@@ -21,7 +19,5 @@ interface ShellCommand {
         return false
     }
 
-    fun completer(): Optional<ArgumentCompleter> {
-        return empty()
-    }
+    fun completer(): ArgumentCompleter? = null
 }

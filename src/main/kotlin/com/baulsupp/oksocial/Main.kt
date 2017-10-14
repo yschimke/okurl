@@ -357,8 +357,8 @@ class Main : HelpOption() {
         val command = getShellCommand()
 
         val commandCompletor = command.completer()
-        if (commandCompletor.isPresent) {
-            val urls = commandCompletion(commandCompletor.get(), arguments)
+        if (commandCompletor != null) {
+            val urls = commandCompletion(commandCompletor, arguments)
 
             val prefix = arguments[arguments.size - 1]
 
@@ -811,15 +811,8 @@ class Main : HelpOption() {
     }
 
     @Throws(SocketException::class)
-    private fun getSocketFactory(): SocketFactory {
-        val socketFactory = InterfaceSocketFactory.byName(networkInterface!!)
-
-        if (!socketFactory.isPresent) {
-            throw UsageException("networkInterface '$networkInterface' not found")
-        }
-
-        return socketFactory.get()
-    }
+    private fun getSocketFactory(): SocketFactory =
+            InterfaceSocketFactory.byName(networkInterface!!) ?: throw UsageException("networkInterface '$networkInterface' not found")
 
     @Throws(Exception::class)
     private fun configureTls(builder: OkHttpClient.Builder) {

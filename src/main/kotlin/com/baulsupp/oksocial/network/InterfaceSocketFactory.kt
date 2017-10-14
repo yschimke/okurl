@@ -7,9 +7,6 @@ import java.net.NetworkInterface
 import java.net.Socket
 import java.net.SocketException
 import java.net.UnknownHostException
-import java.util.Optional
-import java.util.Optional.empty
-import java.util.Optional.of
 import javax.net.SocketFactory
 
 class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFactory() {
@@ -47,18 +44,18 @@ class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFact
     companion object {
 
         @Throws(SocketException::class)
-        fun byName(ipOrInterface: String): Optional<SocketFactory> {
+        fun byName(ipOrInterface: String): SocketFactory? {
             val localAddress = try {
                 // example 192.168.0.51
                 InetAddress.getByName(ipOrInterface)
             } catch (uhe: UnknownHostException) {
                 // example en0
-                val networkInterface = NetworkInterface.getByName(ipOrInterface) ?: return empty()
+                val networkInterface = NetworkInterface.getByName(ipOrInterface) ?: return null
 
                 networkInterface.inetAddresses.nextElement()
             }
 
-            return of(InterfaceSocketFactory(localAddress))
+            return InterfaceSocketFactory(localAddress)
         }
     }
 }
