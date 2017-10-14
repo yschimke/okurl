@@ -135,6 +135,7 @@ private constructor() {
     companion object {
 
         @Throws(Exception::class)
+        @JvmStatic
         fun instance(): OkShell {
             return OkShell()
         }
