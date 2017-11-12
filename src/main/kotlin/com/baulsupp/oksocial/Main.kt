@@ -25,6 +25,7 @@ import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore
 import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore
 import com.baulsupp.oksocial.jjs.JavascriptApiCommand
+import com.baulsupp.oksocial.kotlin.await
 import com.baulsupp.oksocial.location.BestLocation
 import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
@@ -34,8 +35,10 @@ import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
+import com.baulsupp.oksocial.okhttp.FailedResponse
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
-import com.baulsupp.oksocial.okhttp.OkHttpResponseFuture
+import com.baulsupp.oksocial.okhttp.PotentialResponse
+import com.baulsupp.oksocial.okhttp.SuccessfulResponse
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
@@ -70,6 +73,7 @@ import io.airlift.airline.Option
 import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Cache
 import okhttp3.Credentials
 import okhttp3.Dispatcher
@@ -92,8 +96,6 @@ import java.net.Proxy
 import java.net.SocketException
 import java.security.KeyStore
 import java.util.ArrayList
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.logging.Level
@@ -330,7 +332,7 @@ class Main : HelpOption() {
                 return 0
             }
 
-            return executeRequests(outputHandler!!)
+            return runBlocking { executeRequests(outputHandler!!) }
         } catch (e: UsageException) {
             outputHandler!!.showError("error: " + e.message, null)
             return -1
@@ -645,7 +647,7 @@ class Main : HelpOption() {
     }
 
     @Throws(Exception::class)
-    private fun executeRequests(outputHandler: OutputHandler<Response>): Int {
+    private suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
         val command = getShellCommand()
 
         val requests = command.buildRequests(client!!, requestBuilder!!, arguments)
@@ -655,8 +657,8 @@ class Main : HelpOption() {
                 throw UsageException("no urls specified")
             }
 
-            val responseFutures = enqueueRequests(requests, client!!)
-            val failed = processResponses(outputHandler, responseFutures)
+            val responses = enqueueRequests(requests, client!!)
+            val failed = processResponses(outputHandler, responses)
             return if (failed) -5 else 0
         }
 
@@ -665,20 +667,19 @@ class Main : HelpOption() {
 
     @Throws(IOException::class, InterruptedException::class)
     private fun processResponses(outputHandler: OutputHandler<Response>,
-                                 responseFutures: List<Future<Response>>): Boolean {
+                                 responses: List<PotentialResponse>): Boolean {
         var failed = false
-        for (responseFuture in responseFutures) {
-            if (failed) {
-                responseFuture.cancel(true)
-            } else {
-                try {
-                    responseFuture.get().use { response -> showOutput(outputHandler, response) }
-                } catch (ee: ExecutionException) {
-                    outputHandler.showError("request failed", ee.cause)
-                    failed = true
-                }
-
+        for (response in responses) {
+          when (response) {
+            is SuccessfulResponse -> {
+              showOutput(outputHandler, response.response)
+              response.response.close()
             }
+            is FailedResponse -> {
+              outputHandler.showError("request failed", response.exception)
+              failed = true
+            }
+          }
         }
         return failed
     }
@@ -702,8 +703,8 @@ class Main : HelpOption() {
         outputHandler.showOutput(response)
     }
 
-    private fun enqueueRequests(requests: List<Request>, client: OkHttpClient): List<Future<Response>> {
-        val responseFutures = Lists.newArrayList<Future<Response>>()
+    private suspend fun enqueueRequests(requests: List<Request>, client: OkHttpClient): List<PotentialResponse> {
+        val responses = Lists.newArrayList<PotentialResponse>()
 
         for (request in requests) {
             logger.log(Level.FINE, "url " + request.url())
@@ -712,9 +713,9 @@ class Main : HelpOption() {
                 System.err.println(request.url())
             }
 
-            responseFutures.add(makeRequest(client, request))
+          responses.add(makeRequest(client, request))
         }
-        return responseFutures
+        return responses
     }
 
     private fun getShellCommand(): ShellCommand {
@@ -737,16 +738,14 @@ class Main : HelpOption() {
         names.forEach({ outputHandler!!.info(it) })
     }
 
-    private fun makeRequest(client: OkHttpClient, request: Request): Future<Response> {
+    private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
         logger.log(Level.FINE, "Request " + request)
 
-        val call = client.newCall(request)
-
-        val result = OkHttpResponseFuture()
-
-        call.enqueue(result)
-
-        return result.future
+        try {
+          return SuccessfulResponse(client.newCall(request).await())
+        } catch (ioe: IOException) {
+          return FailedResponse(ioe)
+        }
     }
 
     @Throws(Exception::class)

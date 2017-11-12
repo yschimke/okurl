@@ -98,6 +98,8 @@ dependencies {
     compile group: 'io.zipkin.brave', name: 'brave', version: '4.6.0'
     compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
     compile 'com.spotify:completable-futures:0.3.1'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.3'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.19.3'
 
     testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
@@ -157,4 +159,10 @@ task packageTests(type: Jar) {
 }
 
 artifacts.archives packageTests
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
 
