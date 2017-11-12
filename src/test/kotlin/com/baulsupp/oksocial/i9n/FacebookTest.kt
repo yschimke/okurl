@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
+import com.baulsupp.oksocial.services.facebook.FacebookUtil
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import com.google.common.collect.Lists
 import com.google.common.collect.Lists.newArrayList
@@ -38,7 +39,7 @@ class FacebookTest {
     fun testExplainsUrl() {
         assumeHasNetwork()
 
-        main.arguments = Lists.newArrayList("https://graph.facebook.com/v2.10/app/groups")
+        main.arguments = Lists.newArrayList("https://graph.facebook.com/${FacebookUtil.VERSION}/app/groups")
         main.apiDoc = true
 
         main.run()

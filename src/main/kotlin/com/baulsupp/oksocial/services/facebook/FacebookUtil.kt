@@ -7,7 +7,7 @@ import okhttp3.Request
 import java.util.concurrent.CompletableFuture
 
 object FacebookUtil {
-    val VERSION = "v2.10"
+    val VERSION = "v2.11"
 
     val API_HOSTS = setOf("graph.facebook.com")
 

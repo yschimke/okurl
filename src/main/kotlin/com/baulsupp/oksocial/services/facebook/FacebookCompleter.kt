@@ -49,7 +49,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     private fun completePath(path: String): CompletableFuture<UrlList> {
         when {
             path == "/" -> return topLevel().map { it + VERSION }.thenApply { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com/"))) }
-            path.matches("/v\\d.\\d/?".toRegex()) -> return topLevel().map { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com" + path))) }
+            path.matches("/v\\d.\\d+/?".toRegex()) -> return topLevel().map { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com" + path))) }
             else -> {
                 val prefix = "https://graph.facebook.com" + path
 
