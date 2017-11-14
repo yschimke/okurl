@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.1.51'
+    ext.kotlin_version = '1.1.60'
     repositories {
         mavenCentral()
     }
@@ -9,9 +9,9 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'com.github.ben-manes.versions' version '0.17.0'
     id 'net.nemerosa.versioning' version '2.6.1'
-    id "org.jetbrains.kotlin.jvm" version "1.1.51"
+    id "org.jetbrains.kotlin.jvm" version "1.1.60"
 }
 
 apply plugin: 'java'
@@ -26,7 +26,7 @@ versioning {
     releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
 }
 
-version = "1.7.1"// versioning.info.display
+version = versioning.info.display
 
 description = """OkHttp Social Authentication"""
 
@@ -71,10 +71,10 @@ dependencies {
     compile group: 'com.baulsupp', name: 'oksocial-output', version: '0.11.0'
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.0'
     compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.9.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0'
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2"
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml',
-            version: '2.9.0'
+            version: '2.9.2'
     compile(group: 'com.twitter', name: 'joauth', version: '6.0.2') {
         exclude(module: 'guava')
     }
@@ -85,14 +85,14 @@ dependencies {
     }
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
     compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.slf4j', name: 'slf4j-jcl', version: '1.7.25'
     compile group: 'org.zeroturnaround', name: 'zt-exec', version: '1.10'
-    compile group: 'com.google.guava', name: 'guava', version: '23.0'
+    compile group: 'com.google.guava', name: 'guava', version: '23.4-jre'
     compile group: 'com.jakewharton.byteunits', name: 'byteunits', version: '0.9.1'
-    compile group: 'io.netty', name: 'netty-all', version: '4.1.15.Final'
-    compile group: 'io.netty', name: 'netty-resolver-dns', version: '4.1.15.Final'
+    compile group: 'io.netty', name: 'netty-all', version: '4.1.17.Final'
+    compile group: 'io.netty', name: 'netty-resolver-dns', version: '4.1.17.Final'
     compile group: 'io.airlift', name: 'airline', version: '0.8'
     compile files('external/osxkeychain.jar')
     compile group: 'io.zipkin.reporter', name: 'zipkin-sender-okhttp3', version: '1.0.2'
@@ -100,15 +100,15 @@ dependencies {
     compile group: 'io.zipkin.brave', name: 'brave-instrumentation-okhttp3', version: '4.6.0'
     compile group: 'io.zipkin.brave', name: 'brave', version: '4.6.0'
     compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
-    compile 'com.spotify:completable-futures:0.3.1'
+    compile 'com.spotify:completable-futures:0.3.2'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.3'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.19.3'
     compile 'com.squareup.moshi:moshi:1.5.0'
     compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
     compile 'com.squareup.moshi:moshi-adapters:1.5.0'
 
-    testCompile "org.jetbrains.kotlin:kotlin-test:1.1.4-3"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.4-3"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     testCompile group: 'com.squareup.okhttp3', name: 'okhttp-testing-support', version: '3.9.0'
     testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.9.0'

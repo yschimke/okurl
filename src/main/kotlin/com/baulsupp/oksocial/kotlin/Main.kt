@@ -2,10 +2,13 @@
 
 package com.baulsupp.oksocial.kotlin
 
+import com.baulsupp.oksocial.util.LoggingUtil
 import java.io.File
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
+  LoggingUtil.configureLogging(false, false)
+
   val factory = KotlinAppScriptFactory()
   val engine = factory!!.scriptEngine
   val bindings = engine.createBindings()
