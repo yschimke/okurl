@@ -85,11 +85,11 @@ dependencies {
     }
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
     compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.slf4j', name: 'slf4j-jcl', version: '1.7.25'
     compile group: 'org.zeroturnaround', name: 'zt-exec', version: '1.10'
-    compile group: 'com.google.guava', name: 'guava', version: '23.4-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '23.0'
     compile group: 'com.jakewharton.byteunits', name: 'byteunits', version: '0.9.1'
     compile group: 'io.netty', name: 'netty-all', version: '4.1.17.Final'
     compile group: 'io.netty', name: 'netty-resolver-dns', version: '4.1.17.Final'
