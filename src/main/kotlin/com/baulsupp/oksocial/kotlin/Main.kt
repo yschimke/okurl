@@ -23,6 +23,5 @@ fun main(args: Array<String>) {
 
   bindings.put("arguments", arguments)
 
-  engine.eval(File(script).readText())
-//  kscript.a
+  engine.eval(File(script).readText(), bindings)
 }
