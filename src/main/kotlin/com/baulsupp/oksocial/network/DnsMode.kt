@@ -8,7 +8,7 @@ enum class DnsMode {
     DNSGOOGLE;
 
     companion object {
-        fun fromString(dnsMode: String): DnsMode {
+        @JvmStatic fun fromString(dnsMode: String): DnsMode {
             return when (dnsMode) {
                 "java" -> DnsMode.JAVA
                 "netty" -> DnsMode.NETTY

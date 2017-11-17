@@ -8,7 +8,7 @@ enum class IPvMode {
     IPV4_ONLY;
 
     companion object {
-        fun fromString(ipMode: String): IPvMode {
+        @JvmStatic fun fromString(ipMode: String): IPvMode {
             return when (ipMode) {
                 "ipv6" -> IPvMode.IPV6_FIRST
                 "ipv4" -> IPvMode.IPV4_FIRST
