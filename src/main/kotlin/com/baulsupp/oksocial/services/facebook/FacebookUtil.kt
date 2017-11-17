@@ -21,7 +21,7 @@ object FacebookUtil {
         val request = Request.Builder().url(url).build()
 
         return AuthUtil.enqueueJsonMapRequest(client, request)
-                .thenApply { m -> FacebookMetadata(m["metadata"] as Map<String, Any>) }
+                .thenApply { m -> FacebookMetadata(m["metadata"] as Map<String, Any>?) }
     }
 
     val ALL_PERMISSIONS = listOf(
