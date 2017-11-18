@@ -8,17 +8,12 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
-import java.net.URLEncoder
 
 object SurveyMonkeyAuthFlow {
     @Throws(IOException::class)
     fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              apiKey: String,
-              secret: String, scopes: Iterable<String>): Oauth2Token {
+              apiKey: String, secret: String): Oauth2Token {
         SimpleWebServer.forCode().use { s ->
-            // TODO use scopesString
-            val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
-
             val redirectUri = s.redirectUri
 
             val loginUrl = "https://api.surveymonkey.net/oauth/authorize?response_type=code&client_id=$clientId&api_key=$apiKey&redirect_uri=$redirectUri"

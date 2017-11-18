@@ -7,9 +7,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.baulsupp.oksocial.services.twilio.TwilioUtil
 import com.google.common.collect.Sets
-import com.spotify.futures.CompletableFutures
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -64,7 +62,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
         val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)
         val clientSecret = Secrets.prompt("Paypal Client Secret", "paypal.clientSecret", "", true)
 
-        return PaypalAuthFlow.login(client, host(), outputHandler, clientId, clientSecret)
+        return PaypalAuthFlow.login(client, host(), clientId, clientSecret)
     }
 
     override fun hosts(): Set<String> {

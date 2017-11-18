@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.paypal
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -11,8 +10,8 @@ import java.io.IOException
 
 object PaypalAuthFlow {
     @Throws(IOException::class)
-    fun login(client: OkHttpClient, host: String, outputHandler: OutputHandler<*>,
-              clientId: String, clientSecret: String): Oauth2Token {
+    fun login(client: OkHttpClient, host: String, clientId: String,
+              clientSecret: String): Oauth2Token {
         val body = FormBody.Builder().add("grant_type", "client_credentials").build()
 
         val basic = Credentials.basic(clientId, clientSecret)

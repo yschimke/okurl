@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.ShellCommand
 import com.baulsupp.oksocial.output.util.UsageException
-import com.google.common.base.Throwables
 import com.google.common.collect.Lists
 import jdk.nashorn.api.scripting.ScriptObjectMirror
 import okhttp3.OkHttpClient
@@ -31,16 +30,16 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
     @Throws(Exception::class)
     override fun buildRequests(client: OkHttpClient,
-                               requestBuilder: Request.Builder, args: List<String>): List<Request> {
+                               requestBuilder: Request.Builder, arguments: List<String>): List<Request> {
         var multiple = false
-        val arguments = args.toMutableList()
+        val args = arguments.toMutableList()
 
-        if (arguments[0] == "-m") {
+        if (args[0] == "-m") {
             multiple = true
-            arguments.removeAt(0)
+            args.removeAt(0)
         }
 
-        val script = FileSystems.getDefault().getPath(arguments.removeAt(0))
+        val script = FileSystems.getDefault().getPath(args.removeAt(0))
 
         val engineManager = ScriptEngineManager()
         val engine = engineManager.getEngineByName("nashorn")
@@ -56,7 +55,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
         if (multiple) {
             // TODO how to do this without engine.eval
-            engine.put("a", arguments)
+            engine.put("a", args)
             val argumentsJs = engine.eval("Java.from(a)")
 
             engine.put("arguments", argumentsJs)
@@ -65,7 +64,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
 
             return toRequestList(requestBuilder, result)
         } else {
-            return arguments.map { item ->
+            return args.map { item ->
                 engine.put("item", item)
                 val result = eval(engine, lines)
 

@@ -115,7 +115,7 @@ class Main : HelpOption() {
     var data: String? = null
 
     @Option(name = arrayOf("-H", "--header"), description = "Custom header to pass to server")
-    var headers: List<String>? = null
+    var headers: java.util.List<String>? = null
 
     @Option(name = arrayOf("-A", "--user-agent"), description = "User-Agent to send to server")
     var userAgent = NAME + "/" + versionString()
@@ -187,7 +187,7 @@ class Main : HelpOption() {
     var resolve: List<String>? = null
 
     @Option(name = arrayOf("--certificatePin"), description = "Specific Local Network Interface")
-    var certificatePins: List<CertificatePin>? = null
+    var certificatePins: java.util.List<CertificatePin>? = null
 
     @Option(name = arrayOf("--networkInterface"), description = "Specific Local Network Interface")
     var networkInterface: String? = null
@@ -858,7 +858,7 @@ class Main : HelpOption() {
                 trustManager)
 
         if (certificatePins != null) {
-            builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!))
+            builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
         }
     }
 
@@ -892,7 +892,7 @@ class Main : HelpOption() {
     fun createRequestBuilder(): Request.Builder {
         val requestBuilder = Request.Builder()
 
-        val headerMap = HeaderUtil.headerMap(headers).toMutableMap()
+        val headerMap = HeaderUtil.headerMap(headers?.toList()).toMutableMap()
 
         requestBuilder.method(getRequestMethod(), getRequestBody(headerMap))
 

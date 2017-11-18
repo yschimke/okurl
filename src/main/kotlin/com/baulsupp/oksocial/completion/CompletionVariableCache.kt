@@ -15,7 +15,7 @@ interface CompletionVariableCache {
         val values = get(service, key)
 
         return if (values != null) {
-            ImmediateFuture { values!! }
+            ImmediateFuture { values.toList() }
         } else {
             s().onSuccess { store(service, key, it) }
         }

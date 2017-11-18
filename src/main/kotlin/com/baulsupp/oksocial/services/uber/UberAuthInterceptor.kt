@@ -82,10 +82,9 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
         val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
-        val body = FormBody.Builder().add("client_id", credentials.clientId)
-                //.add("redirect_uri", s.getRedirectUri())
-                .add("client_secret", credentials.clientSecret)
-                .add("refresh_token", credentials.refreshToken)
+        val body = FormBody.Builder().add("client_id", credentials.clientId!!)
+                .add("client_secret", credentials.clientSecret!!)
+                .add("refresh_token", credentials.refreshToken!!)
                 .add("grant_type", "refresh_token")
                 .build()
 
