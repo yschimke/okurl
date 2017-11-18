@@ -5,11 +5,14 @@ import com.baulsupp.oksocial.output.util.UsageException
 import org.zeroturnaround.exec.ProcessExecutor
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * https://github.com/fulldecent/corelocationcli
  */
 class CoreLocationCLI : LocationSource {
+  private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
     override fun read(): Location? {
         if (PlatformUtil.isOSX) {
@@ -18,15 +21,21 @@ class CoreLocationCLI : LocationSource {
             }
 
             return try {
-                val line = ProcessExecutor().command(LOCATION_APP, "-format",
-                        "%latitude,%longitude", "-once", "yes")
-                        .readOutput(true).timeout(5, TimeUnit.SECONDS).execute().outputUTF8()
+                val process = ProcessExecutor().command(LOCATION_APP, "-format",
+                    "%latitude,%longitude", "-once", "yes")
+                    .readOutput(true).timeout(5, TimeUnit.SECONDS).execute()
+                val line = process.outputUTF8()
+
+                if (process.exitValue != 0) {
+                  logger.log(Level.INFO, "failed to get location $line")
+                  return null
+                }
 
                 val parts = line.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
                 Location(parts[0].toDouble(), parts[1].toDouble())
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.log(Level.WARNING, "failed to get location", e)
                 null
             }
 
