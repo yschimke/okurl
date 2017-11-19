@@ -63,7 +63,6 @@ import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
 import com.baulsupp.oksocial.util.ProtocolUtil
 import com.google.common.collect.Lists
-import com.google.common.collect.Sets
 import com.mcdermottroe.apple.OSXKeychainException
 import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Arguments
@@ -733,7 +732,7 @@ class Main : HelpOption() {
     }
 
     private fun printAliasNames() {
-        val names = Sets.newTreeSet(commandRegistry.names())
+        val names = commandRegistry.names().sorted()
 
         names.forEach({ outputHandler!!.info(it) })
     }

@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.twitter
 
-import com.google.common.base.Joiner
 import com.twitter.joauth.Normalizer
 import com.twitter.joauth.OAuthParams
 import com.twitter.joauth.Signer
@@ -105,7 +104,7 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
         }
         oauthHeaders.put(OAuthParams.OAUTH_VERSION, quoted(OAuthParams.ONE_DOT_OH))
 
-        return "OAuth " + Joiner.on(", ").withKeyValueSeparator("=").join(oauthHeaders)
+        return "OAuth " + oauthHeaders.entries.joinToString(", ") { it.key + "=" + it.value }
     }
 
     private fun isFormContentType(request: Request): Boolean {
