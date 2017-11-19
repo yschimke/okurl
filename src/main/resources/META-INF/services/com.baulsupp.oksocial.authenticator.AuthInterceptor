@@ -1,3 +1,4 @@
+com.baulsupp.oksocial.services.datasettes.DatasettesAuthInterceptor
 com.baulsupp.oksocial.services.dropbox.DropboxAuthInterceptor
 com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
 com.baulsupp.oksocial.services.fitbit.FitbitAuthInterceptor

@@ -10,6 +10,7 @@ import okhttp3.Request
 import java.io.IOException
 import java.util.Date
 
+
 val okshell: OkShell = OkShell.instance()
 
 val x = run {
@@ -33,38 +34,14 @@ suspend fun show(url: String) {
 }
 
 @Throws(IOException::class)
-inline suspend fun <reified T> query(url: String): T {
-  val stringResult = okshell.execute(okshell.requestBuilder.url(url).build())
-
-  return moshi.adapter(T::class.java).fromJson(stringResult)!!
-}
+inline suspend fun <reified T> query(url: String): T = okshell.client.query(url)
 
 @Throws(IOException::class)
-suspend fun queryForString(url: String): String {
-  return okshell.execute(okshell.requestBuilder.url(url).build())
-}
+inline suspend fun <reified K, reified V> queryMap(url: String): Map<K, V> =
+    okshell.client.queryMap<K, V>(url)
 
 @Throws(IOException::class)
-suspend fun execute(request: Request): String {
-  val call = okshell.client.newCall(request)
+suspend fun queryForString(url: String): String = okshell.client.queryForString(url)
 
-  val response = call.await()
-
-  try {
-    val responseString = response.body()!!.string()
-
-    if (!response.isSuccessful) {
-      val msg: String = if (responseString.isNotEmpty()) {
-        responseString
-      } else {
-        response.code().toString() + " " + response.message()
-      }
-
-      throw RuntimeException(msg)
-    }
-
-    return responseString
-  } finally {
-    response.body()!!.close()
-  }
-}
+@Throws(IOException::class)
+suspend fun execute(request: Request): String = okshell.client.execute(request)
