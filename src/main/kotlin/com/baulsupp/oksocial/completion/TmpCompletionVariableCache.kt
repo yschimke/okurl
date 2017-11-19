@@ -31,7 +31,7 @@ class TmpCompletionVariableCache : CompletionVariableCache {
         val f = File(dir, "$service-$key.txt")
 
         try {
-            Files.write(values.joinToString("\n"), f, StandardCharsets.UTF_8)
+            f.writeText(values.joinToString("\n"))
         } catch (e: IOException) {
             logger.log(Level.WARNING, "failed to store variables", e)
         }

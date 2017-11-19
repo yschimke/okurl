@@ -16,9 +16,8 @@ object FacebookUtil {
     }
 
     fun getMetadata(client: OkHttpClient, url: HttpUrl): CompletableFuture<FacebookMetadata> {
-        var url = url
-        url = url.newBuilder().addQueryParameter("metadata", "1").build()
-        val request = Request.Builder().url(url).build()
+        var newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
+        val request = Request.Builder().url(newUrl).build()
 
         return AuthUtil.enqueueJsonMapRequest(client, request)
                 .thenApply { m -> FacebookMetadata(m["metadata"] as Map<String, Any>?) }

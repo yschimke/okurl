@@ -68,9 +68,9 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
         val body = FormBody.Builder()
                 .add("grant_type", "refresh_token")
-                .add("refresh_token", credentials.refreshToken)
+                .add("refresh_token", credentials.refreshToken!!)
                 .build()
-        val basic = Credentials.basic(credentials.clientId, credentials.clientSecret)
+        val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
         val request = Request.Builder().url("https://" + host() + "/oauth/token")
                 .post(body)
                 .header("Authorization", basic)

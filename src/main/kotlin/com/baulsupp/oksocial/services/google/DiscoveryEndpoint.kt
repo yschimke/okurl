@@ -68,6 +68,6 @@ class DiscoveryEndpoint(private val baseUrl: String, private val map: Map<String
     }
 
     fun httpMethod(): String {
-        return (map as java.util.Map<String, Any>).getOrDefault("httpMethod", "GET") as String
+        return map.getOrDefault("httpMethod", "GET") as String
     }
 }

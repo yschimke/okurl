@@ -66,7 +66,7 @@ constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler
         if (error != null) {
             out.println(generateFailBody(request, error))
         } else {
-            out.println(generateSuccessBody(request))
+            out.println(generateSuccessBody())
         }
         out.flush()
         out.close()
@@ -98,7 +98,7 @@ constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler
 
     }
 
-    private fun generateSuccessBody(request: HttpServletRequest): String {
+    private fun generateSuccessBody(): String {
 
         return """<html>
 <body background="http://win.blogadda.com/wp-content/uploads/2015/08/inspire-win-15.jpg">

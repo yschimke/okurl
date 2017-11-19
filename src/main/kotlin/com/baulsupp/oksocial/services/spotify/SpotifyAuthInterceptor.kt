@@ -86,12 +86,12 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
         val tokenUrl = "https://accounts.spotify.com/api/token"
 
         val body = FormBody.Builder()
-                .add("refresh_token", credentials.refreshToken)
+                .add("refresh_token", credentials.refreshToken!!)
                 .add("grant_type", "refresh_token")
                 .build()
 
         val request = Request.Builder().header("Authorization",
-                Credentials.basic(credentials.clientId, credentials.clientSecret))
+                Credentials.basic(credentials.clientId!!, credentials.clientSecret!!))
                 .url(tokenUrl)
                 .method("POST", body)
                 .build()

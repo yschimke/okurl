@@ -10,8 +10,8 @@ class TwurlCredentialsStore(val file: File) {
 
     fun readTwurlRc(): TwurlRc? = try {
         if (file.isFile) {
-            val objectMapper = ObjectMapper(YAMLFactory()!!)
-            objectMapper.propertyNamingStrategy = PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES
+            val objectMapper = ObjectMapper(YAMLFactory())
+            objectMapper.propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
 
             objectMapper.readValue(file, TwurlRc::class.java)
         } else {

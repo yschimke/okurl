@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.completion
 
 import com.google.common.collect.Lists
-import com.google.common.io.Files
 import com.google.common.io.Resources
 import java.io.File
 import java.io.IOException
@@ -46,9 +45,9 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
     @Throws(IOException::class)
     fun toFile(file: File, strip: Int, prefix: String) {
-        val content = regex(prefix) + "\n" + urls.joinToString("\n") { u -> u.substring(strip) }
+        val content = "${regex(prefix)}\n${urls.joinToString("\n") { u -> u.substring(strip) }}"
 
-        Files.write(content, file, StandardCharsets.UTF_8)
+        file.writeText(content)
     }
 
     private fun regex(prefix: String): String {
