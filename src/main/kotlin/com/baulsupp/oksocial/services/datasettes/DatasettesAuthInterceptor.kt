@@ -16,6 +16,8 @@ import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 /**
  * https://datasettes.com/
@@ -53,7 +55,8 @@ class DatasettesCompleter(private val client: OkHttpClient) : ContinuationApiCom
 
   private fun tablesInDatabase(datasetteTables: DatasetteTables, host: String?, path: MutableList<String>): UrlList {
     val tableLike = datasetteTables.views + datasetteTables.tables.map { it.name }
-    val paths = tableLike.map { "$it.json" } + ".json"
+    val encoded = tableLike.map { URLEncoder.encode(it, StandardCharsets.UTF_8.name()) }
+    val paths = encoded.map { "$it.json" } + ".json"
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/${path.first()}/$it" })
   }
 
