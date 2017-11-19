@@ -7,13 +7,13 @@ import java.io.IOException
 
 interface ApiDocPresenter {
 
-    @Throws(IOException::class)
-    fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient)
+  @Throws(IOException::class)
+  fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient)
 
-    companion object {
-        val NONE = object : ApiDocPresenter {
-            override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) =
-                    outputHandler.info("No documentation for: " + url)
-        }
+  companion object {
+    val NONE = object : ApiDocPresenter {
+      override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) =
+          outputHandler.info("No documentation for: " + url)
     }
+  }
 }

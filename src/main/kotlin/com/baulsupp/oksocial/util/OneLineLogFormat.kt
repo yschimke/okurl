@@ -19,31 +19,31 @@ import java.util.logging.LogRecord
  * Why so much construction?
  */
 class OneLineLogFormat : Formatter() {
-    private val d = DateTimeFormatterBuilder()
-            .appendValue(HOUR_OF_DAY, 2)
-            .appendLiteral(':')
-            .appendValue(MINUTE_OF_HOUR, 2)
-            .optionalStart()
-            .appendLiteral(':')
-            .appendValue(SECOND_OF_MINUTE, 2)
-            .optionalStart()
-            .appendFraction(NANO_OF_SECOND, 3, 3, true)
-            .toFormatter()
+  private val d = DateTimeFormatterBuilder()
+      .appendValue(HOUR_OF_DAY, 2)
+      .appendLiteral(':')
+      .appendValue(MINUTE_OF_HOUR, 2)
+      .optionalStart()
+      .appendLiteral(':')
+      .appendValue(SECOND_OF_MINUTE, 2)
+      .optionalStart()
+      .appendFraction(NANO_OF_SECOND, 3, 3, true)
+      .toFormatter()
 
-    private val offset = ZoneOffset.systemDefault()
+  private val offset = ZoneOffset.systemDefault()
 
-    override fun format(record: LogRecord): String {
-        val message = formatMessage(record)
+  override fun format(record: LogRecord): String {
+    val message = formatMessage(record)
 
-        val time = Instant.ofEpochMilli(record.millis).atZone(offset)
+    val time = Instant.ofEpochMilli(record.millis).atZone(offset)
 
-        return if (record.thrown != null) {
-            val sw = StringWriter(4096)
-            val pw = PrintWriter(sw)
-            record.thrown.printStackTrace(pw)
-            String.format("%s\t%s%n%s%n", time.format(d), message, sw.toString())
-        } else {
-            String.format("%s\t%s%n", time.format(d), message)
-        }
+    return if (record.thrown != null) {
+      val sw = StringWriter(4096)
+      val pw = PrintWriter(sw)
+      record.thrown.printStackTrace(pw)
+      String.format("%s\t%s%n%s%n", time.format(d), message, sw.toString())
+    } else {
+      String.format("%s\t%s%n", time.format(d), message)
     }
+  }
 }

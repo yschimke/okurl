@@ -20,63 +20,63 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 interface AuthInterceptor<T> {
-    fun name(): String = serviceDefinition().shortName()
+  fun name(): String = serviceDefinition().shortName()
 
-    fun supportsUrl(url: HttpUrl): Boolean = try {
-        hosts().contains(url.host())
-    } catch (e: IOException) {
-        logger.log(Level.WARNING, "failed getting hosts", e)
-        false
+  fun supportsUrl(url: HttpUrl): Boolean = try {
+    hosts().contains(url.host())
+  } catch (e: IOException) {
+    logger.log(Level.WARNING, "failed getting hosts", e)
+    false
+  }
+
+  @Throws(IOException::class)
+  fun intercept(chain: Interceptor.Chain, credentials: T): Response
+
+  @Throws(IOException::class)
+  fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): T
+
+  fun serviceDefinition(): ServiceDefinition<T>
+
+  fun validate(client: OkHttpClient,
+               requestBuilder: Request.Builder, credentials: T): Future<ValidatedCredentials>
+
+  fun canRenew(result: Response): Boolean = result.code() == 401
+
+  fun canRenew(credentials: T): Boolean = false
+
+  @Throws(IOException::class)
+  fun renew(client: OkHttpClient, credentials: T): T? = null
+
+  @Throws(IOException::class)
+  fun hosts(): Set<String>
+
+  @Throws(IOException::class)
+  fun apiCompleter(prefix: String, client: OkHttpClient,
+                   credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
+      UrlList.fromResource(name())?.let {
+        BaseUrlCompleter(it, hosts())
+      } ?: HostUrlCompleter(hosts())
+
+  fun defaultCredentials(): T? = null
+
+  @Throws(IOException::class)
+  fun apiDocPresenter(url: String): ApiDocPresenter {
+    return object : ApiDocPresenter {
+      override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+        val sd = serviceDefinition()
+
+        outputHandler.info("service: " + sd.shortName())
+        outputHandler.info("name: " + sd.serviceName())
+        sd.apiDocs()?.let { outputHandler.info("docs: " + it) }
+        sd.accountsLink()?.let { outputHandler.info("apps: " + it) }
+      }
     }
+  }
 
-    @Throws(IOException::class)
-    fun intercept(chain: Interceptor.Chain, credentials: T): Response
+  companion object {
+    val logger = Logger.getLogger(AuthInterceptor::class.java.name)!!
+  }
 
-    @Throws(IOException::class)
-    fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): T
-
-    fun serviceDefinition(): ServiceDefinition<T>
-
-    fun validate(client: OkHttpClient,
-                 requestBuilder: Request.Builder, credentials: T): Future<ValidatedCredentials>
-
-    fun canRenew(result: Response): Boolean = result.code() == 401
-
-    fun canRenew(credentials: T): Boolean = false
-
-    @Throws(IOException::class)
-    fun renew(client: OkHttpClient, credentials: T): T? = null
-
-    @Throws(IOException::class)
-    fun hosts(): Collection<String>
-
-    @Throws(IOException::class)
-    fun apiCompleter(prefix: String, client: OkHttpClient,
-                     credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
-            UrlList.fromResource(name())?.let {
-                BaseUrlCompleter(it, hosts())
-            } ?: HostUrlCompleter(hosts())
-
-    fun defaultCredentials(): T? = null
-
-    @Throws(IOException::class)
-    fun apiDocPresenter(url: String): ApiDocPresenter {
-        return object : ApiDocPresenter {
-            override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
-                val sd = serviceDefinition()
-
-                outputHandler.info("service: " + sd.shortName())
-                outputHandler.info("name: " + sd.serviceName())
-                sd.apiDocs()?.let { outputHandler.info("docs: " + it) }
-                sd.accountsLink()?.let { outputHandler.info("apps: " + it) }
-            }
-        }
-    }
-
-    companion object {
-        val logger = Logger.getLogger(AuthInterceptor::class.java.name)!!
-    }
-
-    // TODO fix up hackery
-    fun cast(credentials: Any): T = credentials as T
+  // TODO fix up hackery
+  fun cast(credentials: Any): T = credentials as T
 }

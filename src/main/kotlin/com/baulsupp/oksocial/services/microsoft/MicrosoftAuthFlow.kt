@@ -11,33 +11,33 @@ import okhttp3.Request
 import java.io.IOException
 
 object MicrosoftAuthFlow {
-    @Throws(IOException::class)
-    fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              clientSecret: String): Oauth2Token {
-        SimpleWebServer.forCode().use { s ->
+  @Throws(IOException::class)
+  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+            clientSecret: String): Oauth2Token {
+    SimpleWebServer.forCode().use { s ->
 
-            val loginUrl = "https://login.microsoftonline.com/common/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
+      val loginUrl = "https://login.microsoftonline.com/common/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
 
-            outputHandler.openLink(loginUrl)
+      outputHandler.openLink(loginUrl)
 
-            val code = s.waitForCode()
+      val code = s.waitForCode()
 
-            val url = HttpUrl.parse("https://login.microsoftonline.com/common/oauth2/token")
+      val url = HttpUrl.parse("https://login.microsoftonline.com/common/oauth2/token")
 
-            val body = FormBody.Builder().add("grant_type", "authorization_code")
-                    .add("redirect_uri", s.redirectUri)
-                    .add("client_id", clientId)
-                    .add("client_secret", clientSecret)
-                    .add("code", code)
-                    .add("resource", "https://graph.microsoft.com/")
-                    .build()
+      val body = FormBody.Builder().add("grant_type", "authorization_code")
+          .add("redirect_uri", s.redirectUri)
+          .add("client_id", clientId)
+          .add("client_secret", clientSecret)
+          .add("code", code)
+          .add("resource", "https://graph.microsoft.com/")
+          .build()
 
-            val request = Request.Builder().url(url!!).post(body).build()
+      val request = Request.Builder().url(url!!).post(body).build()
 
-            val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-            return Oauth2Token(responseMap["access_token"] as String,
-                    responseMap["refresh_token"] as String, clientId, clientSecret)
-        }
+      return Oauth2Token(responseMap["access_token"] as String,
+          responseMap["refresh_token"] as String, clientId, clientSecret)
     }
+  }
 }

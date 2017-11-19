@@ -10,30 +10,30 @@ import okhttp3.Request
 import java.io.IOException
 
 object ImgurAuthFlow {
-    @Throws(IOException::class)
-    fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              clientSecret: String): Oauth2Token {
-        SimpleWebServer.forCode().use { s ->
+  @Throws(IOException::class)
+  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+            clientSecret: String): Oauth2Token {
+    SimpleWebServer.forCode().use { s ->
 
-            val loginUrl = "https://api.imgur.com/oauth2/authorize?client_id=$clientId&response_type=code&state=x"
+      val loginUrl = "https://api.imgur.com/oauth2/authorize?client_id=$clientId&response_type=code&state=x"
 
-            outputHandler.openLink(loginUrl)
+      outputHandler.openLink(loginUrl)
 
-            val code = s.waitForCode()
+      val code = s.waitForCode()
 
-            val body = FormBody.Builder().add("client_id", clientId)
-                    .add("client_secret", clientSecret)
-                    .add("code", code)
-                    .add("grant_type", "authorization_code")
-                    .build()
-            val request = Request.Builder().url("https://api.imgur.com/oauth2/token")
-                    .method("POST", body)
-                    .build()
+      val body = FormBody.Builder().add("client_id", clientId)
+          .add("client_secret", clientSecret)
+          .add("code", code)
+          .add("grant_type", "authorization_code")
+          .build()
+      val request = Request.Builder().url("https://api.imgur.com/oauth2/token")
+          .method("POST", body)
+          .build()
 
-            val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-            return Oauth2Token(responseMap["access_token"] as String,
-                    responseMap["refresh_token"] as String, clientId, clientSecret)
-        }
+      return Oauth2Token(responseMap["access_token"] as String,
+          responseMap["refresh_token"] as String, clientId, clientSecret)
     }
+  }
 }

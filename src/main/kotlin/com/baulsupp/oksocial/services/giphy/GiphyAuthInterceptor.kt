@@ -15,45 +15,45 @@ import java.io.IOException
 import java.util.concurrent.Future
 
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
-    override fun serviceDefinition(): Oauth2ServiceDefinition {
-        return Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
-                "https://github.com/Giphy/GiphyAPI", null)
-    }
+  override fun serviceDefinition(): Oauth2ServiceDefinition {
+    return Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
+        "https://github.com/Giphy/GiphyAPI", null)
+  }
 
-    override fun defaultCredentials(): Oauth2Token? {
-        return Oauth2Token("dc6zaTOxFJmzC")
-    }
+  override fun defaultCredentials(): Oauth2Token? {
+    return Oauth2Token("dc6zaTOxFJmzC")
+  }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-        var request = chain.request()
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    var request = chain.request()
 
-        val token = credentials.accessToken
+    val token = credentials.accessToken
 
-        val newUrl = request.url().newBuilder().addQueryParameter("api_key", token).build()
+    val newUrl = request.url().newBuilder().addQueryParameter("api_key", token).build()
 
-        request = request.newBuilder().url(newUrl).build()
+    request = request.newBuilder().url(newUrl).build()
 
-        return chain.proceed(request)
-    }
+    return chain.proceed(request)
+  }
 
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): Oauth2Token {
-        System.err.println("Authorising Giphy API")
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): Oauth2Token {
+    System.err.println("Authorising Giphy API")
 
-        val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
+    val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
 
-        return Oauth2Token(apiKey)
-    }
+    return Oauth2Token(apiKey)
+  }
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
-        return ImmediateFuture { ValidatedCredentials("?", null) }
-    }
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+    return ImmediateFuture { ValidatedCredentials("?", null) }
+  }
 
-    override fun hosts(): Collection<String> {
-        return GiphyUtil.API_HOSTS
-    }
+  override fun hosts(): Set<String> {
+    return GiphyUtil.API_HOSTS
+  }
 }

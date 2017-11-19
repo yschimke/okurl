@@ -14,31 +14,31 @@ import kotlin.test.assertTrue
 
 class SurveyMonkeyTest {
 
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
-    private val completionCache = TestCompletionVariableCache()
-    private val credentialsStore = TestCredentialsStore()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
+  private val completionCache = TestCompletionVariableCache()
+  private val credentialsStore = TestCredentialsStore()
 
-    init {
-        main.outputHandler = output
-        main.completionVariableCache = completionCache
-        main.credentialsStore = credentialsStore
-    }
+  init {
+    main.outputHandler = output
+    main.completionVariableCache = completionCache
+    main.credentialsStore = credentialsStore
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeEndpointWithReplacements() {
-        main.arguments = newArrayList("https://api.surveymonkey.net/")
-        main.urlComplete = true
-        completionCache.store("surveymonkey", "surveys", Lists.newArrayList("AA", "BB"))
-        credentialsStore.storeCredentials(SurveyMonkeyToken("", ""),
-                SurveyMonkeyAuthInterceptor().serviceDefinition())
+  @Test
+  @Throws(Throwable::class)
+  fun completeEndpointWithReplacements() {
+    main.arguments = newArrayList("https://api.surveymonkey.net/")
+    main.urlComplete = true
+    completionCache.store("surveymonkey", "surveys", Lists.newArrayList("AA", "BB"))
+    credentialsStore.storeCredentials(SurveyMonkeyToken("", ""),
+        SurveyMonkeyAuthInterceptor().serviceDefinition())
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertEquals(1, output.stdout.size)
-        assertTrue(output.stdout[0].contains("/v3/surveys/AA/details"))
-        assertTrue(output.stdout[0].contains("/v3/surveys/BB/details"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertEquals(1, output.stdout.size)
+    assertTrue(output.stdout[0].contains("/v3/surveys/AA/details"))
+    assertTrue(output.stdout[0].contains("/v3/surveys/BB/details"))
+  }
 }

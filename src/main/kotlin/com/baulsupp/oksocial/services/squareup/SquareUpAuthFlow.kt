@@ -15,32 +15,32 @@ import java.util.HashMap
 
 object SquareUpAuthFlow {
 
-    @Throws(IOException::class)
-    fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              clientSecret: String, scopes: Iterable<String>): Oauth2Token {
-        SimpleWebServer.forCode().use { s ->
+  @Throws(IOException::class)
+  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+            clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+    SimpleWebServer.forCode().use { s ->
 
-            val serverUri = s.redirectUri
+      val serverUri = s.redirectUri
 
-            val loginUrl = "https://connect.squareup.com/oauth2/authorize?client_id=$clientId&redirect_uri=${URLEncoder.encode(serverUri, "UTF-8")}&response_type=code&scope=" + URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
+      val loginUrl = "https://connect.squareup.com/oauth2/authorize?client_id=$clientId&redirect_uri=${URLEncoder.encode(serverUri, "UTF-8")}&response_type=code&scope=" + URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
-            outputHandler.openLink(loginUrl)
+      outputHandler.openLink(loginUrl)
 
-            val code = s.waitForCode()
+      val code = s.waitForCode()
 
-            val tokenUrl = "https://connect.squareup.com/oauth2/token"
-            val map = HashMap<String, String>()
-            map.put("client_id", clientId)
-            map.put("client_secret", clientSecret)
-            map.put("code", code)
-            map.put("redirect_uri", serverUri)
-            val body = JsonUtil.toJson(map)
+      val tokenUrl = "https://connect.squareup.com/oauth2/token"
+      val map = HashMap<String, String>()
+      map.put("client_id", clientId)
+      map.put("client_secret", clientSecret)
+      map.put("code", code)
+      map.put("redirect_uri", serverUri)
+      val body = JsonUtil.toJson(map)
 
-            val reqBody = RequestBody.create(MediaType.parse("application/json"), body)
-            val request = Request.Builder().url(tokenUrl).post(reqBody).build()
-            val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val reqBody = RequestBody.create(MediaType.parse("application/json"), body)
+      val request = Request.Builder().url(tokenUrl).post(reqBody).build()
+      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-            return Oauth2Token(responseMap["access_token"] as String)
-        }
+      return Oauth2Token(responseMap["access_token"] as String)
     }
+  }
 }

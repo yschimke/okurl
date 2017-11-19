@@ -7,15 +7,15 @@ import javax.security.auth.callback.PasswordCallback
 import javax.security.auth.callback.UnsupportedCallbackException
 
 class ConsoleCallbackHandler : CallbackHandler {
-    @Throws(IOException::class, UnsupportedCallbackException::class)
-    override fun handle(callbacks: Array<Callback>) {
+  @Throws(IOException::class, UnsupportedCallbackException::class)
+  override fun handle(callbacks: Array<Callback>) {
 
-        for (c in callbacks) {
-            if (c is PasswordCallback) {
-                c.password = System.console().readPassword(c.prompt)
-            } else {
-                throw UnsupportedCallbackException(c)
-            }
-        }
+    for (c in callbacks) {
+      if (c is PasswordCallback) {
+        c.password = System.console().readPassword(c.prompt)
+      } else {
+        throw UnsupportedCallbackException(c)
+      }
     }
+  }
 }

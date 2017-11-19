@@ -14,37 +14,37 @@ import java.util.logging.Logger
 class CoreLocationCLI : LocationSource {
   private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
-    override fun read(): Location? {
-        if (PlatformUtil.isOSX) {
-            if (!File(LOCATION_APP).exists()) {
-                throw UsageException("Missing " + LOCATION_APP)
-            }
+  override fun read(): Location? {
+    if (PlatformUtil.isOSX) {
+      if (!File(LOCATION_APP).exists()) {
+        throw UsageException("Missing " + LOCATION_APP)
+      }
 
-            return try {
-                val process = ProcessExecutor().command(LOCATION_APP, "-format",
-                    "%latitude,%longitude", "-once", "yes")
-                    .readOutput(true).timeout(5, TimeUnit.SECONDS).execute()
-                val line = process.outputUTF8()
+      return try {
+        val process = ProcessExecutor().command(LOCATION_APP, "-format",
+            "%latitude,%longitude", "-once", "yes")
+            .readOutput(true).timeout(5, TimeUnit.SECONDS).execute()
+        val line = process.outputUTF8()
 
-                if (process.exitValue != 0) {
-                  logger.log(Level.INFO, "failed to get location $line")
-                  return null
-                }
-
-                val parts = line.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-                Location(parts[0].toDouble(), parts[1].toDouble())
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "failed to get location", e)
-                null
-            }
-
-        } else {
-            return null
+        if (process.exitValue != 0) {
+          logger.log(Level.INFO, "failed to get location $line")
+          return null
         }
-    }
 
-    companion object {
-        val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
+        val parts = line.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
+        Location(parts[0].toDouble(), parts[1].toDouble())
+      } catch (e: Exception) {
+        logger.log(Level.WARNING, "failed to get location", e)
+        null
+      }
+
+    } else {
+      return null
     }
+  }
+
+  companion object {
+    val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
+  }
 }

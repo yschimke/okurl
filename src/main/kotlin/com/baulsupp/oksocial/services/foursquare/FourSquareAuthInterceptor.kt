@@ -17,54 +17,54 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.Future
 
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
-    override fun serviceDefinition(): Oauth2ServiceDefinition {
-        return Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
-                "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
+  override fun serviceDefinition(): Oauth2ServiceDefinition {
+    return Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
+        "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
+  }
+
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    var request = chain.request()
+
+    val token = credentials.accessToken
+
+    val urlBuilder = request.url().newBuilder()
+    urlBuilder.addQueryParameter("oauth_token", token)
+    if (request.url().queryParameter("v") == null) {
+      urlBuilder.addQueryParameter("v", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE))
     }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-        var request = chain.request()
+    request = request.newBuilder().url(urlBuilder.build()).build()
 
-        val token = credentials.accessToken
+    return chain.proceed(request)
+  }
 
-        val urlBuilder = request.url().newBuilder()
-        urlBuilder.addQueryParameter("oauth_token", token)
-        if (request.url().queryParameter("v") == null) {
-            urlBuilder.addQueryParameter("v", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE))
-        }
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): Oauth2Token {
+    System.err.println("Authorising FourSquare API")
 
-        request = request.newBuilder().url(urlBuilder.build()).build()
+    val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
+    val clientSecret = Secrets.prompt("FourSquare Application Secret", "4sq.clientSecret", "", true)
 
-        return chain.proceed(request)
-    }
+    return FourSquareAuthFlow.login(client, outputHandler, clientId, clientSecret)
+  }
 
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): Oauth2Token {
-        System.err.println("Authorising FourSquare API")
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+    return JsonCredentialsValidator(
+        FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
+        { this.getName(it) }).validate(client)
+  }
 
-        val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
-        val clientSecret = Secrets.prompt("FourSquare Application Secret", "4sq.clientSecret", "", true)
+  private fun getName(map: Map<String, Any>): String {
+    val user = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
 
-        return FourSquareAuthFlow.login(client, outputHandler, clientId, clientSecret)
-    }
+    return "${user["firstName"]} ${user["lastName"]}"
+  }
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
-        return JsonCredentialsValidator(
-                FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
-                { this.getName(it) }).validate(client)
-    }
-
-    private fun getName(map: Map<String, Any>): String {
-        val user = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
-
-        return "${user["firstName"]} ${user["lastName"]}"
-    }
-
-    override fun hosts(): Collection<String> {
-        return FourSquareUtil.API_HOSTS
-    }
+  override fun hosts(): Set<String> {
+    return FourSquareUtil.API_HOSTS
+  }
 }

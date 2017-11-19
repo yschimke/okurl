@@ -13,7 +13,7 @@ data class MapboxGeometry(val coordinates: Location, val type: String)
 
 data class MapboxPlacesResult(val type: String, val query: List<String>, val features: List<MapboxFeature>, val geometry: MapboxGeometry?)
 
-data class MapboxRoute(val geometry:String)
+data class MapboxRoute(val geometry: String)
 
 data class MapboxDrivingResults(val routes: List<MapboxRoute>)
 

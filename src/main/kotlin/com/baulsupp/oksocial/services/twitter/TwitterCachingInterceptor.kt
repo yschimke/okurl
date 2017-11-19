@@ -7,32 +7,32 @@ import java.io.IOException
 
 class TwitterCachingInterceptor : Interceptor {
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val originalResponse = chain.proceed(chain.request())
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val originalResponse = chain.proceed(chain.request())
 
-        val host = chain.request().url().host()
+    val host = chain.request().url().host()
 
-        if (TwitterUtil.TWITTER_API_HOSTS.contains(host)) {
-            if (originalResponse.code() == 200) {
-                var cacheSeconds = 60
+    if (TwitterUtil.TWITTER_API_HOSTS.contains(host)) {
+      if (originalResponse.code() == 200) {
+        var cacheSeconds = 60
 
-                if (permanentHosts.contains(host)) {
-                    cacheSeconds = 3600
-                }
-
-                return originalResponse.newBuilder()
-                        .header("Cache-Control", "max-age=" + cacheSeconds)
-                        .removeHeader("expires")
-                        .removeHeader("pragma")
-                        .build()
-            }
+        if (permanentHosts.contains(host)) {
+          cacheSeconds = 3600
         }
 
-        return originalResponse
+        return originalResponse.newBuilder()
+            .header("Cache-Control", "max-age=" + cacheSeconds)
+            .removeHeader("expires")
+            .removeHeader("pragma")
+            .build()
+      }
     }
 
-    companion object {
-        private val permanentHosts = Sets.newHashSet("pbs.twimg.com")
-    }
+    return originalResponse
+  }
+
+  companion object {
+    private val permanentHosts = Sets.newHashSet("pbs.twimg.com")
+  }
 }

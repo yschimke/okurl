@@ -12,7 +12,7 @@ data class UberPriceEstimate(
     val duration: Int,
     val estimate: String,
     @Json(name = "currency_code") val currencyCode: String?
-    )
+)
 
 data class UberTimeEstimate(
     @Json(name = "localized_display_name") val localizedDisplayName: String,

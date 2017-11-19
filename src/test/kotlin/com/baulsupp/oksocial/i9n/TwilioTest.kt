@@ -12,42 +12,42 @@ import kotlin.test.assertTrue
 
 
 class TwilioTest {
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
-    private val credentialsStore = TestCredentialsStore()
-    private val service = TwilioAuthInterceptor().serviceDefinition()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
+  private val credentialsStore = TestCredentialsStore()
+  private val service = TwilioAuthInterceptor().serviceDefinition()
 
-    init {
-        main.outputHandler = output
-        main.credentialsStore = credentialsStore
-    }
+  init {
+    main.outputHandler = output
+    main.credentialsStore = credentialsStore
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeEndpointShortCommand1() {
-        credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
+  @Test
+  @Throws(Throwable::class)
+  fun completeEndpointShortCommand1() {
+    credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
 
-        main.commandName = "okapi"
-        main.arguments = newArrayList("commands/twilioapi", "/")
-        main.urlComplete = true
+    main.commandName = "okapi"
+    main.arguments = newArrayList("commands/twilioapi", "/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(output.stdout[0].contains("/Calls.json"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(output.stdout[0].contains("/Calls.json"))
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeEndpointWithReplacements() {
-        credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
+  @Test
+  @Throws(Throwable::class)
+  fun completeEndpointWithReplacements() {
+    credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
 
-        main.arguments = newArrayList("https://api.twilio.com/")
-        main.urlComplete = true
+    main.arguments = newArrayList("https://api.twilio.com/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(output.stdout[0].contains("/Accounts/ABC/Calls.json"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(output.stdout[0].contains("/Accounts/ABC/Calls.json"))
+  }
 }

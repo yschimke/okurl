@@ -9,30 +9,30 @@ import java.io.IOException
 import java.util.zip.Inflater
 
 class TwitterDeflatedResponseInterceptor : Interceptor {
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val response = chain.proceed(chain.request())
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val response = chain.proceed(chain.request())
 
-        if ("deflate" == response.header("content-encoding")) {
-            val host = response.request().url().host()
+    if ("deflate" == response.header("content-encoding")) {
+      val host = response.request().url().host()
 
-            if (TwitterUtil.TWITTER_HOSTS.contains(host)) {
-                return response.newBuilder()
-                        .body(inflateBody(response.body()))
-                        .removeHeader("content-encoding")
-                        .removeHeader("content-length")
-                        .build()
-            }
-        }
-
-        return response
+      if (TwitterUtil.TWITTER_HOSTS.contains(host)) {
+        return response.newBuilder()
+            .body(inflateBody(response.body()))
+            .removeHeader("content-encoding")
+            .removeHeader("content-length")
+            .build()
+      }
     }
 
-    private fun inflateBody(origBody: ResponseBody?): ResponseBody {
-        val inflater = Inflater()
-        val realSource = origBody!!.source()
-        val s = InflaterSource(realSource, inflater)
+    return response
+  }
 
-        return ResponseBody.create(origBody.contentType(), -1, Okio.buffer(s))
-    }
+  private fun inflateBody(origBody: ResponseBody?): ResponseBody {
+    val inflater = Inflater()
+    val realSource = origBody!!.source()
+    val s = InflaterSource(realSource, inflater)
+
+    return ResponseBody.create(origBody.contentType(), -1, Okio.buffer(s))
+  }
 }
