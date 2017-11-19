@@ -14,30 +14,30 @@ import kotlin.test.assertTrue
 
 class SquareUpTest {
 
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
-    private val completionCache = TestCompletionVariableCache()
-    private val credentialsStore = TestCredentialsStore()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
+  private val completionCache = TestCompletionVariableCache()
+  private val credentialsStore = TestCredentialsStore()
 
-    init {
-        main.outputHandler = output
-        main.completionVariableCache = completionCache
-        main.credentialsStore = credentialsStore
-    }
+  init {
+    main.outputHandler = output
+    main.completionVariableCache = completionCache
+    main.credentialsStore = credentialsStore
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeEndpointWithReplacements() {
-        main.arguments = newArrayList("https://connect.squareup.com/")
-        main.urlComplete = true
-        completionCache.store("squareup", "locations", Lists.newArrayList("AA", "bb"))
-        credentialsStore.storeCredentials(Oauth2Token("test"),
-                SquareUpAuthInterceptor().serviceDefinition())
+  @Test
+  @Throws(Throwable::class)
+  fun completeEndpointWithReplacements() {
+    main.arguments = newArrayList("https://connect.squareup.com/")
+    main.urlComplete = true
+    completionCache.store("squareup", "locations", Lists.newArrayList("AA", "bb"))
+    credentialsStore.storeCredentials(Oauth2Token("test"),
+        SquareUpAuthInterceptor().serviceDefinition())
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertEquals(1, output.stdout.size)
-        assertTrue(output.stdout[0].contains("/v2/locations/AA/transactions"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertEquals(1, output.stdout.size)
+    assertTrue(output.stdout[0].contains("/v2/locations/AA/transactions"))
+  }
 }

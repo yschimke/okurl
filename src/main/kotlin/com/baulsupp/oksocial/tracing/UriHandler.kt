@@ -6,11 +6,11 @@ import java.net.URI
 import java.util.ServiceLoader
 
 interface UriHandler {
-    fun buildSender(uri: URI): Reporter<Span>?
+  fun buildSender(uri: URI): Reporter<Span>?
 
-    companion object {
-        fun loadServices(): ServiceLoader<UriHandler> {
-            return ServiceLoader.load(UriHandler::class.java)
-        }
+  companion object {
+    fun loadServices(): ServiceLoader<UriHandler> {
+      return ServiceLoader.load(UriHandler::class.java)
     }
+  }
 }

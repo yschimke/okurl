@@ -21,71 +21,71 @@ import java.util.concurrent.Future
  * http://graph.microsoft.io/en-us/docs/authorization/permission_scopes
  */
 class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
-    override fun serviceDefinition(): Oauth2ServiceDefinition {
-        return Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
-                "https://graph.microsoft.io/en-us/docs/get-started/rest",
-                "https://apps.dev.microsoft.com/#/appList")
-    }
+  override fun serviceDefinition(): Oauth2ServiceDefinition {
+    return Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
+        "https://graph.microsoft.io/en-us/docs/get-started/rest",
+        "https://apps.dev.microsoft.com/#/appList")
+  }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-        var request = chain.request()
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    var request = chain.request()
 
-        val token = credentials.accessToken
+    val token = credentials.accessToken
 
-        request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
 
-        return chain.proceed(request)
-    }
+    return chain.proceed(request)
+  }
 
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): Oauth2Token {
-        System.err.println("Authorising Microsoft API")
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): Oauth2Token {
+    System.err.println("Authorising Microsoft API")
 
-        val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
-        val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
+    val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
+    val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
 
-        return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret)
-    }
+    return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret)
+  }
 
-    override fun canRenew(credentials: Oauth2Token): Boolean {
-        return credentials.isRenewable()
-    }
+  override fun canRenew(credentials: Oauth2Token): Boolean {
+    return credentials.isRenewable()
+  }
 
-    @Throws(IOException::class)
-    override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  @Throws(IOException::class)
+  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
-        val body = FormBody.Builder().add("grant_type", "refresh_token")
-                .add("redirect_uri", "http://localhost:3000/callback")
-                .add("client_id", credentials.clientId!!)
-                .add("client_secret", credentials.clientSecret!!)
-                .add("refresh_token", credentials.refreshToken!!)
-                .add("resource", "https://graph.microsoft.com/")
-                .build()
+    val body = FormBody.Builder().add("grant_type", "refresh_token")
+        .add("redirect_uri", "http://localhost:3000/callback")
+        .add("client_id", credentials.clientId!!)
+        .add("client_secret", credentials.clientSecret!!)
+        .add("refresh_token", credentials.refreshToken!!)
+        .add("resource", "https://graph.microsoft.com/")
+        .build()
 
-        val request = Request.Builder().url("https://login.microsoftonline.com/common/oauth2/token")
-                .post(body)
-                .build()
+    val request = Request.Builder().url("https://login.microsoftonline.com/common/oauth2/token")
+        .post(body)
+        .build()
 
-        val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        // TODO check if refresh token in response?
-        return Oauth2Token(responseMap["access_token"] as String,
-                credentials.refreshToken, credentials.clientId,
-                credentials.clientSecret)
-    }
+    // TODO check if refresh token in response?
+    return Oauth2Token(responseMap["access_token"] as String,
+        credentials.refreshToken, credentials.clientId,
+        credentials.clientSecret)
+  }
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
-        return JsonCredentialsValidator(
-                MicrosoftUtil.apiRequest("/v1.0/me", requestBuilder),
-                { it["displayName"] as String }).validate(
-                client)
-    }
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+    return JsonCredentialsValidator(
+        MicrosoftUtil.apiRequest("/v1.0/me", requestBuilder),
+        { it["displayName"] as String }).validate(
+        client)
+  }
 
-    override fun hosts(): Set<String> {
-        return MicrosoftUtil.API_HOSTS
-    }
+  override fun hosts(): Set<String> {
+    return MicrosoftUtil.API_HOSTS
+  }
 }

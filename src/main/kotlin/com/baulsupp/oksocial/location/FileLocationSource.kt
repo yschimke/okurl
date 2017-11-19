@@ -9,33 +9,33 @@ import java.io.IOException
 
 class FileLocationSource(private val file: File) : LocationSource {
 
-    @Throws(IOException::class)
-    override fun read(): Location? {
-        if (file.isFile) {
-            val mapper = ObjectMapper()
-            mapper.registerModule(KotlinModule())
+  @Throws(IOException::class)
+  override fun read(): Location? {
+    if (file.isFile) {
+      val mapper = ObjectMapper()
+      mapper.registerModule(KotlinModule())
 
-            val values = mapper.readValue<Map<String, Double>>(file, object : TypeReference<Map<String, Double>>() {})
+      val values = mapper.readValue<Map<String, Double>>(file, object : TypeReference<Map<String, Double>>() {})
 
-            return Location(values["latitude"]!!, values["longitude"]!!)
-        }
-
-        return null
+      return Location(values["latitude"]!!, values["longitude"]!!)
     }
 
-    @Throws(IOException::class)
-    fun save(location: Location) {
-        val mapper = ObjectMapper()
-        mapper.registerModule(KotlinModule())
+    return null
+  }
 
-        val map = Maps.newLinkedHashMap<String, Double>()
-        map.put("latitude", location.latitude)
-        map.put("longitude", location.longitude)
+  @Throws(IOException::class)
+  fun save(location: Location) {
+    val mapper = ObjectMapper()
+    mapper.registerModule(KotlinModule())
 
-        mapper.writeValue(file, map)
-    }
+    val map = Maps.newLinkedHashMap<String, Double>()
+    map.put("latitude", location.latitude)
+    map.put("longitude", location.longitude)
 
-    companion object {
-        var FILE = File(System.getenv("HOME"), ".oksocial-location.json")
-    }
+    mapper.writeValue(file, map)
+  }
+
+  companion object {
+    var FILE = File(System.getenv("HOME"), ".oksocial-location.json")
+  }
 }

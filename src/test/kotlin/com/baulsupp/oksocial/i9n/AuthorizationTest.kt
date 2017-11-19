@@ -9,57 +9,57 @@ import kotlin.test.assertEquals
 
 
 class AuthorizationTest {
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
-    private val credentialsStore = TestCredentialsStore()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
+  private val credentialsStore = TestCredentialsStore()
 
-    init {
-        main.outputHandler = output
-        main.credentialsStore = credentialsStore
-    }
+  init {
+    main.outputHandler = output
+    main.credentialsStore = credentialsStore
+  }
 
-    @Test
-    @Throws(Exception::class)
-    fun setToken() {
-        main.authorize = true
-        main.token = "abc"
-        main.arguments = Lists.newArrayList("test")
+  @Test
+  @Throws(Exception::class)
+  fun setToken() {
+    main.authorize = true
+    main.token = "abc"
+    main.arguments = Lists.newArrayList("test")
 
-        main.run()
+    main.run()
 
-        assertEquals("abc", credentialsStore.tokens["localhost"])
-    }
+    assertEquals("abc", credentialsStore.tokens["localhost"])
+  }
 
-    @Test
-    @Throws(Exception::class)
-    fun authorize() {
-        main.authorize = true
-        main.arguments = Lists.newArrayList("test")
+  @Test
+  @Throws(Exception::class)
+  fun authorize() {
+    main.authorize = true
+    main.arguments = Lists.newArrayList("test")
 
-        main.run()
+    main.run()
 
-        assertEquals("testToken", credentialsStore.tokens["localhost"])
-    }
+    assertEquals("testToken", credentialsStore.tokens["localhost"])
+  }
 
-    @Test
-    @Throws(Exception::class)
-    fun authorizeByHost() {
-        main.authorize = true
-        main.arguments = Lists.newArrayList("https://test.com/test")
+  @Test
+  @Throws(Exception::class)
+  fun authorizeByHost() {
+    main.authorize = true
+    main.arguments = Lists.newArrayList("https://test.com/test")
 
-        main.run()
+    main.run()
 
-        assertEquals("testToken", credentialsStore.tokens["localhost"])
-    }
+    assertEquals("testToken", credentialsStore.tokens["localhost"])
+  }
 
-    @Test
-    @Throws(Exception::class)
-    fun authorizeWithArgs() {
-        main.authorize = true
-        main.arguments = Lists.newArrayList("test", "TOKENARG")
+  @Test
+  @Throws(Exception::class)
+  fun authorizeWithArgs() {
+    main.authorize = true
+    main.arguments = Lists.newArrayList("test", "TOKENARG")
 
-        main.run()
+    main.run()
 
-        assertEquals("TOKENARG", credentialsStore.tokens["localhost"])
-    }
+    assertEquals("TOKENARG", credentialsStore.tokens["localhost"])
+  }
 }

@@ -4,14 +4,14 @@ import okhttp3.Request
 import java.util.Arrays
 
 object FitbitUtil {
-    val SCOPES: Collection<String> = Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",
-            "settings", "sleep", "social", "weight")
+  val SCOPES: Collection<String> = Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",
+      "settings", "sleep", "social", "weight")
 
-    val API_HOSTS = setOf((
-            "api.fitbit.com")
-    )
+  val API_HOSTS = setOf((
+      "api.fitbit.com")
+  )
 
-    fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
-        return requestBuilder.url("https://api.fitbit.com" + s).build()
-    }
+  fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
+    return requestBuilder.url("https://api.fitbit.com" + s).build()
+  }
 }

@@ -7,18 +7,18 @@ import java.io.IOException
 
 class WebAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<*>) : TwitterAuthFlow(client, outputHandler) {
 
-    @Throws(IOException::class)
-    fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
-        SimpleWebServer({ it.getParameter("oauth_verifier") }).use({ s ->
-            val unauthed = TwitterCredentials(null, consumerKey, consumerSecret, null, "")
+  @Throws(IOException::class)
+  fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
+    SimpleWebServer({ it.getParameter("oauth_verifier") }).use({ s ->
+      val unauthed = TwitterCredentials(null, consumerKey, consumerSecret, null, "")
 
-            val requestCredentials = generateRequestToken(unauthed, s.redirectUri)
+      val requestCredentials = generateRequestToken(unauthed, s.redirectUri)
 
-            showUserLogin(requestCredentials)
+      showUserLogin(requestCredentials)
 
-            val verifier = s.waitForCode()
+      val verifier = s.waitForCode()
 
-            return generateAccessToken(requestCredentials, verifier)
-        })
-    }
+      return generateAccessToken(requestCredentials, verifier)
+    })
+  }
 }

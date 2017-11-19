@@ -16,64 +16,64 @@ import java.util.logging.Logger
 
 class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val client: OkHttpClient,
                    private val credentialsStore: CredentialsStore, private val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
-    private val clock = Clock.systemDefaultZone()
+  private val clock = Clock.systemDefaultZone()
 
-    override fun urlList(prefix: String): UrlList {
-        val fullUrl = parseUrl(prefix)
+  override fun urlList(prefix: String): UrlList {
+    val fullUrl = parseUrl(prefix)
 
-        return if (fullUrl != null) {
-            // won't match anything
-            services
-                    .firstOrNull { it.supportsUrl(fullUrl) }
-                    ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
-                    ?.siteUrls(fullUrl)
-                    ?.get()
-                    ?: UrlList(UrlList.Match.EXACT, Lists.newArrayList())
-        } else {
-            val futures = Lists.newArrayList<Future<UrlList>>()
-
-            services.mapTo(futures) { it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls() }
-
-            futuresToList(prefix, futures)
-        }
-    }
-
-    private fun futuresToList(prefix: String, futures: List<Future<UrlList>>): UrlList {
-        val to = clock.millis() + 2000
-
-        val results = Lists.newArrayList<String>()
-
-        for (f in futures) {
-            try {
-                val result = f.get(to - clock.millis(), TimeUnit.MILLISECONDS)
-
-                results.addAll(result.getUrls(prefix))
-            } catch (e: ExecutionException) {
-                logger.log(Level.WARNING, "failure during url completion", e.cause)
-            } catch (e: InterruptedException) {
-                logger.log(Level.FINE, "timeout during url completion", e)
-            } catch (e: TimeoutException) {
-                logger.log(Level.FINE, "timeout during url completion", e)
-            }
-
-        }
-
-        return UrlList(UrlList.Match.HOSTS, results)
-    }
-
-    private fun parseUrl(prefix: String): HttpUrl? = if (isSingleApi(prefix)) {
-        HttpUrl.parse(prefix)
+    return if (fullUrl != null) {
+      // won't match anything
+      services
+          .firstOrNull { it.supportsUrl(fullUrl) }
+          ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+          ?.siteUrls(fullUrl)
+          ?.get()
+          ?: UrlList(UrlList.Match.EXACT, Lists.newArrayList())
     } else {
-        null
+      val futures = Lists.newArrayList<Future<UrlList>>()
+
+      services.mapTo(futures) { it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls() }
+
+      futuresToList(prefix, futures)
+    }
+  }
+
+  private fun futuresToList(prefix: String, futures: List<Future<UrlList>>): UrlList {
+    val to = clock.millis() + 2000
+
+    val results = Lists.newArrayList<String>()
+
+    for (f in futures) {
+      try {
+        val result = f.get(to - clock.millis(), TimeUnit.MILLISECONDS)
+
+        results.addAll(result.getUrls(prefix))
+      } catch (e: ExecutionException) {
+        logger.log(Level.WARNING, "failure during url completion", e.cause)
+      } catch (e: InterruptedException) {
+        logger.log(Level.FINE, "timeout during url completion", e)
+      } catch (e: TimeoutException) {
+        logger.log(Level.FINE, "timeout during url completion", e)
+      }
+
     }
 
-    private fun isSingleApi(prefix: String): Boolean = prefix.matches("https://[^/]+/.*".toRegex())
+    return UrlList(UrlList.Match.HOSTS, results)
+  }
 
-    companion object {
-        private val logger = Logger.getLogger(UrlCompleter::class.java.name)
+  private fun parseUrl(prefix: String): HttpUrl? = if (isSingleApi(prefix)) {
+    HttpUrl.parse(prefix)
+  } else {
+    null
+  }
 
-        fun isPossibleAddress(urlCompletion: String): Boolean {
-            return urlCompletion.startsWith("https://".substring(0, min(urlCompletion.length, 8)))
-        }
+  private fun isSingleApi(prefix: String): Boolean = prefix.matches("https://[^/]+/.*".toRegex())
+
+  companion object {
+    private val logger = Logger.getLogger(UrlCompleter::class.java.name)
+
+    fun isPossibleAddress(urlCompletion: String): Boolean {
+      return urlCompletion.startsWith("https://".substring(0, min(urlCompletion.length, 8)))
     }
+  }
 }

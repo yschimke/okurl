@@ -21,40 +21,40 @@ import java.util.concurrent.Future
  */
 class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
-        var request = chain.request()
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+    var request = chain.request()
 
-        request = request.newBuilder()
-                .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-                .build()
+    request = request.newBuilder()
+        .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+        .build()
 
-        return chain.proceed(request)
-    }
+    return chain.proceed(request)
+  }
 
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): BasicCredentials {
-        val user = Secrets.prompt("User", "httpbin.user", "", false)
-        val password = Secrets.prompt("Password", "httpbin.password", "", true)
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): BasicCredentials {
+    val user = Secrets.prompt("User", "httpbin.user", "", false)
+    val password = Secrets.prompt("Password", "httpbin.password", "", true)
 
-        return BasicCredentials(user, password)
-    }
+    return BasicCredentials(user, password)
+  }
 
-    override fun serviceDefinition(): ServiceDefinition<BasicCredentials> {
-        return BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
-                "https://httpbin.org/", null)
-    }
+  override fun serviceDefinition(): ServiceDefinition<BasicCredentials> {
+    return BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
+        "https://httpbin.org/", null)
+  }
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
-        return ImmediateFuture { ValidatedCredentials(credentials.user, null) }
-    }
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
+    return ImmediateFuture { ValidatedCredentials(credentials.user, null) }
+  }
 
-    override fun hosts(): Collection<String> {
-        return setOf((
-                "httpbin.org")
-        )
-    }
+  override fun hosts(): Collection<String> {
+    return setOf((
+        "httpbin.org")
+    )
+  }
 }

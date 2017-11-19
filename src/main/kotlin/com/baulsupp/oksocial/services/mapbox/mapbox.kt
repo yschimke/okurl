@@ -1,9 +1,6 @@
 package com.baulsupp.oksocial.services.mapbox
 
 import com.baulsupp.oksocial.location.Location
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.Json
-import com.squareup.moshi.ToJson
 
 data class MapboxProperties(val address: String?, val category: String?, val tel: String?, val landmark: Boolean?, val maki: String?)
 
@@ -13,7 +10,7 @@ data class MapboxGeometry(val coordinates: Location, val type: String)
 
 data class MapboxPlacesResult(val type: String, val query: List<String>, val features: List<MapboxFeature>, val geometry: MapboxGeometry?)
 
-data class MapboxRoute(val geometry:String)
+data class MapboxRoute(val geometry: String)
 
 data class MapboxDrivingResults(val routes: List<MapboxRoute>)
 

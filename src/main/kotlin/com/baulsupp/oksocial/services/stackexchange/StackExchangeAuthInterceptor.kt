@@ -14,57 +14,57 @@ import java.io.IOException
 import java.util.concurrent.Future
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
-    override fun serviceDefinition(): StackExchangeServiceDefinition {
-        return StackExchangeServiceDefinition()
+  override fun serviceDefinition(): StackExchangeServiceDefinition {
+    return StackExchangeServiceDefinition()
+  }
+
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
+    var request = chain.request()
+
+    val newUrl = request.url()
+        .newBuilder()
+        .addQueryParameter("access_token", credentials.accessToken)
+        .addQueryParameter("key", credentials.key)
+        .build()
+
+    request = request.newBuilder().url(newUrl).build()
+
+    return chain.proceed(request)
+  }
+
+  private fun extract(map: Map<String, Any>): String {
+    val items = map["items"] as List<Map<String, Any>>
+
+    return if (items.isNotEmpty()) {
+      "" + items[0]["display_name"]
+    } else {
+      "Unknown"
     }
+  }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
-        var request = chain.request()
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: StackExchangeToken): Future<ValidatedCredentials> {
+    return JsonCredentialsValidator(apiRequest("/2.2/me?site=drupal", requestBuilder),
+        this::extract).validate(client)
+  }
 
-        val newUrl = request.url()
-                .newBuilder()
-                .addQueryParameter("access_token", credentials.accessToken)
-                .addQueryParameter("key", credentials.key)
-                .build()
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): StackExchangeToken {
+    System.err.println("Authorising StackExchange API")
 
-        request = request.newBuilder().url(newUrl).build()
+    val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
+    val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", "", true)
+    val clientKey = Secrets.prompt("StackExchange Key", "stackexchange.key", "", false)
+    val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", StackExchangeUtil.SCOPES)
 
-        return chain.proceed(request)
-    }
+    return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey,
+        scopes)
+  }
 
-    private fun extract(map: Map<String, Any>): String {
-        val items = map["items"] as List<Map<String, Any>>
-
-        return if (items.isNotEmpty()) {
-            "" + items[0]["display_name"]
-        } else {
-            "Unknown"
-        }
-    }
-
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: StackExchangeToken): Future<ValidatedCredentials> {
-        return JsonCredentialsValidator(apiRequest("/2.2/me?site=drupal", requestBuilder),
-                this::extract).validate(client)
-    }
-
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): StackExchangeToken {
-        System.err.println("Authorising StackExchange API")
-
-        val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
-        val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", "", true)
-        val clientKey = Secrets.prompt("StackExchange Key", "stackexchange.key", "", false)
-        val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", StackExchangeUtil.SCOPES)
-
-        return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey,
-                scopes)
-    }
-
-    override fun hosts(): Collection<String> {
-        return StackExchangeUtil.API_HOSTS
-    }
+  override fun hosts(): Collection<String> {
+    return StackExchangeUtil.API_HOSTS
+  }
 }

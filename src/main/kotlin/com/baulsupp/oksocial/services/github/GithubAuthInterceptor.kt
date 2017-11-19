@@ -18,41 +18,41 @@ import java.util.concurrent.Future
  * https://developer.github.com/docs/authentication
  */
 class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
-    override fun serviceDefinition(): Oauth2ServiceDefinition {
-        return Oauth2ServiceDefinition("api.github.com", "Github API", "github",
-                "https://developer.github.com/v3/", "https://github.com/settings/developers")
-    }
+  override fun serviceDefinition(): Oauth2ServiceDefinition {
+    return Oauth2ServiceDefinition("api.github.com", "Github API", "github",
+        "https://developer.github.com/v3/", "https://github.com/settings/developers")
+  }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-        var request = chain.request()
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    var request = chain.request()
 
-        val token = credentials.accessToken
+    val token = credentials.accessToken
 
-        request = request.newBuilder().addHeader("Authorization", "token " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "token " + token).build()
 
-        return chain.proceed(request)
-    }
+    return chain.proceed(request)
+  }
 
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): Oauth2Token {
-        System.err.println("Authorising Github API")
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): Oauth2Token {
+    System.err.println("Authorising Github API")
 
-        val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
-        val clientSecret = Secrets.prompt("Github Client Secret", "github.clientSecret", "", true)
-        val scopes = Secrets.promptArray("Scopes", "github.scopes", GithubUtil.SCOPES)
+    val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
+    val clientSecret = Secrets.prompt("Github Client Secret", "github.clientSecret", "", true)
+    val scopes = Secrets.promptArray("Scopes", "github.scopes", GithubUtil.SCOPES)
 
-        return GithubAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
-    }
+    return GithubAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
+  }
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
-        return JsonCredentialsValidator(GithubUtil.apiRequest("/user", requestBuilder), { it["name"] as String }).validate(client)
-    }
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+    return JsonCredentialsValidator(GithubUtil.apiRequest("/user", requestBuilder), { it["name"] as String }).validate(client)
+  }
 
-    override fun hosts(): List<String> {
-        return GithubUtil.API_HOSTS
-    }
+  override fun hosts(): List<String> {
+    return GithubUtil.API_HOSTS
+  }
 }

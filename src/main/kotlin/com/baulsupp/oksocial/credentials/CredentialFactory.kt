@@ -4,12 +4,12 @@ import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.mcdermottroe.apple.OSXKeychainException
 
 object CredentialFactory {
-    @Throws(OSXKeychainException::class)
-    fun createCredentialsStore(tokenSet: String?): CredentialsStore {
-        return if (PlatformUtil.isOSX) {
-            OSXCredentialsStore(tokenSet)
-        } else {
-            PreferencesCredentialsStore(tokenSet)
-        }
+  @Throws(OSXKeychainException::class)
+  fun createCredentialsStore(tokenSet: String?): CredentialsStore {
+    return if (PlatformUtil.isOSX) {
+      OSXCredentialsStore(tokenSet)
+    } else {
+      PreferencesCredentialsStore(tokenSet)
     }
+  }
 }

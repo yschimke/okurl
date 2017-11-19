@@ -10,41 +10,41 @@ import java.net.InetAddress
 import java.net.UnknownHostException
 
 object TestUtil {
-    private var cachedException: UnknownHostException? = null
-    private var initialised = false
-    private var credentialsStore: CredentialsStore? = null
+  private var cachedException: UnknownHostException? = null
+  private var initialised = false
+  private var credentialsStore: CredentialsStore? = null
 
-    @Synchronized
-    fun assumeHasNetwork() {
-        initialise()
+  @Synchronized
+  fun assumeHasNetwork() {
+    initialise()
 
-        Assume.assumeTrue(cachedException == null)
+    Assume.assumeTrue(cachedException == null)
+  }
+
+  private fun initialise() {
+    if (!initialised) {
+      try {
+        InetAddress.getByName("www.google.com")
+      } catch (e: UnknownHostException) {
+        cachedException = e
+      }
+
+      try {
+        credentialsStore = CredentialFactory.createCredentialsStore(null)
+      } catch (e: OSXKeychainException) {
+      }
+
+      initialised = true
     }
+  }
 
-    private fun initialise() {
-        if (!initialised) {
-            try {
-                InetAddress.getByName("www.google.com")
-            } catch (e: UnknownHostException) {
-                cachedException = e
-            }
+  @Synchronized
+  fun assumeHasToken(
+      serviceDefinition: ServiceDefinition<out Any>) {
+    initialise()
 
-            try {
-                credentialsStore = CredentialFactory.createCredentialsStore(null)
-            } catch (e: OSXKeychainException) {
-            }
+    val token = credentialsStore!!.readDefaultCredentials(serviceDefinition)
 
-            initialised = true
-        }
-    }
-
-    @Synchronized
-    fun assumeHasToken(
-            serviceDefinition: ServiceDefinition<out Any>) {
-        initialise()
-
-        val token = credentialsStore!!.readDefaultCredentials(serviceDefinition)
-
-        Assume.assumeTrue(token != null)
-    }
+    Assume.assumeTrue(token != null)
+  }
 }

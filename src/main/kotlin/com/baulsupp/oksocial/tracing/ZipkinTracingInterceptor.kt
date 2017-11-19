@@ -8,23 +8,23 @@ import okhttp3.Response
 import java.io.IOException
 
 class ZipkinTracingInterceptor(private val tracing: Tracing) : Interceptor {
-    private val injector: TraceContext.Injector<Request.Builder>
+  private val injector: TraceContext.Injector<Request.Builder>
 
-    init {
-        injector = tracing.propagation().injector { request, header, value -> request.header(header, value) }
-    }
+  init {
+    injector = tracing.propagation().injector { request, header, value -> request.header(header, value) }
+  }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val request = chain.request()
 
-        val traceContext = tracing.currentTraceContext().get() ?: // expect an existing trace
-                return chain.proceed(request)
+    val traceContext = tracing.currentTraceContext().get() ?: // expect an existing trace
+        return chain.proceed(request)
 
-        val newRequest = request.newBuilder()
+    val newRequest = request.newBuilder()
 
-        injector.inject(traceContext, newRequest)
+    injector.inject(traceContext, newRequest)
 
-        return chain.proceed(newRequest.build())
-    }
+    return chain.proceed(newRequest.build())
+  }
 }

@@ -19,79 +19,79 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class WebServerTest {
-    @Rule
-    @JvmField
-    var server = MockWebServer()
+  @Rule
+  @JvmField
+  var server = MockWebServer()
 
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
 
-    init {
-        main.outputHandler = output
-    }
+  init {
+    main.outputHandler = output
+  }
 
-    private val sslClient = SslClient.localhost()
+  private val sslClient = SslClient.localhost()
 
-    @Test
-    @Throws(Exception::class)
-    fun httpsRequestInsecureFails() {
-        server.useHttps(sslClient.socketFactory, false)
-        server.enqueue(MockResponse().setBody("Isla Sorna"))
+  @Test
+  @Throws(Exception::class)
+  fun httpsRequestInsecureFails() {
+    server.useHttps(sslClient.socketFactory, false)
+    server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-        main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.arguments = Lists.newArrayList(server.url("/").toString())
 
-        main.run()
+    main.run()
 
-        assertEquals(0, output.responses.size)
-        assertEquals(1, output.failures.size)
-        assertTrue(output.failures[0] is SSLHandshakeException)
-    }
+    assertEquals(0, output.responses.size)
+    assertEquals(1, output.failures.size)
+    assertTrue(output.failures[0] is SSLHandshakeException)
+  }
 
-    @Test
-    @Throws(Exception::class)
-    fun httpsRequestInsecure() {
-        server.useHttps(sslClient.socketFactory, false)
-        server.enqueue(MockResponse().setBody("Isla Sorna"))
+  @Test
+  @Throws(Exception::class)
+  fun httpsRequestInsecure() {
+    server.useHttps(sslClient.socketFactory, false)
+    server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-        main.arguments = Lists.newArrayList(server.url("/").toString())
-        main.allowInsecure = true
+    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.allowInsecure = true
 
-        main.run()
+    main.run()
 
-        assertEquals(1, output.responses.size)
-        assertEquals(200, output.responses[0].code())
-    }
+    assertEquals(1, output.responses.size)
+    assertEquals(200, output.responses[0].code())
+  }
 
-    @Test
-    @Ignore
-    @Throws(Exception::class)
-    fun httpsRequestSecure() {
-        server.useHttps(sslClient.socketFactory, false)
-        server.enqueue(MockResponse().setBody("Isla Sorna"))
+  @Test
+  @Ignore
+  @Throws(Exception::class)
+  fun httpsRequestSecure() {
+    server.useHttps(sslClient.socketFactory, false)
+    server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-        main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.arguments = Lists.newArrayList(server.url("/").toString())
 
-        main.run()
+    main.run()
 
-        assertEquals(1, output.responses.size)
-        assertEquals(200, output.responses[0].code())
-    }
+    assertEquals(1, output.responses.size)
+    assertEquals(200, output.responses[0].code())
+  }
 
-    @Test
-    @Throws(Exception::class)
-    fun rejectedWithPin() {
-        server.useHttps(sslClient.socketFactory, false)
-        server.enqueue(MockResponse().setBody("Isla Sorna"))
+  @Test
+  @Throws(Exception::class)
+  fun rejectedWithPin() {
+    server.useHttps(sslClient.socketFactory, false)
+    server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-        main.arguments = Lists.newArrayList(server.url("/").toString())
-        main.certificatePins = Lists.newArrayList(CertificatePin(server.hostName + ":" +
-                "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")) as java.util.List<CertificatePin>
-        main.allowInsecure = true
+    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.certificatePins = Lists.newArrayList(CertificatePin(server.hostName + ":" +
+        "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")) as java.util.List<CertificatePin>
+    main.allowInsecure = true
 
-        main.run()
+    main.run()
 
-        assertEquals(0, output.responses.size)
-        assertEquals(1, output.failures.size)
-        assertTrue(output.failures[0] is SSLPeerUnverifiedException)
-    }
+    assertEquals(0, output.responses.size)
+    assertEquals(1, output.failures.size)
+    assertTrue(output.failures[0] is SSLPeerUnverifiedException)
+  }
 }

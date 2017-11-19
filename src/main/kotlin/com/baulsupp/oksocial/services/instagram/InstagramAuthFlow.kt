@@ -10,29 +10,29 @@ import okhttp3.Request
 import java.io.IOException
 
 object InstagramAuthFlow {
-    @Throws(IOException::class)
-    fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-              clientSecret: String, scopes: Iterable<String>): Oauth2Token {
-        SimpleWebServer.forCode().use { s ->
+  @Throws(IOException::class)
+  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+            clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+    SimpleWebServer.forCode().use { s ->
 
-            val loginUrl = "https://api.instagram.com/oauth/authorize/?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString("+")}"
+      val loginUrl = "https://api.instagram.com/oauth/authorize/?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString("+")}"
 
-            outputHandler.openLink(loginUrl)
+      outputHandler.openLink(loginUrl)
 
-            val code = s.waitForCode()
+      val code = s.waitForCode()
 
-            val tokenUrl = "https://api.instagram.com/oauth/access_token"
-            val body = FormBody.Builder().add("client_id", clientId)
-                    .add("redirect_uri", s.redirectUri)
-                    .add("client_secret", clientSecret)
-                    .add("code", code)
-                    .add("grant_type", "authorization_code")
-                    .build()
-            val request = Request.Builder().url(tokenUrl).method("POST", body).build()
+      val tokenUrl = "https://api.instagram.com/oauth/access_token"
+      val body = FormBody.Builder().add("client_id", clientId)
+          .add("redirect_uri", s.redirectUri)
+          .add("client_secret", clientSecret)
+          .add("code", code)
+          .add("grant_type", "authorization_code")
+          .build()
+      val request = Request.Builder().url(tokenUrl).method("POST", body).build()
 
-            val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-            return Oauth2Token(responseMap["access_token"] as String)
-        }
+      return Oauth2Token(responseMap["access_token"] as String)
     }
+  }
 }

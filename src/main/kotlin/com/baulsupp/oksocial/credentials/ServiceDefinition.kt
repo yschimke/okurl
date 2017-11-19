@@ -1,17 +1,17 @@
 package com.baulsupp.oksocial.credentials
 
 interface ServiceDefinition<T> {
-    fun apiHost(): String
+  fun apiHost(): String
 
-    fun serviceName(): String
+  fun serviceName(): String
 
-    fun parseCredentialsString(s: String): T
+  fun parseCredentialsString(s: String): T
 
-    fun formatCredentialsString(credentials: T): String
+  fun formatCredentialsString(credentials: T): String
 
-    fun shortName(): String
+  fun shortName(): String
 
-    fun apiDocs(): String? = null
+  fun apiDocs(): String? = null
 
-    fun accountsLink(): String? = null
+  fun accountsLink(): String? = null
 }

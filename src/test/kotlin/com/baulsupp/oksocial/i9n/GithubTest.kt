@@ -12,42 +12,42 @@ import kotlin.test.assertTrue
 
 
 class GithubTest {
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
-    private val credentialsStore = TestCredentialsStore()
-    private val service = GithubAuthInterceptor().serviceDefinition()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
+  private val credentialsStore = TestCredentialsStore()
+  private val service = GithubAuthInterceptor().serviceDefinition()
 
-    init {
-        main.outputHandler = output
-        main.credentialsStore = credentialsStore
-    }
+  init {
+    main.outputHandler = output
+    main.credentialsStore = credentialsStore
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeEndpointShortCommand1() {
-        credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
+  @Test
+  @Throws(Throwable::class)
+  fun completeEndpointShortCommand1() {
+    credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
 
-        main.commandName = "okapi"
-        main.arguments = newArrayList("commands/githubapi", "/")
-        main.urlComplete = true
+    main.commandName = "okapi"
+    main.arguments = newArrayList("commands/githubapi", "/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(output.stdout[0].contains("/user"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(output.stdout[0].contains("/user"))
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeEndpoint() {
-        credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
+  @Test
+  @Throws(Throwable::class)
+  fun completeEndpoint() {
+    credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
 
-        main.arguments = newArrayList("https://api.github.com/")
-        main.urlComplete = true
+    main.arguments = newArrayList("https://api.github.com/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(output.stdout[0].contains("https://api.github.com/user"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(output.stdout[0].contains("https://api.github.com/user"))
+  }
 }
