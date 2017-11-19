@@ -85,7 +85,7 @@ class WebServerTest {
 
         main.arguments = Lists.newArrayList(server.url("/").toString())
         main.certificatePins = Lists.newArrayList(CertificatePin(server.hostName + ":" +
-                "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18="))
+                "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")) as java.util.List<CertificatePin>
         main.allowInsecure = true
 
         main.run()
