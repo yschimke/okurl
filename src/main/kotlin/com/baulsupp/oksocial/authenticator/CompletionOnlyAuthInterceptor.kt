@@ -21,10 +21,6 @@ abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, privat
   override fun validate(client: OkHttpClient, requestBuilder: Request.Builder, credentials: Nothing): Future<ValidatedCredentials> =
       CompletableFuture.completedFuture(ValidatedCredentials(null, null))
 
-  override fun hosts(): Collection<String> {
-    return listOf("fivethirtyeight.datasettes.com", "parlgov.datasettes.com")
-  }
-
   override fun serviceDefinition(): ServiceDefinition<Nothing> {
     return object : AbstractServiceDefinition<Nothing>(apiHost, serviceName, shortName,
         apiDocs, null) {
