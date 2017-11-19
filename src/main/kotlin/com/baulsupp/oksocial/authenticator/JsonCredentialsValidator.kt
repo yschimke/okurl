@@ -42,7 +42,8 @@ class JsonCredentialsValidator(
   private fun extractString(response: Response,
                             responseExtractor: (Map<String, Any>) -> String): CompletableFuture<String?> {
     try {
-      val map = JsonUtil.map(response.body()!!.string())
+      val responseString = response.body()!!.string()
+      val map = if (responseString == "") mapOf() else JsonUtil.map(responseString)
 
       if (response.code() != 200) {
         var error = "verify failed"
