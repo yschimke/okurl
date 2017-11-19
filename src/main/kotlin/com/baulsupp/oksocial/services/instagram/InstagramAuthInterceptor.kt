@@ -62,7 +62,7 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return user["full_name"] as String
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return InstagramUtil.API_HOSTS
   }
 }

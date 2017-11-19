@@ -67,7 +67,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
         apiRequest("/app", requestBuilder), { this.extract(it) }).validate(client)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return FacebookUtil.API_HOSTS
   }
 

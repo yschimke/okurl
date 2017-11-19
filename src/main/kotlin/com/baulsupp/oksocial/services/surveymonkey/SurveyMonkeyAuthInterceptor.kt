@@ -79,7 +79,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     return completer
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return SurveyMonkeyUtil.API_HOSTS
   }
 }

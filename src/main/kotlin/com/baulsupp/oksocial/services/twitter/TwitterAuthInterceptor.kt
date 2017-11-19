@@ -66,7 +66,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
         { it["name"] as String }).validate(client)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return TwitterUtil.TWITTER_API_HOSTS
   }
 }

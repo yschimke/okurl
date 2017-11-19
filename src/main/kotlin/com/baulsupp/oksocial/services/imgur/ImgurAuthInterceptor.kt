@@ -80,7 +80,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
         credentials.clientSecret)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return ImgurUtil.API_HOSTS
   }
 }

@@ -28,7 +28,7 @@ import java.util.concurrent.Future
  */
 class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   private val foundHosts by lazy {
-    UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }
+    UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }.toSet()
   }
   private val discoveryIndex by lazy { DiscoveryIndex.loadStatic() }
 
@@ -108,7 +108,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
         BaseUrlCompleter(UrlList.fromResource(name())!!, hosts())
       }
 
-  override fun hosts(): Collection<String> = foundHosts
+  override fun hosts(): Set<String> = foundHosts
 
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 

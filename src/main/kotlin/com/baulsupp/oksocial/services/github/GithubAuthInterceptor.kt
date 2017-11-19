@@ -52,7 +52,7 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return JsonCredentialsValidator(GithubUtil.apiRequest("/user", requestBuilder), { it["name"] as String }).validate(client)
   }
 
-  override fun hosts(): List<String> {
+  override fun hosts(): Set<String> {
     return GithubUtil.API_HOSTS
   }
 }

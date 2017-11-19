@@ -85,7 +85,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return completer
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return SquareUpUtil.API_HOSTS
   }
 }

@@ -57,7 +57,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
         { it["formattedName"] as String }).validate(client)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return LinkedinUtil.API_HOSTS
   }
 }

@@ -1,7 +1,11 @@
 package com.baulsupp.oksocial.kotlin
 
-//import com.intellij.openapi.diagnostic.Logger
-//import org.apache.log4j.Level
+import org.jetbrains.kotlin.cli.common.repl.KotlinJsr223JvmScriptEngineFactoryBase
+import org.jetbrains.kotlin.cli.common.repl.ScriptArgsWithTypes
+import org.jetbrains.kotlin.com.intellij.openapi.diagnostic.Logger
+import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer
+import org.jetbrains.kotlin.org.apache.log4j.Level
+import org.jetbrains.kotlin.script.jsr223.KotlinStandardJsr223ScriptTemplate
 import java.io.File
 import java.lang.management.ManagementFactory
 import javax.script.Bindings

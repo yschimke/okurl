@@ -1,6 +1,9 @@
 package com.baulsupp.oksocial.services.mapbox
 
 import com.baulsupp.oksocial.location.Location
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.Json
+import com.squareup.moshi.ToJson
 
 data class MapboxProperties(val address: String?, val category: String?, val tel: String?, val landmark: Boolean?, val maki: String?)
 

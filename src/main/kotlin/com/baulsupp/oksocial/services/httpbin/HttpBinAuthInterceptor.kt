@@ -52,7 +52,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return ImmediateFuture { ValidatedCredentials(credentials.user, null) }
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return setOf((
         "httpbin.org")
     )

@@ -54,7 +54,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
         "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2l0eGRkc245MDAzODJ5cDF2Z3l2czJjaSJ9.9XMBjr0vkbh2WD74DQcd3w")
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return MapboxUtil.API_HOSTS
   }
 }

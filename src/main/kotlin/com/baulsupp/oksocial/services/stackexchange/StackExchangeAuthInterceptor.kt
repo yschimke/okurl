@@ -64,7 +64,7 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
         scopes)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return StackExchangeUtil.API_HOSTS
   }
 }

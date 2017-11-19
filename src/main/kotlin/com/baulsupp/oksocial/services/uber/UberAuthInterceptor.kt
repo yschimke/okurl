@@ -68,7 +68,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
         { map -> "${map["first_name"]} ${map["last_name"]}" }).validate(client)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return setOf(
         "api.uber.com", "login.uber.com", "sandbox-api.uber.com")
 

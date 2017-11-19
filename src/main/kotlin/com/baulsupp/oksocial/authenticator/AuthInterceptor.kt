@@ -48,7 +48,7 @@ interface AuthInterceptor<T> {
   fun renew(client: OkHttpClient, credentials: T): T? = null
 
   @Throws(IOException::class)
-  fun hosts(): Collection<String>
+  fun hosts(): Set<String>
 
   @Throws(IOException::class)
   fun apiCompleter(prefix: String, client: OkHttpClient,

@@ -53,7 +53,7 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return ImmediateFuture { ValidatedCredentials("?", null) }
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return GiphyUtil.API_HOSTS
   }
 }

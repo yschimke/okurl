@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.Arrays
 import java.util.concurrent.Future
 
 class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
@@ -44,8 +43,8 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
         "https://docs.test.com", "https://apps.test.com")
   }
 
-  override fun hosts(): Collection<String> {
-    return Arrays.asList("test.com", "api1.test.com")
+  override fun hosts(): Set<String> {
+    return setOf("test.com", "api1.test.com")
   }
 
   override fun apiDocPresenter(url: String): ApiDocPresenter {

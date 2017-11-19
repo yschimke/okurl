@@ -64,7 +64,7 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return "${user["firstName"]} ${user["lastName"]}"
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return FourSquareUtil.API_HOSTS
   }
 }

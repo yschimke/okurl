@@ -77,7 +77,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return completer
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return TwilioUtil.API_HOSTS
   }
 }

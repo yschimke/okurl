@@ -71,7 +71,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
         { it["display_name"] as String }).validate(client)
   }
 
-  override fun hosts(): Collection<String> {
+  override fun hosts(): Set<String> {
     return setOf((
         "api.spotify.com")
     )
