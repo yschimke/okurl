@@ -12,71 +12,71 @@ import kotlin.test.assertTrue
 
 
 class GoogleCompletionTest {
-    private val main = Main()
-    private val output = TestOutputHandler<Response>()
-    private val credentialsStore = TestCredentialsStore()
+  private val main = Main()
+  private val output = TestOutputHandler<Response>()
+  private val credentialsStore = TestCredentialsStore()
 
-    init {
-        main.outputHandler = output
-        main.credentialsStore = credentialsStore
-    }
+  init {
+    main.outputHandler = output
+    main.credentialsStore = credentialsStore
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completePeopleEndpointSite() {
-        assumeHasNetwork()
+  @Test
+  @Throws(Throwable::class)
+  fun completePeopleEndpointSite() {
+    assumeHasNetwork()
 
-        main.arguments = newArrayList("https://people.googleapis.com/")
-        main.urlComplete = true
+    main.arguments = newArrayList("https://people.googleapis.com/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completePeopleEndpointPath() {
-        assumeHasNetwork()
+  @Test
+  @Throws(Throwable::class)
+  fun completePeopleEndpointPath() {
+    assumeHasNetwork()
 
-        main.arguments = newArrayList("https://people.googleapis.com/v1/people:batch")
-        main.urlComplete = true
+    main.arguments = newArrayList("https://people.googleapis.com/v1/people:batch")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(output.stdout[0].contains("https://people.googleapis.com/v1/people:batchGet"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(output.stdout[0].contains("https://people.googleapis.com/v1/people:batchGet"))
+  }
 
-    @Test
-    @Throws(Throwable::class)
-    fun completeGmailUserId() {
-        assumeHasNetwork()
+  @Test
+  @Throws(Throwable::class)
+  fun completeGmailUserId() {
+    assumeHasNetwork()
 
-        main.arguments = newArrayList("https://www.googleapis.com/gmail/v1/")
-        main.urlComplete = true
+    main.arguments = newArrayList("https://www.googleapis.com/gmail/v1/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(
-                output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/profile"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(
+        output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/profile"))
+  }
 
-    // Nested example
-    @Test
-    @Throws(Throwable::class)
-    fun completeGmailMessages() {
-        assumeHasNetwork()
+  // Nested example
+  @Test
+  @Throws(Throwable::class)
+  fun completeGmailMessages() {
+    assumeHasNetwork()
 
-        main.arguments = newArrayList("https://www.googleapis.com/gmail/v1/")
-        main.urlComplete = true
+    main.arguments = newArrayList("https://www.googleapis.com/gmail/v1/")
+    main.urlComplete = true
 
-        main.run()
+    main.run()
 
-        assertEquals(mutableListOf(), output.failures)
-        assertTrue(
-                output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/messages"))
-    }
+    assertEquals(mutableListOf(), output.failures)
+    assertTrue(
+        output.stdout[0].contains("https://www.googleapis.com/gmail/v1/users/me/messages"))
+  }
 }

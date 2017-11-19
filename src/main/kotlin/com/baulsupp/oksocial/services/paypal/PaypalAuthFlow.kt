@@ -9,20 +9,20 @@ import okhttp3.Request
 import java.io.IOException
 
 object PaypalAuthFlow {
-    @Throws(IOException::class)
-    fun login(client: OkHttpClient, host: String, clientId: String,
-              clientSecret: String): Oauth2Token {
-        val body = FormBody.Builder().add("grant_type", "client_credentials").build()
+  @Throws(IOException::class)
+  fun login(client: OkHttpClient, host: String, clientId: String,
+            clientSecret: String): Oauth2Token {
+    val body = FormBody.Builder().add("grant_type", "client_credentials").build()
 
-        val basic = Credentials.basic(clientId, clientSecret)
-        val request = Request.Builder().url("https://$host/v1/oauth2/token")
-                .post(body)
-                .header("Authorization", basic)
-                .header("Accept", "application/json")
-                .build()
+    val basic = Credentials.basic(clientId, clientSecret)
+    val request = Request.Builder().url("https://$host/v1/oauth2/token")
+        .post(body)
+        .header("Authorization", basic)
+        .header("Accept", "application/json")
+        .build()
 
-        val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
-        return Oauth2Token(responseMap["access_token"] as String)
-    }
+    return Oauth2Token(responseMap["access_token"] as String)
+  }
 }

@@ -22,62 +22,62 @@ import java.io.IOException
 import java.util.concurrent.Future
 
 class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
-    override fun serviceDefinition(): BasicAuthServiceDefinition {
-        return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
-                "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
+  override fun serviceDefinition(): BasicAuthServiceDefinition {
+    return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
+        "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
+  }
+
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+    var request = chain.request()
+
+    request = request.newBuilder()
+        .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+        .build()
+
+    return chain.proceed(request)
+  }
+
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): BasicCredentials {
+    val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
+    val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
+
+    return BasicCredentials(user, password)
+  }
+
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
+    return JsonCredentialsValidator(
+        TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),
+        this::getName).validate(client)
+  }
+
+  private fun getName(map: Map<String, Any>): String {
+    val accounts = map["accounts"] as List<Map<String, Any>>
+
+    return accounts[0]["friendly_name"] as String
+  }
+
+  @Throws(IOException::class)
+  override fun apiCompleter(prefix: String, client: OkHttpClient,
+                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+    val urlList = UrlList.fromResource(name())
+
+    val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
+
+    val completer = BaseUrlCompleter(urlList!!, hosts())
+
+    if (credentials != null) {
+      completer.withVariable("AccountSid",
+          Lists.newArrayList(credentials.user))
     }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
-        var request = chain.request()
+    return completer
+  }
 
-        request = request.newBuilder()
-                .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-                .build()
-
-        return chain.proceed(request)
-    }
-
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): BasicCredentials {
-        val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
-        val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
-
-        return BasicCredentials(user, password)
-    }
-
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
-        return JsonCredentialsValidator(
-                TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),
-                this::getName).validate(client)
-    }
-
-    private fun getName(map: Map<String, Any>): String {
-        val accounts = map["accounts"] as List<Map<String, Any>>
-
-        return accounts[0]["friendly_name"] as String
-    }
-
-    @Throws(IOException::class)
-    override fun apiCompleter(prefix: String, client: OkHttpClient,
-                              credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-        val urlList = UrlList.fromResource(name())
-
-        val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
-
-        val completer = BaseUrlCompleter(urlList!!, hosts())
-
-        if (credentials != null) {
-            completer.withVariable("AccountSid",
-                    Lists.newArrayList(credentials.user))
-        }
-
-        return completer
-    }
-
-    override fun hosts(): Collection<String> {
-        return TwilioUtil.API_HOSTS
-    }
+  override fun hosts(): Collection<String> {
+    return TwilioUtil.API_HOSTS
+  }
 }

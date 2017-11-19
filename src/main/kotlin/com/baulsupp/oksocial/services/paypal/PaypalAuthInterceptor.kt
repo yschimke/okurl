@@ -19,53 +19,53 @@ import java.util.concurrent.Future
  * https://developer.paypal.com/docs/authentication
  */
 open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
-    override fun serviceDefinition(): Oauth2ServiceDefinition {
-        return Oauth2ServiceDefinition(host(), "Paypal API", shortName(),
-                "https://developer.paypal.com/docs/api/",
-                "https://developer.paypal.com/developer/applications/")
-    }
+  override fun serviceDefinition(): Oauth2ServiceDefinition {
+    return Oauth2ServiceDefinition(host(), "Paypal API", shortName(),
+        "https://developer.paypal.com/docs/api/",
+        "https://developer.paypal.com/developer/applications/")
+  }
 
-    protected open fun shortName(): String {
-        return "paypal"
-    }
+  protected open fun shortName(): String {
+    return "paypal"
+  }
 
-    protected open fun host(): String {
-        return "api.paypal.com"
-    }
+  protected open fun host(): String {
+    return "api.paypal.com"
+  }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-        var request = chain.request()
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    var request = chain.request()
 
-        val token = credentials.accessToken
+    val token = credentials.accessToken
 
-        val builder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
+    val builder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
 
-        request = builder.build()
+    request = builder.build()
 
-        return chain.proceed(request)
-    }
+    return chain.proceed(request)
+  }
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
-        return JsonCredentialsValidator(
-                PaypalUtil.apiRequest("/v1/oauth2/token/userinfo?schema=openid", requestBuilder),
-                { it -> it["name"].toString() }).validate(client)
-    }
+  @Throws(IOException::class)
+  override fun validate(client: OkHttpClient,
+                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+    return JsonCredentialsValidator(
+        PaypalUtil.apiRequest("/v1/oauth2/token/userinfo?schema=openid", requestBuilder),
+        { it -> it["name"].toString() }).validate(client)
+  }
 
-    @Throws(IOException::class)
-    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-                           authArguments: List<String>): Oauth2Token {
-        System.err.println("Authorising Paypal API")
+  @Throws(IOException::class)
+  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+                         authArguments: List<String>): Oauth2Token {
+    System.err.println("Authorising Paypal API")
 
-        val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)
-        val clientSecret = Secrets.prompt("Paypal Client Secret", "paypal.clientSecret", "", true)
+    val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)
+    val clientSecret = Secrets.prompt("Paypal Client Secret", "paypal.clientSecret", "", true)
 
-        return PaypalAuthFlow.login(client, host(), clientId, clientSecret)
-    }
+    return PaypalAuthFlow.login(client, host(), clientId, clientSecret)
+  }
 
-    override fun hosts(): Set<String> {
-        return Sets.newHashSet(host())
-    }
+  override fun hosts(): Set<String> {
+    return Sets.newHashSet(host())
+  }
 }

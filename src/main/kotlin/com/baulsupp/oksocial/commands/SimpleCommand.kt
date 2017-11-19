@@ -6,16 +6,16 @@ import okhttp3.Request
 
 open class SimpleCommand(val name: String, private val prefix: String, val authenticator: String?) : ShellCommand {
 
-    override fun name(): String {
-        return name
-    }
+  override fun name(): String {
+    return name
+  }
 
-    override fun buildRequests(client: OkHttpClient,
-                               requestBuilder: Request.Builder, arguments: List<String>): List<Request> {
-        return try {
-            arguments.map { u -> requestBuilder.url(prefix + u).build() }
-        } catch (iae: IllegalArgumentException) {
-            throw UsageException(iae.message.orEmpty())
-        }
+  override fun buildRequests(client: OkHttpClient,
+                             requestBuilder: Request.Builder, arguments: List<String>): List<Request> {
+    return try {
+      arguments.map { u -> requestBuilder.url(prefix + u).build() }
+    } catch (iae: IllegalArgumentException) {
+      throw UsageException(iae.message.orEmpty())
     }
+  }
 }

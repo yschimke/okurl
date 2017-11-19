@@ -22,53 +22,53 @@ import javax.security.auth.callback.PasswordCallback
 import javax.security.auth.callback.UnsupportedCallbackException
 
 object KeystoreUtils {
-    fun keyManagerArray(keyManagers: List<KeyManager>): Array<KeyManager>? {
-        var kms: Array<KeyManager>? = null
-        if (!keyManagers.isEmpty()) {
-            kms = keyManagers.toTypedArray()
-        }
-        return kms
+  fun keyManagerArray(keyManagers: List<KeyManager>): Array<KeyManager>? {
+    var kms: Array<KeyManager>? = null
+    if (!keyManagers.isEmpty()) {
+      kms = keyManagers.toTypedArray()
+    }
+    return kms
+  }
+
+  @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
+  fun createSslSocketFactory(keyManagers: Array<KeyManager>?,
+                             trustManagers: X509TrustManager): SSLSocketFactory {
+    val context = SSLContext.getInstance("TLS")
+
+    context.init(keyManagers, arrayOf<TrustManager>(trustManagers), null)
+
+    return context.socketFactory
+  }
+
+  @Throws(Exception::class)
+  fun createKeyManager(keystore: KeyStore, callbackHandler: CallbackHandler): KeyManager {
+    val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+
+    try {
+      kmf.init(keystore, "".toCharArray())
+    } catch (uke: UnrecoverableKeyException) {
+      val pwCallback = PasswordCallback("Keystore password: ", false)
+      val callbacks = arrayOf<Callback>(pwCallback)
+      callbackHandler.handle(callbacks)
+
+      kmf.init(keystore, pwCallback.password)
     }
 
-    @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
-    fun createSslSocketFactory(keyManagers: Array<KeyManager>?,
-                               trustManagers: X509TrustManager): SSLSocketFactory {
-        val context = SSLContext.getInstance("TLS")
+    val keyManagers = kmf.keyManagers
 
-        context.init(keyManagers, arrayOf<TrustManager>(trustManagers), null)
-
-        return context.socketFactory
+    if (keyManagers.size != 1) {
+      throw IllegalStateException(Arrays.toString(keyManagers))
     }
 
-    @Throws(Exception::class)
-    fun createKeyManager(keystore: KeyStore, callbackHandler: CallbackHandler): KeyManager {
-        val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+    return keyManagers[0]
+  }
 
-        try {
-            kmf.init(keystore, "".toCharArray())
-        } catch (uke: UnrecoverableKeyException) {
-            val pwCallback = PasswordCallback("Keystore password: ", false)
-            val callbacks = arrayOf<Callback>(pwCallback)
-            callbackHandler.handle(callbacks)
+  @Throws(KeyStoreException::class, IOException::class, NoSuchAlgorithmException::class, CertificateException::class, UnsupportedCallbackException::class)
+  fun getKeyStore(keystore: File?): KeyStore {
+    val keystoreClient = KeyStore.getInstance("JKS")
 
-            kmf.init(keystore, pwCallback.password)
-        }
+    keystoreClient.load(if (keystore != null) FileInputStream(keystore) else null, null)
 
-        val keyManagers = kmf.keyManagers
-
-        if (keyManagers.size != 1) {
-            throw IllegalStateException(Arrays.toString(keyManagers))
-        }
-
-        return keyManagers[0]
-    }
-
-    @Throws(KeyStoreException::class, IOException::class, NoSuchAlgorithmException::class, CertificateException::class, UnsupportedCallbackException::class)
-    fun getKeyStore(keystore: File?): KeyStore {
-        val keystoreClient = KeyStore.getInstance("JKS")
-
-        keystoreClient.load(if (keystore != null) FileInputStream(keystore) else null, null)
-
-        return keystoreClient
-    }
+    return keystoreClient
+  }
 }

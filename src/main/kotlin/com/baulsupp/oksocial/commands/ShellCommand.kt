@@ -5,19 +5,19 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 interface ShellCommand {
-    fun name(): String
+  fun name(): String
 
-    @Throws(Exception::class)
-    fun buildRequests(client: OkHttpClient, requestBuilder: Request.Builder,
-                      arguments: List<String>): List<Request>
+  @Throws(Exception::class)
+  fun buildRequests(client: OkHttpClient, requestBuilder: Request.Builder,
+                    arguments: List<String>): List<Request>
 
-    fun authenticator(): String? {
-        return null
-    }
+  fun authenticator(): String? {
+    return null
+  }
 
-    fun handlesRequests(): Boolean {
-        return false
-    }
+  fun handlesRequests(): Boolean {
+    return false
+  }
 
-    fun completer(): ArgumentCompleter? = null
+  fun completer(): ArgumentCompleter? = null
 }

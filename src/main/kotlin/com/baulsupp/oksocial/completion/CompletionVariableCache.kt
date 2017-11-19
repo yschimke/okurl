@@ -6,28 +6,28 @@ import java.util.concurrent.CompletableFuture
 
 interface CompletionVariableCache {
 
-    operator fun get(service: String, key: String): List<String>?
+  operator fun get(service: String, key: String): List<String>?
 
-    fun store(service: String, key: String, values: List<String>)
+  fun store(service: String, key: String, values: List<String>)
 
-    fun compute(service: String, key: String,
-                s: () -> CompletableFuture<List<String>>): CompletableFuture<List<String>> {
-        val values = get(service, key)
+  fun compute(service: String, key: String,
+              s: () -> CompletableFuture<List<String>>): CompletableFuture<List<String>> {
+    val values = get(service, key)
 
-        return if (values != null) {
-            ImmediateFuture { values.toList() }
-        } else {
-            s().onSuccess { store(service, key, it) }
-        }
+    return if (values != null) {
+      ImmediateFuture { values.toList() }
+    } else {
+      s().onSuccess { store(service, key, it) }
     }
+  }
 
-    companion object {
-        val NONE: CompletionVariableCache = object : CompletionVariableCache {
-            override fun get(service: String, key: String): List<String>? {
-                return null
-            }
+  companion object {
+    val NONE: CompletionVariableCache = object : CompletionVariableCache {
+      override fun get(service: String, key: String): List<String>? {
+        return null
+      }
 
-            override fun store(service: String, key: String, values: List<String>) {}
-        }
+      override fun store(service: String, key: String, values: List<String>) {}
     }
+  }
 }

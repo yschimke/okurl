@@ -15,29 +15,29 @@ import java.util.ServiceLoader
  * Uses the Jar Services mechanism with services defined by [UriHandler].
  */
 class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
-    private val handlers: List<UriHandler>
+  private val handlers: List<UriHandler>
 
-    init {
-        handlers = ArrayList()
-        services.forEach { handlers.add(it) }
+  init {
+    handlers = ArrayList()
+    services.forEach { handlers.add(it) }
+  }
+
+  private fun findClient(uriString: String): Reporter<Span> {
+    val uri = URI.create(uriString)
+
+    return handlers.mapNotNull { it.buildSender(uri) }.firstOrNull() ?: throw UsageException("unknown zipkin sender: " + uriString)
+  }
+
+  companion object {
+
+    fun fromServices(): UriTransportRegistry {
+      val services = loadServices()
+
+      return UriTransportRegistry(services)
     }
 
-    private fun findClient(uriString: String): Reporter<Span> {
-        val uri = URI.create(uriString)
-
-        return handlers.mapNotNull { it.buildSender(uri) }.firstOrNull() ?: throw UsageException("unknown zipkin sender: " + uriString)
+    fun forUri(uri: String): Reporter<Span> {
+      return UriTransportRegistry.fromServices().findClient(uri)
     }
-
-    companion object {
-
-        fun fromServices(): UriTransportRegistry {
-            val services = loadServices()
-
-            return UriTransportRegistry(services)
-        }
-
-        fun forUri(uri: String): Reporter<Span> {
-            return UriTransportRegistry.fromServices().findClient(uri)
-        }
-    }
+  }
 }

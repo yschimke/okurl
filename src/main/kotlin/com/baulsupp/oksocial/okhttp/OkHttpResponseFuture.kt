@@ -7,14 +7,14 @@ import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
 class OkHttpResponseFuture : Callback {
-    val future = CompletableFuture<Response>()
+  val future = CompletableFuture<Response>()
 
-    override fun onFailure(call: Call, e: IOException) {
-        future.completeExceptionally(e)
-    }
+  override fun onFailure(call: Call, e: IOException) {
+    future.completeExceptionally(e)
+  }
 
-    @Throws(IOException::class)
-    override fun onResponse(call: Call, response: Response) {
-        future.complete(response)
-    }
+  @Throws(IOException::class)
+  override fun onResponse(call: Call, response: Response) {
+    future.complete(response)
+  }
 }

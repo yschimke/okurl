@@ -8,34 +8,34 @@ import java.util.Properties
 
 class ZipkinConfig(private val senderUri: String?, private val displayUrl: String?) {
 
-    fun zipkinSenderUri(): String? {
-        return senderUri
-    }
+  fun zipkinSenderUri(): String? {
+    return senderUri
+  }
 
-    fun openFunction(): (TraceContext) -> String? {
-        return { traceContext -> displayUrl?.replace(Regex("""\{traceid\}"""), traceContext.traceIdString()) }
-    }
+  fun openFunction(): (TraceContext) -> String? {
+    return { traceContext -> displayUrl?.replace(Regex("""\{traceid\}"""), traceContext.traceIdString()) }
+  }
 
-    companion object {
-        private val zipkinRc = File(System.getenv("HOME"), ".zipkinrc")
+  companion object {
+    private val zipkinRc = File(System.getenv("HOME"), ".zipkinrc")
 
-        @Throws(IOException::class)
-        fun load(): ZipkinConfig {
-            if (zipkinRc.exists()) {
-                FileReader(zipkinRc).use { r ->
-                    val p = Properties()
-                    p.load(r)
-                    val sender = p.getProperty("SENDER")
-                    val display = p.getProperty("DISPLAY")
-                    return ZipkinConfig(sender, display)
-                }
-            } else {
-                return unconfigured()
-            }
+    @Throws(IOException::class)
+    fun load(): ZipkinConfig {
+      if (zipkinRc.exists()) {
+        FileReader(zipkinRc).use { r ->
+          val p = Properties()
+          p.load(r)
+          val sender = p.getProperty("SENDER")
+          val display = p.getProperty("DISPLAY")
+          return ZipkinConfig(sender, display)
         }
-
-        fun unconfigured(): ZipkinConfig {
-            return ZipkinConfig(null, null)
-        }
+      } else {
+        return unconfigured()
+      }
     }
+
+    fun unconfigured(): ZipkinConfig {
+      return ZipkinConfig(null, null)
+    }
+  }
 }

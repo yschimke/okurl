@@ -16,50 +16,50 @@ import java.util.logging.LogManager
 import kotlin.test.assertEquals
 
 class LoggingTest {
-    @Rule
-    @JvmField
-    var server = MockWebServer()
+  @Rule
+  @JvmField
+  var server = MockWebServer()
 
-    private val main = Main()
+  private val main = Main()
 
-    private val sslClient = SslClient.localhost()
-    private val output = TestOutputHandler<Response>()
+  private val sslClient = SslClient.localhost()
+  private val output = TestOutputHandler<Response>()
 
-    init {
-        main.outputHandler = output
+  init {
+    main.outputHandler = output
+  }
+
+  @Test
+  @Throws(Exception::class)
+  fun logsData() {
+    server.useHttps(sslClient.socketFactory, false)
+    server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1))
+    server.enqueue(MockResponse().setBody("Isla Sorna"))
+    main.allowInsecure = true
+
+    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.debug = true
+
+    main.run()
+  }
+
+  @Test
+  @Throws(Exception::class)
+  fun version() {
+    val output = TestOutputHandler<Response>()
+
+    main.version = true
+
+    main.run()
+
+    assertEquals(0, output.failures.size)
+  }
+
+  companion object {
+
+    @AfterClass
+    fun resetLogging() {
+      LogManager.getLogManager().reset()
     }
-
-    @Test
-    @Throws(Exception::class)
-    fun logsData() {
-        server.useHttps(sslClient.socketFactory, false)
-        server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1))
-        server.enqueue(MockResponse().setBody("Isla Sorna"))
-        main.allowInsecure = true
-
-        main.arguments = Lists.newArrayList(server.url("/").toString())
-        main.debug = true
-
-        main.run()
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun version() {
-        val output = TestOutputHandler<Response>()
-
-        main.version = true
-
-        main.run()
-
-        assertEquals(0, output.failures.size)
-    }
-
-    companion object {
-
-        @AfterClass
-        fun resetLogging() {
-            LogManager.getLogManager().reset()
-        }
-    }
+  }
 }

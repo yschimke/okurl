@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.services.uber
 
-import com.squareup.moshi.Json
-
 data class UberPriceEstimate(
     @Json(name = "localized_display_name") val localizedDisplayName: String,
     val distance: Double,
@@ -12,7 +10,7 @@ data class UberPriceEstimate(
     val duration: Int,
     val estimate: String,
     @Json(name = "currency_code") val currencyCode: String?
-    )
+)
 
 data class UberTimeEstimate(
     @Json(name = "localized_display_name") val localizedDisplayName: String,

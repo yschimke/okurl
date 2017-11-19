@@ -8,27 +8,27 @@ import java.io.File
 
 class TwurlCredentialsStore(val file: File) {
 
-    fun readTwurlRc(): TwurlRc? = try {
-        if (file.isFile) {
-            val objectMapper = ObjectMapper(YAMLFactory())
-            objectMapper.propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
+  fun readTwurlRc(): TwurlRc? = try {
+    if (file.isFile) {
+      val objectMapper = ObjectMapper(YAMLFactory())
+      objectMapper.propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
 
-            objectMapper.readValue(file, TwurlRc::class.java)
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        throw RuntimeException(e)
+      objectMapper.readValue(file, TwurlRc::class.java)
+    } else {
+      null
     }
+  } catch (e: Exception) {
+    throw RuntimeException(e)
+  }
 
-    fun readCredentials(): TwitterCredentials? = readTwurlRc()?.let {
-        val username = it.defaultProfile()[0]
-        val consumerKey = it.defaultProfile()[1]
+  fun readCredentials(): TwitterCredentials? = readTwurlRc()?.let {
+    val username = it.defaultProfile()[0]
+    val consumerKey = it.defaultProfile()[1]
 
-        it.readCredentials(username, consumerKey)
-    }
+    it.readCredentials(username, consumerKey)
+  }
 
-    companion object {
-        var TWURL_STORE = TwurlCredentialsStore(File(System.getProperty("user.home"), ".twurlrc"))
-    }
+  companion object {
+    var TWURL_STORE = TwurlCredentialsStore(File(System.getProperty("user.home"), ".twurlrc"))
+  }
 }

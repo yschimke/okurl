@@ -9,20 +9,20 @@ import okhttp3.OkHttpClient
 import java.io.IOException
 
 class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
-    override fun shortName(): String {
-        return "paypal-sandbox"
-    }
+  override fun shortName(): String {
+    return "paypal-sandbox"
+  }
 
-    override fun host(): String {
-        return "api.sandbox.paypal.com"
-    }
+  override fun host(): String {
+    return "api.sandbox.paypal.com"
+  }
 
-    @Throws(IOException::class)
-    override fun apiCompleter(prefix: String, client: OkHttpClient,
-                              credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-        val testUrls = UrlList.fromResource("paypal")!!.getUrls("")
-                .map { s -> s.replace("api.paypal.com", host()) }
+  @Throws(IOException::class)
+  override fun apiCompleter(prefix: String, client: OkHttpClient,
+                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+    val testUrls = UrlList.fromResource("paypal")!!.getUrls("")
+        .map { s -> s.replace("api.paypal.com", host()) }
 
-        return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts())
-    }
+    return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts())
+  }
 }

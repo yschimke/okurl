@@ -4,11 +4,11 @@ import okhttp3.Request
 
 object SurveyMonkeyUtil {
 
-    val API_HOSTS = setOf((
-            "api.surveymonkey.net")
-    )
+  val API_HOSTS = setOf((
+      "api.surveymonkey.net")
+  )
 
-    fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
-        return requestBuilder.url("https://api.surveymonkey.net" + s).build()
-    }
+  fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
+    return requestBuilder.url("https://api.surveymonkey.net" + s).build()
+  }
 }
