@@ -1,60 +1,29 @@
 package com.baulsupp.oksocial.services.datasettes
 
-import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.BasicCredentials
-import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition
-import com.baulsupp.oksocial.credentials.ServiceDefinition
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.secrets.Secrets
-import io.github.vjames19.futures.jdk8.ImmediateFuture
-import okhttp3.Credentials
-import okhttp3.Interceptor
+import com.baulsupp.oksocial.authenticator.CompletionOnlyAuthInterceptor
+import com.baulsupp.oksocial.completion.ApiCompleter
+import com.baulsupp.oksocial.completion.CompletionVariableCache
+import com.baulsupp.oksocial.completion.HostUrlCompleter
+import com.baulsupp.oksocial.credentials.CredentialsStore
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
-import java.util.concurrent.Future
 
 /**
- * http://httpbin.org/
+ * https://datasettes.com/
  */
-class DatasettesAuthInterceptor : AuthInterceptor<BasicCredentials> {
+class DatasettesAuthInterceptor : CompletionOnlyAuthInterceptor("datasettes.com", "Datasettes", "datasettes", "https://github.com/simonw/datasette") {
+  override fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+    return DatasettesCompleter()
+  }
 
-//    @Throws(IOException::class)
-//    override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
-//        var request = chain.request()
-//
-//        request = request.newBuilder()
-//                .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-//                .build()
-//
-//        return chain.proceed(request)
-//    }
-//
-//    @Throws(IOException::class)
-//    override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
-//                           authArguments: List<String>): BasicCredentials {
-//        val user = Secrets.prompt("User", "httpbin.user", "", false)
-//        val password = Secrets.prompt("Password", "httpbin.password", "", true)
-//
-//        return BasicCredentials(user, password)
-//    }
+  override fun hosts(): Collection<String> {
+    return knownHosts()
+  }
+}
 
-    override fun serviceDefinition(): ServiceDefinition<BasicCredentials> {
-        return BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
-            "https://httpbin.org/", null)
-    }
+class DatasettesCompleter : HostUrlCompleter(knownHosts()) {
 
-    @Throws(IOException::class)
-    override fun validate(client: OkHttpClient,
-                          requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
-        return ImmediateFuture { ValidatedCredentials(credentials.user, null) }
-    }
+}
 
-    override fun hosts(): Collection<String> {
-        return setOf((
-                "httpbin.org")
-        )
-    }
+fun knownHosts(): Iterable<String> {
+  return listOf("fivethirtyeight.datasettes.com", "parlgov.datasettes.com")
 }
