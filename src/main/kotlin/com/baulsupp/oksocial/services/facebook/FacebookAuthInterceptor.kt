@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.services.facebook
 
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
+import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -13,12 +14,10 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.ALL_PERMISSIONS
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.Future
+import java.util.logging.Level
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -69,6 +68,10 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override fun hosts(): Set<String> {
     return FacebookUtil.API_HOSTS
+  }
+
+  override fun supportsUrl(url: HttpUrl): Boolean {
+      return url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
   }
 
   @Throws(IOException::class)
