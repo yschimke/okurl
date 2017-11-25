@@ -16,7 +16,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://developer.surveymonkey.com/docs/authentication
@@ -38,8 +37,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): SurveyMonkeyToken {
     System.err.println("Authorising SurveyMonkey API")
 
@@ -48,9 +46,8 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     return SurveyMonkeyToken(apiKey, accessToken)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): ValidatedCredentials {
     return JsonCredentialsValidator(
         SurveyMonkeyUtil.apiRequest("/v3/users/me", requestBuilder),
         { it["username"] as String }).validate(client)

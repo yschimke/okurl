@@ -10,8 +10,7 @@ import okhttp3.Request
 import java.io.IOException
 
 object UberAuthFlow {
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
             clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val loginUrl = "https://login.uber.com/oauth/v2/authorize?client_id=$clientId&response_type=code&state=x&redirect_uri=${s.redirectUri}"

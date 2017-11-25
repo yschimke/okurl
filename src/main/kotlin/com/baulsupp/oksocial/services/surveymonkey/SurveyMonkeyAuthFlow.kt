@@ -10,8 +10,7 @@ import okhttp3.Request
 import java.io.IOException
 
 object SurveyMonkeyAuthFlow {
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
             apiKey: String, secret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val redirectUri = s.redirectUri

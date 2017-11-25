@@ -14,7 +14,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://graph.microsoft.io/en-us/docs/authorization/app_authorization
@@ -38,8 +37,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Microsoft API")
 
@@ -53,8 +51,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return credentials.isRenewable()
   }
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder().add("grant_type", "refresh_token")
         .add("redirect_uri", "http://localhost:3000/callback")
@@ -76,9 +73,8 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
         credentials.clientSecret)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         MicrosoftUtil.apiRequest("/v1.0/me", requestBuilder),
         { it["displayName"] as String }).validate(

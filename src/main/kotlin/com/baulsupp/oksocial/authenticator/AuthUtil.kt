@@ -11,8 +11,7 @@ import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
 object AuthUtil {
-  @Throws(IOException::class)
-  fun makeSimpleRequest(client: OkHttpClient, request: Request): String {
+  suspend fun makeSimpleRequest(client: OkHttpClient, request: Request): String {
     client.newCall(request).execute().use { response -> return responseToString(response) }
   }
 
@@ -36,8 +35,7 @@ object AuthUtil {
     return response.body()!!.string()
   }
 
-  @Throws(IOException::class)
-  fun makeSimpleGetRequest(client: OkHttpClient, uri: String): String {
+  suspend fun makeSimpleGetRequest(client: OkHttpClient, uri: String): String {
     return makeSimpleRequest(client, uriGetRequest(uri))
   }
 
@@ -45,8 +43,7 @@ object AuthUtil {
     return Request.Builder().url(uri).build()
   }
 
-  @Throws(IOException::class)
-  fun makeJsonMapRequest(client: OkHttpClient, request: Request): Map<String, Any> {
+  suspend fun makeJsonMapRequest(client: OkHttpClient, request: Request): Map<String, Any> {
     return JsonUtil.map(makeSimpleRequest(client, request))
   }
 

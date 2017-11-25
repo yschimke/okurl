@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.facebook
 
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -16,8 +15,6 @@ import com.baulsupp.oksocial.services.facebook.FacebookUtil.ALL_PERMISSIONS
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest
 import okhttp3.*
 import java.io.IOException
-import java.util.concurrent.Future
-import java.util.logging.Level
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -38,8 +35,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Facebook API")
 
@@ -59,9 +55,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return "" + map["name"] + " (" + map["id"] + ")"
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(apiRequest("/me", requestBuilder), { extract(it) },
         apiRequest("/app", requestBuilder), { this.extract(it) }).validate(client)
   }

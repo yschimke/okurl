@@ -7,7 +7,7 @@ import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Rfc3339DateJsonAdapter
 import okhttp3.Request
-import java.io.IOException
+import okhttp3.Response
 import java.util.Date
 
 
@@ -18,10 +18,10 @@ val x = run {
 }
 
 val moshi = Moshi.Builder()
-    .add(MapboxLatLongAdapter())
-    .add(KotlinJsonAdapterFactory())
-    .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-    .build()
+        .add(MapboxLatLongAdapter())
+        .add(KotlinJsonAdapterFactory())
+        .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+        .build()
 
 fun warmup(vararg urls: String) {
   urls.forEach { okshell.warmup(it) }
@@ -33,15 +33,11 @@ suspend fun show(url: String) {
   okshell.show(url)
 }
 
-@Throws(IOException::class)
 inline suspend fun <reified T> query(url: String): T = okshell.client.query(url)
 
-@Throws(IOException::class)
 inline suspend fun <reified K, reified V> queryMap(url: String): Map<K, V> =
-    okshell.client.queryMap<K, V>(url)
+        okshell.client.queryMap<K, V>(url)
 
-@Throws(IOException::class)
-suspend fun queryForString(url: String): String = okshell.client.queryForString(url)
+inline suspend fun queryForString(url: String): String = okshell.client.queryForString(url)
 
-@Throws(IOException::class)
-suspend fun execute(request: Request): String = okshell.client.execute(request)
+inline suspend fun execute(request: Request): Response = okshell.client.execute(request)

@@ -11,8 +11,7 @@ import okhttp3.Request
 import java.io.IOException
 
 object TransferwiseAuthFlow {
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, host: String,
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, host: String,
             clientId: String, clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val serverUri = s.redirectUri

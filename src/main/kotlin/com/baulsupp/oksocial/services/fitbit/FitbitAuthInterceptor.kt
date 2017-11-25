@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -34,8 +33,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Fitbit API")
 
@@ -46,9 +44,8 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(FitbitUtil.apiRequest("/1/user/-/profile.json", requestBuilder), { this.getName(it) }).validate(client)
   }
 
@@ -58,8 +55,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
         && credentials.clientSecret != null
   }
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("grant_type", "refresh_token")
         .add("refresh_token", credentials.refreshToken!!)
         .build()

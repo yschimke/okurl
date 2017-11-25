@@ -13,7 +13,6 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
-import java.util.concurrent.Future
 
 class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -36,8 +35,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(requestBuilder.build())
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Linkedin API")
 
@@ -49,9 +47,8 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return LinkedinAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         LinkedinUtil.apiRequest("/v1/people/~:(formatted-name)", requestBuilder),
         { it["formattedName"] as String }).validate(client)

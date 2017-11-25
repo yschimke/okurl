@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.network
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.google.common.net.InetAddresses
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Dns
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -24,7 +25,7 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
       // TODO map punycode here?
       val url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host + "&type=" + type(mode))
       val request = Request.Builder().url(url!!).header("Accept", "application/dns+json").build()
-      val result = AuthUtil.makeJsonMapRequest(client(), request)
+      val result = runBlocking { AuthUtil.makeJsonMapRequest(client(), request) }
 
       responseToList(result)
     } catch (e: IOException) {

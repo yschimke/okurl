@@ -11,8 +11,7 @@ import java.io.IOException
 
 abstract class TwitterAuthFlow(protected val client: OkHttpClient, protected val outputHandler: OutputHandler<*>) {
 
-  @Throws(IOException::class)
-  protected fun generateRequestToken(unauthed: TwitterCredentials, callback: String): TwitterCredentials {
+  suspend fun generateRequestToken(unauthed: TwitterCredentials, callback: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_callback", callback).build()
     var request = Request.Builder().url("https://api.twitter.com/oauth/request_token")
         .post(body)
@@ -31,8 +30,7 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient, protected val
         tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
   }
 
-  @Throws(IOException::class)
-  protected fun generateAccessToken(requestCredentials: TwitterCredentials,
+  suspend fun generateAccessToken(requestCredentials: TwitterCredentials,
                                     verifier: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_verifier", verifier).build()
     var request = Request.Builder().url("https://api.twitter.com/oauth/access_token")

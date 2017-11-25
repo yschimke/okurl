@@ -10,9 +10,7 @@ import java.io.IOException
 import java.net.URLEncoder
 
 object StackExchangeAuthFlow {
-
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>,
             clientId: String, clientSecret: String, clientKey: String, scopes: Iterable<String>): StackExchangeToken {
     SimpleWebServer.forCode().use { s ->
 

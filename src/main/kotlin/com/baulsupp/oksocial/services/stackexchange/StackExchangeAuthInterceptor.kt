@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
   override fun serviceDefinition(): StackExchangeServiceDefinition {
@@ -43,15 +42,13 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
     }
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: StackExchangeToken): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: StackExchangeToken): ValidatedCredentials {
     return JsonCredentialsValidator(apiRequest("/2.2/me?site=drupal", requestBuilder),
         this::extract).validate(client)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): StackExchangeToken {
     System.err.println("Authorising StackExchange API")
 

@@ -11,7 +11,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
                     private val client: OkHttpClient, private val outputHandler: OutputHandler<*>) {
 
   @Throws(Exception::class)
-  fun authorize(auth: AuthInterceptor<*>?, token: String?,
+  suspend fun authorize(auth: AuthInterceptor<*>?, token: String?,
                 authArguments: List<String>) {
     if (auth == null) {
       throw UsageException(
@@ -30,9 +30,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
     credentialsStore.storeCredentials(credentials, auth.serviceDefinition())
   }
 
-  @Throws(Exception::class)
-  private fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>) {
-
+  suspend fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>) {
     auth.serviceDefinition().accountsLink()?.let { outputHandler.info("Accounts: " + it) }
 
     val credentials = auth.authorize(client, outputHandler, authArguments)
@@ -45,7 +43,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
   }
 
   @Throws(IOException::class)
-  fun <T> renew(auth: AuthInterceptor<T>?) {
+  suspend fun <T> renew(auth: AuthInterceptor<T>?) {
     if (auth == null) {
       throw UsageException(
           "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))

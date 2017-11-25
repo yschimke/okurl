@@ -17,7 +17,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://developer.lyft.com/docs/authentication
@@ -39,8 +38,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Lyft API")
 
@@ -56,9 +54,8 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         LyftUtil.apiRequest("/v1/profile", requestBuilder), { it["id"] as String }).validate(
         client)
@@ -68,8 +65,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return credentials.isRenewable()
   }
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
     val body = RequestBody.create(MediaType.parse("application/json"),
         "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""

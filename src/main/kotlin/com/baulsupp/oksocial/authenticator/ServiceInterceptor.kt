@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -15,13 +16,12 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
   override fun intercept(chain: Interceptor.Chain): Response {
     services
         .filter { it.supportsUrl(chain.request().url()) }
-        .forEach { return intercept(it, chain) }
+        .forEach { return runBlocking { intercept(it, chain) } }
 
     return chain.proceed(chain.request())
   }
 
-  @Throws(IOException::class)
-  private fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
+  suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
     val credentials = credentialsStore.readDefaultCredentials(interceptor.serviceDefinition()) ?: interceptor.defaultCredentials()
 
     if (credentials != null) {

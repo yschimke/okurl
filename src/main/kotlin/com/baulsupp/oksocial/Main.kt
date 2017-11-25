@@ -296,8 +296,10 @@ class Main : HelpOption() {
       initialise()
 
       if (showCredentials) {
-        PrintCredentials(client!!, credentialsStore!!, outputHandler!!,
-            serviceInterceptor!!).showCredentials(arguments) { this.createRequestBuilder() }
+        runBlocking {
+          PrintCredentials(client!!, credentialsStore!!, outputHandler!!,
+                  serviceInterceptor!!).showCredentials(arguments) { createRequestBuilder() }
+        }
         return 0
       }
 
@@ -322,12 +324,12 @@ class Main : HelpOption() {
       }
 
       if (authorize) {
-        authorize()
+        runBlocking { authorize() }
         return 0
       }
 
       if (renew) {
-        renew()
+        runBlocking { renew() }
         return 0
       }
 
@@ -747,13 +749,11 @@ class Main : HelpOption() {
     }
   }
 
-  @Throws(Exception::class)
-  private fun authorize() {
+  suspend fun authorize() {
     authorisation!!.authorize(findAuthInterceptor(), token, arguments)
   }
 
-  @Throws(Exception::class)
-  private fun renew() {
+  suspend fun renew() {
     authorisation!!.renew(findAuthInterceptor())
   }
 

@@ -19,7 +19,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
   override fun serviceDefinition(): BasicAuthServiceDefinition {
@@ -38,7 +37,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return chain.proceed(request)
   }
 
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
@@ -46,9 +45,8 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return BasicCredentials(user, password)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: BasicCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
         TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),
         this::getName).validate(client)

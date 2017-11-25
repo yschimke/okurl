@@ -9,8 +9,7 @@ import okhttp3.Request
 import java.io.IOException
 
 object PaypalAuthFlow {
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, host: String, clientId: String,
+  suspend fun login(client: OkHttpClient, host: String, clientId: String,
             clientSecret: String): Oauth2Token {
     val body = FormBody.Builder().add("grant_type", "client_credentials").build()
 

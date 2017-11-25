@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
 
@@ -31,8 +30,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): TwitterCredentials {
     System.err.println("Authorising Twitter API")
 
@@ -58,9 +56,8 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
     return WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: TwitterCredentials): Future<ValidatedCredentials> {
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder, credentials: TwitterCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
         TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
         { it["name"] as String }).validate(client)
