@@ -1,12 +1,21 @@
-#!/usr/bin/env okshell
+#!/usr/bin/env okscript
 
-var a = query("https://api.stackexchange.com/2.2/questions/unanswered/my-tags?order=desc&sort=creation&site=stackoverflow");
+import com.baulsupp.oksocial.kotlin.query
+import com.baulsupp.oksocial.kotlin.epochSecondsToDate
+import com.baulsupp.oksocial.kotlin.terminalWidth
+import kotlinx.coroutines.experimental.runBlocking
 
-a.items.forEach(function(question) {
-   var title = padRight(Math.max(50, terminalWidth - 80), question.title);
-   var url = question.link.replace(/(.*)\/.*/, "$1");
-   var tags = padRight(20, question.tags.join(','));
-   var answers = padRight(4, String(question.answer_count));
-   var time = new Date(question.creation_date * 1000).toLocaleTimeString();
-   print("${title}  ${tags}  ${answers} ${time}  ${url}");
-});
+data class Question(val tags: List<String>, val title: String, val answer_count: Int, val link: String, val creation_date: Long)
+
+data class Questions(val items: List<Question>, val has_more: Boolean, val quota_max: Int, val quota_remaining: Int)
+
+var questions = runBlocking {
+  query<Questions>("https://api.stackexchange.com/2.2/questions/unanswered/my-tags?order=desc&sort=creation&site=stackoverflow");
+}
+
+val titleWidth = Math.max(50, terminalWidth - 80);
+for (q in questions.items) {
+  val time = epochSecondsToDate(q.creation_date)
+  val url = q.link.replace("(.*)/.*".toRegex(), "$1");
+  println("%${titleWidth}.${titleWidth}s %-18.18s %4.4s %-10s %s".format(q.title, q.tags.joinToString(), q.answer_count, time, url));
+}
