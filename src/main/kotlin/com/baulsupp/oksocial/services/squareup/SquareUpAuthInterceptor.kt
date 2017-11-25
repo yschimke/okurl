@@ -18,7 +18,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -42,7 +41,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         SquareUpUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
         client)

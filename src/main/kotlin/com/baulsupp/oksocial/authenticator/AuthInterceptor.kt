@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -29,7 +28,6 @@ interface AuthInterceptor<T> {
     false
   }
 
-  @Throws(IOException::class)
   fun intercept(chain: Interceptor.Chain, credentials: T): Response
 
   suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): T
@@ -37,7 +35,7 @@ interface AuthInterceptor<T> {
   fun serviceDefinition(): ServiceDefinition<T>
 
   suspend fun validate(client: OkHttpClient,
-               requestBuilder: Request.Builder, credentials: T): Future<ValidatedCredentials>
+                       requestBuilder: Request.Builder, credentials: T): ValidatedCredentials
 
   fun canRenew(result: Response): Boolean = result.code() == 401
 

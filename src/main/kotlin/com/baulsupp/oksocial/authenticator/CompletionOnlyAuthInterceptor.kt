@@ -9,7 +9,6 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
 abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, private val serviceName: String, private val shortName: String, private val apiDocs: String) : AuthInterceptor<Nothing> {
   override fun intercept(chain: Interceptor.Chain, credentials: Nothing): Response =
@@ -18,8 +17,8 @@ abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, privat
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): Nothing =
       throw IOException("authorize not supported")
 
-  override suspend fun validate(client: OkHttpClient, requestBuilder: Request.Builder, credentials: Nothing): Future<ValidatedCredentials> =
-      CompletableFuture.completedFuture(ValidatedCredentials(null, null))
+  override suspend fun validate(client: OkHttpClient, requestBuilder: Request.Builder, credentials: Nothing): ValidatedCredentials =
+      ValidatedCredentials(null, null)
 
   override fun serviceDefinition(): ServiceDefinition<Nothing> {
     return object : AbstractServiceDefinition<Nothing>(apiHost, serviceName, shortName,

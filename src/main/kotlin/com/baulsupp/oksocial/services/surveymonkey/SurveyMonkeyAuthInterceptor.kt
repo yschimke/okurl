@@ -16,7 +16,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://developer.surveymonkey.com/docs/authentication
@@ -48,7 +47,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): ValidatedCredentials {
     return JsonCredentialsValidator(
         SurveyMonkeyUtil.apiRequest("/v3/users/me", requestBuilder),
         { it["username"] as String }).validate(client)

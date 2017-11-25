@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -46,7 +45,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(FitbitUtil.apiRequest("/1/user/-/profile.json", requestBuilder), { this.getName(it) }).validate(client)
   }
 

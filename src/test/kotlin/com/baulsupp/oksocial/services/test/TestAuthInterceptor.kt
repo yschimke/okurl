@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
   @Throws(IOException::class)
@@ -21,8 +20,7 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(chain.request())
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     return if (authArguments.isEmpty()) {
       Oauth2Token("testToken")
@@ -31,11 +29,10 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
     }
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder,
-                        credentials: Oauth2Token): Future<ValidatedCredentials> {
-    return ImmediateFuture { ValidatedCredentials("aaa", null) }
+  override suspend fun validate(client: OkHttpClient,
+                                requestBuilder: Request.Builder,
+                                credentials: Oauth2Token): ValidatedCredentials {
+    return ValidatedCredentials("aaa", null)
   }
 
   override fun serviceDefinition(): ServiceDefinition<Oauth2Token> {

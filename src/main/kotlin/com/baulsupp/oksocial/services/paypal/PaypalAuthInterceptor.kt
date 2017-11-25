@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://developer.paypal.com/docs/authentication
@@ -47,7 +46,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         PaypalUtil.apiRequest("/v1/oauth2/token/userinfo?schema=openid", requestBuilder),
         { it -> it["name"].toString() }).validate(client)

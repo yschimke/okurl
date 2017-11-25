@@ -14,7 +14,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://developer.dropbox.com/docs/authentication
@@ -48,7 +47,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
     return JsonCredentialsValidator(
         DropboxUtil.apiRequest("/2/users/get_current_account", requestBuilder)

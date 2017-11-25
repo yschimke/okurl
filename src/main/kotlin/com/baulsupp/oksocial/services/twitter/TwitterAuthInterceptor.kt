@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
 
@@ -58,7 +57,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: TwitterCredentials): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: TwitterCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
         TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
         { it["name"] as String }).validate(client)

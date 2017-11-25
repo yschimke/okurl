@@ -21,7 +21,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.Future
 
 /**
  * https://developer.google.com/docs/authentication
@@ -66,7 +65,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
         { it["name"] as String }).validate(client)

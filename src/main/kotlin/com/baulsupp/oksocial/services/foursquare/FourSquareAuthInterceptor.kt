@@ -14,7 +14,6 @@ import okhttp3.Response
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.Future
 
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -50,7 +49,7 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
         { this.getName(it) }).validate(client)

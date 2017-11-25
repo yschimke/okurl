@@ -4,13 +4,16 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.util.ClientException
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -18,21 +21,20 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
                        private val outputHandler: OutputHandler<*>, private val serviceInterceptor: ServiceInterceptor) {
   private val started: ZonedDateTime = ZonedDateTime.now()
 
-  fun <T> printKnownCredentials(future: Future<ValidatedCredentials>,
-                                a: AuthInterceptor<T>) {
+  fun <T> printKnownCredentials(future: Deferred<ValidatedCredentials>, a: AuthInterceptor<T>) {
     val sd = a.serviceDefinition()
 
     try {
-      val left = 5000L - ZonedDateTime.now().until(started, ChronoUnit.MILLIS)
-      val validated = future.get(left, TimeUnit.MILLISECONDS)
+      val left = 2000L - ZonedDateTime.now().until(started, ChronoUnit.MILLIS)
+      val validated = runBlocking {
+        withTimeout(left, TimeUnit.MILLISECONDS) {
+          future.await()
+        }
+      }
 
       printSuccess(sd, validated)
-    } catch (e: InterruptedException) {
+    } catch (e: Exception) {
       printFailed(sd, e)
-    } catch (e: TimeoutException) {
-      printFailed(sd, e)
-    } catch (e: ExecutionException) {
-      printFailed(sd, e.cause!!)
     }
   }
 
@@ -76,12 +78,12 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
   }
 
   suspend fun validate(
-      services: Iterable<AuthInterceptor<*>>, requestBuilder: () -> Request.Builder): Map<AuthInterceptor<*>, Future<ValidatedCredentials>> {
+          services: Iterable<AuthInterceptor<*>>, requestBuilder: () -> Request.Builder): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = credentialsStore.readDefaultCredentials(sv.serviceDefinition())
 
       credentials?.let {
-        val x = v(sv, requestBuilder, credentials)
+        val x = async(CommonPool) { v(sv, requestBuilder, credentials) }
         Pair(sv, x)
       }
     }.toMap()
@@ -89,5 +91,5 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
 
   // TODO fix up hackery
   suspend fun <T> v(sv: AuthInterceptor<T>, requestBuilder: () -> Request.Builder, credentials: Any?) =
-      sv.validate(client, requestBuilder(), credentials as T)
+          sv.validate(client, requestBuilder(), credentials as T)
 }

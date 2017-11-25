@@ -13,7 +13,6 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
-import java.util.concurrent.Future
 
 class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -49,7 +48,7 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                        requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
+                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
         InstagramUtil.apiRequest("/v1/users/self", requestBuilder), this::getName).validate(client)
   }
