@@ -13,7 +13,7 @@ import java.io.IOException
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-class OkShell @Throws(Exception::class)
+class OkShell
 private constructor() {
   val client: OkHttpClient
   val requestBuilder: Request.Builder
@@ -49,12 +49,10 @@ private constructor() {
     t.start()
   }
 
-  @Throws(IOException::class)
   fun query(url: String): String {
     return execute(requestBuilder.url(url).build())
   }
 
-  @Throws(IOException::class)
   fun execute(request: Request): String {
     val call = client.newCall(request)
 
@@ -95,7 +93,6 @@ private constructor() {
     })
   }
 
-  @Throws(IOException::class)
   fun show(url: String) {
     val request = requestBuilder.url(url).build()
 
@@ -118,7 +115,6 @@ private constructor() {
     return null
   }
 
-  @Throws(IOException::class)
   fun location(): Location? {
     return main!!.locationSource.read()
   }
@@ -133,14 +129,8 @@ private constructor() {
   }
 
   companion object {
+    val instance: OkShell by lazy { OkShell() }
 
-    @Throws(Exception::class)
-    @JvmStatic
-    fun instance(): OkShell {
-      return OkShell()
-    }
-
-    @Throws(IOException::class)
     fun readParam(param: String): String {
       return FileContent.readParamString(param)
     }

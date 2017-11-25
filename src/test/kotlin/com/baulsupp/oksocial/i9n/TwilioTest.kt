@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.BasicCredentials
+import com.baulsupp.oksocial.kotlin.okshell
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
 import com.google.common.collect.Lists.newArrayList
