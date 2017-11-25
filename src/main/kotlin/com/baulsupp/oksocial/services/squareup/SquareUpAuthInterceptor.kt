@@ -47,7 +47,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
         client)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising SquareUp API")
 

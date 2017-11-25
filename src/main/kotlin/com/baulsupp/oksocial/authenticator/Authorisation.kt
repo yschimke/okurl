@@ -5,10 +5,11 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import java.io.IOException
 
 class Authorisation(private val interceptor: ServiceInterceptor, private val credentialsStore: CredentialsStore,
-                    private val client: OkHttpClient, private val outputHandler: OutputHandler<*>) {
+                    private val client: OkHttpClient, private val outputHandler: OutputHandler<Response>) {
 
   @Throws(Exception::class)
   suspend fun authorize(auth: AuthInterceptor<*>?, token: String?,

@@ -43,7 +43,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Spotify API")
 

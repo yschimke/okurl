@@ -7,12 +7,13 @@ import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import java.util.UUID
 
 object GoogleAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
-            clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
+                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val scopesString = scopes.joinToString("+", transform = { GoogleUtil.fullScope(it) })

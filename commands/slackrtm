@@ -1,18 +1,19 @@
-#!/usr/bin/env okshell
+#!/usr/bin/env okscript
 
-var WebSocketCall = Java.type('okhttp3.ws.WebSocketCall');
-var WebSocketPrinter = Java.type('com.baulsupp.oksocial.ws.WebSocketPrinter');
-var TimeUnit = Java.type('java.util.concurrent.TimeUnit');
+import com.baulsupp.oksocial.kotlin.client
+import com.baulsupp.oksocial.kotlin.okshell
+import com.baulsupp.oksocial.kotlin.query
+import com.baulsupp.oksocial.kotlin.newWebSocket
+import com.baulsupp.oksocial.ws.WebSocketPrinter
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.experimental.runBlocking
+import com.baulsupp.oksocial.services.slack.RtmConnect
 
-client = client.newBuilder().readTimeout(0, TimeUnit.MINUTES).build();
+val wsClient = client.newBuilder().readTimeout(0, TimeUnit.MINUTES).build();
 
-var start = query("https://slack.com/api/rtm.start");
+val start = runBlocking { query<RtmConnect>("https://slack.com/api/rtm.connect") }
 
-var request = requestBuilder.url(start.url).build();
+val printer = WebSocketPrinter(okshell.outputHandler)
+val ws = newWebSocket(start.url, printer)
 
-var printer = new WebSocketPrinter();
-var call = WebSocketCall.create(client, request);
-
-call.enqueue(printer);
-
-printer.waitForExit();
+printer.waitForExit()

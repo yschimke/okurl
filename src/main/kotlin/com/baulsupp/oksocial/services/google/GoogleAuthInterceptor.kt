@@ -53,7 +53,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com")
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Google API")
 

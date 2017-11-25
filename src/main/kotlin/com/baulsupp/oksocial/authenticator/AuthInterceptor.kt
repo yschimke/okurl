@@ -30,7 +30,7 @@ interface AuthInterceptor<T> {
 
   fun intercept(chain: Interceptor.Chain, credentials: T): Response
 
-  suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): T
+  suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
 
   fun serviceDefinition(): ServiceDefinition<T>
 

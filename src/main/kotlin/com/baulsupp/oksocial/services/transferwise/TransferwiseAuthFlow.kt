@@ -8,11 +8,12 @@ import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 
 object TransferwiseAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, host: String,
-            clientId: String, clientSecret: String): Oauth2Token {
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, host: String,
+                    clientId: String, clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val serverUri = s.redirectUri
 

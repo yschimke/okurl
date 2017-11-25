@@ -52,7 +52,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
         { it -> it["name"].toString() }).validate(client)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Paypal API")
 

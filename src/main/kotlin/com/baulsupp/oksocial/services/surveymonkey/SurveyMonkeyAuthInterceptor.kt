@@ -37,7 +37,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): SurveyMonkeyToken {
     System.err.println("Authorising SurveyMonkey API")
 
