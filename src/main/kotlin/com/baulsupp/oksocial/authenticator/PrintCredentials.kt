@@ -15,6 +15,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -46,6 +47,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
   private fun <T> printFailed(sd: ServiceDefinition<T>,
                               e: Throwable) {
     when (e) {
+      is CancellationException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
       is TimeoutException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
       is ClientException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.message))
       is IOException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
