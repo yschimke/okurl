@@ -10,8 +10,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 
 class OkShell
 private constructor() {

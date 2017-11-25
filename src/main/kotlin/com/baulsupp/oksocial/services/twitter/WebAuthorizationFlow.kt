@@ -2,10 +2,8 @@ package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.output.OutputHandler
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class WebAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Response>) :
         TwitterAuthFlow(client, outputHandler) {

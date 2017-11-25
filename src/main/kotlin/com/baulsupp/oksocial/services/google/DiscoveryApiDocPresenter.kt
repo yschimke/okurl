@@ -6,13 +6,11 @@ import com.spotify.futures.CompletableFutures
 import io.github.vjames19.futures.jdk8.map
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
 
-  @Throws(IOException::class)
-  override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
     val discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url)
 
     val registry = DiscoveryRegistry.instance(client)

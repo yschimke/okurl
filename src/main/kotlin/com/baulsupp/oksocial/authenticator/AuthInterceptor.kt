@@ -55,7 +55,7 @@ interface AuthInterceptor<T> {
 
   fun apiDocPresenter(url: String): ApiDocPresenter {
     return object : ApiDocPresenter {
-      override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+      override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
         val sd = serviceDefinition()
 
         outputHandler.info("service: " + sd.shortName())

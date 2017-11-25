@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
+import com.baulsupp.oksocial.kotlin.query
+import com.baulsupp.oksocial.services.facebook.model.Metadata
+import com.baulsupp.oksocial.services.facebook.model.MetadataResult
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.concurrent.CompletableFuture
 
 object FacebookUtil {
   val VERSION = "v2.11"
@@ -15,12 +16,12 @@ object FacebookUtil {
     return requestBuilder.url("https://graph.facebook.com" + s).build()
   }
 
-  fun getMetadata(client: OkHttpClient, url: HttpUrl): CompletableFuture<FacebookMetadata> {
+  suspend fun getMetadata(client: OkHttpClient, url: HttpUrl): Metadata? {
     var newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
     val request = Request.Builder().url(newUrl).build()
 
-    return AuthUtil.enqueueJsonMapRequest(client, request)
-        .thenApply { m -> FacebookMetadata(m["metadata"] as Map<String, Any>?) }
+    val response = client.query<MetadataResult>(request)
+    return response.metadata
   }
 
   val ALL_PERMISSIONS = listOf(
