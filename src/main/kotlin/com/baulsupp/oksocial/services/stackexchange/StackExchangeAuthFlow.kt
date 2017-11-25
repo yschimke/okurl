@@ -6,12 +6,13 @@ import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import java.net.URLEncoder
 
 object StackExchangeAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>,
-            clientId: String, clientSecret: String, clientKey: String, scopes: Iterable<String>): StackExchangeToken {
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+                    clientId: String, clientSecret: String, clientKey: String, scopes: Iterable<String>): StackExchangeToken {
     SimpleWebServer.forCode().use { s ->
 
       val serverUri = s.redirectUri

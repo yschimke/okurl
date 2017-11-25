@@ -48,7 +48,7 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
         this::extract).validate(client)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): StackExchangeToken {
     System.err.println("Authorising StackExchange API")
 

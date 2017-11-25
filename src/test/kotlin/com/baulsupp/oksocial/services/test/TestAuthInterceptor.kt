@@ -20,7 +20,7 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(chain.request())
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): Oauth2Token {
     return if (authArguments.isEmpty()) {
       Oauth2Token("testToken")

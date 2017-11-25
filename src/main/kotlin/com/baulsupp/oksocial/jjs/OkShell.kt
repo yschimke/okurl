@@ -17,7 +17,6 @@ class OkShell
 private constructor() {
   val client: OkHttpClient
   val requestBuilder: Request.Builder
-  private val engine: ScriptEngine
   private val main: Main?
   val outputHandler: OutputHandler<Response>
 
@@ -27,9 +26,6 @@ private constructor() {
     client = main.client!!
     requestBuilder = main.createRequestBuilder()
     outputHandler = main.outputHandler!!
-
-    val m = ScriptEngineManager()
-    engine = m.getEngineByName("nashorn")
 
     listenForMainExit()
   }

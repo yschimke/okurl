@@ -1,5 +1,3 @@
-//@file:JvmName(name="Main")
-
 package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.util.LoggingUtil

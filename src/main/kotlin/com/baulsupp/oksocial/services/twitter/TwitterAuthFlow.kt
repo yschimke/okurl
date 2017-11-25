@@ -7,9 +7,10 @@ import com.twitter.joauth.keyvalue.KeyValueParser
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 
-abstract class TwitterAuthFlow(protected val client: OkHttpClient, protected val outputHandler: OutputHandler<*>) {
+abstract class TwitterAuthFlow(protected val client: OkHttpClient, protected val outputHandler: OutputHandler<Response>) {
 
   suspend fun generateRequestToken(unauthed: TwitterCredentials, callback: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_callback", callback).build()

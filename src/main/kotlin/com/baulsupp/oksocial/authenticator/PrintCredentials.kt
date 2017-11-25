@@ -11,6 +11,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 class PrintCredentials(private val client: OkHttpClient, private val credentialsStore: CredentialsStore,
-                       private val outputHandler: OutputHandler<*>, private val serviceInterceptor: ServiceInterceptor) {
+                       private val outputHandler: OutputHandler<Response>, private val serviceInterceptor: ServiceInterceptor) {
   private val started: ZonedDateTime = ZonedDateTime.now()
 
   fun <T> printKnownCredentials(future: Deferred<ValidatedCredentials>, a: AuthInterceptor<T>) {

@@ -37,7 +37,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                          authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
