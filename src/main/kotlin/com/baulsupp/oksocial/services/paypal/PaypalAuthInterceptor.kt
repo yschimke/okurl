@@ -46,16 +46,14 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         PaypalUtil.apiRequest("/v1/oauth2/token/userinfo?schema=openid", requestBuilder),
         { it -> it["name"].toString() }).validate(client)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Paypal API")
 

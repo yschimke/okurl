@@ -10,8 +10,7 @@ import okhttp3.RequestBody
 import java.io.IOException
 
 object LyftClientAuthFlow {
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, clientId: String, clientSecret: String): Oauth2Token {
+  suspend fun login(client: OkHttpClient, clientId: String, clientSecret: String): Oauth2Token {
     val body = RequestBody.create(MediaType.parse("application/json"),
         "{\"grant_type\": \"client_credentials\", \"scope\": \"public\"}")
     val basic = Credentials.basic(clientId, clientSecret)

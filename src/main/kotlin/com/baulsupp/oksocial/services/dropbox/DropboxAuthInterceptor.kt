@@ -37,7 +37,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Dropbox API")
 
@@ -47,7 +47,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return DropboxAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
     return JsonCredentialsValidator(

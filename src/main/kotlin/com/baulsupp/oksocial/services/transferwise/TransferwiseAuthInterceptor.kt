@@ -40,8 +40,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Transferwise API")
 
@@ -51,8 +50,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return TransferwiseAuthFlow.login(client, outputHandler, host(), clientId, clientSecret)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         TransferwiseUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
@@ -63,8 +61,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return credentials.isRenewable()
   }
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder()
         .add("grant_type", "refresh_token")

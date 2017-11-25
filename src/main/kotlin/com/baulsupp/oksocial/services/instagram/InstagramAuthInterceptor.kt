@@ -35,8 +35,7 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Instagram API")
 
@@ -49,8 +48,7 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         InstagramUtil.apiRequest("/v1/users/self", requestBuilder), this::getName).validate(client)

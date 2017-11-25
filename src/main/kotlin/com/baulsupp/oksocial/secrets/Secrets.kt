@@ -68,7 +68,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
       return Secrets(p.toMutableStringMap(), null, { _ -> null })
     }
 
-    fun prompt(name: String, key: String, defaultValue: String, password: Boolean): String {
+    suspend fun prompt(name: String, key: String, defaultValue: String, password: Boolean): String {
       val defaulted = instance[key] ?: defaultValue
 
       val prompt = name + defaultDisplay(defaulted, password) + ": "
@@ -76,6 +76,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
       var value = ""
 
       if (System.console() != null) {
+        // TODO run in IO pool
         value = if (password) {
           String(System.console().readPassword(prompt))
         } else {
@@ -94,7 +95,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
       return value
     }
 
-    fun promptArray(name: String, key: String, defaults: Iterable<String>): List<String> {
+    suspend fun promptArray(name: String, key: String, defaults: Iterable<String>): List<String> {
       val valueString = prompt(name, key, defaults.joinToString(","), false)
       return valueString.split("\\s*,\\s*".toRegex()).dropLastWhile { it.isEmpty() }
     }

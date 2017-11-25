@@ -43,15 +43,13 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
     }
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: StackExchangeToken): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(apiRequest("/2.2/me?site=drupal", requestBuilder),
         this::extract).validate(client)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): StackExchangeToken {
     System.err.println("Authorising StackExchange API")
 

@@ -38,7 +38,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return chain.proceed(request)
   }
 
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
@@ -46,8 +46,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     return BasicCredentials(user, password)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: BasicCredentials): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),

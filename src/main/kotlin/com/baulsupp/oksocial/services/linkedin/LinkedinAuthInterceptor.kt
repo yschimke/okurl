@@ -36,8 +36,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(requestBuilder.build())
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Linkedin API")
 
@@ -49,8 +48,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return LinkedinAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         LinkedinUtil.apiRequest("/v1/people/~:(formatted-name)", requestBuilder),

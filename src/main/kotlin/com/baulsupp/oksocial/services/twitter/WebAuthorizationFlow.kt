@@ -9,8 +9,7 @@ import java.io.IOException
 class WebAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<*>) :
         TwitterAuthFlow(client, outputHandler) {
 
-  @Throws(IOException::class)
-  fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
+  suspend fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
     SimpleWebServer({
       it.queryParameter("oauth_verifier")!!
     }).use({ s ->

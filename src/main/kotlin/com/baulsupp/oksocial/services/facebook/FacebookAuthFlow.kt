@@ -10,9 +10,7 @@ import java.io.IOException
 import java.net.URLEncoder
 
 object FacebookAuthFlow {
-
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
             clientSecret: String,
             scopes: List<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->

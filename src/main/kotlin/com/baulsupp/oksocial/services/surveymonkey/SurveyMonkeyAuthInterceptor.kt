@@ -38,8 +38,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): SurveyMonkeyToken {
     System.err.println("Authorising SurveyMonkey API")
 
@@ -48,8 +47,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     return SurveyMonkeyToken(apiKey, accessToken)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         SurveyMonkeyUtil.apiRequest("/v3/users/me", requestBuilder),

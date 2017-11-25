@@ -11,8 +11,7 @@ import java.io.IOException
 import java.net.URLEncoder
 
 object SlackAuthFlow {
-  @Throws(IOException::class)
-  fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
+  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<*>, clientId: String,
             clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 

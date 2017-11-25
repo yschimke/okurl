@@ -43,8 +43,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Uber API")
 
@@ -60,8 +59,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts())
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         UberUtil.apiRequest("/v1/me", requestBuilder),
@@ -78,8 +76,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return credentials.isRenewable()
   }
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)

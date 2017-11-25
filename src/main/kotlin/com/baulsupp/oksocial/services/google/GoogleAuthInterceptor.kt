@@ -54,8 +54,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com")
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Google API")
 
@@ -66,8 +65,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return GoogleAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
@@ -76,8 +74,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
         .add("refresh_token", credentials.refreshToken!!)
         .add("client_secret", credentials.clientSecret!!)
@@ -96,7 +93,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
         credentials.clientSecret!!)
   }
 
-  @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
       if (isPastHost(prefix)) {

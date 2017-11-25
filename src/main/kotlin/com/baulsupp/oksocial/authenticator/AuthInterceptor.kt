@@ -32,25 +32,21 @@ interface AuthInterceptor<T> {
   @Throws(IOException::class)
   fun intercept(chain: Interceptor.Chain, credentials: T): Response
 
-  @Throws(IOException::class)
-  fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): T
+  suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>, authArguments: List<String>): T
 
   fun serviceDefinition(): ServiceDefinition<T>
 
-  fun validate(client: OkHttpClient,
+  suspend fun validate(client: OkHttpClient,
                requestBuilder: Request.Builder, credentials: T): Future<ValidatedCredentials>
 
   fun canRenew(result: Response): Boolean = result.code() == 401
 
   fun canRenew(credentials: T): Boolean = false
 
-  @Throws(IOException::class)
-  fun renew(client: OkHttpClient, credentials: T): T? = null
+  suspend fun renew(client: OkHttpClient, credentials: T): T? = null
 
-  @Throws(IOException::class)
   fun hosts(): Set<String>
 
-  @Throws(IOException::class)
   fun apiCompleter(prefix: String, client: OkHttpClient,
                    credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
       UrlList.fromResource(name())?.let {
@@ -59,7 +55,6 @@ interface AuthInterceptor<T> {
 
   fun defaultCredentials(): T? = null
 
-  @Throws(IOException::class)
   fun apiDocPresenter(url: String): ApiDocPresenter {
     return object : ApiDocPresenter {
       override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {

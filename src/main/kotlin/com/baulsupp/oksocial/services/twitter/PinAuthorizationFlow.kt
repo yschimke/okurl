@@ -6,18 +6,17 @@ import java.io.IOException
 
 class PinAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<*>) : TwitterAuthFlow(client, outputHandler) {
 
-  @Throws(IOException::class)
-  private fun promptForPin(newCredentials: TwitterCredentials): String {
+  private suspend fun promptForPin(newCredentials: TwitterCredentials): String {
     System.err.println(
         "Authorise by entering the PIN through a web browser")
 
     showUserLogin(newCredentials)
 
+    // TODO move to IO pool
     return String(System.console().readPassword("Enter PIN: "))
   }
 
-  @Throws(IOException::class)
-  fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
+  suspend fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
     val unauthed = TwitterCredentials(null, consumerKey, consumerSecret, null, "")
 
     val requestCredentials = generateRequestToken(unauthed, "oob")

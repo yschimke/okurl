@@ -24,8 +24,7 @@ class JsonCredentialsValidator(
     }
   }
 
-  @Throws(IOException::class)
-  fun validate(client: OkHttpClient): CompletableFuture<ValidatedCredentials> {
+  suspend fun validate(client: OkHttpClient): CompletableFuture<ValidatedCredentials> {
     val nameCallback = enqueue(client, request).flatMap { extractString(it, extractor) }
 
     val appCallback = appRequest?.let { r -> enqueue(client, r).flatMap { response -> extractString(response, appExtractor!!) } } ?: ImmediateFuture { null }

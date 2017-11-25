@@ -34,8 +34,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Fitbit API")
 
@@ -46,8 +45,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(FitbitUtil.apiRequest("/1/user/-/profile.json", requestBuilder), { this.getName(it) }).validate(client)
   }
@@ -58,8 +56,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
         && credentials.clientSecret != null
   }
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("grant_type", "refresh_token")
         .add("refresh_token", credentials.refreshToken!!)
         .build()

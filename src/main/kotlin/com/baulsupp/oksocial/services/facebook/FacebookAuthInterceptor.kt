@@ -38,8 +38,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Facebook API")
 
@@ -59,8 +58,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return "" + map["name"] + " (" + map["id"] + ")"
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(apiRequest("/me", requestBuilder), { extract(it) },
         apiRequest("/app", requestBuilder), { this.extract(it) }).validate(client)

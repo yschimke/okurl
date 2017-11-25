@@ -50,8 +50,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
     }
   }
 
-  @Throws(Exception::class)
-  fun showCredentials(arguments: List<String>, requestBuilder: () -> Request.Builder) {
+  suspend fun showCredentials(arguments: List<String>, requestBuilder: () -> Request.Builder) {
     var services: Iterable<AuthInterceptor<*>> = serviceInterceptor.services()
 
     val full = !arguments.isEmpty()
@@ -76,7 +75,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
     outputHandler.info(credentialsString)
   }
 
-  private fun validate(
+  suspend fun validate(
       services: Iterable<AuthInterceptor<*>>, requestBuilder: () -> Request.Builder): Map<AuthInterceptor<*>, Future<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = credentialsStore.readDefaultCredentials(sv.serviceDefinition())
@@ -89,6 +88,6 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
   }
 
   // TODO fix up hackery
-  private fun <T> v(sv: AuthInterceptor<T>, requestBuilder: () -> Request.Builder, credentials: Any?) =
+  suspend fun <T> v(sv: AuthInterceptor<T>, requestBuilder: () -> Request.Builder, credentials: Any?) =
       sv.validate(client, requestBuilder(), credentials as T)
 }

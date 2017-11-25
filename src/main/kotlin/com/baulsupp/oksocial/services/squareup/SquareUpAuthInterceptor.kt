@@ -41,16 +41,14 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         SquareUpUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
         client)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising SquareUp API")
 
@@ -61,7 +59,6 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())

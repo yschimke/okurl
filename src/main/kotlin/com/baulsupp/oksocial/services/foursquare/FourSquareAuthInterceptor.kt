@@ -39,8 +39,7 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising FourSquare API")
 
@@ -50,8 +49,7 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return FourSquareAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),

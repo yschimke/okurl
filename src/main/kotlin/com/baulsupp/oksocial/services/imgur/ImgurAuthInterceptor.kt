@@ -34,8 +34,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Imgur API")
 
@@ -45,8 +44,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return ImgurAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: Oauth2Token): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(apiRequest("/3/account/me", requestBuilder), this::getName).validate(client)
   }
@@ -61,8 +59,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  @Throws(IOException::class)
-  override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("refresh_token", credentials.refreshToken!!)
         .add("client_id", credentials.clientId!!)
         .add("client_secret", credentials.clientSecret!!)

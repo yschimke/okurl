@@ -31,8 +31,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
     return chain.proceed(request)
   }
 
-  @Throws(IOException::class)
-  override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<*>,
                          authArguments: List<String>): TwitterCredentials {
     System.err.println("Authorising Twitter API")
 
@@ -58,8 +57,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
     return WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
   }
 
-  @Throws(IOException::class)
-  override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                         requestBuilder: Request.Builder, credentials: TwitterCredentials): Future<ValidatedCredentials> {
     return JsonCredentialsValidator(
         TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
