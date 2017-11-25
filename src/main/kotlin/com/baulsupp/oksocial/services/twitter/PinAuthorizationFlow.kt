@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.services.twitter
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class PinAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Response>) : TwitterAuthFlow(client, outputHandler) {
 

@@ -65,7 +65,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ContinuationApiCom
 }
 
 class DatasettesPresenter: ApiDocPresenter {
-  override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
     val urlI = HttpUrl.parse(url) ?: throw UsageException("Unable to parse Url '$url'")
 
     val datasettes = runBlocking { fetchDatasetteMetadata(urlI.host(), client) }

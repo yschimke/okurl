@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.facebook
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.kotlin.asyncFuture
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
 import io.github.vjames19.futures.jdk8.map
 import okhttp3.HttpUrl
@@ -53,10 +54,14 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
       else -> {
         val prefix = "https://graph.facebook.com" + path
 
-        val metadataFuture = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!)
+        val metadataFuture = asyncFuture { FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!) }
 
         return metadataFuture.map { metadata ->
-          UrlList(UrlList.Match.EXACT, metadata.connections().map(addPath(prefix)) + prefix)
+          if (metadata == null) {
+            UrlList(UrlList.Match.EXACT, listOf())
+          } else {
+            UrlList(UrlList.Match.EXACT, metadata.connections.keys.map(addPath(prefix)) + prefix)
+          }
         }.exceptionally { e ->
           logger.log(Level.FINE, "completion failure", e)
           UrlList(UrlList.Match.EXACT, listOf())

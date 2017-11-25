@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.google
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import com.google.common.collect.Lists.newArrayList
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.junit.Before
@@ -27,11 +28,12 @@ class DiscoveryApiDocPresenterTest {
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsUrl() {
     assumeHasNetwork()
 
-    p!!.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client)
+    runBlocking {
+      p!!.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client)
+    }
 
     val es = newArrayList("name: Google People API",
         "docs: https://developers.google.com/people/",
@@ -96,7 +98,9 @@ class DiscoveryApiDocPresenterTest {
   private fun assertMatch(requested: String, expected: String, field: String) {
     assumeHasNetwork()
 
-    p!!.explainApi(requested, outputHandler, client)
+    runBlocking {
+      p!!.explainApi(requested, outputHandler, client)
+    }
 
     val contains = outputHandler.stdout.contains(field + ": " + expected)
 

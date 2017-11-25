@@ -1,6 +1,8 @@
 package com.baulsupp.oksocial.kotlin
 
 import kotlinx.coroutines.experimental.CancellableContinuation
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -55,4 +57,18 @@ suspend fun <T> CompletableFuture<T>.await(): T {
       consumer.cont = null // shall clear reference to continuation
     }
   }
+}
+
+fun <T> asyncFuture(function: suspend () -> T): CompletableFuture<T> {
+  val future = CompletableFuture<T>()
+
+  val x = async(CommonPool) {
+    try {
+      future.complete(function())
+    } catch (e: Exception) {
+      future.completeExceptionally(e)
+    }
+  }
+
+  return future
 }

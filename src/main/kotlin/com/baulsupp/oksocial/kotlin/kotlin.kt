@@ -7,7 +7,11 @@ import okhttp3.Request
 import okhttp3.Response
 
 inline suspend fun <reified T> OkHttpClient.query(url: String): T {
-  val stringResult = this.queryForString(okshell.requestBuilder.url(url).build())
+  return this.query<T>(okshell.requestBuilder.url(url).build())
+}
+
+inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
+  val stringResult = this.queryForString(request)
 
   return moshi.adapter(T::class.java).fromJson(stringResult)!!
 }

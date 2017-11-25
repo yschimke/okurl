@@ -7,7 +7,6 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 import java.net.URLEncoder
 
 object FourSquareAuthFlow {

@@ -319,7 +319,7 @@ class Main : HelpOption() {
       }
 
       if (apiDoc) {
-        showApiDocs()
+        runBlocking { showApiDocs() }
         return 0
       }
 
@@ -345,9 +345,8 @@ class Main : HelpOption() {
     }
   }
 
-  @Throws(Exception::class)
-  private fun showApiDocs() {
-    val docs = ServiceApiDocPresenter(serviceInterceptor!!, client!!, credentialsStore!!)
+  suspend fun showApiDocs() {
+    val docs = ServiceApiDocPresenter(serviceInterceptor!!)
 
     getFullCompletionUrl()?.let { u ->
       docs.explainApi(u, outputHandler!!, client!!)

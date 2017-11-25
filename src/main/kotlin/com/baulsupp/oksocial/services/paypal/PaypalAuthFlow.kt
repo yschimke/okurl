@@ -6,7 +6,6 @@ import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
 
 object PaypalAuthFlow {
   suspend fun login(client: OkHttpClient, host: String, clientId: String,
