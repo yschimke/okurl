@@ -1,101 +1,67 @@
 package com.baulsupp.oksocial.authenticator
 
-import org.eclipse.jetty.server.Request
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.AbstractHandler
+import com.baulsupp.oksocial.kotlin.await
+import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.HttpHandler
+import com.sun.net.httpserver.HttpServer
+import kotlinx.coroutines.experimental.runBlocking
+import okhttp3.HttpUrl
 import java.io.Closeable
 import java.io.IOException
+import java.io.PrintWriter
+import java.net.InetSocketAddress
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import java.util.logging.Level
+import java.util.logging.Logger
 
-class SimpleWebServer<out T> @Throws(IOException::class)
-constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler(), Closeable {
-  private val port = 3000
-  private val f = CompletableFuture<T>()
+class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
+        private val port: Int = 3000) : Closeable, HttpHandler {
+  private val logger = Logger.getLogger(SimpleWebServer::class.java.name)
+
+  private var server: HttpServer
+  var f: CompletableFuture<String> = CompletableFuture()
 
   init {
-    org.eclipse.jetty.util.log.Log.initialized()
-    org.eclipse.jetty.util.log.Log.setLog(NullLogger())
+    server = HttpServer.create(InetSocketAddress("localhost", port), 1)
+    server.createContext("/", this)
+    server.start()
 
-    server = Server(port)
-    try {
-      server.handler = this
-      server.start()
-    } catch (e: IOException) {
-      throw e
-    } catch (e: Exception) {
-      throw IOException(e)
-    }
-
+    logger.log(Level.FINE, "listening at $redirectUri")
   }
 
   val redirectUri: String
     get() = "http://localhost:$port/callback"
 
-  @Throws(IOException::class)
-  fun waitForCode(): T {
-    return try {
-      f.get(60, TimeUnit.SECONDS)
-    } catch (e: InterruptedException) {
-      throw IOException(e)
-    } catch (e: ExecutionException) {
-      throw IOException(e)
-    } catch (e: TimeoutException) {
-      throw IOException(e)
-    }
+  override fun handle(exchange: HttpExchange) {
+    val url = HttpUrl.parse("http://localhost:${port}${exchange.requestURI}")!!
 
-  }
+    exchange.responseHeaders.add("Content-Type", "text/html; charset=utf-8")
+    exchange.sendResponseHeaders(200, 0)
+    PrintWriter(exchange.responseBody).use { out ->
+      val error = url.queryParameter("error")
 
-  @Throws(IOException::class, ServletException::class)
-  override fun handle(target: String,
-                      baseRequest: Request,
-                      request: HttpServletRequest,
-                      response: HttpServletResponse) {
-    response.contentType = "text/html; charset=utf-8"
-    response.status = HttpServletResponse.SC_OK
+      try {
+        if (error != null) {
+          IOException(error)
+        }
 
-    val out = response.writer
+        val code = codeReader(url)
 
-    val error = request.getParameter("error")
+        if (code == null) {
+          throw IllegalArgumentException("no code read")
+        }
 
-    if (error != null) {
-      out.println(generateFailBody(request, error))
-    } else {
-      out.println(generateSuccessBody())
-    }
-    out.flush()
-    out.close()
-
-    // return response before continuing
-
-    if (error != null) {
-      f.completeExceptionally(IOException(error))
-    } else {
-      f.complete(codeReader(request))
-    }
-
-    baseRequest.isHandled = true
-
-    val t = Thread(Runnable { this.shutdown() }, "SimpleWebServer Stop")
-    t.isDaemon = true
-    t.start()
-  }
-
-  private fun shutdown() {
-    try {
-      for (c in server.connectors) {
-        c.shutdown()
+        out.println(generateSuccessBody())
+        out.flush()
+        exchange.close()
+        f.complete(code)
+      } catch (e: Exception) {
+        out.println(generateFailBody(url, e.toString()))
+        out.flush()
+        exchange.close()
+        f.completeExceptionally(e)
       }
-      server.stop()
-    } catch (e: Exception) {
-      e.printStackTrace()
     }
-
   }
 
   private fun generateSuccessBody(): String {
@@ -107,32 +73,39 @@ constructor(private val codeReader: (HttpServletRequest) -> T) : AbstractHandler
 </html>"""
   }
 
-  private fun generateFailBody(request: HttpServletRequest, error: String): String {
-    val params = request.parameterMap
-        .entries.joinToString("<br/>") { e -> e.key + " = " + e.value.joinToString(", ") }
+  private fun generateFailBody(url: HttpUrl, error: String): String {
+//        val params = url.param.joinToString("<br/>") { e -> e.key + " = " + e.value.joinToString(", ") }
 
     return """<html>
 <body background="http://adsoftheworld.com/sites/default/files/fail_moon_aotw.jpg">
 <h1>Authorization Error!</h1>
-<p style="font-size: 600%; font-family: Comic Sans, Comic Sans MS, cursive;">$error</p><p>$params</p></body>
+<p style="font-size: 600%; font-family: Comic Sans, Comic Sans MS, cursive;">$error</p></body>
 </html>"""
   }
 
   override fun close() {
-    shutdown()
+    server.stop(0)
   }
 
-  companion object {
+  suspend fun waitForCodeAsync(): String = f.await()
 
-    @Throws(IOException::class)
-    fun forCode(): SimpleWebServer<String> {
-      return SimpleWebServer({ r -> r.getParameter("code") })
+  fun waitForCode(): String = runBlocking { waitForCodeAsync() }
+
+  companion object {
+    fun forCode(): SimpleWebServer {
+      return SimpleWebServer({ r ->
+        r.queryParameter("code")
+      })
     }
 
-    @Throws(IOException::class)
     @JvmStatic
     fun main(args: Array<String>) {
-      SimpleWebServer.forCode().waitForCode()
+      SimpleWebServer.forCode().use { ws ->
+        val s = runBlocking {
+          ws.waitForCodeAsync()
+        }
+        println("result = $s")
+      }
     }
   }
 }

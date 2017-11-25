@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.1.60'
+    ext.kotlin_version = '1.1.61'
     repositories {
         mavenCentral()
     }
@@ -11,7 +11,7 @@ buildscript {
 plugins {
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'net.nemerosa.versioning' version '2.6.1'
-    id "org.jetbrains.kotlin.jvm" version "1.1.60"
+    id "org.jetbrains.kotlin.jvm" version "1.1.61"
 }
 
 apply plugin: 'java'
@@ -70,18 +70,16 @@ dependencies {
     }
     compile "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
 
-    compile group: 'com.baulsupp', name: 'oksocial-output', version: '0.11.0'
-    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.0'
-    compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.9.0'
+    compile(group: 'com.baulsupp', name: 'oksocial-output', version: '0.11.0')
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.1'
+    compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.9.1'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2"
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2")
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml',
             version: '2.9.2'
     compile(group: 'com.twitter', name: 'joauth', version: '6.0.2') {
         exclude(module: 'guava')
     }
-    compile group: 'org.eclipse.jetty.aggregate', name: 'jetty-all', version: '9.4.7.RC0',
-            classifier: 'uber'
     compile(group: 'com.github.mrmike', name: 'ok2curl', version: '0.3.2') {
         exclude(module: 'okhttp')
     }
@@ -101,19 +99,19 @@ dependencies {
     compile group: 'io.zipkin.brave', name: 'brave-okhttp', version: '4.6.0'
     compile group: 'io.zipkin.brave', name: 'brave-instrumentation-okhttp3', version: '4.6.0'
     compile group: 'io.zipkin.brave', name: 'brave', version: '4.6.0'
-    compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
+    compile('com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0') {
+        transitive = false
+    }
     compile 'com.spotify:completable-futures:0.3.2'
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.3'
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.19.3'
     compile 'com.squareup.moshi:moshi:1.5.0'
-    compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
+    compile('com.squareup.moshi:moshi-kotlin:1.5.0')
     compile 'com.squareup.moshi:moshi-adapters:1.5.0'
 
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-    testCompile group: 'com.squareup.okhttp3', name: 'okhttp-testing-support', version: '3.9.0'
-    testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.9.0'
+    testCompile group: 'com.squareup.okhttp3', name: 'okhttp-testing-support', version: '3.9.1'
+    testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.9.1'
 
     runtime 'org.mortbay.jetty.alpn:alpn-boot:8.1.11.v20170118'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
