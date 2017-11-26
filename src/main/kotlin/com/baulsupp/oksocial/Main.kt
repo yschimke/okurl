@@ -24,7 +24,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.credentials.OSXCredentialsStore
 import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore
-import com.baulsupp.oksocial.jjs.JavascriptApiCommand
+import com.baulsupp.oksocial.jjs.OkApiCommand
 import com.baulsupp.oksocial.kotlin.await
 import com.baulsupp.oksocial.location.BestLocation
 import com.baulsupp.oksocial.location.LocationSource
@@ -420,7 +420,7 @@ class Main : HelpOption() {
 
     val command = getShellCommand()
 
-    if (command is JavascriptApiCommand) {
+    if (command is OkApiCommand) {
       val requests = command.buildRequests(client!!, requestBuilder!!, arguments)
 
       if (requests.isNotEmpty()) {

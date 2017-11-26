@@ -12,7 +12,7 @@ import javax.script.ScriptEngine
 import javax.script.ScriptException
 import kotlin.system.exitProcess
 
-class JavascriptApiCommand : ShellCommand, MainAware {
+class OkApiCommand : ShellCommand, MainAware {
   private var main: Main? = null
 
   override fun name(): String {
@@ -35,7 +35,7 @@ class JavascriptApiCommand : ShellCommand, MainAware {
     val lines = script.toFile().readText()
 
     if (args.size < 1) {
-      System.err.println("usage: okscript file.kts arguments");
+      System.err.println("usage: okapi file.kts arguments");
       exitProcess(-2)
     }
 
