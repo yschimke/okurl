@@ -2,11 +2,9 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
-import com.google.common.collect.Lists
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
-
 
 class ImgurTest {
   private val main = Main()
@@ -23,7 +21,7 @@ class ImgurTest {
   fun setToken() {
     main.authorize = true
     main.token = "abc"
-    main.arguments = Lists.newArrayList("imgur")
+    main.arguments = mutableListOf("imgur")
 
     main.run()
 

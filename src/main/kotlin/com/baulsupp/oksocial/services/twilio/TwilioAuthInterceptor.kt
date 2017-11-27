@@ -12,7 +12,6 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.google.common.collect.Lists
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -23,7 +22,7 @@ import java.io.IOException
 class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
   override fun serviceDefinition(): BasicAuthServiceDefinition {
     return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
-        "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
+            "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
   }
 
   @Throws(IOException::class)
@@ -31,14 +30,14 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     var request = chain.request()
 
     request = request.newBuilder()
-        .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-        .build()
+            .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+            .build()
 
     return chain.proceed(request)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): BasicCredentials {
+          authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
 
@@ -46,10 +45,10 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: BasicCredentials): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: BasicCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
-        TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),
-        this::getName).validate(client)
+            TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),
+            this::getName).validate(client)
   }
 
   private fun getName(map: Map<String, Any>): String {
@@ -60,7 +59,8 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
@@ -68,8 +68,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
     val completer = BaseUrlCompleter(urlList!!, hosts())
 
     if (credentials != null) {
-      completer.withVariable("AccountSid",
-          Lists.newArrayList(credentials.user))
+      completer.withVariable("AccountSid", { listOf(credentials.user) })
     }
 
     return completer

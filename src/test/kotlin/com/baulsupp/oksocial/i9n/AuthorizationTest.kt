@@ -2,11 +2,9 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
-import com.google.common.collect.Lists
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
-
 
 class AuthorizationTest {
   private val main = Main()
@@ -23,7 +21,7 @@ class AuthorizationTest {
   fun setToken() {
     main.authorize = true
     main.token = "abc"
-    main.arguments = Lists.newArrayList("test")
+    main.arguments = mutableListOf("test")
 
     main.run()
 
@@ -34,7 +32,7 @@ class AuthorizationTest {
   @Throws(Exception::class)
   fun authorize() {
     main.authorize = true
-    main.arguments = Lists.newArrayList("test")
+    main.arguments = mutableListOf("test")
 
     main.run()
 
@@ -45,7 +43,7 @@ class AuthorizationTest {
   @Throws(Exception::class)
   fun authorizeByHost() {
     main.authorize = true
-    main.arguments = Lists.newArrayList("https://test.com/test")
+    main.arguments = mutableListOf("https://test.com/test")
 
     main.run()
 
@@ -56,7 +54,7 @@ class AuthorizationTest {
   @Throws(Exception::class)
   fun authorizeWithArgs() {
     main.authorize = true
-    main.arguments = Lists.newArrayList("test", "TOKENARG")
+    main.arguments = mutableListOf("test", "TOKENARG")
 
     main.run()
 

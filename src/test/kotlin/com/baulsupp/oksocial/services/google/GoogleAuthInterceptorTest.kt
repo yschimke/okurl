@@ -3,14 +3,11 @@ package com.baulsupp.oksocial.services.google
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.i9n.TestCredentialsStore
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
-import com.google.common.collect.Lists
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import org.junit.Test
-
-
 import java.io.IOException
-import java.util.concurrent.ExecutionException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -35,68 +32,69 @@ class GoogleAuthInterceptorTest {
   }
 
   @Test
-  @Throws(IOException::class, ExecutionException::class, InterruptedException::class)
   fun completesHosts() {
-    val hostCompleter = interceptor.apiCompleter("https://", client, credentialsStore, cache)
+    runBlocking {
+      val hostCompleter = interceptor.apiCompleter("https://", client, credentialsStore, cache)
 
-    val urls = hostCompleter.prefixUrls().get().getUrls("https://")
+      val urls = hostCompleter.prefixUrls().getUrls("https://")
 
-    assertTrue(urls.contains("https://www.googleapis.com"))
-    assertTrue(urls.contains("https://people.googleapis.com"))
+      assertTrue(urls.contains("https://www.googleapis.com"))
+      assertTrue(urls.contains("https://people.googleapis.com"))
+    }
   }
 
   @Test
-  @Throws(IOException::class, ExecutionException::class, InterruptedException::class)
   fun completesWwwPaths() {
-    val hostCompleter = interceptor.apiCompleter("https://people.googleapis.com", client,
-        credentialsStore, cache)
+    runBlocking {
+      val hostCompleter = interceptor.apiCompleter("https://people.googleapis.com", client,
+              credentialsStore, cache)
 
-    val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!)
-        .get()
-        .getUrls("https://people.googleapis.com")
+      val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!)
+              .getUrls("https://people.googleapis.com")
 
-    assertEquals(Lists.newArrayList("https://people.googleapis.com/"), urls)
+      assertEquals(listOf("https://people.googleapis.com/"), urls)
+    }
   }
 
   // hits the network
   @Test
-  @Throws(IOException::class, ExecutionException::class, InterruptedException::class)
   fun completesSitePaths() {
-    assumeHasNetwork()
+    runBlocking {
+      assumeHasNetwork()
 
-    val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/urlshortener/v1/url",
-        client,
-        credentialsStore, cache)
+      val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/urlshortener/v1/url",
+              client,
+              credentialsStore, cache)
 
-    val urlList = hostCompleter.siteUrls(
-        HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!)
-        .get()
+      val urlList = hostCompleter.siteUrls(
+              HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!)
 
-    val urls = urlList
-        .getUrls("https://www.googleapis.com/urlshortener/v1/url")
+      val urls = urlList
+              .getUrls("https://www.googleapis.com/urlshortener/v1/url")
 
-    assertEquals(Lists.newArrayList("https://www.googleapis.com/urlshortener/v1/url",
-        "https://www.googleapis.com/urlshortener/v1/url/history"), urls)
+      assertEquals(listOf("https://www.googleapis.com/urlshortener/v1/url",
+              "https://www.googleapis.com/urlshortener/v1/url/history"), urls)
+    }
   }
 
   // hits the network
   @Test
-  @Throws(IOException::class, ExecutionException::class, InterruptedException::class)
   fun completesSitePathsForDuplicates() {
-    assumeHasNetwork()
+    runBlocking {
+      assumeHasNetwork()
 
-    val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/", client,
-        credentialsStore, cache)
+      val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/", client,
+              credentialsStore, cache)
 
-    val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!)
-        .get()
+      val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!)
 
-    val urls = urlList
-        .getUrls("https://www.googleapis.com/")
+      val urls = urlList
+              .getUrls("https://www.googleapis.com/")
 
-    assertTrue(urls.size > 5)
+      assertTrue(urls.size > 5)
 
-    assertTrue(urls.contains("https://www.googleapis.com/urlshortener/v1/url/history"))
-    assertTrue(urls.contains("https://www.googleapis.com/oauth2/v1/userinfo"))
+      assertTrue(urls.contains("https://www.googleapis.com/urlshortener/v1/url/history"))
+      assertTrue(urls.contains("https://www.googleapis.com/oauth2/v1/userinfo"))
+    }
   }
 }

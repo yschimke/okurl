@@ -2,14 +2,11 @@ package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
-import com.google.common.collect.Lists.newArrayList
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.junit.Before
 import org.junit.Test
-
-
 import java.io.IOException
 import kotlin.test.assertTrue
 import kotlin.test.fail
@@ -35,7 +32,7 @@ class DiscoveryApiDocPresenterTest {
       p!!.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client)
     }
 
-    val es = newArrayList("name: Google People API",
+    val es = listOf("name: Google People API",
         "docs: https://developers.google.com/people/",
         "url: https://people.googleapis.com/v1/{+resourceName}"
     )

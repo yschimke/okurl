@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.google.common.collect.Lists
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -45,7 +44,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
     val clientId = Secrets.prompt("Lyft Client Id", "lyft.clientId", "", false)
     val clientSecret = Secrets.prompt("Lyft Client Secret", "lyft.clientSecret", "", true)
 
-    return if (authArguments == Lists.newArrayList("--client")) {
+    return if (authArguments == listOf("--client")) {
       LyftClientAuthFlow.login(client, clientId, clientSecret)
     } else {
       val scopes = Secrets.promptArray("Scopes", "lyft.scopes", LyftUtil.SCOPES)

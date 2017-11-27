@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.CompletionOnlyAuthInterceptor
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
-import com.baulsupp.oksocial.completion.ContinuationApiCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
@@ -31,8 +30,8 @@ class DatasettesAuthInterceptor : CompletionOnlyAuthInterceptor("datasettes.com"
   override fun apiDocPresenter(url: String): ApiDocPresenter = DatasettesPresenter()
 }
 
-class DatasettesCompleter(private val client: OkHttpClient) : ContinuationApiCompleter() {
-  override suspend fun site(url: HttpUrl): UrlList {
+class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
+  override suspend fun siteUrls(url: HttpUrl): UrlList {
     val host = url.host()
 
     val path = url.pathSegments()
@@ -60,7 +59,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ContinuationApiCom
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/${path.first()}/$it" })
   }
 
-  suspend override fun prefix(): UrlList =
+  suspend override fun prefixUrls(): UrlList =
       UrlList(UrlList.Match.HOSTS, knownHosts().map { "https://$it/" })
 }
 

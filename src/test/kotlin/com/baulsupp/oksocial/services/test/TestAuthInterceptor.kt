@@ -7,7 +7,6 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
-import io.github.vjames19.futures.jdk8.ImmediateFuture
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request

@@ -62,7 +62,6 @@ import com.baulsupp.oksocial.util.HeaderUtil
 import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
 import com.baulsupp.oksocial.util.ProtocolUtil
-import com.google.common.collect.Lists
 import com.mcdermottroe.apple.OSXKeychainException
 import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Arguments
@@ -266,7 +265,7 @@ class Main : HelpOption() {
 
   private var eventLoopGroup: NioEventLoopGroup? = null
 
-  private val closeables = Lists.newArrayList<Closeable>()
+  private val closeables = mutableListOf<Closeable>()
 
   private fun versionString(): String {
     return "1"
@@ -360,7 +359,9 @@ class Main : HelpOption() {
 
     val commandCompletor = command.completer()
     if (commandCompletor != null) {
-      val urls = commandCompletion(commandCompletor, arguments)
+      val urls = runBlocking {
+        commandCompletion(commandCompletor, arguments)
+      }
 
       val prefix = arguments[arguments.size - 1]
 
@@ -380,7 +381,9 @@ class Main : HelpOption() {
     val originalCompletionUrl = arguments[arguments.size - 1]
 
     if (fullCompletionUrl != null) {
-      val urls = completer.urlList(fullCompletionUrl)
+      val urls = runBlocking {
+        completer.urlList(fullCompletionUrl)
+      }
 
       val strip: Int = if (fullCompletionUrl != originalCompletionUrl) {
         fullCompletionUrl.length - originalCompletionUrl.length
@@ -398,19 +401,17 @@ class Main : HelpOption() {
     }
   }
 
-  @Throws(IOException::class)
-  private fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
+  suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
     return urlCompleter.urlList(arguments[arguments.size - 1])
   }
 
   /*
- * The last url in arguments which should be used for completion or apidoc requests.
- * In the case of javascript command expansion, it is expanded first before
- * being returned.
- *
- * n.b. arguments may be modified by this call.
- */
-  @Throws(Exception::class)
+   * The last url in arguments which should be used for completion or apidoc requests.
+   * In the case of javascript command expansion, it is expanded first before
+   * being returned.
+   *
+   * n.b. arguments may be modified by this call.
+   */
   private fun getFullCompletionUrl(): String? {
     if (arguments.isEmpty()) {
       return null
@@ -704,7 +705,7 @@ class Main : HelpOption() {
   }
 
   private suspend fun enqueueRequests(requests: List<Request>, client: OkHttpClient): List<PotentialResponse> {
-    val responses = Lists.newArrayList<PotentialResponse>()
+    val responses = mutableListOf<PotentialResponse>()
 
     for (request in requests) {
       logger.log(Level.FINE, "url " + request.url())
@@ -822,7 +823,7 @@ class Main : HelpOption() {
       keystore = KeystoreUtils.getKeyStore(keystoreFile)
     }
 
-    val keyManagers = Lists.newArrayList<KeyManager>()
+    val keyManagers = mutableListOf<KeyManager>()
 
     if (opensc != null) {
       keyManagers.addAll(OpenSCUtil.getKeyManagers(callbackHandler, opensc!!).asIterable())
@@ -839,7 +840,7 @@ class Main : HelpOption() {
       trustManager = InsecureTrustManager()
       builder.hostnameVerifier(InsecureHostnameVerifier())
     } else {
-      val trustManagers = Lists.newArrayList<X509TrustManager>()
+      val trustManagers = mutableListOf<X509TrustManager>()
 
       if (keystore != null) {
         trustManagers.add(CertificateUtils.trustManagerForKeyStore(keystore))

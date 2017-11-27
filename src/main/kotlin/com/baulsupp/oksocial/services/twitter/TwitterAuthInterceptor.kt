@@ -7,7 +7,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlrcImport
-import com.google.common.collect.Lists
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -38,7 +37,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
       return TwurlrcImport.authorize(authArguments)
     }
 
-    if (authArguments == Lists.newArrayList("--pin")) {
+    if (authArguments == listOf("--pin")) {
       val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
       val consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true)
 

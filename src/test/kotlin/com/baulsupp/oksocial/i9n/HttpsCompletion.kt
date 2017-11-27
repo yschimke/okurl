@@ -2,12 +2,10 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
-import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 class HttpsCompletion {
   private val main = Main()
@@ -22,7 +20,7 @@ class HttpsCompletion {
   @Test
   @Throws(Throwable::class)
   fun completePeopleEndpointSite() {
-    main.arguments = newArrayList("https://")
+    main.arguments = mutableListOf("https://")
     main.urlComplete = true
 
     main.run()

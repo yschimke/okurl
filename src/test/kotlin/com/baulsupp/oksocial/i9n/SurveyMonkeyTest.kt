@@ -4,13 +4,10 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken
-import com.google.common.collect.Lists
-import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 class SurveyMonkeyTest {
 
@@ -28,9 +25,9 @@ class SurveyMonkeyTest {
   @Test
   @Throws(Throwable::class)
   fun completeEndpointWithReplacements() {
-    main.arguments = newArrayList("https://api.surveymonkey.net/")
+    main.arguments = mutableListOf("https://api.surveymonkey.net/")
     main.urlComplete = true
-    completionCache.store("surveymonkey", "surveys", Lists.newArrayList("AA", "BB"))
+    completionCache.store("surveymonkey", "surveys", listOf("AA", "BB"))
     credentialsStore.storeCredentials(SurveyMonkeyToken("", ""),
         SurveyMonkeyAuthInterceptor().serviceDefinition())
 

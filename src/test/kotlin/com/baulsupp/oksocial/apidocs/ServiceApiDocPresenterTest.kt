@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.apidocs
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
-import com.google.common.collect.Lists.newArrayList
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.OkHttpClient
 import org.junit.Test
@@ -19,14 +18,14 @@ class ServiceApiDocPresenterTest {
   fun returnsAllUrls() {
     runBlocking { presenter.explainApi("https://api1.test.com/me", outputHandler, client) }
 
-    assertEquals(newArrayList("Test: https://api1.test.com/me"), outputHandler.stdout)
+    assertEquals(mutableListOf("Test: https://api1.test.com/me"), outputHandler.stdout)
   }
 
   @Test
   fun errorForUnknown() {
     runBlocking { presenter.explainApi("https://api1.blah.com/me", outputHandler, client) }
 
-    assertEquals(newArrayList("No documentation for: https://api1.blah.com/me"),
+    assertEquals(mutableListOf("No documentation for: https://api1.blah.com/me"),
             outputHandler.stdout)
   }
 }
