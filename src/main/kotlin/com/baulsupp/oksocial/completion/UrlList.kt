@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.completion
 
-import com.google.common.collect.Lists
 import com.google.common.io.Resources
 import java.io.File
 import java.io.IOException
@@ -25,7 +24,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
     val replacementList: List<String>
     if (keepTemplate) {
-      replacementList = Lists.newArrayList(replacements)
+      replacementList = replacements.toMutableList()
       if (keepTemplate) {
         replacementList.add(literalToken)
       }
@@ -59,7 +58,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
   }
 
   fun combine(b: UrlList): UrlList {
-    val newUrls = Lists.newArrayList<String>()
+    val newUrls = mutableListOf<String>()
 
     newUrls.addAll(urls)
     newUrls.addAll(b.urls)

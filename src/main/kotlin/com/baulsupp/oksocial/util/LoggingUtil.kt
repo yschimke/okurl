@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.util
 
-import com.google.common.collect.Lists
 import io.netty.util.internal.logging.InternalLoggerFactory
 import io.netty.util.internal.logging.JdkLoggerFactory
 import okhttp3.internal.http2.Http2
@@ -13,7 +12,7 @@ import java.util.logging.SimpleFormatter
 
 class LoggingUtil {
   companion object {
-    private val activeLoggers = Lists.newArrayList<Logger>()
+    private val activeLoggers = mutableListOf<Logger>()
 
     fun configureLogging(debug: Boolean, showHttp2Frames: Boolean) {
       InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)

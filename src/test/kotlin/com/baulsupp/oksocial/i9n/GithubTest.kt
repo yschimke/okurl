@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor
-import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -28,7 +27,7 @@ class GithubTest {
     credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
 
     main.commandName = "okapi"
-    main.arguments = newArrayList("commands/githubapi", "/")
+    main.arguments = mutableListOf("commands/githubapi", "/")
     main.urlComplete = true
 
     main.run()
@@ -42,7 +41,7 @@ class GithubTest {
   fun completeEndpoint() {
     credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
 
-    main.arguments = newArrayList("https://api.github.com/")
+    main.arguments = mutableListOf("https://api.github.com/")
     main.urlComplete = true
 
     main.run()

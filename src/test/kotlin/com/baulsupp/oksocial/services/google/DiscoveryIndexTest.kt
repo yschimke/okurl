@@ -1,9 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
-import com.google.common.collect.Lists.newArrayList
 import org.junit.Test
-
-
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -16,7 +13,7 @@ class DiscoveryIndexTest {
     val r = DiscoveryIndex.loadStatic()
 
     assertEquals(
-        newArrayList("https://www.googleapis.com/discovery/v1/apis/urlshortener/v1/rest"),
+        listOf("https://www.googleapis.com/discovery/v1/apis/urlshortener/v1/rest"),
         r.getDiscoveryUrlForApi("https://www.googleapis.com/urlshortener/v1/"))
   }
 
@@ -27,7 +24,7 @@ class DiscoveryIndexTest {
 
     val results = r.getDiscoveryUrlForPrefix("https://people.googleapis.com/xxx")
 
-    assertEquals(newArrayList("https://www.googleapis.com/discovery/v1/apis/people/v1/rest"),
+    assertEquals(listOf("https://www.googleapis.com/discovery/v1/apis/people/v1/rest"),
         results)
   }
 

@@ -2,15 +2,12 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.BasicCredentials
-import com.baulsupp.oksocial.kotlin.okshell
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
-import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 class TwilioTest {
   private val main = Main()
@@ -29,7 +26,7 @@ class TwilioTest {
     credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
 
     main.commandName = "okapi"
-    main.arguments = newArrayList("commands/twilioapi", "/")
+    main.arguments = mutableListOf("commands/twilioapi", "/")
     main.urlComplete = true
 
     main.run()
@@ -43,7 +40,7 @@ class TwilioTest {
   fun completeEndpointWithReplacements() {
     credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
 
-    main.arguments = newArrayList("https://api.twilio.com/")
+    main.arguments = mutableListOf("https://api.twilio.com/")
     main.urlComplete = true
 
     main.run()

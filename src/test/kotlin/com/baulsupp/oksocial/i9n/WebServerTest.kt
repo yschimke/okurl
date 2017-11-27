@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.security.CertificatePin
-import com.google.common.collect.Lists
 import okhttp3.Response
 import okhttp3.internal.tls.SslClient
 import okhttp3.mockwebserver.MockResponse
@@ -11,8 +10,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-
-
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
 import kotlin.test.assertEquals
@@ -38,7 +35,7 @@ class WebServerTest {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.arguments = mutableListOf(server.url("/").toString())
 
     main.run()
 
@@ -53,7 +50,7 @@ class WebServerTest {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.arguments = mutableListOf(server.url("/").toString())
     main.allowInsecure = true
 
     main.run()
@@ -69,7 +66,7 @@ class WebServerTest {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.arguments = mutableListOf(server.url("/").toString())
 
     main.run()
 
@@ -83,8 +80,8 @@ class WebServerTest {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
-    main.arguments = Lists.newArrayList(server.url("/").toString())
-    main.certificatePins = Lists.newArrayList(CertificatePin(server.hostName + ":" +
+    main.arguments = mutableListOf(server.url("/").toString())
+    main.certificatePins = listOf(CertificatePin(server.hostName + ":" +
         "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")) as java.util.List<CertificatePin>
     main.allowInsecure = true
 

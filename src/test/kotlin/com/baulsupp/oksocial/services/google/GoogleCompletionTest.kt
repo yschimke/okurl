@@ -4,12 +4,10 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.i9n.TestCredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
-import com.google.common.collect.Lists.newArrayList
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 class GoogleCompletionTest {
   private val main = Main()
@@ -26,7 +24,7 @@ class GoogleCompletionTest {
   fun completePeopleEndpointSite() {
     assumeHasNetwork()
 
-    main.arguments = newArrayList("https://people.googleapis.com/")
+    main.arguments = mutableListOf("https://people.googleapis.com/")
     main.urlComplete = true
 
     main.run()
@@ -40,7 +38,7 @@ class GoogleCompletionTest {
   fun completePeopleEndpointPath() {
     assumeHasNetwork()
 
-    main.arguments = newArrayList("https://people.googleapis.com/v1/people:batch")
+    main.arguments = mutableListOf("https://people.googleapis.com/v1/people:batch")
     main.urlComplete = true
 
     main.run()
@@ -54,7 +52,7 @@ class GoogleCompletionTest {
   fun completeGmailUserId() {
     assumeHasNetwork()
 
-    main.arguments = newArrayList("https://www.googleapis.com/gmail/v1/")
+    main.arguments = mutableListOf("https://www.googleapis.com/gmail/v1/")
     main.urlComplete = true
 
     main.run()
@@ -66,11 +64,10 @@ class GoogleCompletionTest {
 
   // Nested example
   @Test
-  @Throws(Throwable::class)
   fun completeGmailMessages() {
     assumeHasNetwork()
 
-    main.arguments = newArrayList("https://www.googleapis.com/gmail/v1/")
+    main.arguments = mutableListOf("https://www.googleapis.com/gmail/v1/")
     main.urlComplete = true
 
     main.run()

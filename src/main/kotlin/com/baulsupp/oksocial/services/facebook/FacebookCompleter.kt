@@ -1,23 +1,19 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
-import com.baulsupp.oksocial.kotlin.asyncFuture
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
-import io.github.vjames19.futures.jdk8.map
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
-import java.util.concurrent.CompletableFuture
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<String>) : HostUrlCompleter(hosts) {
+class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<String>) :
+        HostUrlCompleter(hosts) {
 
-  @Throws(IOException::class)
-  override fun siteUrls(url: HttpUrl): CompletableFuture<UrlList> {
+  override suspend fun siteUrls(url: HttpUrl): UrlList {
     var result = completePath(url.encodedPath())
 
     if (!url.encodedPath().endsWith("/")) {
@@ -26,7 +22,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
 
       val parentPath = "/" + parentPaths.joinToString("/")
 
-      result = result.thenCombine(completePath(parentPath), { obj, b -> obj.combine(b) })
+      result = result.combine(completePath(parentPath))
     }
 
     return result
@@ -36,33 +32,39 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     return { c: String -> prefix + (if (prefix.endsWith("/")) "" else "/") + c }
   }
 
-  private fun topLevel(): CompletableFuture<List<String>> {
+  suspend fun topLevel(): List<String> {
     val url = HttpUrl.parse(
-        "https://graph.facebook.com/$VERSION/me/accounts?fields=username")
+            "https://graph.facebook.com/$VERSION/me/accounts?fields=username")
     val request = Request.Builder().url(url!!).build()
 
-    return AuthUtil.enqueueJsonMapRequest(client, request)
-        .map { m ->
-          (m["data"] as List<Map<String, String>>).map { it["username"]!! } + "me"
-        }.exceptionally { mutableListOf() }
+    val map = client.queryMap<String, Any>(request)
+
+    // TODO exception handling
+    return (map["data"] as List<Map<String, String>>).map { it["username"]!! } + "me"
   }
 
-  private fun completePath(path: String): CompletableFuture<UrlList> {
+  suspend fun completePath(path: String): UrlList {
     when {
-      path == "/" -> return topLevel().map { it + VERSION }.thenApply { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com/"))) }
-      path.matches("/v\\d.\\d+/?".toRegex()) -> return topLevel().map { l -> UrlList(UrlList.Match.EXACT, l.map(addPath("https://graph.facebook.com" + path))) }
+      path == "/" -> {
+        return UrlList(UrlList.Match.EXACT,
+                (topLevel() + VERSION).map(addPath("https://graph.facebook.com/")))
+      }
+      path.matches("/v\\d.\\d+/?".toRegex()) -> {
+        return UrlList(UrlList.Match.EXACT,
+                topLevel().map(addPath("https://graph.facebook.com" + path)))
+      }
       else -> {
         val prefix = "https://graph.facebook.com" + path
 
-        val metadataFuture = asyncFuture { FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!) }
+        val metadata = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!)
 
-        return metadataFuture.map { metadata ->
+        return try {
           if (metadata == null) {
             UrlList(UrlList.Match.EXACT, listOf())
           } else {
             UrlList(UrlList.Match.EXACT, metadata.connections.keys.map(addPath(prefix)) + prefix)
           }
-        }.exceptionally { e ->
+        } catch (e: Exception) {
           logger.log(Level.FINE, "completion failure", e)
           UrlList(UrlList.Match.EXACT, listOf())
         }

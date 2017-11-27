@@ -1,20 +1,13 @@
 package com.baulsupp.oksocial.completion
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
+import com.baulsupp.oksocial.kotlin.queryMap
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.CompletableFuture
 
 object CompletionQuery {
-  fun getIds(client: OkHttpClient, urlString: String,
-             path: String,
-             key: String): CompletableFuture<List<String>> {
-    val request = Request.Builder().url(urlString).build()
-
-    return AuthUtil.enqueueJsonMapRequest(client, request)
-        .thenApply { map ->
-          val surveys = map[path] as List<Map<String, Any>>
-          surveys.map { m -> m[key] as String }
-        }
+  suspend fun getIds(client: OkHttpClient, urlString: String,
+          path: String, key: String): List<String> {
+    val result = client.queryMap<String, Any>(urlString)
+    val surveys = result[path] as List<Map<String, Any>>
+    return surveys.map { m -> m[key] as String }
   }
 }

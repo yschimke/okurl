@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
-import com.google.common.collect.Lists
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.internal.tls.SslClient
@@ -33,11 +32,11 @@ class LoggingTest {
   @Throws(Exception::class)
   fun logsData() {
     server.useHttps(sslClient.socketFactory, false)
-    server.setProtocols(Lists.newArrayList(Protocol.HTTP_2, Protocol.HTTP_1_1))
+    server.setProtocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
     server.enqueue(MockResponse().setBody("Isla Sorna"))
     main.allowInsecure = true
 
-    main.arguments = Lists.newArrayList(server.url("/").toString())
+    main.arguments = mutableListOf(server.url("/").toString())
     main.debug = true
 
     main.run()

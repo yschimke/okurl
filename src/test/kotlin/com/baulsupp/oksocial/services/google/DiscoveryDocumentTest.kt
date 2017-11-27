@@ -1,11 +1,8 @@
 package com.baulsupp.oksocial.services.google
 
-import com.google.common.collect.Lists.newArrayList
 import com.google.common.io.Resources
 import org.junit.Before
 import org.junit.Test
-
-
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
@@ -28,7 +25,7 @@ class DiscoveryDocumentTest {
   fun getUrlsFromFile() {
     assertEquals("https://www.googleapis.com/urlshortener/v1/", doc!!.baseUrl)
 
-    assertEquals(newArrayList("https://www.googleapis.com/urlshortener/v1/url",
+    assertEquals(listOf("https://www.googleapis.com/urlshortener/v1/url",
         "https://www.googleapis.com/urlshortener/v1/url/history"), doc!!.urls)
   }
 

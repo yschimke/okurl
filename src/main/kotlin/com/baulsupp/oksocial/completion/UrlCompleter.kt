@@ -2,60 +2,55 @@ package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.google.common.collect.Lists
+import kotlinx.coroutines.experimental.CancellationException
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.withTimeout
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.lang.Math.min
-import java.time.Clock
 import java.util.concurrent.ExecutionException
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
 
 class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val client: OkHttpClient,
-                   private val credentialsStore: CredentialsStore, private val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
-  private val clock = Clock.systemDefaultZone()
-
-  override fun urlList(prefix: String): UrlList {
+        private val credentialsStore: CredentialsStore,
+        private val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
+  override suspend fun urlList(prefix: String): UrlList {
     val fullUrl = parseUrl(prefix)
 
     return if (fullUrl != null) {
-      // won't match anything
       services
-          .firstOrNull { it.supportsUrl(fullUrl) }
-          ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
-          ?.siteUrls(fullUrl)
-          ?.get()
-          ?: UrlList(UrlList.Match.EXACT, Lists.newArrayList())
+              .firstOrNull { it.supportsUrl(fullUrl) }
+              ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+              ?.siteUrls(fullUrl)
+              ?: UrlList(UrlList.Match.EXACT, listOf())
     } else {
-      val futures = Lists.newArrayList<Future<UrlList>>()
-
-      services.mapTo(futures) { it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls() }
+      val futures = services.map {
+        async(CommonPool) {
+          withTimeout(2, TimeUnit.SECONDS) {
+            it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls()
+          }
+        }
+      }
 
       futuresToList(prefix, futures)
     }
   }
 
-  private fun futuresToList(prefix: String, futures: List<Future<UrlList>>): UrlList {
-    val to = clock.millis() + 2000
-
-    val results = Lists.newArrayList<String>()
+  suspend fun futuresToList(prefix: String, futures: List<Deferred<UrlList>>): UrlList {
+    val results = mutableListOf<String>()
 
     for (f in futures) {
       try {
-        val result = f.get(to - clock.millis(), TimeUnit.MILLISECONDS)
-
-        results.addAll(result.getUrls(prefix))
+        results.addAll(f.await().getUrls(prefix))
+      } catch (e: CancellationException) {
+        logger.log(Level.WARNING, "failure during url completion", e.cause)
       } catch (e: ExecutionException) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
-      } catch (e: InterruptedException) {
-        logger.log(Level.FINE, "timeout during url completion", e)
-      } catch (e: TimeoutException) {
-        logger.log(Level.FINE, "timeout during url completion", e)
       }
-
     }
 
     return UrlList(UrlList.Match.HOSTS, results)

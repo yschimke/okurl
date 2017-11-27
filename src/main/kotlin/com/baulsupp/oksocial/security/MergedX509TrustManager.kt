@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.security
 
-import com.google.common.collect.Lists.newArrayList
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import java.util.Arrays.asList
@@ -15,7 +14,7 @@ class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X50
 
   @Throws(CertificateException::class)
   override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
-    val exceptions = newArrayList<CertificateException>()
+    val exceptions = mutableListOf<CertificateException>()
 
     for (tm in managers) {
       try {
@@ -41,7 +40,7 @@ class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X50
   }
 
   override fun getAcceptedIssuers(): Array<X509Certificate> {
-    val certificates = newArrayList<X509Certificate>()
+    val certificates = mutableListOf<X509Certificate>()
 
     for (tm in managers) {
       certificates.addAll(asList(*tm.acceptedIssuers))
