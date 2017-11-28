@@ -23,6 +23,6 @@ class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
     val testUrls = UrlList.fromResource("paypal")!!.getUrls("")
         .map { s -> s.replace("api.paypal.com", host()) }
 
-    return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts())
+    return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts(), completionVariableCache)
   }
 }

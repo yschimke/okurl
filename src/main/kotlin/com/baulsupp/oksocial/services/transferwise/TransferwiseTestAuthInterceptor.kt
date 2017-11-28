@@ -28,6 +28,6 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
     val testUrls = urlList.getUrls("")
         .map { s -> s.replace("api.transferwise.com", host()) }
 
-    return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts())
+    return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts(), completionVariableCache)
   }
 }

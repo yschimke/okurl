@@ -60,7 +60,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts())
+    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     if (credentials != null) {
       completer.withVariable("survey",

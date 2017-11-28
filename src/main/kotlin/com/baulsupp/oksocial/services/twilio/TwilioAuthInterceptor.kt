@@ -65,7 +65,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts())
+    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     if (credentials != null) {
       completer.withVariable("AccountSid", { listOf(credentials.user) })
