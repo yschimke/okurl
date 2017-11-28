@@ -25,13 +25,11 @@ class FacebookTest {
   private var p: FacebookApiDocPresenter? = null
 
   @Before
-  @Throws(IOException::class)
   fun loadPresenter() {
     p = FacebookApiDocPresenter(sd)
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsUrl() {
     assumeHasNetwork()
 

@@ -21,22 +21,6 @@ class TwilioTest {
   }
 
   @Test
-  @Throws(Throwable::class)
-  fun completeEndpointShortCommand1() {
-    credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
-
-    main.commandName = "okapi"
-    main.arguments = mutableListOf("commands/twilioapi", "/")
-    main.urlComplete = true
-
-    main.run()
-
-    assertEquals(mutableListOf(), output.failures)
-    assertTrue(output.stdout[0].contains("/Calls.json"))
-  }
-
-  @Test
-  @Throws(Throwable::class)
   fun completeEndpointWithReplacements() {
     credentialsStore.storeCredentials(BasicCredentials("ABC", "PW"), service)
 

@@ -22,7 +22,6 @@ class GithubTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointShortCommand1() {
     credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
 
@@ -37,7 +36,6 @@ class GithubTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpoint() {
     credentialsStore.storeCredentials(Oauth2Token("ABC"), service)
 
