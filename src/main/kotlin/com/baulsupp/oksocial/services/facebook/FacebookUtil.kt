@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.facebook
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.services.facebook.model.Metadata
 import com.baulsupp.oksocial.services.facebook.model.MetadataResult
+import com.baulsupp.oksocial.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,8 +21,15 @@ object FacebookUtil {
     var newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
     val request = Request.Builder().url(newUrl).build()
 
-    val response = client.query<MetadataResult>(request)
-    return response.metadata
+    try {
+      val response = client.query<MetadataResult>(request)
+      return response.metadata
+    } catch (ce: ClientException) {
+      if (ce.code != 404) {
+        throw ce
+      }
+      return null
+    }
   }
 
   val ALL_PERMISSIONS = listOf(

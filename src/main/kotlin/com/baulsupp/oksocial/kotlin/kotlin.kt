@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.kotlin
 
+import com.baulsupp.oksocial.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
 import okhttp3.OkHttpClient
@@ -51,7 +52,7 @@ suspend fun OkHttpClient.execute(request: Request): Response {
       response.code().toString() + " " + response.message()
     }
 
-    throw RuntimeException(msg)
+    throw ClientException(msg, response.code())
   }
 
   return response

@@ -2,11 +2,12 @@ package com.baulsupp.oksocial.services.facebook
 
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
-import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
+import com.baulsupp.oksocial.services.facebook.model.PageableResult
+import com.baulsupp.oksocial.services.facebook.model.Paging
+import com.baulsupp.oksocial.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -32,15 +33,20 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     return { c: String -> prefix + (if (prefix.endsWith("/")) "" else "/") + c }
   }
 
+  data class Account(val id: String, val username: String)
+
+  data class AccountList(override val data: List<Account>, override val paging: Paging) :
+          PageableResult<Account>(data, paging)
+
   suspend fun topLevel(): List<String> {
-    val url = HttpUrl.parse(
-            "https://graph.facebook.com/$VERSION/me/accounts?fields=username")
-    val request = Request.Builder().url(url!!).build()
-
-    val map = client.queryMap<String, Any>(request)
-
-    // TODO exception handling
-    return (map["data"] as List<Map<String, String>>).map { it["username"]!! } + "me"
+    return try {
+      client.fbQueryList<Account, AccountList>("/me/accounts").data.map { it.username } + "me"
+    } catch (ce: ClientException) {
+      if (ce.code != 400) {
+        throw ce
+      }
+      listOf<String>("me")
+    }
   }
 
   suspend fun completePath(path: String): UrlList {
