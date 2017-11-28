@@ -1,3 +1,0 @@
-#!/usr/bin/env okapi
-
-"https://slack.com/api" + item
