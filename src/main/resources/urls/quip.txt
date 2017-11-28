@@ -19,3 +19,4 @@ https://platform.quip.com/1/users/{userId}
 https://platform.quip.com/1/users/?ids={userIds}
 https://platform.quip.com/1/users/current
 https://platform.quip.com/1/users/contacts
+https://platform.quip.com/1/websockets/new
