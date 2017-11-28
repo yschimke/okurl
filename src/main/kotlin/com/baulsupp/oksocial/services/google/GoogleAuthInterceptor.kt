@@ -100,7 +100,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
         GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
             discoveryPaths)
       } else {
-        BaseUrlCompleter(UrlList.fromResource(name())!!, hosts())
+        BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
       }
 
   override fun hosts(): Set<String> = foundHosts

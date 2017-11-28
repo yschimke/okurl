@@ -58,7 +58,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
-    return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts())
+    return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
   override suspend fun validate(client: OkHttpClient,

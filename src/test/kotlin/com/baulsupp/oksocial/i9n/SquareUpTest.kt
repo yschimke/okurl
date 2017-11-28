@@ -23,11 +23,10 @@ class SquareUpTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointWithReplacements() {
     main.arguments = mutableListOf("https://connect.squareup.com/")
     main.urlComplete = true
-    completionCache.store("squareup", "locations", listOf("AA", "bb"))
+    completionCache.store("squareup", "location", listOf("AA", "bb"))
     credentialsStore.storeCredentials(Oauth2Token("test"),
         SquareUpAuthInterceptor().serviceDefinition())
 

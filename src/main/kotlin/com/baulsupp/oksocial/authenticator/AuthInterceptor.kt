@@ -35,7 +35,8 @@ interface AuthInterceptor<T> {
   fun serviceDefinition(): ServiceDefinition<T>
 
   suspend fun validate(client: OkHttpClient,
-                       requestBuilder: Request.Builder, credentials: T): ValidatedCredentials
+                       requestBuilder: Request.Builder, credentials: T): ValidatedCredentials =
+          ValidatedCredentials()
 
   fun canRenew(result: Response): Boolean = result.code() == 401
 
@@ -48,7 +49,7 @@ interface AuthInterceptor<T> {
   fun apiCompleter(prefix: String, client: OkHttpClient,
                    credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
       UrlList.fromResource(name())?.let {
-        BaseUrlCompleter(it, hosts())
+        BaseUrlCompleter(it, hosts(), completionVariableCache)
       } ?: HostUrlCompleter(hosts())
 
   fun defaultCredentials(): T? = null

@@ -22,7 +22,8 @@ import java.io.IOException
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup",
-        "https://docs.connect.squareup.com/api/connect/v2/", "https://connect.squareup.com/apps")
+            "https://docs.connect.squareup.com/api/connect/v2/",
+            "https://connect.squareup.com/apps")
   }
 
   @Throws(IOException::class)
@@ -41,41 +42,39 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        SquareUpUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
-        client)
+            SquareUpUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
+            client)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising SquareUp API")
 
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
-    val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "", true)
+    val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
+            true)
     val scopes = Secrets.promptArray("Scopes", "squareup.scopes", SquareUpUtil.ALL_PERMISSIONS)
 
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts())
+    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    credentials?.let {
-      val fn: suspend () -> List<String> = {
-        completionVariableCache.compute(name(), "locations",
-                {
-                  CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations",
-                          "locations",
-                          "id")
-                })
-      }
-      completer.withVariable("location", fn)
+    if (credentials != null) {
+      completer.withCachedVariable(name(), "location", {
+        CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations",
+                "locations",
+                "id")
+      })
     }
 
     return completer

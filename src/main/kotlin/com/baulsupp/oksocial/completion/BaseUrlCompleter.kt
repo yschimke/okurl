@@ -2,7 +2,9 @@ package com.baulsupp.oksocial.completion
 
 import okhttp3.HttpUrl
 
-class BaseUrlCompleter(private val urlList: UrlList, hosts: Collection<String>) : HostUrlCompleter(hosts) {
+class BaseUrlCompleter(private val urlList: UrlList,
+        hosts: Collection<String>, private val completionVariableCache: CompletionVariableCache) :
+        HostUrlCompleter(hosts) {
   private val mappings = CompletionMappings()
 
   override suspend fun siteUrls(url: HttpUrl): UrlList {
@@ -11,5 +13,9 @@ class BaseUrlCompleter(private val urlList: UrlList, hosts: Collection<String>) 
 
   fun withVariable(name: String, values: suspend () -> List<String>) {
     mappings.withVariable(name, values)
+  }
+
+  fun withCachedVariable(name: String, field: String, fn: suspend () -> List<String>) {
+    withVariable(field) { completionVariableCache.compute(name, field, fn) }
   }
 }
