@@ -3,8 +3,8 @@ package com.baulsupp.oksocial.services.facebook
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
-import com.baulsupp.oksocial.services.facebook.model.PageableResult
-import com.baulsupp.oksocial.services.facebook.model.Paging
+import com.baulsupp.oksocial.services.facebook.model.Account
+import com.baulsupp.oksocial.services.facebook.model.AccountList
 import com.baulsupp.oksocial.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -32,11 +32,6 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
   private fun addPath(prefix: String): (String) -> String {
     return { c: String -> prefix + (if (prefix.endsWith("/")) "" else "/") + c }
   }
-
-  data class Account(val id: String, val username: String)
-
-  data class AccountList(override val data: List<Account>, override val paging: Paging) :
-          PageableResult<Account>(data, paging)
 
   suspend fun topLevel(): List<String> {
     return try {

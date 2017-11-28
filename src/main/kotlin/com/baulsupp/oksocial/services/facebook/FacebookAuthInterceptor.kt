@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.facebook
 
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
@@ -12,7 +11,8 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.ALL_PERMISSIONS
-import com.baulsupp.oksocial.services.facebook.FacebookUtil.apiRequest
+import com.baulsupp.oksocial.services.facebook.model.App
+import com.baulsupp.oksocial.services.facebook.model.UserOrPage
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -61,8 +61,10 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun validate(client: OkHttpClient,
                                 requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(apiRequest("/me", requestBuilder), { extract(it) },
-        apiRequest("/app", requestBuilder), { this.extract(it) }).validate(client)
+    val userName = client.fbQuery<UserOrPage>("/me").name
+    val appName = client.fbQuery<App>("/app").name
+
+    return ValidatedCredentials(userName, appName)
   }
 
   override fun hosts(): Set<String> {

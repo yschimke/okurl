@@ -15,3 +15,12 @@ open class PageableResult<T> (open val data: List<T>, open val paging: Paging): 
 open class IdResult (open val id: String): Result()
 
 data class MetadataResult(override val metadata: Metadata?) : Result()
+
+data class Account(override val id: String, val username: String) : IdResult(id)
+
+data class App(override val id: String, val name: String) : IdResult(id)
+
+data class UserOrPage(override val id: String, val name: String) : IdResult(id)
+
+data class AccountList(override val data: List<Account>, override val paging: Paging) :
+        PageableResult<Account>(data, paging)
