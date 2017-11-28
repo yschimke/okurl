@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.services.google
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionMappings
 import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CancellationException
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
@@ -31,7 +32,7 @@ class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
     }.mapNotNull {
       try {
         it.await()
-      } catch (e: RuntimeException) {
+      } catch (e: ClientException) {
         logger.log(Level.FINE, "failed getting siteUrls for " + url, e)
         null
       } catch (e: CancellationException) {
