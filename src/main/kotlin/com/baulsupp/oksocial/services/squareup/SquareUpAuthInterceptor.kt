@@ -1,16 +1,15 @@
 package com.baulsupp.oksocial.services.squareup
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter
-import com.baulsupp.oksocial.completion.CompletionQuery
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
@@ -18,6 +17,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.Arrays
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -43,19 +43,23 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun validate(client: OkHttpClient,
           requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            SquareUpUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
-            client)
+    val user = client.query<User>("https://connect.squareup.com/v1/me")
+    return ValidatedCredentials(user.name)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
           authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising SquareUp API")
+    outputHandler.showError("Authorising SquareUp API", null)
 
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
     val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
             true)
-    val scopes = Secrets.promptArray("Scopes", "squareup.scopes", SquareUpUtil.ALL_PERMISSIONS)
+    val scopes = Secrets.promptArray("Scopes", "squareup.scopes", Arrays.asList(
+            "MERCHANT_PROFILE_READ",
+            "PAYMENTS_READ",
+            "SETTLEMENTS_READ",
+            "BANK_ACCOUNTS_READ"
+    ))
 
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
@@ -71,16 +75,13 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
     if (credentials != null) {
       completer.withCachedVariable(name(), "location", {
-        CompletionQuery.getIds(client, "https://connect.squareup.com/v2/locations",
-                "locations",
-                "id")
+        client.query<LocationList>(
+                "https://connect.squareup.com/v2/locations").locations.map { it.id }
       })
     }
 
     return completer
   }
 
-  override fun hosts(): Set<String> {
-    return SquareUpUtil.API_HOSTS
-  }
+  override fun hosts(): Set<String> = setOf(("connect.squareup.com"))
 }
