@@ -8,9 +8,8 @@ import okhttp3.Response
 import java.io.IOException
 
 object AuthUtil {
-  suspend fun makeSimpleRequest(client: OkHttpClient, request: Request): String {
-    client.newCall(request).execute().use { response -> return responseToString(response) }
-  }
+  suspend fun makeSimpleRequest(client: OkHttpClient, request: Request): String =
+          client.newCall(request).execute().use { response -> responseToString(response) }
 
   @Throws(IOException::class)
   fun responseToString(response: Response): String {

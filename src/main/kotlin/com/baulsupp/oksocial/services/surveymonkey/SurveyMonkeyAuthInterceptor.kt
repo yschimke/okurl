@@ -1,16 +1,18 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter
-import com.baulsupp.oksocial.completion.CompletionQuery
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.surveymonkey.model.SurveyList
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,42 +22,48 @@ import java.io.IOException
 /**
  * https://developer.surveymonkey.com/docs/authentication
  */
-class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
-  override fun serviceDefinition(): SurveyMonkeyServiceDefinition {
-    return SurveyMonkeyServiceDefinition()
+class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
+  override fun serviceDefinition(): Oauth2ServiceDefinition {
+    return Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
+            "https://developer.surveymonkey.com/api/v3/#scopes",
+            "https://developer.surveymonkey.com/apps/")
   }
 
   @Throws(IOException::class)
-  override fun intercept(chain: Interceptor.Chain, credentials: SurveyMonkeyToken): Response {
-    var request = chain.request()
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    val newRequest = chain.request().newBuilder().addHeader("Authorization",
+            "bearer " + credentials.accessToken).build()
 
-    val token = credentials.accessToken
-
-    val newUrl = request.url().newBuilder().addQueryParameter("api_key", credentials.apiKey).build()
-    request = request.newBuilder().addHeader("Authorization", "bearer " + token).url(newUrl).build()
-
-    return chain.proceed(request)
+    return chain.proceed(newRequest)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): SurveyMonkeyToken {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising SurveyMonkey API")
 
-    val apiKey = Secrets.prompt("SurveyMonkey API Key", "surveymonkey.apiKey", "", false)
-    val accessToken = Secrets.prompt("SurveyMonkey Access Token", "surveymonkey.accessToken", "", true)
-    return SurveyMonkeyToken(apiKey, accessToken)
+    val clientId = Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false)
+    val clientSecret = Secrets.prompt("SurveyMonkey Client Secret", "surveymonkey.clientSecret", "",
+            true)
+    return SurveyMonkeyAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
+
+  data class User(val username: String, val first_name: String?, val last_name: String?,
+          val email: String)
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: SurveyMonkeyToken): ValidatedCredentials {
-    return JsonCredentialsValidator(
-        SurveyMonkeyUtil.apiRequest("/v3/users/me", requestBuilder),
-        { it["username"] as String }).validate(client)
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+    val user = client.query<User>("https://api.surveymonkey.net/v3/users/me")
+
+    if (user.first_name != null && user.last_name != null) {
+      return ValidatedCredentials(user.first_name + " " + user.last_name)
+    } else {
+      return ValidatedCredentials(user.email)
+    }
   }
 
-  @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
@@ -63,20 +71,15 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<SurveyMonkeyToken> {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     if (credentials != null) {
-      completer.withVariable("survey",
-          {
-            completionVariableCache.compute(name(), "surveys",
-                {
-                  CompletionQuery.getIds(client, "https://api.surveymonkey.net/v3/surveys", "data",
-                      "id")
-                })
-          })
+      completer.withCachedVariable(name(), "survey", {
+        client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys").data.map { m -> m.id }
+      })
     }
 
     return completer
   }
 
   override fun hosts(): Set<String> {
-    return SurveyMonkeyUtil.API_HOSTS
+    return setOf("api.surveymonkey.net")
   }
 }

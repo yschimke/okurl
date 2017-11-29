@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
-import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyToken
 import okhttp3.Response
 import org.junit.Test
 import kotlin.test.assertEquals
