@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
 import okhttp3.Response
@@ -26,9 +27,9 @@ class SurveyMonkeyTest {
   fun completeEndpointWithReplacements() {
     main.arguments = mutableListOf("https://api.surveymonkey.net/")
     main.urlComplete = true
-    completionCache.store("surveymonkey", "surveys", listOf("AA", "BB"))
-    credentialsStore.storeCredentials(SurveyMonkeyToken("", ""),
-        SurveyMonkeyAuthInterceptor().serviceDefinition())
+    completionCache.store("surveymonkey", "survey", listOf("AA", "BB"))
+    credentialsStore.storeCredentials(Oauth2Token(""),
+            SurveyMonkeyAuthInterceptor().serviceDefinition())
 
     main.run()
 
