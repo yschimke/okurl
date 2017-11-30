@@ -13,8 +13,8 @@ class DiscoveryDocument(private val map: Map<String, Any>) {
 
   val urls: List<String>
     get() = endpoints
-        .map { e -> e.url() }
-        .distinct()
+            .map { e -> e.url() }
+            .distinct()
 
   val endpoints: List<DiscoveryEndpoint>
     get() = expandEndpoints(map)
@@ -22,7 +22,11 @@ class DiscoveryDocument(private val map: Map<String, Any>) {
   private fun expandEndpoints(map: Map<String, Any>): List<DiscoveryEndpoint> {
     val resources = getResources(map)
 
-    return resources.values.flatMap { r -> getMethods(r).values.map { m -> DiscoveryEndpoint(baseUrl, m) } + expandEndpoints(r) }
+    return resources.values.flatMap { r ->
+      getMethods(r).values.map { m ->
+        DiscoveryEndpoint(baseUrl, m)
+      } + expandEndpoints(r)
+    }
   }
 
   private fun getResources(map: Map<String, Any>): Map<String, Map<String, Any>> {
@@ -44,7 +48,9 @@ class DiscoveryDocument(private val map: Map<String, Any>) {
     get() = map["documentationLink"] as String
 
   fun findEndpoint(url: String): DiscoveryEndpoint? {
-    return endpoints.filter { e -> matches(url, e) }.sortedBy { it.httpMethod() != "GET" }.firstOrNull()
+    return endpoints.filter { e ->
+      matches(url, e)
+    }.sortedBy { it.httpMethod() != "GET" }.firstOrNull()
   }
 
   private fun matches(url: String, e: DiscoveryEndpoint): Boolean {

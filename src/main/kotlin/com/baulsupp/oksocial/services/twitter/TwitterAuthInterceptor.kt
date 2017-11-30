@@ -30,7 +30,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): TwitterCredentials {
+          authArguments: List<String>): TwitterCredentials {
     System.err.println("Authorising Twitter API")
 
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
@@ -46,7 +46,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
 
     if (!authArguments.isEmpty()) {
       throw UsageException(
-          "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" "))
+              "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" "))
     }
 
     val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
@@ -56,10 +56,10 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: TwitterCredentials): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: TwitterCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
-        TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
-        { it["name"] as String }).validate(client)
+            TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
+            { it["name"] as String }).validate(client)
   }
 
   override fun hosts(): Set<String> {

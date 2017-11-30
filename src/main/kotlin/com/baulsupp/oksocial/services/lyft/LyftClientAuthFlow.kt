@@ -11,12 +11,12 @@ import okhttp3.RequestBody
 object LyftClientAuthFlow {
   suspend fun login(client: OkHttpClient, clientId: String, clientSecret: String): Oauth2Token {
     val body = RequestBody.create(MediaType.parse("application/json"),
-        "{\"grant_type\": \"client_credentials\", \"scope\": \"public\"}")
+            "{\"grant_type\": \"client_credentials\", \"scope\": \"public\"}")
     val basic = Credentials.basic(clientId, clientSecret)
     val request = Request.Builder().url("https://api.lyft.com/oauth/token")
-        .post(body)
-        .header("Authorization", basic)
-        .build()
+            .post(body)
+            .header("Authorization", basic)
+            .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 

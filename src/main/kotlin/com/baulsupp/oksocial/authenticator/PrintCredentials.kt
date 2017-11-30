@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.authenticator
 
+import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
@@ -18,9 +19,13 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class PrintCredentials(private val client: OkHttpClient, private val credentialsStore: CredentialsStore,
                        private val outputHandler: OutputHandler<Response>, private val serviceInterceptor: ServiceInterceptor) {
+  private val logger = Logger.getLogger(PrintCredentials::class.java.name)
+
   private val started: ZonedDateTime = ZonedDateTime.now()
 
   fun <T> printKnownCredentials(future: Deferred<ValidatedCredentials>, a: AuthInterceptor<T>) {
@@ -83,7 +88,12 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
   suspend fun validate(
           services: Iterable<AuthInterceptor<*>>, requestBuilder: () -> Request.Builder): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
-      val credentials = credentialsStore.readDefaultCredentials(sv.serviceDefinition())
+      val credentials = try {
+        credentialsStore.readDefaultCredentials(sv.serviceDefinition())
+      } catch (e: Exception) {
+        logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
+        null
+      }
 
       credentials?.let {
         val x = async(CommonPool) { v(sv, requestBuilder, credentials) }

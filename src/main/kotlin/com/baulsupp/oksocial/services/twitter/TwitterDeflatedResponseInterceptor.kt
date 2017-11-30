@@ -18,10 +18,10 @@ class TwitterDeflatedResponseInterceptor : Interceptor {
 
       if (TwitterUtil.TWITTER_HOSTS.contains(host)) {
         return response.newBuilder()
-            .body(inflateBody(response.body()))
-            .removeHeader("content-encoding")
-            .removeHeader("content-length")
-            .build()
+                .body(inflateBody(response.body()))
+                .removeHeader("content-encoding")
+                .removeHeader("content-length")
+                .build()
       }
     }
 

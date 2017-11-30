@@ -20,8 +20,8 @@ import java.io.IOException
 open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
-        "https://api-docs.transferwise.com/docs/versions/v1/overview",
-        "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
+            "https://api-docs.transferwise.com/docs/versions/v1/overview",
+            "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
   }
 
   protected open fun host(): String {
@@ -40,20 +40,22 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Transferwise API")
 
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
-    val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "", true)
+    val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "",
+            true)
 
     return TransferwiseAuthFlow.login(client, outputHandler, host(), clientId, clientSecret)
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        TransferwiseUtil.apiRequest("/v1/me", requestBuilder), { it["name"] as String }).validate(
-        client)
+            requestBuilder.url("https://api.transferwise.com" + "/v1/me").build(),
+            { it["name"] as String }).validate(
+            client)
   }
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
@@ -63,21 +65,21 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder()
-        .add("grant_type", "refresh_token")
-        .add("refresh_token", credentials.refreshToken!!)
-        .build()
+            .add("grant_type", "refresh_token")
+            .add("refresh_token", credentials.refreshToken!!)
+            .build()
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
     val request = Request.Builder().url("https://" + host() + "/oauth/token")
-        .post(body)
-        .header("Authorization", basic)
-        .build()
+            .post(body)
+            .header("Authorization", basic)
+            .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, credentials.clientId,
-        credentials.clientSecret)
+            responseMap["refresh_token"] as String, credentials.clientId,
+            credentials.clientSecret)
   }
 
   override fun hosts(): Set<String> {

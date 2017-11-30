@@ -15,7 +15,8 @@ import java.io.IOException
 class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
           Oauth2ServiceDefinition("api.mapbox.com", "Mapbox API", "mapbox",
-                  "https://www.mapbox.com/api-documentation/", "https://www.mapbox.com/studio/account/tokens/")
+                  "https://www.mapbox.com/api-documentation/",
+                  "https://www.mapbox.com/studio/account/tokens/")
 
   @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -31,7 +32,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Mapbox API")
 
     val apiKey = Secrets.prompt("Mapbox Access Token", "mapbox.accessToken", "", false)
@@ -40,11 +41,13 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials =
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials("?", null)
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token(
           "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2l0eGRkc245MDAzODJ5cDF2Z3l2czJjaSJ9.9XMBjr0vkbh2WD74DQcd3w")
 
-  override fun hosts(): Set<String> = MapboxUtil.API_HOSTS
+  override fun hosts(): Set<String> = setOf((
+          "api.mapbox.com")
+  )
 }

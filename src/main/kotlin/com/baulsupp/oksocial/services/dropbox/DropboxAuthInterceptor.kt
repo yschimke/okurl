@@ -21,7 +21,7 @@ import java.io.IOException
 class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.dropboxapi.com", "Dropbox API", "dropbox",
-        "https://www.dropbox.com/developers", "https://www.dropbox.com/developers/apps")
+            "https://www.dropbox.com/developers", "https://www.dropbox.com/developers/apps")
   }
 
   @Throws(IOException::class)
@@ -37,7 +37,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Dropbox API")
 
     val clientId = Secrets.prompt("Dropbox Client Id", "dropbox.clientId", "", false)
@@ -47,17 +47,18 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
     return JsonCredentialsValidator(
-        DropboxUtil.apiRequest("/2/users/get_current_account", requestBuilder)
-            .newBuilder()
-            .post(body)
-            .build(),
-        { it["email"]?.toString() ?: "unknown" }).validate(client)
+            requestBuilder.url(
+                    "https://api.dropboxapi.com" + "/2/users/get_current_account").build()
+                    .newBuilder()
+                    .post(body)
+                    .build(),
+            { it["email"]?.toString() ?: "unknown" }).validate(client)
   }
 
   override fun hosts(): Set<String> {
-    return DropboxUtil.API_HOSTS
+    return setOf("api.dropboxapi.com", "content.dropboxapi.com")
   }
 }

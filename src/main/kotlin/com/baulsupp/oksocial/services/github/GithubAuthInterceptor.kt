@@ -19,7 +19,7 @@ import java.io.IOException
 class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.github.com", "Github API", "github",
-        "https://developer.github.com/v3/", "https://github.com/settings/developers")
+            "https://developer.github.com/v3/", "https://github.com/settings/developers")
   }
 
   @Throws(IOException::class)
@@ -34,22 +34,24 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Github API")
 
     val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
     val clientSecret = Secrets.prompt("Github Client Secret", "github.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "github.scopes", GithubUtil.SCOPES)
+    val scopes = Secrets.promptArray("Scopes", "github.scopes",
+            listOf("user", "repo", "gist", "admin:org"))
 
     return GithubAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(GithubUtil.apiRequest("/user", requestBuilder), { it["name"] as String }).validate(client)
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+    return JsonCredentialsValidator(requestBuilder.url("https://api.github.com" + "/user").build(),
+            { it["name"] as String }).validate(client)
   }
 
   override fun hosts(): Set<String> {
-    return GithubUtil.API_HOSTS
+    return setOf("api.github.com", "uploads.github.com")
   }
 }

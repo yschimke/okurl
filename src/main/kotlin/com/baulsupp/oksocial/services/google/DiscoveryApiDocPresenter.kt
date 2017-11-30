@@ -25,7 +25,7 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
     }.mapNotNull {
       try {
         it.await()
-      } catch (ce : CancellationException) {
+      } catch (ce: CancellationException) {
         // TODO log
         null
       }

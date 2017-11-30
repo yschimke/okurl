@@ -17,8 +17,8 @@ import java.util.Arrays
 class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
-        "https://www.instagram.com/developer/endpoints/",
-        "https://www.instagram.com/developer/clients/manage/")
+            "https://www.instagram.com/developer/endpoints/",
+            "https://www.instagram.com/developer/clients/manage/")
   }
 
   @Throws(IOException::class)
@@ -35,22 +35,23 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Instagram API")
 
     val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
     val clientSecret = Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "instagram.scopes",
-        Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships",
-            "likes"))
+            Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships",
+                    "likes"))
 
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        InstagramUtil.apiRequest("/v1/users/self", requestBuilder), this::getName).validate(client)
+            requestBuilder.url("https://api.instagram.com" + "/v1/users/self").build(),
+            this::getName).validate(client)
   }
 
   private fun getName(map: Map<String, Any>): String {
@@ -60,6 +61,8 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override fun hosts(): Set<String> {
-    return InstagramUtil.API_HOSTS
+    return setOf((
+            "api.instagram.com")
+    )
   }
 }

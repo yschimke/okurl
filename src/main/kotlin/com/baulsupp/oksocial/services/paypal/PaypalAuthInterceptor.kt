@@ -20,8 +20,8 @@ import java.io.IOException
 open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Paypal API", shortName(),
-        "https://developer.paypal.com/docs/api/",
-        "https://developer.paypal.com/developer/applications/")
+            "https://developer.paypal.com/docs/api/",
+            "https://developer.paypal.com/developer/applications/")
   }
 
   protected open fun shortName(): String {
@@ -46,14 +46,15 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        PaypalUtil.apiRequest("/v1/oauth2/token/userinfo?schema=openid", requestBuilder),
-        { it -> it["name"].toString() }).validate(client)
+            requestBuilder.url(
+                    "https://api.paypal.com" + "/v1/oauth2/token/userinfo?schema=openid").build(),
+            { it -> it["name"].toString() }).validate(client)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Paypal API")
 
     val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)

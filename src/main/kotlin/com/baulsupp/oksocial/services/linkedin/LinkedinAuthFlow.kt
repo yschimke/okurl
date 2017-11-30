@@ -12,12 +12,13 @@ import java.util.UUID
 
 object LinkedinAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+          clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val uuid = UUID.randomUUID().toString()
 
-      val loginUrl = "https://www.linkedin.com/oauth/v2/authorization?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&state=$uuid&scope=${scopes.joinToString("+")}"
+      val loginUrl = "https://www.linkedin.com/oauth/v2/authorization?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&state=$uuid&scope=${scopes.joinToString(
+              "+")}"
 
       outputHandler.openLink(loginUrl)
 
@@ -25,11 +26,11 @@ object LinkedinAuthFlow {
 
       val tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken"
       val body = FormBody.Builder().add("client_id", clientId)
-          .add("redirect_uri", s.redirectUri)
-          .add("client_secret", clientSecret)
-          .add("code", code)
-          .add("grant_type", "authorization_code")
-          .build()
+              .add("redirect_uri", s.redirectUri)
+              .add("client_secret", clientSecret)
+              .add("code", code)
+              .add("grant_type", "authorization_code")
+              .build()
       val request = Request.Builder().url(tokenUrl).method("POST", body).build()
 
       val responseMap = AuthUtil.makeJsonMapRequest(client, request)

@@ -17,7 +17,8 @@ import java.util.LinkedHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class Signature @JvmOverloads constructor(private val clock: Clock = Clock.systemDefaultZone(), private val random: () -> Long = { SecureRandom().nextLong() }) {
+class Signature @JvmOverloads constructor(private val clock: Clock = Clock.systemDefaultZone(),
+        private val random: () -> Long = { SecureRandom().nextLong() }) {
 
   private fun quoted(str: String): String {
     return "\"" + str + "\""
@@ -40,8 +41,9 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
     val signer = Signer.getStandardSigner()
 
     val oAuth1Params = OAuthParams.OAuth1Params(
-        credentials.token, credentials.consumerKey, nonce, timestampSecs,
-        java.lang.Long.toString(timestampSecs), "", OAuthParams.HMAC_SHA1, OAuthParams.ONE_DOT_OH
+            credentials.token, credentials.consumerKey, nonce, timestampSecs,
+            java.lang.Long.toString(timestampSecs), "", OAuthParams.HMAC_SHA1,
+            OAuthParams.ONE_DOT_OH
     )
 
     val javaParams = ArrayList<com.twitter.joauth.Request.Pair>()
@@ -52,7 +54,7 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
 
       values.mapTo(javaParams) {
         com.twitter.joauth.Request.Pair(UrlCodec.encode(queryParam),
-            UrlCodec.encode(it))
+                UrlCodec.encode(it))
       }
     }
 
@@ -64,7 +66,7 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
 
         (0 until formBody!!.size()).mapTo(javaParams) {
           com.twitter.joauth.Request.Pair(formBody.encodedName(it),
-              formBody.encodedValue(it))
+                  formBody.encodedValue(it))
         }
       } else if (isFormContentType(request)) {
         val buffer = Buffer()
@@ -81,8 +83,8 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
     }
 
     val normalized = normalizer.normalize(
-        if (request.isHttps) "https" else "http", request.url().host(), request.url().port(),
-        request.method(), request.url().encodedPath(), javaParams, oAuth1Params
+            if (request.isHttps) "https" else "http", request.url().host(), request.url().port(),
+            request.method(), request.url().encodedPath(), javaParams, oAuth1Params
     )
 
     log.log(Level.FINE, "normalised " + normalized)
@@ -108,7 +110,8 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
   }
 
   private fun isFormContentType(request: Request): Boolean {
-    return request.body()!!.contentType()!!.toString().startsWith("application/x-www-form-urlencoded")
+    return request.body()!!.contentType()!!.toString().startsWith(
+            "application/x-www-form-urlencoded")
   }
 
   companion object {

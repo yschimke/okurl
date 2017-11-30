@@ -47,7 +47,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
   override suspend fun validate(client: OkHttpClient,
           requestBuilder: Request.Builder, credentials: BasicCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
-            TwilioUtil.apiRequest("/2010-04-01/Accounts.json", requestBuilder),
+            requestBuilder.url("https://api.twilio.com" + "/2010-04-01/Accounts.json").build(),
             this::getName).validate(client)
   }
 
@@ -75,6 +75,8 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
   }
 
   override fun hosts(): Set<String> {
-    return TwilioUtil.API_HOSTS
+    return setOf((
+            "api.twilio.com")
+    )
   }
 }

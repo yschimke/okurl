@@ -23,7 +23,7 @@ class DiscoveryRegistry(private val client: OkHttpClient, private val map: Map<S
 
   companion object {
     private val cache = Cache(File(System.getProperty("user.home"), ".oksocial/google-cache"),
-        MEBIBYTES.toBytes(20))
+            MEBIBYTES.toBytes(20))
 
     private val cacheControl = CacheControl.Builder().maxStale(1, TimeUnit.DAYS).build()
 

@@ -12,6 +12,7 @@ object TwurlrcImport {
       TwurlCredentialsStore.TWURL_STORE
     }
 
-    return twurlStore.readCredentials() ?: throw UsageException("No credentials found in " + twurlStore.file)
+    return twurlStore.readCredentials() ?: throw UsageException(
+            "No credentials found in " + twurlStore.file)
   }
 }

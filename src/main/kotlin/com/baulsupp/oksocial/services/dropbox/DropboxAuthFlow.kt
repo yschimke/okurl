@@ -12,7 +12,7 @@ import okhttp3.Response
 
 object DropboxAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String): Oauth2Token {
+          clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://www.dropbox.com/1/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
@@ -23,13 +23,13 @@ object DropboxAuthFlow {
 
       val basic = Credentials.basic(clientId, clientSecret)
       val body = FormBody.Builder().add("code", code)
-          .add("grant_type", "authorization_code")
-          .add("redirect_uri", s.redirectUri)
-          .build()
+              .add("grant_type", "authorization_code")
+              .add("redirect_uri", s.redirectUri)
+              .build()
       val request = Request.Builder().url("https://api.dropboxapi.com/1/oauth2/token")
-          .post(body)
-          .header("Authorization", basic)
-          .build()
+              .post(body)
+              .header("Authorization", basic)
+              .build()
 
       val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 

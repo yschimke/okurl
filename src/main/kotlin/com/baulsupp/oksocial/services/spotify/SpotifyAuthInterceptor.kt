@@ -20,12 +20,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.Arrays
 
 class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Spotify API", "spotify",
-        "https://developer.spotify.com/web-api/endpoint-reference/",
-        "https://developer.spotify.com/my-applications/")
+            "https://developer.spotify.com/web-api/endpoint-reference/",
+            "https://developer.spotify.com/my-applications/")
   }
 
   private fun host(): String {
@@ -44,33 +45,48 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Spotify API")
 
     val clientId = Secrets.prompt("Spotify Client Id", "spotify.clientId", "", false)
     val clientSecret = Secrets.prompt("Spotify Client Secret", "spotify.clientSecret", "", true)
 
-    val scopes = Secrets.promptArray("Scopes", "spotify.scopes", SpotifyUtil.SCOPES)
+    val scopes = Secrets.promptArray("Scopes", "spotify.scopes",
+            Arrays.asList("playlist-read-private",
+                    "playlist-read-collaborative",
+                    "playlist-modify-public",
+                    "playlist-modify-private",
+                    "streaming",
+                    "ugc-image-upload",
+                    "user-follow-modify",
+                    "user-follow-read",
+                    "user-library-read",
+                    "user-library-modify",
+                    "user-read-private",
+                    "user-read-birthdate",
+                    "user-read-email",
+                    "user-top-read"))
 
     return SpotifyAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        SpotifyUtil.apiRequest("/v1/me", requestBuilder),
-        { it["display_name"] as String }).validate(client)
+            requestBuilder.url("https://api.spotify.com" + "/v1/me").build(),
+            { it["display_name"] as String }).validate(client)
   }
 
   override fun hosts(): Set<String> {
     return setOf((
-        "api.spotify.com")
+            "api.spotify.com")
     )
   }
 
@@ -82,20 +98,20 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     val tokenUrl = "https://accounts.spotify.com/api/token"
 
     val body = FormBody.Builder()
-        .add("refresh_token", credentials.refreshToken!!)
-        .add("grant_type", "refresh_token")
-        .build()
+            .add("refresh_token", credentials.refreshToken!!)
+            .add("grant_type", "refresh_token")
+            .build()
 
     val request = Request.Builder().header("Authorization",
-        Credentials.basic(credentials.clientId!!, credentials.clientSecret!!))
-        .url(tokenUrl)
-        .method("POST", body)
-        .build()
+            Credentials.basic(credentials.clientId!!, credentials.clientSecret!!))
+            .url(tokenUrl)
+            .method("POST", body)
+            .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String?, credentials.clientId,
-        credentials.clientSecret)
+            responseMap["refresh_token"] as String?, credentials.clientId,
+            credentials.clientSecret)
   }
 }

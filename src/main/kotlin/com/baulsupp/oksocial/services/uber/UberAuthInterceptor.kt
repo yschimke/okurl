@@ -23,8 +23,8 @@ import java.io.IOException
 class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Uber API", "uber",
-        "https://developer.uber.com/docs/riders/references/api",
-        "https://developer.uber.com/dashboard/")
+            "https://developer.uber.com/docs/riders/references/api",
+            "https://developer.uber.com/dashboard/")
   }
 
   private fun host(): String {
@@ -43,7 +43,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Uber API")
 
     val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
@@ -54,20 +54,21 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        UberUtil.apiRequest("/v1/me", requestBuilder),
-        { map -> "${map["first_name"]} ${map["last_name"]}" }).validate(client)
+            requestBuilder.url("https://api.uber.com" + "/v1/me").build(),
+            { map -> "${map["first_name"]} ${map["last_name"]}" }).validate(client)
   }
 
   override fun hosts(): Set<String> {
     return setOf(
-        "api.uber.com", "login.uber.com", "sandbox-api.uber.com")
+            "api.uber.com", "login.uber.com", "sandbox-api.uber.com")
 
   }
 
@@ -79,17 +80,17 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
     val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
-        .add("client_secret", credentials.clientSecret!!)
-        .add("refresh_token", credentials.refreshToken!!)
-        .add("grant_type", "refresh_token")
-        .build()
+            .add("client_secret", credentials.clientSecret!!)
+            .add("refresh_token", credentials.refreshToken!!)
+            .add("grant_type", "refresh_token")
+            .build()
 
     val request = Request.Builder().url(tokenUrl).method("POST", body).build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, credentials.clientId,
-        credentials.clientSecret)
+            responseMap["refresh_token"] as String, credentials.clientId,
+            credentials.clientSecret)
   }
 }

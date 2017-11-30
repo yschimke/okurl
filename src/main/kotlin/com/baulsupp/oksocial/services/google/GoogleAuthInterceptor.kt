@@ -33,7 +33,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
-        "https://developers.google.com/", "https://console.developers.google.com/apis/credentials")
+            "https://developers.google.com/",
+            "https://console.developers.google.com/apis/credentials")
   }
 
   @Throws(IOException::class)
@@ -54,7 +55,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Google API")
 
     val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
@@ -65,48 +66,50 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
-        { it["name"] as String }).validate(client)
+            requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
+            { it["name"] as String }).validate(client)
   }
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
-        .add("refresh_token", credentials.refreshToken!!)
-        .add("client_secret", credentials.clientSecret!!)
-        .add("grant_type", "refresh_token")
-        .build()
+            .add("refresh_token", credentials.refreshToken!!)
+            .add("client_secret", credentials.clientSecret!!)
+            .add("grant_type", "refresh_token")
+            .build()
 
     val request = Request.Builder().url("https://www.googleapis.com/oauth2/v4/token")
-        .post(body)
-        .build()
+            .post(body)
+            .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-        credentials.refreshToken!!, credentials.clientId!!,
-        credentials.clientSecret!!)
+            credentials.refreshToken!!, credentials.clientId!!,
+            credentials.clientSecret!!)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
-      if (isPastHost(prefix)) {
-        val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter =
+          if (isPastHost(prefix)) {
+            val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
 
-        GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-            discoveryPaths)
-      } else {
-        BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
-      }
+            GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
+                    discoveryPaths)
+          } else {
+            BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
+          }
 
   override fun hosts(): Set<String> = foundHosts
 
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 
   @Throws(IOException::class)
-  override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(discoveryIndex)
+  override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(
+          discoveryIndex)
 }

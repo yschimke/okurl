@@ -5,12 +5,12 @@ import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.baulsupp.oksocial.services.stackexchange.StackExchangeUtil.apiRequest
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.Arrays
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
   override fun serviceDefinition(): StackExchangeServiceDefinition {
@@ -22,10 +22,10 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
     var request = chain.request()
 
     val newUrl = request.url()
-        .newBuilder()
-        .addQueryParameter("access_token", credentials.accessToken)
-        .addQueryParameter("key", credentials.key)
-        .build()
+            .newBuilder()
+            .addQueryParameter("access_token", credentials.accessToken)
+            .addQueryParameter("key", credentials.key)
+            .build()
 
     request = request.newBuilder().url(newUrl).build()
 
@@ -43,25 +43,32 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: StackExchangeToken): ValidatedCredentials {
-    return JsonCredentialsValidator(apiRequest("/2.2/me?site=drupal", requestBuilder),
-        this::extract).validate(client)
+          requestBuilder: Request.Builder, credentials: StackExchangeToken): ValidatedCredentials {
+    return JsonCredentialsValidator(
+            requestBuilder.url("https://api.stackexchange.com" + "/2.2/me?site=drupal").build(),
+            this::extract).validate(client)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): StackExchangeToken {
+          authArguments: List<String>): StackExchangeToken {
     System.err.println("Authorising StackExchange API")
 
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
-    val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret", "", true)
+    val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret",
+            "", true)
     val clientKey = Secrets.prompt("StackExchange Key", "stackexchange.key", "", false)
-    val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", StackExchangeUtil.SCOPES)
+    val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", Arrays.asList("read_inbox",
+            "no_expiry",
+            "write_access",
+            "private_info"))
 
     return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey,
-        scopes)
+            scopes)
   }
 
   override fun hosts(): Set<String> {
-    return StackExchangeUtil.API_HOSTS
+    return setOf((
+            "api.stackexchange.com")
+    )
   }
 }

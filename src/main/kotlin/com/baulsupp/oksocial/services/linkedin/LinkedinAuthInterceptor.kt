@@ -17,7 +17,8 @@ import java.util.Arrays
 class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.linkedin.com", "Linkedin API", "linkedin",
-        "https://developer.linkedin.com/docs/rest-api", "https://www.linkedin.com/developer/apps")
+            "https://developer.linkedin.com/docs/rest-api",
+            "https://www.linkedin.com/developer/apps")
   }
 
   @Throws(IOException::class)
@@ -36,25 +37,27 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Linkedin API")
 
     val clientId = Secrets.prompt("Linkedin Client Id", "linkedin.clientId", "", false)
     val clientSecret = Secrets.prompt("Linkedin Client Secret", "linkedin.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "linkedin.scopes",
-        Arrays.asList("r_basicprofile", "r_emailaddress", "rw_company_admin", "w_share"))
+            Arrays.asList("r_basicprofile", "r_emailaddress", "rw_company_admin", "w_share"))
 
     return LinkedinAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        LinkedinUtil.apiRequest("/v1/people/~:(formatted-name)", requestBuilder),
-        { it["formattedName"] as String }).validate(client)
+            requestBuilder.url(
+                    "https://api.linkedin.com" + "/v1/people/~:(formatted-name)").build(),
+            { it["formattedName"] as String }).validate(client)
   }
 
   override fun hosts(): Set<String> {
-    return LinkedinUtil.API_HOSTS
+    return setOf((
+            "api.linkedin.com"))
   }
 }

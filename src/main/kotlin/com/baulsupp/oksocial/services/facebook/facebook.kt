@@ -9,7 +9,8 @@ import okhttp3.OkHttpClient
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
-inline suspend fun <reified I, reified T: PageableResult<I>> OkHttpClient.fbQueryList(path: String): T {
+inline suspend fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQueryList(
+        path: String): T {
   val fields = fbFieldNames(I::class)
 
   val stringResult = this.queryForString(okshell.requestBuilder.url(

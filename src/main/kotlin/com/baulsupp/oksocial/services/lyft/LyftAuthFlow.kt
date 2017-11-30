@@ -16,7 +16,7 @@ import java.net.URLEncoder
 object LyftAuthFlow {
   @Throws(IOException::class)
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+          clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
@@ -27,17 +27,17 @@ object LyftAuthFlow {
       val code = s.waitForCodeAsync()
 
       val body = RequestBody.create(MediaType.parse("application/json"),
-          "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
+              "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
       val basic = Credentials.basic(clientId, clientSecret)
       val request = Request.Builder().url("https://api.lyft.com/oauth/token")
-          .post(body)
-          .header("Authorization", basic)
-          .build()
+              .post(body)
+              .header("Authorization", basic)
+              .build()
 
       val responseMap = client.queryMap<String, String>(request)
 
       return Oauth2Token(responseMap["access_token"] as String,
-          responseMap["refresh_token"] as String, clientId, clientSecret)
+              responseMap["refresh_token"] as String, clientId, clientSecret)
     }
   }
 }

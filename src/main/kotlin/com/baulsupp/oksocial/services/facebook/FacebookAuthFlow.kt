@@ -11,13 +11,14 @@ import java.net.URLEncoder
 
 object FacebookAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String,
-                    scopes: List<String>): Oauth2Token {
+          clientSecret: String,
+          scopes: List<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val serverUri = s.redirectUri
 
-      val loginUrl = "https://www.facebook.com/dialog/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(scopes.joinToString(","), "UTF-8")
+      val loginUrl = "https://www.facebook.com/dialog/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
+              scopes.joinToString(","), "UTF-8")
 
       outputHandler.openLink(loginUrl)
 

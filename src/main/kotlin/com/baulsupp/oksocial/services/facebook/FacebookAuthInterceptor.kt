@@ -23,7 +23,8 @@ import java.io.IOException
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
-        "https://developers.facebook.com/docs/graph-api", "https://developers.facebook.com/apps/")
+            "https://developers.facebook.com/docs/graph-api",
+            "https://developers.facebook.com/apps/")
   }
 
   @Throws(IOException::class)
@@ -40,13 +41,13 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Facebook API")
 
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
     val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
     var scopes = Secrets.promptArray("Scopes", "facebook.scopes",
-        listOf("public_profile", "user_friends", "email"))
+            listOf("public_profile", "user_friends", "email"))
 
     if (scopes.contains("all")) {
       scopes = ALL_PERMISSIONS
@@ -60,7 +61,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     val userName = client.fbQuery<UserOrPage>("/me").name
     val appName = client.fbQuery<App>("/app").name
 
@@ -72,12 +73,13 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override fun supportsUrl(url: HttpUrl): Boolean {
-      return url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
+    return url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
   }
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter {
+          credentialsStore: CredentialsStore,
+          completionVariableCache: CompletionVariableCache): ApiCompleter {
     return FacebookCompleter(client, hosts())
   }
 

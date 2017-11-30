@@ -26,10 +26,10 @@ class TwitterServiceDefinition : ServiceDefinition<TwitterCredentials> {
   }
 
   override fun formatCredentialsString(credentials: TwitterCredentials) = StringJoiner(",")
-      .add(credentials.username)
-      .add(credentials.consumerKey)
-      .add(credentials.consumerSecret)
-      .add(credentials.token)
-      .add(credentials.secret)
-      .toString()
+          .add(credentials.username)
+          .add(credentials.consumerKey)
+          .add(credentials.consumerSecret)
+          .add(credentials.token)
+          .add(credentials.secret)
+          .toString()
 }

@@ -11,18 +11,20 @@ import java.net.URLEncoder
 
 object FourSquareAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String): Oauth2Token {
+          clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val serverUri = s.redirectUri
 
-      val loginUrl = "https://foursquare.com/oauth2/authenticate?client_id=$clientId&redirect_uri=${URLEncoder.encode(serverUri, "UTF-8")}&response_type=code"
+      val loginUrl = "https://foursquare.com/oauth2/authenticate?client_id=$clientId&redirect_uri=${URLEncoder.encode(
+              serverUri, "UTF-8")}&response_type=code"
 
       outputHandler.openLink(loginUrl)
 
       val code = s.waitForCode()
 
-      val tokenUrl = "https://foursquare.com/oauth2/access_token?client_id=$clientId&client_secret=$clientSecret&grant_type=authorization_code&redirect_uri=${URLEncoder.encode(serverUri, "UTF-8")}&code=$code"
+      val tokenUrl = "https://foursquare.com/oauth2/access_token?client_id=$clientId&client_secret=$clientSecret&grant_type=authorization_code&redirect_uri=${URLEncoder.encode(
+              serverUri, "UTF-8")}&code=$code"
 
       val responseMap = makeJsonMapRequest(client, uriGetRequest(tokenUrl))
 

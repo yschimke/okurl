@@ -15,7 +15,7 @@ import java.io.IOException
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
           Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
-              "https://github.com/Giphy/GiphyAPI", null)
+                  "https://github.com/Giphy/GiphyAPI", null)
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token("dc6zaTOxFJmzC")
 
@@ -33,7 +33,7 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     outputHandler.showError("Authorising Giphy API", null)
 
     val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
@@ -42,8 +42,10 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials =
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials("?", null)
 
-  override fun hosts(): Set<String> = GiphyUtil.API_HOSTS
+  override fun hosts(): Set<String> = setOf((
+          "api.giphy.com")
+  )
 }

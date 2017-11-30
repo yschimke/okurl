@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
-        "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
+            "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
   }
 
   @Throws(IOException::class)
@@ -39,7 +39,7 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
+          authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising FourSquare API")
 
     val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
@@ -49,10 +49,10 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-        FourSquareUtil.apiRequest("/v2/users/self?v=20160603", requestBuilder),
-        { this.getName(it) }).validate(client)
+            requestBuilder.url("https://api.foursquare.com" + "/v2/users/self?v=20160603").build(),
+            { this.getName(it) }).validate(client)
   }
 
   private fun getName(map: Map<String, Any>): String {
@@ -62,6 +62,8 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override fun hosts(): Set<String> {
-    return FourSquareUtil.API_HOSTS
+    return setOf((
+            "api.foursquare.com")
+    )
   }
 }
