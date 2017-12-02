@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.Main.Companion.NAME
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.PrintCredentials
+import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.commands.CommandRegistry
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.OksocialCommand

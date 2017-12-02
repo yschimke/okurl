@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.jjs
 
-import com.baulsupp.oksocial.CommandLineClient
+import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.warmup
 import com.baulsupp.oksocial.location.Location

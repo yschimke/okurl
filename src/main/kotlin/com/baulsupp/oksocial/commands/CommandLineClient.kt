@@ -1,10 +1,11 @@
-package com.baulsupp.oksocial
+package com.baulsupp.oksocial.commands
 
 import brave.Tracing
 import brave.http.HttpTracing
 import brave.internal.Platform
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
+import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.Authorisation
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor

@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.authenticator.basic
 
-import com.baulsupp.oksocial.AbstractServiceDefinition
+import com.baulsupp.oksocial.services.AbstractServiceDefinition
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 
 class BasicAuthServiceDefinition(apiHost: String, serviceName: String, shortName: String,

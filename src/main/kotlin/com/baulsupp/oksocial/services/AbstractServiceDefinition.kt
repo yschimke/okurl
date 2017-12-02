@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial
+package com.baulsupp.oksocial.services
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 

@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.CommandLineClient
+import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.kotlin.client
