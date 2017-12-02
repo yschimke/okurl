@@ -1,16 +1,9 @@
 package com.baulsupp.oksocial
 
-import brave.Tracing
-import brave.http.HttpTracing
-import brave.internal.Platform
-import brave.propagation.TraceContext
-import brave.sampler.Sampler
 import com.baulsupp.oksocial.Main.Companion.NAME
 import com.baulsupp.oksocial.apidocs.ServiceApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.Authorisation
 import com.baulsupp.oksocial.authenticator.PrintCredentials
-import com.baulsupp.oksocial.authenticator.ServiceInterceptor
 import com.baulsupp.oksocial.commands.CommandRegistry
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.OksocialCommand
@@ -22,78 +15,32 @@ import com.baulsupp.oksocial.completion.UrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
-import com.baulsupp.oksocial.credentials.OSXCredentialsStore
-import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore
 import com.baulsupp.oksocial.jjs.OkApiCommand
 import com.baulsupp.oksocial.kotlin.await
-import com.baulsupp.oksocial.network.DnsMode
-import com.baulsupp.oksocial.network.DnsOverride
-import com.baulsupp.oksocial.network.DnsSelector
-import com.baulsupp.oksocial.network.GoogleDns
-import com.baulsupp.oksocial.network.InterfaceSocketFactory
-import com.baulsupp.oksocial.network.NettyDns
 import com.baulsupp.oksocial.okhttp.FailedResponse
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
 import com.baulsupp.oksocial.okhttp.PotentialResponse
 import com.baulsupp.oksocial.okhttp.SuccessfulResponse
-import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
-import com.baulsupp.oksocial.security.CertificatePin
-import com.baulsupp.oksocial.security.CertificateUtils
-import com.baulsupp.oksocial.security.ConsoleCallbackHandler
-import com.baulsupp.oksocial.security.InsecureHostnameVerifier
-import com.baulsupp.oksocial.security.InsecureTrustManager
-import com.baulsupp.oksocial.security.KeystoreUtils
-import com.baulsupp.oksocial.security.OpenSCUtil
-import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor
-import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor
-import com.baulsupp.oksocial.tracing.UriTransportRegistry
-import com.baulsupp.oksocial.tracing.ZipkinConfig
-import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
-import com.baulsupp.oksocial.tracing.ZipkinTracingListener
 import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
 import com.baulsupp.oksocial.util.LoggingUtil
-import com.baulsupp.oksocial.util.ProtocolUtil
-import com.mcdermottroe.apple.OSXKeychainException
-import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Command
 import io.airlift.airline.Option
 import io.airlift.airline.SingleCommand
-import io.netty.channel.nio.NioEventLoopGroup
-import io.netty.util.concurrent.DefaultThreadFactory
 import kotlinx.coroutines.experimental.runBlocking
-import okhttp3.Cache
-import okhttp3.Credentials
-import okhttp3.Dispatcher
-import okhttp3.Dns
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.StatusLine
-import okhttp3.logging.HttpLoggingInterceptor
-import org.apache.commons.io.IOUtils
-import zipkin.Span
-import zipkin.reporter.Reporter
-import java.io.Closeable
 import java.io.File
-import java.io.Flushable
 import java.io.IOException
-import java.net.Proxy
-import java.net.SocketException
-import java.security.KeyStore
-import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.net.SocketFactory
-import javax.net.ssl.KeyManager
-import javax.net.ssl.X509TrustManager
 
 @Command(name = NAME, description = "A curl for social apis.")
 class Main : CommandLineClient() {
@@ -126,17 +73,11 @@ class Main : CommandLineClient() {
   @Option(name = ["--token"], description = "Use existing Token for authorization")
   var token: String? = null
 
-  @Option(name = ["--curl"], description = "Show curl commands")
-  var curl = false
-
   @Option(name = ["--show-credentials"], description = "Show Credentials")
   var showCredentials = false
 
   @Option(name = ["--alias-names"], description = "Show Alias Names")
   var aliasNames = false
-
-  @Option(name = ["-r", "--raw"], description = "Raw Output")
-  var rawOutput = false
 
   @Option(name = ["--serviceNames"], description = "Service Names")
   var serviceNames = false
@@ -227,6 +168,23 @@ class Main : CommandLineClient() {
     }
   }
 
+  override fun createCredentialsStore(): CredentialsStore {
+    if (token != null && !authorize) {
+      return FixedTokenCredentialsStore(token!!)
+    }
+
+    return super.createCredentialsStore()
+  }
+
+  override fun createClientBuilder(): OkHttpClient.Builder {
+    val builder = super.createClientBuilder()
+
+    builder.followSslRedirects(!dontFollowRedirects)
+    builder.followRedirects(!dontFollowRedirects)
+
+    return builder
+  }
+
   suspend fun showApiDocs() {
     val docs = ServiceApiDocPresenter(serviceInterceptor!!)
 
@@ -235,8 +193,7 @@ class Main : CommandLineClient() {
     }
   }
 
-  // TODO refactor this mess out of Main
-  private fun urlCompletionList(): String {
+  fun urlCompletionList(): String {
     val command = getShellCommand()
 
     val commandCompletor = command.completer()
@@ -347,206 +304,15 @@ class Main : CommandLineClient() {
     return null
   }
 
-  @Throws(Exception::class)
-  fun initialise() {
-    if (outputHandler == null) {
-      outputHandler = buildHandler()
-    }
-
-    if (credentialsStore == null) {
-      credentialsStore = createCredentialsStore()
-    }
-
-    closeables.add(Closeable {
-      if (client != null) {
-        client!!.dispatcher().executorService().shutdown()
-        client!!.connectionPool().evictAll()
-      }
-    })
-
-    val clientBuilder = createClientBuilder()
-
-    if (user != null) {
-      val userParts = user!!.split(":".toRegex(), 2).toTypedArray()
-      if (userParts.size < 2) {
-        throw UsageException("--user should have user:password")
-      }
-      val credential = Credentials.basic(userParts[0], userParts[1])
-
-      clientBuilder.authenticator({ _, response ->
-        logger.fine("Challenges: " + response.challenges())
-
-        // authenticate once
-        if (response.request().header("Authorization") != null) {
-          null
-        } else {
-          response.request().newBuilder()
-                  .header("Authorization", credential)
-                  .build()
-        }
-      })
-    }
-
-    val dispatcher = Dispatcher()
-    dispatcher.maxRequests = maxRequests
-    dispatcher.maxRequestsPerHost = maxRequests
-    clientBuilder.dispatcher(dispatcher)
-
-    val authClient = clientBuilder.build()
-    serviceInterceptor = ServiceInterceptor(authClient, credentialsStore!!)
-
-    authorisation = Authorisation(serviceInterceptor!!, credentialsStore!!, authClient, outputHandler!!)
-
-    clientBuilder.networkInterceptors().add(0, serviceInterceptor)
-
-    if (zipkin || zipkinTrace) {
-      applyZipkin(clientBuilder)
-    }
-
-    client = clientBuilder.build()
+  override fun initialise() {
+    super.initialise()
 
     if (completionVariableCache == null) {
       completionVariableCache = TmpCompletionVariableCache()
     }
   }
 
-  fun createClientBuilder(): OkHttpClient.Builder {
-    val builder = OkHttpClient.Builder()
-    builder.followSslRedirects(!dontFollowRedirects)
-    builder.followRedirects(!dontFollowRedirects)
-    if (connectTimeout != null) {
-      builder.connectTimeout(connectTimeout!!.toLong(), TimeUnit.SECONDS)
-    }
-    if (readTimeout != null) {
-      builder.readTimeout(readTimeout!!.toLong(), TimeUnit.SECONDS)
-    }
-
-    builder.dns(buildDns())
-
-    if (networkInterface != null) {
-      builder.socketFactory(getSocketFactory())
-    }
-
-    configureTls(builder)
-
-    if (cacheDirectory != null) {
-      builder.cache(Cache(cacheDirectory!!, (64 * 1024 * 1024).toLong()))
-    }
-
-    // TODO move behind AuthInterceptor API
-    builder.addNetworkInterceptor(TwitterCachingInterceptor())
-    builder.addNetworkInterceptor(TwitterDeflatedResponseInterceptor())
-
-    if (curl) {
-      builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
-    }
-
-    if (debug) {
-      val loggingInterceptor = HttpLoggingInterceptor(logger::info)
-      loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
-      builder.networkInterceptors().add(loggingInterceptor)
-    }
-
-    if (socksProxy != null) {
-      builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
-    } else if (proxy != null) {
-      builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
-    }
-
-    if (protocols != null) {
-      builder.protocols(ProtocolUtil.parseProtocolList(protocols!!))
-    }
-
-    return builder
-  }
-
-  @Throws(IOException::class)
-  private fun applyZipkin(clientBuilder: OkHttpClient.Builder) {
-    val config = ZipkinConfig.load()
-    val zipkinSenderUri = config.zipkinSenderUri()
-    val reporter: Reporter<Span>
-
-    reporter = if (zipkinSenderUri != null) {
-      UriTransportRegistry.forUri(zipkinSenderUri)
-    } else {
-      Platform.get()
-    }
-
-    val tracing = Tracing.newBuilder()
-            .localServiceName("oksocial")
-            .reporter(reporter)
-            .sampler(Sampler.ALWAYS_SAMPLE)
-            .build()
-
-    val httpTracing = HttpTracing.create(tracing)
-
-    val tracer = tracing.tracer()
-
-    val opener: Consumer<TraceContext> = Consumer { tc ->
-      closeables.add(Closeable {
-        val link = config.openFunction().invoke(tc)
-
-        if (link != null) {
-          openLink(link)
-        }
-      })
-    }
-
-    clientBuilder.eventListenerFactory { call -> ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace) }
-
-    clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
-
-    closeables.add(Closeable {
-      tracing.close()
-      if (reporter is Flushable) {
-        (reporter as Flushable).flush()
-      }
-      if (reporter is Closeable) {
-        (reporter as Closeable).close()
-      }
-    })
-  }
-
-  private fun openLink(link: String) {
-    try {
-      outputHandler!!.openLink(link)
-    } catch (e: IOException) {
-      outputHandler!!.showError("Can't open link", e)
-    }
-
-  }
-
-  @Throws(OSXKeychainException::class)
-  private fun createCredentialsStore(): CredentialsStore {
-    if (token != null && !authorize) {
-      return FixedTokenCredentialsStore(token!!)
-    }
-
-    return if (PlatformUtil.isOSX) {
-      OSXCredentialsStore(tokenSet)
-    } else {
-      PreferencesCredentialsStore(tokenSet)
-    }
-  }
-
-  private fun closeClients() {
-    for (c in closeables) {
-      IOUtils.closeQuietly(c)
-    }
-  }
-
-  private fun buildHandler(): OutputHandler<Response> {
-    val responseExtractor = OkHttpResponseExtractor()
-
-    return when {
-      outputDirectory != null -> DownloadHandler(responseExtractor, outputDirectory!!)
-      rawOutput -> DownloadHandler(responseExtractor, File("-"))
-      else -> ConsoleHandler.instance(responseExtractor) as OutputHandler<Response>
-    }
-  }
-
-  @Throws(Exception::class)
-  private suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
+  suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
     val command = getShellCommand()
 
     val requests = command.buildRequests(client!!, arguments).map(this::applyRequestFields)
@@ -564,8 +330,7 @@ class Main : CommandLineClient() {
     return 0
   }
 
-  @Throws(IOException::class, InterruptedException::class)
-  private fun processResponses(outputHandler: OutputHandler<Response>,
+  fun processResponses(outputHandler: OutputHandler<Response>,
                                responses: List<PotentialResponse>): Boolean {
     var failed = false
     for (response in responses) {
@@ -583,8 +348,7 @@ class Main : CommandLineClient() {
     return failed
   }
 
-  @Throws(IOException::class)
-  private fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
+  fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
     if (showHeaders) {
       outputHandler.info(StatusLine.get(response).toString())
       val headers = response.headers()
@@ -655,7 +419,6 @@ class Main : CommandLineClient() {
     authorisation!!.renew(findAuthInterceptor())
   }
 
-  @Throws(Exception::class)
   private fun findAuthInterceptor(): AuthInterceptor<*>? {
     val command = getShellCommand()
 
@@ -674,98 +437,15 @@ class Main : CommandLineClient() {
     return auth
   }
 
-  private fun buildDns(): Dns {
-    var dns: Dns
-    dns = when {
-      dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers!!)
-      dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
-              GoogleDns.fromHosts({ this@Main.client!! }, ipMode, "216.58.216.142", "216.239.34.10",
-                      "2607:f8b0:400a:809::200e"))
-      else -> {
-        if (dnsServers != null) {
-          throw UsageException("unable to set dns servers with java DNS")
-        }
-
-        DnsSelector(ipMode, Dns.SYSTEM)
-      }
-    }
-    if (resolve != null) {
-      dns = DnsOverride.build(dns, resolve!!)
-    }
-    return dns
+  private fun getRequestMethod(): String = when {
+    method != null -> method!!
+    data != null -> "POST"
+    else -> "GET"
   }
 
-  private fun createEventLoopGroup(): NioEventLoopGroup {
-    if (eventLoopGroup == null) {
-      val threadFactory = DefaultThreadFactory("netty", true)
-      eventLoopGroup = NioEventLoopGroup(5, threadFactory)
-
-      closeables.add(Closeable { eventLoopGroup!!.shutdownGracefully(0, 0, TimeUnit.SECONDS) })
-    }
-
-    return eventLoopGroup!!
-  }
-
-  @Throws(SocketException::class)
-  private fun getSocketFactory(): SocketFactory =
-          InterfaceSocketFactory.byName(networkInterface!!) ?: throw UsageException("networkInterface '$networkInterface' not found")
-
-  @Throws(Exception::class)
-  private fun configureTls(builder: OkHttpClient.Builder) {
-    val callbackHandler = ConsoleCallbackHandler()
-
-    // possibly null
-    var keystore: KeyStore? = null
-
-    if (keystoreFile != null) {
-      keystore = KeystoreUtils.getKeyStore(keystoreFile)
-    }
-
-    val keyManagers = mutableListOf<KeyManager>()
-
-    if (opensc != null) {
-      keyManagers.addAll(OpenSCUtil.getKeyManagers(callbackHandler, opensc!!).asIterable())
-    } else if (clientAuth) {
-      if (keystore == null) {
-        throw UsageException("--clientauth specified without --keystore")
-      }
-
-      keyManagers.add(KeystoreUtils.createKeyManager(keystore, callbackHandler))
-    }
-
-    val trustManager: X509TrustManager
-    if (allowInsecure) {
-      trustManager = InsecureTrustManager()
-      builder.hostnameVerifier(InsecureHostnameVerifier())
-    } else {
-      val trustManagers = mutableListOf<X509TrustManager>()
-
-      if (keystore != null) {
-        trustManagers.add(CertificateUtils.trustManagerForKeyStore(keystore))
-      }
-
-      if (serverCerts != null) {
-        trustManagers.add(CertificateUtils.load(serverCerts!!.toList()))
-      }
-
-      trustManager = CertificateUtils.combineTrustManagers(trustManagers)
-    }
-
-    builder.sslSocketFactory(KeystoreUtils.createSslSocketFactory(KeystoreUtils.keyManagerArray(keyManagers), trustManager),
-            trustManager)
-
-    if (certificatePins != null) {
-      builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
-    }
-  }
-
-  private fun getRequestMethod(): String {
-    if (method != null) {
-      return method!!
-    }
-    return if (data != null) {
-      "POST"
-    } else "GET"
+  override fun buildHandler(): OutputHandler<Response> = when {
+    outputDirectory != null -> DownloadHandler(OkHttpResponseExtractor(), outputDirectory!!)
+    else -> super.buildHandler()
   }
 
   private fun getRequestBody(headerMap: MutableMap<String, String>): RequestBody? {
@@ -783,7 +463,6 @@ class Main : CommandLineClient() {
     } catch (e: IOException) {
       throw UsageException(e.message!!)
     }
-
   }
 
   companion object {
