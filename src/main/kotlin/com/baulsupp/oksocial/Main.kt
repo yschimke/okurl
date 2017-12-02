@@ -397,8 +397,8 @@ class Main : HelpOption() {
     }
   }
 
-  fun requestBuilder(): Request.Builder {
-    val requestBuilder = Request.Builder()
+  fun applyRequestFields(request: Request): Request {
+    val requestBuilder = request.newBuilder()
 
     val headerMap = HeaderUtil.headerMap(headers?.toList()).toMutableMap()
 
@@ -412,7 +412,7 @@ class Main : HelpOption() {
     }
     requestBuilder.header("User-Agent", userAgent)
 
-    return requestBuilder
+    return requestBuilder.build()
   }
 
   suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
@@ -663,7 +663,7 @@ class Main : HelpOption() {
   private suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
     val command = getShellCommand()
 
-    val requests = command.buildRequests(client!!, arguments)
+    val requests = command.buildRequests(client!!, arguments).map(this::applyRequestFields)
 
     if (!command.handlesRequests()) {
       if (requests.isEmpty()) {
