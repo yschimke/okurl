@@ -18,17 +18,17 @@ object FacebookUtil {
   }
 
   suspend fun getMetadata(client: OkHttpClient, url: HttpUrl): Metadata? {
-    var newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
+    val newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
     val request = Request.Builder().url(newUrl).build()
 
-    try {
+    return try {
       val response = client.query<MetadataResult>(request)
-      return response.metadata
+      response.metadata
     } catch (ce: ClientException) {
       if (ce.code != 404) {
         throw ce
       }
-      return null
+      null
     }
   }
 

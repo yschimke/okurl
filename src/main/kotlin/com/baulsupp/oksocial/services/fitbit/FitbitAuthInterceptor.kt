@@ -48,9 +48,9 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.fitbit.com/1/user/-/profile.json").build(),
+            Request.Builder().url("https://api.fitbit.com/1/user/-/profile.json").build(),
             { this.getName(it) }).validate(client)
   }
 

@@ -7,9 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-inline suspend fun <reified T> OkHttpClient.query(url: String): T {
-  return this.query<T>(okshell.requestBuilder.url(url).build())
-}
+inline suspend fun <reified T> OkHttpClient.query(url: String): T = this.query(Request.Builder().url(url).build())
 
 inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
   val stringResult = this.queryForString(request)
@@ -24,9 +22,8 @@ inline suspend fun <reified K, reified V> OkHttpClient.queryMap(request: Request
   return adapter.fromJson(stringResult)!!
 }
 
-inline suspend fun <reified K, reified V> OkHttpClient.queryMap(url: String): Map<K, V> {
-  return this.queryMap(okshell.requestBuilder.url(url).build())
-}
+inline suspend fun <reified K, reified V> OkHttpClient.queryMap(url: String): Map<K, V> =
+        this.queryMap(Request.Builder().url(url).build())
 
 inline suspend fun OkHttpClient.queryForString(request: Request): String {
   val response = this.execute(request)
@@ -34,9 +31,8 @@ inline suspend fun OkHttpClient.queryForString(request: Request): String {
   return response.body()!!.string()
 }
 
-inline suspend fun OkHttpClient.queryForString(url: String): String {
-  return this.queryForString(okshell.requestBuilder.url(url).build())
-}
+inline suspend fun OkHttpClient.queryForString(url: String): String =
+        this.queryForString(Request.Builder().url(url).build())
 
 suspend fun OkHttpClient.execute(request: Request): Response {
   val call = this.newCall(request)

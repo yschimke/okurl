@@ -11,9 +11,9 @@ open class SimpleCommand(val name: String, private val prefix: String, val authe
   }
 
   override fun buildRequests(client: OkHttpClient,
-                             requestBuilder: Request.Builder, arguments: List<String>): List<Request> {
+                             arguments: List<String>): List<Request> {
     return try {
-      arguments.map { u -> requestBuilder.url(prefix + u).build() }
+      arguments.map { u -> Request.Builder().url(prefix + u).build() }
     } catch (iae: IllegalArgumentException) {
       throw UsageException(iae.message.orEmpty())
     }

@@ -43,9 +43,9 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: StackExchangeToken): ValidatedCredentials {
+                                credentials: StackExchangeToken): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.stackexchange.com" + "/2.2/me?site=drupal").build(),
+            Request.Builder().url("https://api.stackexchange.com/2.2/me?site=drupal").build(),
             this::extract).validate(client)
   }
 

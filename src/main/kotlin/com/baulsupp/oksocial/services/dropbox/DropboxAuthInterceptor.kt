@@ -47,11 +47,11 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
     return JsonCredentialsValidator(
-            requestBuilder.url(
-                    "https://api.dropboxapi.com" + "/2/users/get_current_account").build()
+            Request.Builder().url(
+                    "https://api.dropboxapi.com/2/users/get_current_account").build()
                     .newBuilder()
                     .post(body)
                     .build(),

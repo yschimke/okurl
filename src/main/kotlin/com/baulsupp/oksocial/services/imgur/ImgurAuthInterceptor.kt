@@ -43,9 +43,9 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.imgur.com" + "/3/account/me").build(),
+            Request.Builder().url("https://api.imgur.com/3/account/me").build(),
             this::getName).validate(client)
   }
 

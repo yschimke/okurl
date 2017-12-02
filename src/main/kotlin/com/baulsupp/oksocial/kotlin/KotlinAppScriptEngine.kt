@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.kotlin;
+package com.baulsupp.oksocial.kotlin
 
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector

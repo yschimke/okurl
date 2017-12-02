@@ -66,9 +66,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
+            Request.Builder().url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
             { it["name"] as String }).validate(client)
   }
 

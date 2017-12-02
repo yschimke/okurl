@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -29,7 +28,6 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                requestBuilder: Request.Builder,
                                 credentials: Oauth2Token): ValidatedCredentials {
     return ValidatedCredentials("aaa", null)
   }

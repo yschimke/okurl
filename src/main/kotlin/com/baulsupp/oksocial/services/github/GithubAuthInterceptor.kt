@@ -46,8 +46,8 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(requestBuilder.url("https://api.github.com" + "/user").build(),
+                                credentials: Oauth2Token): ValidatedCredentials {
+    return JsonCredentialsValidator(Request.Builder().url("https://api.github.com/user").build(),
             { it["name"] as String }).validate(client)
   }
 

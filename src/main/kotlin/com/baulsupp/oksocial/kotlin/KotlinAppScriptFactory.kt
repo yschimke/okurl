@@ -51,7 +51,7 @@ class BridgeLoggerFactory : Logger.Factory {
 }
 
 class BridgeLogger(name: String) : Logger() {
-  val logger = java.util.logging.Logger.getLogger(name)
+  val logger = java.util.logging.Logger.getLogger(name)!!
 
   override fun warn(p0: String?, p1: Throwable?) {
 //    logger.log(WARNING, p0, p1)

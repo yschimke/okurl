@@ -31,11 +31,11 @@ class Main : HelpOption() {
     val engine = KotlinAppScriptFactory().scriptEngine
 
     if (args.size < 1) {
-      System.err.println("usage: okscript file.kts arguments");
+      System.err.println("usage: okscript file.kts arguments")
       exitProcess(-2)
     }
 
-    val script = args.get(0)
+    val script = args[0]
     val arguments = args.drop(1)
 
     engine.put("arguments", arguments)

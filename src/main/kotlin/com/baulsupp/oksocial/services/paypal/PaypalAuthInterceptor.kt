@@ -46,10 +46,10 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url(
-                    "https://api.paypal.com" + "/v1/oauth2/token/userinfo?schema=openid").build(),
+            Request.Builder().url(
+                    "https://api.paypal.com/v1/oauth2/token/userinfo?schema=openid").build(),
             { it -> it["name"].toString() }).validate(client)
   }
 

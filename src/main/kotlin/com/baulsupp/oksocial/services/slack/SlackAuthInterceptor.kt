@@ -86,9 +86,9 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://slack.com" + "/api/auth.test").build(),
+            Request.Builder().url("https://slack.com/api/auth.test").build(),
             { it["user"] as String }).validate(
             client)
   }

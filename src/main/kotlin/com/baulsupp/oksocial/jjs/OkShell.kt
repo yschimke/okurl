@@ -14,7 +14,6 @@ import java.io.IOException
 class OkShell
 private constructor() {
   val client: OkHttpClient
-  val requestBuilder: Request.Builder
   private val main: Main?
   val outputHandler: OutputHandler<Response>
 
@@ -22,7 +21,6 @@ private constructor() {
     main = Main()
     main.initialise()
     client = main.client!!
-    requestBuilder = main.createRequestBuilder()
     outputHandler = main.outputHandler!!
 
     listenForMainExit()
@@ -44,7 +42,7 @@ private constructor() {
   }
 
   fun query(url: String): String {
-    return execute(requestBuilder.url(url).build())
+    return execute(Request.Builder().url(url).build())
   }
 
   fun execute(request: Request): String {
@@ -72,7 +70,7 @@ private constructor() {
   }
 
   fun warmup(url: String) {
-    val request = requestBuilder.url(url).build()
+    val request = Request.Builder().url(url).build()
     val call = client.newCall(request)
     call.enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
@@ -88,7 +86,7 @@ private constructor() {
   }
 
   fun show(url: String) {
-    val request = requestBuilder.url(url).build()
+    val request = Request.Builder().url(url).build()
 
     val call = client.newCall(request)
 

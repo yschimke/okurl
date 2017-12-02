@@ -10,7 +10,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -43,7 +42,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
                   "https://httpbin.org/", null)
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: BasicCredentials): ValidatedCredentials =
+                                credentials: BasicCredentials): ValidatedCredentials =
           ValidatedCredentials(credentials.user, null)
 
   override fun hosts(): Set<String> = setOf((

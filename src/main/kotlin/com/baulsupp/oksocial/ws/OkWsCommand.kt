@@ -24,13 +24,12 @@ class OkWsCommand : ShellCommand, MainAware {
   }
 
   @Throws(Exception::class)
-  override fun buildRequests(client: OkHttpClient, requestBuilder: Request.Builder,
-                             arguments: List<String>): List<Request> {
+  override fun buildRequests(client: OkHttpClient, arguments: List<String>): List<Request> {
     if (arguments.size != 1) {
       throw UsageException("usage: okws wss://host")
     }
 
-    val request = main!!.createRequestBuilder().url(arguments[0]).build()
+    val request = Request.Builder().url(arguments[0]).build()
 
     val printer = WebSocketPrinter(main!!.outputHandler!!)
     val websocket = client.newWebSocket(request, printer)

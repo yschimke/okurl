@@ -30,7 +30,7 @@ class DiscoveryRegistry(private val client: OkHttpClient, private val map: Map<S
     // TODO make non synchronous
     @Synchronized
     fun instance(client: OkHttpClient): DiscoveryRegistry {
-      var newClient = client.newBuilder().cache(cache).build()
+      val newClient = client.newBuilder().cache(cache).build()
 
       val url = "https://www.googleapis.com/discovery/v1/apis"
       val request = Request.Builder().cacheControl(cacheControl).url(url).build()

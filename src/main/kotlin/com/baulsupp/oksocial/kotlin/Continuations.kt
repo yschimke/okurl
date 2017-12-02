@@ -43,8 +43,8 @@ private class ContinuationConsumer<T>(
 suspend fun <T> CompletableFuture<T>.await(): T {
   // fast path when CompletableFuture is already done (does not suspend)
   if (isDone) {
-    try {
-      return get()
+    return try {
+      get()
     } catch (e: ExecutionException) {
       throw e.cause ?: e // unwrap original cause from ExecutionException
     }

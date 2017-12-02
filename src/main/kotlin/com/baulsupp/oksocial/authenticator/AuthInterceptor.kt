@@ -12,7 +12,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.util.logging.Level
@@ -35,7 +34,7 @@ interface AuthInterceptor<T> {
   fun serviceDefinition(): ServiceDefinition<T>
 
   suspend fun validate(client: OkHttpClient,
-                       requestBuilder: Request.Builder, credentials: T): ValidatedCredentials =
+                       credentials: T): ValidatedCredentials =
           ValidatedCredentials()
 
   fun canRenew(result: Response): Boolean = result.code() == 401

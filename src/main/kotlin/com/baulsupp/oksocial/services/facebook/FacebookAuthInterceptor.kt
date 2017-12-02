@@ -16,7 +16,6 @@ import com.baulsupp.oksocial.services.facebook.model.UserOrPage
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -61,7 +60,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     val userName = client.fbQuery<UserOrPage>("/me").name
     val appName = client.fbQuery<App>("/app").name
 

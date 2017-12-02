@@ -56,9 +56,9 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: TwitterCredentials): ValidatedCredentials {
+                                credentials: TwitterCredentials): ValidatedCredentials {
     return JsonCredentialsValidator(
-            TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", requestBuilder),
+            TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", Request.Builder()),
             { it["name"] as String }).validate(client)
   }
 

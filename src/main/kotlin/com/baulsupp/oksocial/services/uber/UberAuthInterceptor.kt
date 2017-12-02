@@ -60,9 +60,9 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.uber.com" + "/v1/me").build(),
+            Request.Builder().url("https://api.uber.com/v1/me").build(),
             { map -> "${map["first_name"]} ${map["last_name"]}" }).validate(client)
   }
 

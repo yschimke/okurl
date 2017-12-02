@@ -49,9 +49,9 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.foursquare.com" + "/v2/users/self?v=20160603").build(),
+            Request.Builder().url("https://api.foursquare.com/v2/users/self?v=20160603").build(),
             { this.getName(it) }).validate(client)
   }
 

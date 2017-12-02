@@ -25,7 +25,7 @@ class OkApiCommand : ShellCommand, MainAware {
 
   @Throws(Exception::class)
   override fun buildRequests(client: OkHttpClient,
-                             requestBuilder: Request.Builder, arguments: List<String>): List<Request> {
+                             arguments: List<String>): List<Request> {
     val args = arguments.toMutableList()
 
     val script = FileSystems.getDefault().getPath(args.removeAt(0))
@@ -35,16 +35,16 @@ class OkApiCommand : ShellCommand, MainAware {
     val lines = script.toFile().readText()
 
     if (args.size < 1) {
-      System.err.println("usage: okapi file.kts arguments");
+      System.err.println("usage: okapi file.kts arguments")
       exitProcess(-2)
     }
 
     return args.map { item ->
       engine.put("item", item)
-      eval(engine, "val item = bindings[\"item\"] as String");
+      eval(engine, "val item = bindings[\"item\"] as String")
       val result = eval(engine, lines)
 
-      toRequest(requestBuilder, result)
+      toRequest(result)
     }
   }
 
@@ -77,10 +77,10 @@ class OkApiCommand : ShellCommand, MainAware {
 
   }
 
-  private fun toRequest(requestBuilder: Request.Builder, o: Any?): Request {
+  private fun toRequest(o: Any?): Request {
     return when (o) {
       is Request -> o
-      is String -> requestBuilder.url((o as String?)!!).build()
+      is String -> Request.Builder().url(o).build()
       null -> throw NullPointerException()
       else -> throw IllegalStateException("unable to use result " + o + " " + o.javaClass)
     }

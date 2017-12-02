@@ -78,9 +78,9 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.spotify.com" + "/v1/me").build(),
+            Request.Builder().url("https://api.spotify.com/v1/me").build(),
             { it["display_name"] as String }).validate(client)
   }
 

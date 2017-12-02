@@ -14,7 +14,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.services.quip.model.User
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -74,7 +73,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials =
+                                credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials(currentUser(client).name)
 
   private suspend fun currentUser(client: OkHttpClient) =

@@ -25,8 +25,8 @@ class DatasettesAuthInterceptor :
         CompletionOnlyAuthInterceptor("datasettes.com", "Datasettes", "datasettes",
                 "https://github.com/simonw/datasette") {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter =
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter =
           DatasettesCompleter(client)
 
   override fun hosts(): Set<String> = knownHosts()
@@ -40,14 +40,16 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
 
     val path = url.pathSegments()
 
-    if (path.size == 1) {
-      val datasette = runBlocking { fetchDatasetteMetadata(host, client) }
-      return databaseInPath(datasette, host)
-    } else if (path.size == 2) {
-      val datasetteTables = runBlocking { fetchDatasetteTableMetadata(host, path.first(), client) }
-      return tablesInDatabase(datasetteTables, host, path)
-    } else {
-      return UrlList(UrlList.Match.EXACT, listOf())
+    return when {
+      path.size == 1 -> {
+        val datasette = runBlocking { fetchDatasetteMetadata(host, client) }
+        databaseInPath(datasette, host)
+      }
+      path.size == 2 -> {
+        val datasetteTables = runBlocking { fetchDatasetteTableMetadata(host, path.first(), client) }
+        tablesInDatabase(datasetteTables, host, path)
+      }
+      else -> UrlList(UrlList.Match.EXACT, listOf())
     }
   }
 
@@ -57,7 +59,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   private fun tablesInDatabase(datasetteTables: DatasetteTables, host: String?,
-          path: MutableList<String>): UrlList {
+                               path: MutableList<String>): UrlList {
     val tableLike = datasetteTables.views + datasetteTables.tables.map { it.name }
     val encoded = tableLike.map { URLEncoder.encode(it, StandardCharsets.UTF_8.name()) }
     val paths = encoded.map { "$it.json" } + ".json"
@@ -70,14 +72,14 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
 
 class DatasettesPresenter : ApiDocPresenter {
   override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-          client: OkHttpClient) {
+                                  client: OkHttpClient) {
     val urlI = HttpUrl.parse(url) ?: throw UsageException("Unable to parse Url '$url'")
 
     val datasettes = runBlocking { fetchDatasetteMetadata(urlI.host(), client) }
 
     if (datasettes.size != 1) {
       outputHandler.showError(
-              "expected 1 datasette: '${datasettes.map { it.path }.joinToString()}'", null)
+              "expected 1 datasette: '${datasettes.joinToString { it.path }}'", null)
     }
 
     val datasette = datasettes.first()
@@ -92,7 +94,7 @@ class DatasettesPresenter : ApiDocPresenter {
       fetchDatasetteTableMetadata(urlI.host(), datasette.path, client)
     }
 
-    outputHandler.info("tables: " + datasetteTables.tables.map { it.name }.joinToString())
+    outputHandler.info("tables: " + datasetteTables.tables.joinToString { it.name })
     outputHandler.info("views: " + datasetteTables.views.joinToString())
   }
 }
@@ -104,14 +106,14 @@ data class DatasetteTable(val name: String, val columns: List<String>, @Json(
         name = "table_rows") val tableRows: Int)
 
 data class DatasetteTables(val database: String, val tables: List<DatasetteTable>,
-        val views: List<String>, val source: String, @Json(
+                           val views: List<String>, val source: String, @Json(
                 name = "source_url") val sourceUrl: String)
 
-suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient): List<DatasetteIndex> =
+suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
         client.queryMap<String, DatasetteIndex>("https://$host/.json").values.toList()
 
 suspend fun fetchDatasetteTableMetadata(host: String, path: String,
-        client: OkHttpClient): DatasetteTables =
+                                        client: OkHttpClient) =
         client.query<DatasetteTables>("https://$host/$path.json")
 
 fun knownHosts(): Set<String> = setOf("fivethirtyeight.datasettes.com", "parlgov.datasettes.com")

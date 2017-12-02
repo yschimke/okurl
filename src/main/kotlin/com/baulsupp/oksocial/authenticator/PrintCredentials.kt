@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
@@ -11,7 +10,6 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.time.ZonedDateTime
@@ -60,7 +58,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
     }
   }
 
-  suspend fun showCredentials(arguments: List<String>, requestBuilder: () -> Request.Builder) {
+  suspend fun showCredentials(arguments: List<String>) {
     var services: Iterable<AuthInterceptor<*>> = serviceInterceptor.services()
 
     val full = !arguments.isEmpty()
@@ -69,7 +67,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
       services = arguments.mapNotNull { serviceInterceptor.findAuthInterceptor(it) }
     }
 
-    val futures = validate(services, requestBuilder)
+    val futures = validate(services)
 
     for ((service, future) in futures) {
       printKnownCredentials(future, service)
@@ -86,7 +84,7 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
   }
 
   suspend fun validate(
-          services: Iterable<AuthInterceptor<*>>, requestBuilder: () -> Request.Builder): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
+          services: Iterable<AuthInterceptor<*>>): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = try {
         credentialsStore.readDefaultCredentials(sv.serviceDefinition())
@@ -96,13 +94,13 @@ class PrintCredentials(private val client: OkHttpClient, private val credentials
       }
 
       credentials?.let {
-        val x = async(CommonPool) { v(sv, requestBuilder, credentials) }
+        val x = async(CommonPool) { v(sv, credentials) }
         Pair(sv, x)
       }
     }.toMap()
   }
 
   // TODO fix up hackery
-  suspend fun <T> v(sv: AuthInterceptor<T>, requestBuilder: () -> Request.Builder, credentials: Any?) =
-          sv.validate(client, requestBuilder(), credentials as T)
+  suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any?) =
+          sv.validate(client, credentials as T)
 }

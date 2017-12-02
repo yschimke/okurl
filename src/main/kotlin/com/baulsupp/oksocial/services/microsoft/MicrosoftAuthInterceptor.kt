@@ -74,9 +74,9 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://graph.microsoft.com" + "/v1.0/me").build(),
+            Request.Builder().url("https://graph.microsoft.com/v1.0/me").build(),
             { it["displayName"] as String }).validate(
             client)
   }

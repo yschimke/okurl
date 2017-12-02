@@ -48,9 +48,9 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.instagram.com" + "/v1/users/self").build(),
+            Request.Builder().url("https://api.instagram.com/v1/users/self").build(),
             this::getName).validate(client)
   }
 

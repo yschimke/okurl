@@ -28,7 +28,7 @@ object SquareUpAuthFlow {
       val code = s.waitForCode()
 
       val tokenUrl = "https://connect.squareup.com/oauth2/token"
-      val map = mapOf<String, String>("client_id" to clientId, "client_secret" to clientSecret,
+      val map = mapOf("client_id" to clientId, "client_secret" to clientSecret,
               "code" to code, "redirect_uri" to s.redirectUri)
 
       val reqBody = RequestBody.create(MediaType.parse("application/json"), JsonUtil.toJson(map))

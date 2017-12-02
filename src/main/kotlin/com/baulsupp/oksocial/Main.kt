@@ -106,136 +106,136 @@ import javax.net.ssl.X509TrustManager
 class Main : HelpOption() {
   private val logger = Logger.getLogger(Main::class.java.name)
 
-  @Option(name = arrayOf("-X", "--request"), description = "Specify request command to use")
+  @Option(name = ["-X", "--request"], description = "Specify request command to use")
   var method: String? = null
 
-  @Option(name = arrayOf("-d", "--data"), description = "HTTP POST data")
+  @Option(name = ["-d", "--data"], description = "HTTP POST data")
   var data: String? = null
 
-  @Option(name = arrayOf("-H", "--header"), description = "Custom header to pass to server")
+  @Option(name = ["-H", "--header"], description = "Custom header to pass to server")
   var headers: java.util.List<String>? = null
 
-  @Option(name = arrayOf("-A", "--user-agent"), description = "User-Agent to send to server")
+  @Option(name = ["-A", "--user-agent"], description = "User-Agent to send to server")
   var userAgent = NAME + "/" + versionString()
 
-  @Option(name = arrayOf("--connect-timeout"), description = "Maximum time allowed for connection (seconds)")
+  @Option(name = ["--connect-timeout"], description = "Maximum time allowed for connection (seconds)")
   var connectTimeout: Int? = null
 
-  @Option(name = arrayOf("--read-timeout"), description = "Maximum time allowed for reading data (seconds)")
+  @Option(name = ["--read-timeout"], description = "Maximum time allowed for reading data (seconds)")
   var readTimeout: Int? = null
 
-  @Option(name = arrayOf("--no-follow"), description = "Follow redirects")
+  @Option(name = ["--no-follow"], description = "Follow redirects")
   var dontFollowRedirects = false
 
-  @Option(name = arrayOf("-k", "--insecure"), description = "Allow connections to SSL sites without certs")
+  @Option(name = ["-k", "--insecure"], description = "Allow connections to SSL sites without certs")
   var allowInsecure = false
 
-  @Option(name = arrayOf("-i", "--include"), description = "Include protocol headers in the output")
+  @Option(name = ["-i", "--include"], description = "Include protocol headers in the output")
   var showHeaders = false
 
-  @Option(name = arrayOf("--frames"), description = "Log HTTP/2 frames to STDERR")
+  @Option(name = ["--frames"], description = "Log HTTP/2 frames to STDERR")
   var showHttp2Frames = false
 
-  @Option(name = arrayOf("--debug"), description = "Debug")
+  @Option(name = ["--debug"], description = "Debug")
   var debug = false
 
-  @Option(name = arrayOf("-e", "--referer"), description = "Referer URL")
+  @Option(name = ["-e", "--referer"], description = "Referer URL")
   var referer: String? = null
 
-  @Option(name = arrayOf("-V", "--version"), description = "Show version number and quit")
+  @Option(name = ["-V", "--version"], description = "Show version number and quit")
   var version = false
 
-  @Option(name = arrayOf("--cache"), description = "Cache directory")
+  @Option(name = ["--cache"], description = "Cache directory")
   var cacheDirectory: File? = null
 
-  @Option(name = arrayOf("--protocols"), description = "Protocols")
+  @Option(name = ["--protocols"], description = "Protocols")
   var protocols: String? = null
 
-  @Option(name = arrayOf("-o", "--output"), description = "Output file/directory")
+  @Option(name = ["-o", "--output"], description = "Output file/directory")
   var outputDirectory: File? = null
 
-  @Option(name = arrayOf("--authorize"), description = "Authorize API")
+  @Option(name = ["--authorize"], description = "Authorize API")
   var authorize: Boolean = false
 
-  @Option(name = arrayOf("--renew"), description = "Renew API Authorization")
+  @Option(name = ["--renew"], description = "Renew API Authorization")
   var renew: Boolean = false
 
-  @Option(name = arrayOf("--token"), description = "Use existing Token for authorization")
+  @Option(name = ["--token"], description = "Use existing Token for authorization")
   var token: String? = null
 
-  @Option(name = arrayOf("--curl"), description = "Show curl commands")
+  @Option(name = ["--curl"], description = "Show curl commands")
   var curl = false
 
-  @Option(name = arrayOf("--zipkin", "-z"), description = "Activate Zipkin Tracing")
+  @Option(name = ["--zipkin", "-z"], description = "Activate Zipkin Tracing")
   var zipkin = false
 
-  @Option(name = arrayOf("--zipkinTrace"), description = "Activate Detailed Zipkin Tracing")
+  @Option(name = ["--zipkinTrace"], description = "Activate Detailed Zipkin Tracing")
   var zipkinTrace = false
 
-  @Option(name = arrayOf("--ip"), description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)", allowedValues = arrayOf("system", "ipv4", "ipv6", "ipv4only", "ipv6only"))
+  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)", allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(name = arrayOf("--dns"), description = "DNS (netty, java)", allowedValues = arrayOf("java", "netty"))
+  @Option(name = ["--dns"], description = "DNS (netty, java)", allowedValues = ["java", "netty"])
   var dnsMode = DnsMode.JAVA
 
-  @Option(name = arrayOf("--dnsServers"), description = "Specific DNS Servers (csv, google)")
+  @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
   var dnsServers: String? = null
 
-  @Option(name = arrayOf("--resolve"), description = "DNS Overrides (HOST:TARGET)")
+  @Option(name = ["--resolve"], description = "DNS Overrides (HOST:TARGET)")
   var resolve: List<String>? = null
 
-  @Option(name = arrayOf("--certificatePin"), description = "Specific Local Network Interface")
+  @Option(name = ["--certificatePin"], description = "Specific Local Network Interface")
   var certificatePins: java.util.List<CertificatePin>? = null
 
-  @Option(name = arrayOf("--networkInterface"), description = "Specific Local Network Interface")
+  @Option(name = ["--networkInterface"], description = "Specific Local Network Interface")
   var networkInterface: String? = null
 
-  @Option(name = arrayOf("--clientauth"), description = "Use Client Authentication (from keystore)")
+  @Option(name = ["--clientauth"], description = "Use Client Authentication (from keystore)")
   var clientAuth = false
 
-  @Option(name = arrayOf("--keystore"), description = "Keystore")
+  @Option(name = ["--keystore"], description = "Keystore")
   var keystoreFile: File? = null
 
-  @Option(name = arrayOf("--cert"), description = "Use given server cert (Root CA)")
+  @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: java.util.List<File>? = null
 
-  @Option(name = arrayOf("--opensc"), description = "Send OpenSC Client Certificate (slot)")
+  @Option(name = ["--opensc"], description = "Send OpenSC Client Certificate (slot)")
   var opensc: Int? = null
 
-  @Option(name = arrayOf("--socks"), description = "Use SOCKS proxy")
+  @Option(name = ["--socks"], description = "Use SOCKS proxy")
   var socksProxy: InetAddressParam? = null
 
-  @Option(name = arrayOf("--proxy"), description = "Use HTTP proxy")
+  @Option(name = ["--proxy"], description = "Use HTTP proxy")
   var proxy: InetAddressParam? = null
 
-  @Option(name = arrayOf("--show-credentials"), description = "Show Credentials")
+  @Option(name = ["--show-credentials"], description = "Show Credentials")
   var showCredentials = false
 
-  @Option(name = arrayOf("--alias-names"), description = "Show Alias Names")
+  @Option(name = ["--alias-names"], description = "Show Alias Names")
   var aliasNames = false
 
-  @Option(name = arrayOf("-r", "--raw"), description = "Raw Output")
+  @Option(name = ["-r", "--raw"], description = "Raw Output")
   var rawOutput = false
 
-  @Option(name = arrayOf("-s", "--set"), description = "Token Set e.g. work")
+  @Option(name = ["-s", "--set"], description = "Token Set e.g. work")
   var tokenSet: String? = null
 
-  @Option(name = arrayOf("--serviceNames"), description = "Service Names")
+  @Option(name = ["--serviceNames"], description = "Service Names")
   var serviceNames = false
 
-  @Option(name = arrayOf("--urlCompletion"), description = "URL Completion")
+  @Option(name = ["--urlCompletion"], description = "URL Completion")
   var urlComplete: Boolean = false
 
-  @Option(name = arrayOf("--apidoc"), description = "API Documentation")
+  @Option(name = ["--apidoc"], description = "API Documentation")
   var apiDoc: Boolean = false
 
-  @Option(name = arrayOf("--ssldebug"), description = "SSL Debug")
+  @Option(name = ["--ssldebug"], description = "SSL Debug")
   var sslDebug: Boolean = false
 
-  @Option(name = arrayOf("--user"), description = "user:password for basic auth")
+  @Option(name = ["--user"], description = "user:password for basic auth")
   var user: String? = null
 
-  @Option(name = arrayOf("--maxrequests"), description = "Concurrency Level")
+  @Option(name = ["--maxrequests"], description = "Concurrency Level")
   private val maxRequests = 16
 
   var commandName = System.getProperty("command.name", "oksocial")!!
@@ -250,8 +250,6 @@ class Main : HelpOption() {
   private var authorisation: Authorisation? = null
 
   var client: OkHttpClient? = null
-
-  var requestBuilder: Request.Builder? = null
 
   var commandRegistry = CommandRegistry()
 
@@ -296,8 +294,7 @@ class Main : HelpOption() {
 
       if (showCredentials) {
         runBlocking {
-          PrintCredentials(client!!, credentialsStore!!, outputHandler!!,
-                  serviceInterceptor!!).showCredentials(arguments) { createRequestBuilder() }
+          PrintCredentials(client!!, credentialsStore!!, outputHandler!!, serviceInterceptor!!).showCredentials(arguments)
         }
         return 0
       }
@@ -353,7 +350,6 @@ class Main : HelpOption() {
   }
 
   // TODO refactor this mess out of Main
-  @Throws(Exception::class)
   private fun urlCompletionList(): String {
     val command = getShellCommand()
 
@@ -373,7 +369,7 @@ class Main : HelpOption() {
     }
 
     val completer = UrlCompleter(serviceInterceptor!!.services(), client!!, credentialsStore!!,
-        completionVariableCache!!)
+            completionVariableCache!!)
 
     val fullCompletionUrl = getFullCompletionUrl()
 
@@ -401,6 +397,24 @@ class Main : HelpOption() {
     }
   }
 
+  fun requestBuilder(): Request.Builder {
+    val requestBuilder = Request.Builder()
+
+    val headerMap = HeaderUtil.headerMap(headers?.toList()).toMutableMap()
+
+    requestBuilder.method(getRequestMethod(), getRequestBody(headerMap))
+
+    if (headers != null) {
+      headerMap.forEach { k, v -> requestBuilder.header(k, v) }
+    }
+    if (referer != null) {
+      requestBuilder.header("Referer", referer!!)
+    }
+    requestBuilder.header("User-Agent", userAgent)
+
+    return requestBuilder
+  }
+
   suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
     return urlCompleter.urlList(arguments[arguments.size - 1])
   }
@@ -422,7 +436,7 @@ class Main : HelpOption() {
     val command = getShellCommand()
 
     if (command is OkApiCommand) {
-      val requests = command.buildRequests(client!!, requestBuilder!!, arguments)
+      val requests = command.buildRequests(client!!, arguments)
 
       if (requests.isNotEmpty()) {
         val newUrl = requests[0].url()
@@ -481,8 +495,8 @@ class Main : HelpOption() {
           null
         } else {
           response.request().newBuilder()
-              .header("Authorization", credential)
-              .build()
+                  .header("Authorization", credential)
+                  .build()
         }
       })
     }
@@ -504,8 +518,6 @@ class Main : HelpOption() {
     }
 
     client = clientBuilder.build()
-
-    requestBuilder = createRequestBuilder()
 
     if (completionVariableCache == null) {
       completionVariableCache = TmpCompletionVariableCache()
@@ -575,10 +587,10 @@ class Main : HelpOption() {
     }
 
     val tracing = Tracing.newBuilder()
-        .localServiceName("oksocial")
-        .reporter(reporter)
-        .sampler(Sampler.ALWAYS_SAMPLE)
-        .build()
+            .localServiceName("oksocial")
+            .reporter(reporter)
+            .sampler(Sampler.ALWAYS_SAMPLE)
+            .build()
 
     val httpTracing = HttpTracing.create(tracing)
 
@@ -651,7 +663,7 @@ class Main : HelpOption() {
   private suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
     val command = getShellCommand()
 
-    val requests = command.buildRequests(client!!, requestBuilder!!, arguments)
+    val requests = command.buildRequests(client!!, arguments)
 
     if (!command.handlesRequests()) {
       if (requests.isEmpty()) {
@@ -742,10 +754,10 @@ class Main : HelpOption() {
   private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
     logger.log(Level.FINE, "Request " + request)
 
-    try {
-      return SuccessfulResponse(client.newCall(request).await())
+    return try {
+      SuccessfulResponse(client.newCall(request).await())
     } catch (ioe: IOException) {
-      return FailedResponse(ioe)
+      FailedResponse(ioe)
     }
   }
 
@@ -781,8 +793,8 @@ class Main : HelpOption() {
     dns = when {
       dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, getEventLoopGroup(), this.dnsServers!!)
       dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
-          GoogleDns.fromHosts({ this@Main.client!! }, ipMode, "216.58.216.142", "216.239.34.10",
-              "2607:f8b0:400a:809::200e"))
+              GoogleDns.fromHosts({ this@Main.client!! }, ipMode, "216.58.216.142", "216.239.34.10",
+                      "2607:f8b0:400a:809::200e"))
       else -> {
         if (dnsServers != null) {
           throw UsageException("unable to set dns servers with java DNS")
@@ -810,7 +822,7 @@ class Main : HelpOption() {
 
   @Throws(SocketException::class)
   private fun getSocketFactory(): SocketFactory =
-      InterfaceSocketFactory.byName(networkInterface!!) ?: throw UsageException("networkInterface '$networkInterface' not found")
+          InterfaceSocketFactory.byName(networkInterface!!) ?: throw UsageException("networkInterface '$networkInterface' not found")
 
   @Throws(Exception::class)
   private fun configureTls(builder: OkHttpClient.Builder) {
@@ -854,7 +866,7 @@ class Main : HelpOption() {
     }
 
     builder.sslSocketFactory(KeystoreUtils.createSslSocketFactory(KeystoreUtils.keyManagerArray(keyManagers), trustManager),
-        trustManager)
+            trustManager)
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
@@ -876,9 +888,9 @@ class Main : HelpOption() {
     }
 
     val mimeType = headerMap.keys
-        .firstOrNull { "Content-Type".equals(it, ignoreCase = true) }
-        ?.let { headerMap.remove(it)!! }
-        ?: "application/x-www-form-urlencoded"
+            .firstOrNull { "Content-Type".equals(it, ignoreCase = true) }
+            ?.let { headerMap.remove(it)!! }
+            ?: "application/x-www-form-urlencoded"
 
     return try {
       RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data!!))
@@ -886,24 +898,6 @@ class Main : HelpOption() {
       throw UsageException(e.message!!)
     }
 
-  }
-
-  fun createRequestBuilder(): Request.Builder {
-    val requestBuilder = Request.Builder()
-
-    val headerMap = HeaderUtil.headerMap(headers?.toList()).toMutableMap()
-
-    requestBuilder.method(getRequestMethod(), getRequestBody(headerMap))
-
-    if (headers != null) {
-      headerMap.forEach { k, v -> requestBuilder.header(k, v) }
-    }
-    if (referer != null) {
-      requestBuilder.header("Referer", referer!!)
-    }
-    requestBuilder.header("User-Agent", userAgent)
-
-    return requestBuilder
   }
 
   companion object {

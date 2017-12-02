@@ -59,9 +59,9 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.lyft.com" + "/v1/profile").build(),
+            Request.Builder().url("https://api.lyft.com/v1/profile").build(),
             { it["id"] as String }).validate(
             client)
   }

@@ -5,7 +5,6 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -16,7 +15,7 @@ abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, privat
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =
       throw IOException("authorize not supported")
 
-  override suspend fun validate(client: OkHttpClient, requestBuilder: Request.Builder, credentials: Nothing): ValidatedCredentials =
+  override suspend fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
       ValidatedCredentials(null, null)
 
   override fun serviceDefinition(): ServiceDefinition<Nothing> {

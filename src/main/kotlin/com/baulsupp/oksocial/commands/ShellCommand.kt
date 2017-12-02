@@ -7,9 +7,7 @@ import okhttp3.Request
 interface ShellCommand {
   fun name(): String
 
-  @Throws(Exception::class)
-  fun buildRequests(client: OkHttpClient, requestBuilder: Request.Builder,
-                    arguments: List<String>): List<Request>
+  fun buildRequests(client: OkHttpClient, arguments: List<String>): List<Request>
 
   fun authenticator(): String? {
     return null

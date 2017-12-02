@@ -40,7 +40,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
       if (ce.code != 400) {
         throw ce
       }
-      listOf<String>("me")
+      listOf("me")
     }
   }
 

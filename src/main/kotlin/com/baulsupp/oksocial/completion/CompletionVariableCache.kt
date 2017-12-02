@@ -13,7 +13,7 @@ interface CompletionVariableCache {
     return if (values != null) {
       values.toList()
     } else {
-      var result = s()
+      val result = s()
       store(service, key, result)
       result
     }

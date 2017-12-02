@@ -18,11 +18,10 @@ class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
         private val port: Int = 3000) : Closeable, HttpHandler {
   private val logger = Logger.getLogger(SimpleWebServer::class.java.name)
 
-  private var server: HttpServer
+  private var server: HttpServer = HttpServer.create(InetSocketAddress("localhost", port), 1)
   var f: CompletableFuture<String> = CompletableFuture()
 
   init {
-    server = HttpServer.create(InetSocketAddress("localhost", port), 1)
     server.createContext("/", this)
     server.start()
 
@@ -33,7 +32,7 @@ class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
     get() = "http://localhost:$port/callback"
 
   override fun handle(exchange: HttpExchange) {
-    val url = HttpUrl.parse("http://localhost:${port}${exchange.requestURI}")!!
+    val url = HttpUrl.parse("http://localhost:$port${exchange.requestURI}")!!
 
     exchange.responseHeaders.add("Content-Type", "text/html; charset=utf-8")
     exchange.sendResponseHeaders(200, 0)
@@ -45,11 +44,7 @@ class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
           IOException(error)
         }
 
-        val code = codeReader(url)
-
-        if (code == null) {
-          throw IllegalArgumentException("no code read")
-        }
+        val code = codeReader(url) ?: throw IllegalArgumentException("no code read")
 
         out.println(generateSuccessBody())
         out.flush()

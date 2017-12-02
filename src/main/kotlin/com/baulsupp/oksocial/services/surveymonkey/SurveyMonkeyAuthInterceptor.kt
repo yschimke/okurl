@@ -15,7 +15,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.surveymonkey.model.SurveyList
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -51,13 +50,13 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
           val email: String)
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     val user = client.query<User>("https://api.surveymonkey.net/v3/users/me")
 
-    if (user.first_name != null && user.last_name != null) {
-      return ValidatedCredentials(user.first_name + " " + user.last_name)
+    return if (user.first_name != null && user.last_name != null) {
+      ValidatedCredentials(user.first_name + " " + user.last_name)
     } else {
-      return ValidatedCredentials(user.email)
+      ValidatedCredentials(user.email)
     }
   }
 

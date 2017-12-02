@@ -51,9 +51,9 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url("https://api.transferwise.com" + "/v1/me").build(),
+            Request.Builder().url("https://api.transferwise.com/v1/me").build(),
             { it["name"] as String }).validate(
             client)
   }

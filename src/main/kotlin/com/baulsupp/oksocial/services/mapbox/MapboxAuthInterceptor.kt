@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -41,7 +40,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials =
+                                credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials("?", null)
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token(

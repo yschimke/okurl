@@ -8,6 +8,7 @@ import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Rfc3339DateJsonAdapter
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.text.SimpleDateFormat
@@ -26,7 +27,7 @@ val moshi = Moshi.Builder()
         .add(MapboxLatLongAdapter())
         .add(KotlinJsonAdapterFactory())
         .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-        .build()
+        .build()!!
 
 fun warmup(vararg urls: String) {
   urls.forEach { okshell.warmup(it) }
@@ -41,15 +42,15 @@ suspend fun show(url: String) {
 inline suspend fun <reified T> query(url: String): T = okshell.client.query(url)
 
 inline suspend fun <reified K, reified V> queryMap(url: String): Map<K, V> =
-        okshell.client.queryMap<K, V>(url)
+        okshell.client.queryMap(url)
 
 suspend fun queryForString(url: String): String = okshell.client.queryForString(url)
 
-fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = okshell.client.newWebSocket(okshell.requestBuilder.url(url).build(), listener)
+fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = okshell.client.newWebSocket(Request.Builder().url(url).build(), listener)
 
 var dateOnlyformat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
-fun epochSecondsToDate(seconds: Long) = dateOnlyformat.format(Date(seconds * 1000))
+fun epochSecondsToDate(seconds: Long) = dateOnlyformat.format(Date(seconds * 1000))!!
 
 val terminalWidth: Int by lazy { (okshell.outputHandler as ConsoleHandler).terminalWidth() }
 

@@ -49,10 +49,10 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-          requestBuilder: Request.Builder, credentials: Oauth2Token): ValidatedCredentials {
+                                credentials: Oauth2Token): ValidatedCredentials {
     return JsonCredentialsValidator(
-            requestBuilder.url(
-                    "https://api.linkedin.com" + "/v1/people/~:(formatted-name)").build(),
+            Request.Builder().url(
+                    "https://api.linkedin.com/v1/people/~:(formatted-name)").build(),
             { it["formattedName"] as String }).validate(client)
   }
 
