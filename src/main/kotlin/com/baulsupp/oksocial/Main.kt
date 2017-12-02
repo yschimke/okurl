@@ -26,13 +26,10 @@ import com.baulsupp.oksocial.credentials.OSXCredentialsStore
 import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore
 import com.baulsupp.oksocial.jjs.OkApiCommand
 import com.baulsupp.oksocial.kotlin.await
-import com.baulsupp.oksocial.location.BestLocation
-import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
 import com.baulsupp.oksocial.network.DnsOverride
 import com.baulsupp.oksocial.network.DnsSelector
 import com.baulsupp.oksocial.network.GoogleDns
-import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
 import com.baulsupp.oksocial.okhttp.FailedResponse
@@ -59,14 +56,11 @@ import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener
 import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
-import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
 import com.baulsupp.oksocial.util.ProtocolUtil
 import com.mcdermottroe.apple.OSXKeychainException
 import com.moczul.ok2curl.CurlInterceptor
-import io.airlift.airline.Arguments
 import io.airlift.airline.Command
-import io.airlift.airline.HelpOption
 import io.airlift.airline.Option
 import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
@@ -93,7 +87,6 @@ import java.io.IOException
 import java.net.Proxy
 import java.net.SocketException
 import java.security.KeyStore
-import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.logging.Level
@@ -103,7 +96,7 @@ import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
 @Command(name = NAME, description = "A curl for social apis.")
-class Main : HelpOption() {
+class Main : CommandLineClient() {
   private val logger = Logger.getLogger(Main::class.java.name)
 
   @Option(name = ["-X", "--request"], description = "Specify request command to use")
@@ -115,41 +108,11 @@ class Main : HelpOption() {
   @Option(name = ["-H", "--header"], description = "Custom header to pass to server")
   var headers: java.util.List<String>? = null
 
-  @Option(name = ["-A", "--user-agent"], description = "User-Agent to send to server")
-  var userAgent = NAME + "/" + versionString()
-
-  @Option(name = ["--connect-timeout"], description = "Maximum time allowed for connection (seconds)")
-  var connectTimeout: Int? = null
-
-  @Option(name = ["--read-timeout"], description = "Maximum time allowed for reading data (seconds)")
-  var readTimeout: Int? = null
-
   @Option(name = ["--no-follow"], description = "Follow redirects")
   var dontFollowRedirects = false
 
-  @Option(name = ["-k", "--insecure"], description = "Allow connections to SSL sites without certs")
-  var allowInsecure = false
-
-  @Option(name = ["-i", "--include"], description = "Include protocol headers in the output")
-  var showHeaders = false
-
-  @Option(name = ["--frames"], description = "Log HTTP/2 frames to STDERR")
-  var showHttp2Frames = false
-
-  @Option(name = ["--debug"], description = "Debug")
-  var debug = false
-
   @Option(name = ["-e", "--referer"], description = "Referer URL")
   var referer: String? = null
-
-  @Option(name = ["-V", "--version"], description = "Show version number and quit")
-  var version = false
-
-  @Option(name = ["--cache"], description = "Cache directory")
-  var cacheDirectory: File? = null
-
-  @Option(name = ["--protocols"], description = "Protocols")
-  var protocols: String? = null
 
   @Option(name = ["-o", "--output"], description = "Output file/directory")
   var outputDirectory: File? = null
@@ -166,48 +129,6 @@ class Main : HelpOption() {
   @Option(name = ["--curl"], description = "Show curl commands")
   var curl = false
 
-  @Option(name = ["--zipkin", "-z"], description = "Activate Zipkin Tracing")
-  var zipkin = false
-
-  @Option(name = ["--zipkinTrace"], description = "Activate Detailed Zipkin Tracing")
-  var zipkinTrace = false
-
-  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)", allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
-  var ipMode = IPvMode.SYSTEM
-
-  @Option(name = ["--dns"], description = "DNS (netty, java)", allowedValues = ["java", "netty"])
-  var dnsMode = DnsMode.JAVA
-
-  @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
-  var dnsServers: String? = null
-
-  @Option(name = ["--resolve"], description = "DNS Overrides (HOST:TARGET)")
-  var resolve: List<String>? = null
-
-  @Option(name = ["--certificatePin"], description = "Specific Local Network Interface")
-  var certificatePins: java.util.List<CertificatePin>? = null
-
-  @Option(name = ["--networkInterface"], description = "Specific Local Network Interface")
-  var networkInterface: String? = null
-
-  @Option(name = ["--clientauth"], description = "Use Client Authentication (from keystore)")
-  var clientAuth = false
-
-  @Option(name = ["--keystore"], description = "Keystore")
-  var keystoreFile: File? = null
-
-  @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
-  var serverCerts: java.util.List<File>? = null
-
-  @Option(name = ["--opensc"], description = "Send OpenSC Client Certificate (slot)")
-  var opensc: Int? = null
-
-  @Option(name = ["--socks"], description = "Use SOCKS proxy")
-  var socksProxy: InetAddressParam? = null
-
-  @Option(name = ["--proxy"], description = "Use HTTP proxy")
-  var proxy: InetAddressParam? = null
-
   @Option(name = ["--show-credentials"], description = "Show Credentials")
   var showCredentials = false
 
@@ -216,9 +137,6 @@ class Main : HelpOption() {
 
   @Option(name = ["-r", "--raw"], description = "Raw Output")
   var rawOutput = false
-
-  @Option(name = ["-s", "--set"], description = "Token Set e.g. work")
-  var tokenSet: String? = null
 
   @Option(name = ["--serviceNames"], description = "Service Names")
   var serviceNames = false
@@ -229,45 +147,13 @@ class Main : HelpOption() {
   @Option(name = ["--apidoc"], description = "API Documentation")
   var apiDoc: Boolean = false
 
-  @Option(name = ["--ssldebug"], description = "SSL Debug")
-  var sslDebug: Boolean = false
-
-  @Option(name = ["--user"], description = "user:password for basic auth")
-  var user: String? = null
-
-  @Option(name = ["--maxrequests"], description = "Concurrency Level")
-  private val maxRequests = 16
-
   var commandName = System.getProperty("command.name", "oksocial")!!
 
   var completionFile: String? = System.getenv("COMPLETION_FILE")
 
-  @Arguments(title = "arguments", description = "Remote resource URLs")
-  var arguments: MutableList<String> = ArrayList()
-
-  var serviceInterceptor: ServiceInterceptor? = null
-
-  private var authorisation: Authorisation? = null
-
-  var client: OkHttpClient? = null
-
   var commandRegistry = CommandRegistry()
 
-  var outputHandler: OutputHandler<Response>? = null
-
-  var credentialsStore: CredentialsStore? = null
-
   var completionVariableCache: CompletionVariableCache? = null
-
-  var locationSource: LocationSource = BestLocation()
-
-  private var eventLoopGroup: NioEventLoopGroup? = null
-
-  private val closeables = mutableListOf<Closeable>()
-
-  private fun versionString(): String {
-    return this.javaClass.`package`.implementationVersion ?: "dev"
-  }
 
   fun run(): Int {
     if (sslDebug) {
@@ -791,7 +677,7 @@ class Main : HelpOption() {
   private fun buildDns(): Dns {
     var dns: Dns
     dns = when {
-      dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, getEventLoopGroup(), this.dnsServers!!)
+      dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers!!)
       dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
               GoogleDns.fromHosts({ this@Main.client!! }, ipMode, "216.58.216.142", "216.239.34.10",
                       "2607:f8b0:400a:809::200e"))
@@ -809,7 +695,7 @@ class Main : HelpOption() {
     return dns
   }
 
-  private fun getEventLoopGroup(): NioEventLoopGroup {
+  private fun createEventLoopGroup(): NioEventLoopGroup {
     if (eventLoopGroup == null) {
       val threadFactory = DefaultThreadFactory("netty", true)
       eventLoopGroup = NioEventLoopGroup(5, threadFactory)
