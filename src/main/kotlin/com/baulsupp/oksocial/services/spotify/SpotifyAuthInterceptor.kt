@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.spotify
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
@@ -11,6 +10,7 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Credentials
@@ -24,16 +24,11 @@ import java.util.Arrays
 
 class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition(host(), "Spotify API", "spotify",
+    return Oauth2ServiceDefinition("api.spotify.com", "Spotify API", "spotify",
             "https://developer.spotify.com/web-api/endpoint-reference/",
             "https://developer.spotify.com/my-applications/")
   }
 
-  private fun host(): String {
-    return "api.spotify.com"
-  }
-
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -46,7 +41,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Spotify API")
+
 
     val clientId = Secrets.prompt("Spotify Client Id", "spotify.clientId", "", false)
     val clientSecret = Secrets.prompt("Spotify Client Secret", "spotify.clientSecret", "", true)
@@ -79,20 +74,12 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://api.spotify.com/v1/me").build(),
-            { it["display_name"] as String }).validate(client)
+    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", "display_name"))
   }
 
-  override fun hosts(): Set<String> {
-    return setOf((
-            "api.spotify.com")
-    )
-  }
+  override fun hosts(): Set<String> = setOf("api.spotify.com")
 
-  override fun canRenew(credentials: Oauth2Token): Boolean {
-    return credentials.isRenewable()
-  }
+  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://accounts.spotify.com/api/token"

@@ -18,15 +18,25 @@ inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
   return moshi.adapter(T::class.java).fromJson(stringResult)!!
 }
 
-inline suspend fun <reified K, reified V> OkHttpClient.queryMap(request: Request): Map<K, V> {
+inline suspend fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {
   val stringResult = this.queryForString(request)
 
-  val adapter = moshi.adapter<Any>(Types.newParameterizedType(Map::class.java, K::class.java, V::class.java)) as JsonAdapter<Map<K, V>>
+  val adapter = moshi.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java, V::class.java)) as JsonAdapter<Map<String, V>>
   return adapter.fromJson(stringResult)!!
 }
 
-inline suspend fun <reified K, reified V> OkHttpClient.queryMap(url: String): Map<K, V> =
+inline suspend fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
         this.queryMap(Request.Builder().url(url).build())
+
+inline suspend fun <reified T> OkHttpClient.queryMapValue(url: String, vararg keys: String): T? =
+        this.queryMapValue<T>(Request.Builder().url(url).build(), *keys)
+
+inline suspend fun <reified T> OkHttpClient.queryMapValue(request: Request, vararg keys: String): T? {
+  val queryMap = this.queryMap<Any>(request)
+
+  // TODO loop & null checks
+  return queryMap.get(keys.last()) as T
+}
 
 inline suspend fun OkHttpClient.queryForString(request: Request): String {
   val response = this.execute(request)

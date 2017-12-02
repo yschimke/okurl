@@ -16,7 +16,6 @@ import com.baulsupp.oksocial.services.surveymonkey.model.SurveyList
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 /**
  * https://developer.surveymonkey.com/docs/authentication
@@ -28,7 +27,6 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://developer.surveymonkey.com/apps/")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val newRequest = chain.request().newBuilder().addHeader("Authorization",
             "bearer " + credentials.accessToken).build()
@@ -38,7 +36,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising SurveyMonkey API")
+
 
     val clientId = Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false)
     val clientSecret = Secrets.prompt("SurveyMonkey Client Secret", "surveymonkey.clientSecret", "",
@@ -78,7 +76,5 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return completer
   }
 
-  override fun hosts(): Set<String> {
-    return setOf("api.surveymonkey.net")
-  }
+  override fun hosts(): Set<String> = setOf("api.surveymonkey.net")
 }

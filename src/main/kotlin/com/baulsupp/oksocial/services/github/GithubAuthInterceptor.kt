@@ -1,17 +1,15 @@
 package com.baulsupp.oksocial.services.github
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 /**
  * https://developer.github.com/docs/authentication
@@ -22,7 +20,6 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://developer.github.com/v3/", "https://github.com/settings/developers")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -35,7 +32,7 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Github API")
+
 
     val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
     val clientSecret = Secrets.prompt("Github Client Secret", "github.clientSecret", "", true)
@@ -46,12 +43,8 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(Request.Builder().url("https://api.github.com/user").build(),
-            { it["name"] as String }).validate(client)
-  }
+                                credentials: Oauth2Token): ValidatedCredentials =
+          ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user", "name"))
 
-  override fun hosts(): Set<String> {
-    return setOf("api.github.com", "uploads.github.com")
-  }
+  override fun hosts(): Set<String> = setOf("api.github.com", "uploads.github.com")
 }

@@ -41,7 +41,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Facebook API")
+
 
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
     val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
@@ -55,10 +55,6 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  private fun extract(map: Map<String, Any>): String {
-    return "" + map["name"] + " (" + map["id"] + ")"
-  }
-
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val userName = client.fbQuery<UserOrPage>("/me").name
@@ -67,23 +63,15 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return ValidatedCredentials(userName, appName)
   }
 
-  override fun hosts(): Set<String> {
-    return FacebookUtil.API_HOSTS
-  }
+  override fun hosts(): Set<String> = FacebookUtil.API_HOSTS
 
-  override fun supportsUrl(url: HttpUrl): Boolean {
-    return url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
-  }
+  override fun supportsUrl(url: HttpUrl): Boolean =
+          url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
 
-  @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache): ApiCompleter {
-    return FacebookCompleter(client, hosts())
-  }
+                            completionVariableCache: CompletionVariableCache): ApiCompleter =
+          FacebookCompleter(client, hosts())
 
-  @Throws(IOException::class)
-  override fun apiDocPresenter(url: String): ApiDocPresenter {
-    return FacebookApiDocPresenter(serviceDefinition())
-  }
+  override fun apiDocPresenter(url: String): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition())
 }

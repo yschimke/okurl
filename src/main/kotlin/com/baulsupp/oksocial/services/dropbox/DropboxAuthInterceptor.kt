@@ -1,10 +1,10 @@
 package com.baulsupp.oksocial.services.dropbox
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.FormBody
@@ -13,7 +13,6 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 /**
  * https://developer.dropbox.com/docs/authentication
@@ -24,7 +23,6 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://www.dropbox.com/developers", "https://www.dropbox.com/developers/apps")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -38,8 +36,6 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Dropbox API")
-
     val clientId = Secrets.prompt("Dropbox Client Id", "dropbox.clientId", "", false)
     val clientSecret = Secrets.prompt("Dropbox Client Secret", "dropbox.clientSecret", "", true)
 
@@ -49,16 +45,11 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
-    return JsonCredentialsValidator(
-            Request.Builder().url(
-                    "https://api.dropboxapi.com/2/users/get_current_account").build()
-                    .newBuilder()
-                    .post(body)
-                    .build(),
-            { it["email"]?.toString() ?: "unknown" }).validate(client)
+    val request = Request.Builder().url("https://api.dropboxapi.com/2/users/get_current_account").post(body).build()
+    return ValidatedCredentials(client.queryMapValue<String>(request, "email"))
   }
 
-  override fun hosts(): Set<String> {
-    return setOf("api.dropboxapi.com", "content.dropboxapi.com")
-  }
+  override fun hosts(): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")
 }
+
+

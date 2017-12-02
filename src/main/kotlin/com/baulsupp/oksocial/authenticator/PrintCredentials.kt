@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.authenticator
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CommonPool
@@ -89,7 +88,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     outputHandler.info(credentialsString)
   }
 
-  suspend fun validate(
+  fun validate(
           services: Iterable<AuthInterceptor<*>>): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = try {
@@ -108,5 +107,5 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   // TODO fix up hackery
   suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any?) =
-          sv.validate(client, credentials as T)
+          sv.validate(commandLineClient.client!!, credentials as T)
 }

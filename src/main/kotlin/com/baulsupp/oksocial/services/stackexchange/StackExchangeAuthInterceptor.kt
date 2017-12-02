@@ -1,13 +1,12 @@
 package com.baulsupp.oksocial.services.stackexchange
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
@@ -44,14 +43,13 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: StackExchangeToken): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://api.stackexchange.com/2.2/me?site=drupal").build(),
-            this::extract).validate(client)
+    val map = client.queryMap<Any>("https://api.stackexchange.com/2.2/me?site=drupal")
+    return ValidatedCredentials(extract(map))
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): StackExchangeToken {
-    System.err.println("Authorising StackExchange API")
+
 
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
     val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret",
@@ -66,9 +64,5 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
             scopes)
   }
 
-  override fun hosts(): Set<String> {
-    return setOf((
-            "api.stackexchange.com")
-    )
-  }
+  override fun hosts(): Set<String> = setOf("api.stackexchange.com")
 }

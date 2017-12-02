@@ -33,7 +33,7 @@ suspend fun show(url: String) { okshell.show(url) }
 
 inline suspend fun <reified T> query(url: String): T = client.query(url)
 
-inline suspend fun <reified K, reified V> queryMap(url: String): Map<K, V> = client.queryMap(url)
+inline suspend fun <reified V> queryMap(url: String): Map<String, V> = client.queryMap(url)
 
 suspend fun queryForString(url: String): String = client.queryForString(url)
 

@@ -11,14 +11,12 @@ import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 /**
  * http://httpbin.org/
  */
 class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 

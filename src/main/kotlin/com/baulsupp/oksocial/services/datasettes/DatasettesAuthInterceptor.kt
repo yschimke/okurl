@@ -42,7 +42,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
 
     return when {
       path.size == 1 -> {
-        val datasette = runBlocking { fetchDatasetteMetadata(host, client) }
+        val datasette = fetchDatasetteMetadata(host, client)
         databaseInPath(datasette, host)
       }
       path.size == 2 -> {
@@ -110,7 +110,7 @@ data class DatasetteTables(val database: String, val tables: List<DatasetteTable
                 name = "source_url") val sourceUrl: String)
 
 suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
-        client.queryMap<String, DatasetteIndex>("https://$host/.json").values.toList()
+        client.queryMap<DatasetteIndex>("https://$host/.json").values.toList()
 
 suspend fun fetchDatasetteTableMetadata(host: String, path: String,
                                         client: OkHttpClient) =

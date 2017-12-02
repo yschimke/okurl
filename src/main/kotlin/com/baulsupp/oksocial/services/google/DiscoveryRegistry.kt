@@ -16,7 +16,7 @@ class DiscoveryRegistry(private val client: OkHttpClient, private val map: Map<S
 
   suspend fun load(discoveryDocPath: String): DiscoveryDocument {
     val request = Request.Builder().url(discoveryDocPath).cacheControl(cacheControl).build()
-    val map = client.queryMap<String, Any>(request)
+    val map = client.queryMap<Any>(request)
 
     return DiscoveryDocument(map)
   }

@@ -1,17 +1,15 @@
 package com.baulsupp.oksocial.services.slack
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 import java.util.Arrays
 
 /**
@@ -23,7 +21,6 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://api.slack.com/apps")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -40,7 +37,7 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Slack API")
+
 
     val clientId = Secrets.prompt("Slack Client Id", "slack.clientId", "", false)
     val clientSecret = Secrets.prompt("Slack Client Secret", "slack.clientSecret", "", true)
@@ -86,16 +83,8 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://slack.com/api/auth.test").build(),
-            { it["user"] as String }).validate(
-            client)
-  }
+                                credentials: Oauth2Token): ValidatedCredentials =
+          ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test", "user"))
 
-  override fun hosts(): Set<String> {
-    return setOf((
-            "slack.com")
-    )
-  }
+  override fun hosts(): Set<String> = setOf("slack.com")
 }

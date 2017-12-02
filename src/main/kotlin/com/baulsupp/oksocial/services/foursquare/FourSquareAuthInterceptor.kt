@@ -1,17 +1,15 @@
 package com.baulsupp.oksocial.services.foursquare
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -21,7 +19,6 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -40,7 +37,7 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising FourSquare API")
+
 
     val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
     val clientSecret = Secrets.prompt("FourSquare Application Secret", "4sq.clientSecret", "", true)
@@ -50,20 +47,10 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://api.foursquare.com/v2/users/self?v=20160603").build(),
-            { this.getName(it) }).validate(client)
+    val map = client.queryMap<Any>("https://api.foursquare.com/v2/users/self?v=20160603")
+    val userMap = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
+    return ValidatedCredentials("${userMap["firstName"]} ${userMap["lastName"]}")
   }
 
-  private fun getName(map: Map<String, Any>): String {
-    val user = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
-
-    return "${user["firstName"]} ${user["lastName"]}"
-  }
-
-  override fun hosts(): Set<String> {
-    return setOf((
-            "api.foursquare.com")
-    )
-  }
+  override fun hosts(): Set<String> = setOf("api.foursquare.com")
 }

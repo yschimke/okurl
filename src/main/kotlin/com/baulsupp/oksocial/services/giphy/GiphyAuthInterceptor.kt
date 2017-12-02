@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
@@ -18,7 +17,6 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token("dc6zaTOxFJmzC")
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -33,7 +31,7 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    outputHandler.showError("Authorising Giphy API", null)
+
 
     val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
 
@@ -44,7 +42,5 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials("?", null)
 
-  override fun hosts(): Set<String> = setOf((
-          "api.giphy.com")
-  )
+  override fun hosts(): Set<String> = setOf("api.giphy.com")
 }

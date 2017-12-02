@@ -10,11 +10,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import java.io.IOException
 import java.net.URLEncoder
 
 object LyftAuthFlow {
-  @Throws(IOException::class)
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
                     clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
@@ -34,7 +32,7 @@ object LyftAuthFlow {
               .header("Authorization", basic)
               .build()
 
-      val responseMap = client.queryMap<String, String>(request)
+      val responseMap = client.queryMap<String>(request)
 
       return Oauth2Token(responseMap["access_token"] as String,
               responseMap["refresh_token"] as String, clientId, clientSecret)

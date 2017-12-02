@@ -1,17 +1,15 @@
 package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlrcImport
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
 
@@ -19,7 +17,6 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
     return TwitterServiceDefinition()
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: TwitterCredentials): Response {
     var request = chain.request()
 
@@ -31,7 +28,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): TwitterCredentials {
-    System.err.println("Authorising Twitter API")
+
 
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
       return TwurlrcImport.authorize(authArguments)
@@ -56,13 +53,8 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: TwitterCredentials): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            TwitterUtil.apiRequest("/1.1/account/verify_credentials.json", Request.Builder()),
-            { it["name"] as String }).validate(client)
-  }
+                                credentials: TwitterCredentials): ValidatedCredentials =
+          ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json", "name"))
 
-  override fun hosts(): Set<String> {
-    return TwitterUtil.TWITTER_API_HOSTS
-  }
+  override fun hosts(): Set<String> = TwitterUtil.TWITTER_API_HOSTS
 }

@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.services.google
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
@@ -12,6 +11,7 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.FormBody
@@ -20,7 +20,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 /**
  * https://developer.google.com/docs/authentication
@@ -37,7 +36,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://console.developers.google.com/apis/credentials")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -56,7 +54,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Google API")
+
 
     val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
     val clientSecret = Secrets.prompt("Google Client Secret", "google.clientSecret", "", true)
@@ -66,11 +64,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://www.googleapis.com/oauth2/v3/userinfo").build(),
-            { it["name"] as String }).validate(client)
-  }
+                                credentials: Oauth2Token): ValidatedCredentials =
+          ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo", "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
@@ -109,7 +104,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 
-  @Throws(IOException::class)
   override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(
           discoveryIndex)
 }

@@ -15,20 +15,14 @@ import com.baulsupp.oksocial.services.quip.model.User
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition(host(), "Quip API", "quip",
+    return Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
             "https://fb.quip.com/dev/automation/documentation",
             "https://quip.com/dev/token")
   }
 
-  private fun host(): String {
-    return "platform.quip.com"
-  }
-
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -41,7 +35,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Quip API")
+
 
     outputHandler.openLink("https://quip.com/dev/token")
 
@@ -79,5 +73,5 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
   private suspend fun currentUser(client: OkHttpClient) =
           client.query<User>("https://platform.quip.com/1/users/current")
 
-  override fun hosts(): Set<String> = setOf(host())
+  override fun hosts(): Set<String> = setOf("platform.quip.com")
 }

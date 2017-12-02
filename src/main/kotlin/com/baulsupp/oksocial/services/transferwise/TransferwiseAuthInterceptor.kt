@@ -2,10 +2,10 @@ package com.baulsupp.oksocial.services.transferwise
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.google.common.collect.Sets
@@ -15,7 +15,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -24,11 +23,6 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
   }
 
-  protected open fun host(): String {
-    return "api.transferwise.com"
-  }
-
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -41,7 +35,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Transferwise API")
+
 
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
     val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "",
@@ -51,12 +45,8 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://api.transferwise.com/v1/me").build(),
-            { it["name"] as String }).validate(
-            client)
-  }
+                                credentials: Oauth2Token): ValidatedCredentials =
+          ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.isRenewable()
@@ -82,7 +72,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
             credentials.clientSecret)
   }
 
-  override fun hosts(): Set<String> {
-    return Sets.newHashSet(host())
-  }
+  override fun hosts(): Set<String> = Sets.newHashSet(host())
+
+  open fun host() = "api.transferwise.com"
 }

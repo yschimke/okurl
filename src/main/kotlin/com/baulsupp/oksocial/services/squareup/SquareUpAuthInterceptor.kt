@@ -15,7 +15,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 import java.util.Arrays
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
@@ -25,7 +24,6 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://connect.squareup.com/apps")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -41,14 +39,12 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    val user = client.query<User>("https://connect.squareup.com/v1/me")
-    return ValidatedCredentials(user.name)
-  }
+                                credentials: Oauth2Token): ValidatedCredentials =
+          ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me").name)
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    outputHandler.showError("Authorising SquareUp API", null)
+
 
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
     val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
@@ -82,5 +78,5 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf(("connect.squareup.com"))
+  override fun hosts(): Set<String> = setOf("connect.squareup.com")
 }

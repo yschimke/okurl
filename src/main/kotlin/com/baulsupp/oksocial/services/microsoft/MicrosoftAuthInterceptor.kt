@@ -2,10 +2,10 @@ package com.baulsupp.oksocial.services.microsoft
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import com.baulsupp.oksocial.authenticator.JsonCredentialsValidator
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.FormBody
@@ -13,7 +13,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 /**
  * https://graph.microsoft.io/en-us/docs/authorization/app_authorization
@@ -26,7 +25,6 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
             "https://apps.dev.microsoft.com/#/appList")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
@@ -39,7 +37,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
-    System.err.println("Authorising Microsoft API")
+
 
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
     val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
@@ -74,16 +72,8 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    return JsonCredentialsValidator(
-            Request.Builder().url("https://graph.microsoft.com/v1.0/me").build(),
-            { it["displayName"] as String }).validate(
-            client)
-  }
+                                credentials: Oauth2Token): ValidatedCredentials =
+          ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", "displayName"))
 
-  override fun hosts(): Set<String> {
-    return setOf((
-            "graph.microsoft.com")
-    )
-  }
+  override fun hosts(): Set<String> = setOf("graph.microsoft.com")
 }
