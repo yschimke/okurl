@@ -95,25 +95,17 @@ class Main : CommandLineClient() {
   var completionVariableCache: CompletionVariableCache? = null
 
   override fun runCommand(runArguments: List<String>): Int {
-    try {
-      runBlocking {
-        when {
-          showCredentials -> PrintCredentials(this@Main).showCredentials(arguments)
-          aliasNames -> printAliasNames()
-          serviceNames -> outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
-          urlComplete -> outputHandler!!.info(urlCompletionList())
-          apiDoc -> showApiDocs()
-          authorize -> authorize()
-          renew -> renew()
-          else -> executeRequests(outputHandler!!)
-        }
+    runBlocking {
+      when {
+        showCredentials -> PrintCredentials(this@Main).showCredentials(arguments)
+        aliasNames -> printAliasNames()
+        serviceNames -> outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
+        urlComplete -> outputHandler!!.info(urlCompletionList())
+        apiDoc -> showApiDocs()
+        authorize -> authorize()
+        renew -> renew()
+        else -> executeRequests(outputHandler!!)
       }
-    } catch (e: UsageException) {
-      outputHandler!!.showError("error: " + e.message, null)
-      return -1
-    } catch (e: Exception) {
-      outputHandler!!.showError("unknown error", e)
-      return -2
     }
 
     return 0

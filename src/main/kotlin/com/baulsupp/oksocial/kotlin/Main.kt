@@ -31,10 +31,8 @@ class Main : CommandLineClient() {
       engine.eval(File(script).readText())
       return 0
     } catch (se: ScriptException) {
-      if (se.cause != null) {
-        throw se.cause!!
-      }
-      throw se
+      val cause = se.cause
+      throw cause ?: se
     }
   }
 

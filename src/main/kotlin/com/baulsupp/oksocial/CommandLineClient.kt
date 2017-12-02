@@ -39,6 +39,7 @@ import com.baulsupp.oksocial.tracing.UriTransportRegistry
 import com.baulsupp.oksocial.tracing.ZipkinConfig
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener
+import com.baulsupp.oksocial.util.ClientException
 import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
 import com.baulsupp.oksocial.util.ProtocolUtil
@@ -284,6 +285,15 @@ open class CommandLineClient : HelpOption() {
 
     try {
       return runCommand(arguments)
+    } catch (e: ClientException) {
+      outputHandler!!.showError(e.message, null)
+      return -1
+    } catch (e: UsageException) {
+      outputHandler!!.showError(e.message, null)
+      return -1
+    } catch (e: Exception) {
+      outputHandler!!.showError("unknown error", e)
+      return -2
     } finally {
       closeClients()
     }
