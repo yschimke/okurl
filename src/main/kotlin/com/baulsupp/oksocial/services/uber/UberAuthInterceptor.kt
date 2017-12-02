@@ -43,7 +43,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Uber API")
 
     val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
@@ -54,8 +54,8 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 

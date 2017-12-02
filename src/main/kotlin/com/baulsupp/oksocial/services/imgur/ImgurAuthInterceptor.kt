@@ -33,7 +33,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Imgur API")
 
     val clientId = Secrets.prompt("Imgur Client Id", "imgur.clientId", "", false)

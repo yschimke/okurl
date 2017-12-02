@@ -11,7 +11,7 @@ import okhttp3.Response
 
 object SurveyMonkeyAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String): Oauth2Token {
+                    clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val redirectUri = s.redirectUri
 

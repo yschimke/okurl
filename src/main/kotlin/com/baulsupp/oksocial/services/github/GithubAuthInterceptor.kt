@@ -34,7 +34,7 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Github API")
 
     val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)

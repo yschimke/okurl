@@ -37,7 +37,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): BasicCredentials {
+                                 authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
 
@@ -59,8 +59,8 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())

@@ -12,7 +12,7 @@ import okhttp3.Response
 
 object TransferwiseAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, host: String,
-          clientId: String, clientSecret: String): Oauth2Token {
+                    clientId: String, clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val serverUri = s.redirectUri
 

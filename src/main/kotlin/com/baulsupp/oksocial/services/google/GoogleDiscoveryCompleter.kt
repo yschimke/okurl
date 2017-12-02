@@ -12,7 +12,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
-        private val discoveryDocPaths: List<String>) : ApiCompleter {
+                               private val discoveryDocPaths: List<String>) : ApiCompleter {
   private val mappings = CompletionMappings()
 
   init {
@@ -48,7 +48,7 @@ class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
     private val logger = Logger.getLogger(GoogleDiscoveryCompleter::class.java.name)
 
     fun forApis(discoveryRegistry: DiscoveryRegistry,
-            discoveryDocPaths: List<String>): GoogleDiscoveryCompleter {
+                discoveryDocPaths: List<String>): GoogleDiscoveryCompleter {
       return GoogleDiscoveryCompleter(discoveryRegistry, discoveryDocPaths)
     }
   }

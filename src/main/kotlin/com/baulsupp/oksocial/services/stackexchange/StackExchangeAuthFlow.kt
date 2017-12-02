@@ -11,8 +11,8 @@ import java.net.URLEncoder
 
 object StackExchangeAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          clientId: String, clientSecret: String, clientKey: String,
-          scopes: Iterable<String>): StackExchangeToken {
+                    clientId: String, clientSecret: String, clientKey: String,
+                    scopes: Iterable<String>): StackExchangeToken {
     SimpleWebServer.forCode().use { s ->
 
       val serverUri = s.redirectUri

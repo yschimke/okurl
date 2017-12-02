@@ -12,7 +12,7 @@ import okhttp3.Response
 
 object MicrosoftAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String): Oauth2Token {
+                    clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://login.microsoftonline.com/common/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"

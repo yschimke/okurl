@@ -17,7 +17,7 @@ class OSXCredentialsStore @Throws(OSXKeychainException::class)
     } catch (e: OSXKeychainException) {
       if ("The specified item could not be found in the keychain." == e.message) {
         logger.log(Level.FINE,
-            "No OSX Keychain entry for '" + serviceDefinition.apiHost() + "' '" + tokenKey() + "'")
+                "No OSX Keychain entry for '" + serviceDefinition.apiHost() + "' '" + tokenKey() + "'")
       } else {
         logger.log(Level.FINE, "Failed to read from keychain", e)
       }

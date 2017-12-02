@@ -30,10 +30,10 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
   init {
     this.dnsServers = dnsServers
     val builder = DnsNameResolverBuilder(this.group.next())
-        .channelType(NioDatagramChannel::class.java)
-        .optResourceEnabled(false)
-        .maxQueriesPerResolve(3)
-        .recursionDesired(true)
+            .channelType(NioDatagramChannel::class.java)
+            .optResourceEnabled(false)
+            .maxQueriesPerResolve(3)
+            .recursionDesired(true)
 
     if (logger.isLoggable(Level.FINEST)) {
       builder.traceEnabled(true)
@@ -53,10 +53,10 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
   }
 
   private fun multiProvider(dnsServers: List<InetSocketAddress>): DnsServerAddressStreamProvider =
-      MultiDnsServerAddressStreamProvider(dnsServers.map { s -> singleProvider(s) })
+          MultiDnsServerAddressStreamProvider(dnsServers.map { s -> singleProvider(s) })
 
   private fun singleProvider(address: InetSocketAddress): SingletonDnsServerAddressStreamProvider =
-      SingletonDnsServerAddressStreamProvider(address)
+          SingletonDnsServerAddressStreamProvider(address)
 
   @Throws(UnknownHostException::class)
   override fun lookup(hostname: String): List<InetAddress> {
@@ -66,15 +66,15 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
       val addresses = f.get()
 
       logger.fine("Dns ($hostname): " + addresses.stream()
-          .map<String>({ it.toString() })
-          .collect(joining(", ")))
+              .map<String>({ it.toString() })
+              .collect(joining(", ")))
 
       addresses
     } catch (e: InterruptedException) {
       throw UnknownHostException(e.toString())
     } catch (e: ExecutionException) {
       throw UnknownHostException(e.cause!!.message).initCause(
-          e.cause) as UnknownHostException
+              e.cause) as UnknownHostException
     }
 
   }
@@ -95,9 +95,9 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
 
       return if (dnsServers == "google") {
         Arrays.asList(InetSocketAddress("8.8.8.8", 53),
-            InetSocketAddress("8.8.4.4", 53))
+                InetSocketAddress("8.8.4.4", 53))
       } else stream(dnsServers.split(
-          ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()).map { s ->
+              ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()).map { s ->
         InetSocketAddress(s, 53)
       }.toList()
 

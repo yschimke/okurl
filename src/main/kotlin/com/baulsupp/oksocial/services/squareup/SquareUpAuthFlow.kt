@@ -16,7 +16,7 @@ import java.net.URLEncoder.encode
 object SquareUpAuthFlow {
 
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://connect.squareup.com/oauth2/authorize?client_id=$clientId&redirect_uri=${encode(

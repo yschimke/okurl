@@ -37,7 +37,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Dropbox API")
 
     val clientId = Secrets.prompt("Dropbox Client Id", "dropbox.clientId", "", false)

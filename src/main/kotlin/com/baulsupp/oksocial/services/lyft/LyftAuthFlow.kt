@@ -16,7 +16,7 @@ import java.net.URLEncoder
 object LyftAuthFlow {
   @Throws(IOException::class)
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 

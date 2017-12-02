@@ -30,7 +30,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): TwitterCredentials {
+                                 authArguments: List<String>): TwitterCredentials {
     System.err.println("Authorising Twitter API")
 
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {

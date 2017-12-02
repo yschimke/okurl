@@ -11,7 +11,7 @@ import okhttp3.Response
 
 object ImgurAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String): Oauth2Token {
+                    clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://api.imgur.com/oauth2/authorize?client_id=$clientId&response_type=code&state=x"

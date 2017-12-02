@@ -40,11 +40,13 @@ import com.baulsupp.oksocial.tracing.ZipkinConfig
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
 import com.baulsupp.oksocial.tracing.ZipkinTracingListener
 import com.baulsupp.oksocial.util.InetAddressParam
+import com.baulsupp.oksocial.util.LoggingUtil
 import com.baulsupp.oksocial.util.ProtocolUtil
 import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Arguments
 import io.airlift.airline.HelpOption
 import io.airlift.airline.Option
+import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
 import okhttp3.Cache
@@ -70,7 +72,7 @@ import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
-open class CommandLineClient: HelpOption() {
+open class CommandLineClient : HelpOption() {
 
   @Option(name = ["-A", "--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
@@ -175,7 +177,7 @@ open class CommandLineClient: HelpOption() {
 
   var credentialsStore: CredentialsStore? = null
 
-  var locationSource: LocationSource = BestLocation()
+  var locationSource: LocationSource? = null
 
   var eventLoopGroup: NioEventLoopGroup? = null
 
@@ -268,9 +270,38 @@ open class CommandLineClient: HelpOption() {
     return this.javaClass.`package`.implementationVersion ?: "dev"
   }
 
+  fun run(): Int {
+    if (showHelpIfRequested()) {
+      return 0
+    }
+
+    initialise()
+
+    if (version) {
+      outputHandler!!.info(Main.NAME + " " + versionString())
+      return 0
+    }
+
+    try {
+      return runCommand(arguments)
+    } finally {
+      closeClients()
+    }
+  }
+
+  open fun runCommand(runArguments: List<String>): Int {
+    return 0
+  }
+
   open fun initialise() {
+    LoggingUtil.configureLogging(debug, showHttp2Frames, sslDebug)
+
     if (outputHandler == null) {
       outputHandler = buildHandler()
+    }
+
+    if (locationSource == null) {
+      locationSource = BestLocation(outputHandler!!)
     }
 
     if (credentialsStore == null) {
@@ -445,5 +476,11 @@ open class CommandLineClient: HelpOption() {
   open fun buildHandler(): OutputHandler<Response> = when {
     rawOutput -> DownloadHandler(OkHttpResponseExtractor(), File("-"))
     else -> ConsoleHandler.instance(OkHttpResponseExtractor()) as OutputHandler<Response>
+  }
+
+  companion object {
+    inline fun <reified T> fromArgs(vararg args: String): T {
+      return SingleCommand.singleCommand(T::class.java).parse(*args)
+    }
   }
 }

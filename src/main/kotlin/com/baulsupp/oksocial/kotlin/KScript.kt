@@ -15,13 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-val okshell: OkShell by lazy { OkShell.instance }
+val okshell: OkShell by lazy { OkShell.instance!! }
 
-val client: OkHttpClient by lazy { okshell.client }
-
-val x = run {
-  okshell.listenForMainExit()
-}
+val client: OkHttpClient by lazy { okshell.commandLine.client!! }
 
 val moshi = Moshi.Builder()
         .add(MapboxLatLongAdapter())
@@ -29,29 +25,24 @@ val moshi = Moshi.Builder()
         .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
         .build()!!
 
-fun warmup(vararg urls: String) {
-  urls.forEach { okshell.warmup(it) }
-}
+suspend fun warmup(vararg urls: String) { okshell.warmup(*urls) }
 
-fun location(): Location? = okshell.location()
+suspend fun location(): Location? = okshell.location()
 
-suspend fun show(url: String) {
-  okshell.show(url)
-}
+suspend fun show(url: String) { okshell.show(url) }
 
-inline suspend fun <reified T> query(url: String): T = okshell.client.query(url)
+inline suspend fun <reified T> query(url: String): T = client.query(url)
 
-inline suspend fun <reified K, reified V> queryMap(url: String): Map<K, V> =
-        okshell.client.queryMap(url)
+inline suspend fun <reified K, reified V> queryMap(url: String): Map<K, V> = client.queryMap(url)
 
-suspend fun queryForString(url: String): String = okshell.client.queryForString(url)
+suspend fun queryForString(url: String): String = client.queryForString(url)
 
-fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = okshell.client.newWebSocket(Request.Builder().url(url).build(), listener)
+fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = client.newWebSocket(Request.Builder().url(url).build(), listener)
 
 var dateOnlyformat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
 fun epochSecondsToDate(seconds: Long) = dateOnlyformat.format(Date(seconds * 1000))!!
 
-val terminalWidth: Int by lazy { (okshell.outputHandler as ConsoleHandler).terminalWidth() }
+val terminalWidth: Int by lazy { (okshell.commandLine.outputHandler as ConsoleHandler).terminalWidth() }
 
 

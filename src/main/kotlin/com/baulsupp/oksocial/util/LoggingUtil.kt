@@ -14,7 +14,11 @@ class LoggingUtil {
   companion object {
     private val activeLoggers = mutableListOf<Logger>()
 
-    fun configureLogging(debug: Boolean, showHttp2Frames: Boolean) {
+    fun configureLogging(debug: Boolean, showHttp2Frames: Boolean, sslDebug: Boolean) {
+      if (sslDebug) {
+        System.setProperty("javax.net.debug", "ssl,handshake")
+      }
+
       InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
 
       if (debug || showHttp2Frames) {

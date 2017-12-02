@@ -11,7 +11,7 @@ import java.net.URLEncoder
 
 object FourSquareAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String): Oauth2Token {
+                    clientSecret: String): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val serverUri = s.redirectUri

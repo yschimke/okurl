@@ -9,7 +9,7 @@ import okhttp3.Request
 
 object PaypalAuthFlow {
   suspend fun login(client: OkHttpClient, host: String, clientId: String,
-          clientSecret: String): Oauth2Token {
+                    clientSecret: String): Oauth2Token {
     val body = FormBody.Builder().add("grant_type", "client_credentials").build()
 
     val basic = Credentials.basic(clientId, clientSecret)

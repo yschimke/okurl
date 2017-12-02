@@ -35,7 +35,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Fitbit API")
 
     val clientId = Secrets.prompt("Fitbit Client Id", "fitbit.clientId", "", false)

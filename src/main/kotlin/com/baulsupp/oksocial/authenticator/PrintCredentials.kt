@@ -1,7 +1,9 @@
 package com.baulsupp.oksocial.authenticator
 
+import com.baulsupp.oksocial.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
+import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CommonPool
@@ -9,7 +11,6 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
-import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 import java.time.ZonedDateTime
@@ -20,9 +21,14 @@ import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class PrintCredentials(private val client: OkHttpClient, private val credentialsStore: CredentialsStore,
-                       private val outputHandler: OutputHandler<Response>, private val serviceInterceptor: ServiceInterceptor) {
+class PrintCredentials(private val commandLineClient: CommandLineClient) {
   private val logger = Logger.getLogger(PrintCredentials::class.java.name)
+
+  val outputHandler: OutputHandler<Response> = commandLineClient.outputHandler!!
+
+  val serviceInterceptor: ServiceInterceptor = commandLineClient.serviceInterceptor!!
+
+  val credentialsStore: CredentialsStore = commandLineClient.credentialsStore!!
 
   private val started: ZonedDateTime = ZonedDateTime.now()
 

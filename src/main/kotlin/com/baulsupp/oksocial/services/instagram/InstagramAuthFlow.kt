@@ -11,7 +11,7 @@ import okhttp3.Response
 
 object InstagramAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-          clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://api.instagram.com/oauth/authorize/?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString(

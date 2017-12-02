@@ -25,7 +25,7 @@ object AuthUtil {
       }
 
       throw IllegalStateException(
-          "failed request " + response.code() + ": " + message)
+              "failed request " + response.code() + ": " + message)
     }
 
     return response.body()!!.string()

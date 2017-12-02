@@ -26,10 +26,8 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
-import com.baulsupp.oksocial.util.LoggingUtil
 import io.airlift.airline.Command
 import io.airlift.airline.Option
-import io.airlift.airline.SingleCommand
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -96,76 +94,29 @@ class Main : CommandLineClient() {
 
   var completionVariableCache: CompletionVariableCache? = null
 
-  fun run(): Int {
-    if (sslDebug) {
-      System.setProperty("javax.net.debug", "ssl,handshake")
-    }
-
-    LoggingUtil.configureLogging(debug, showHttp2Frames)
-
-    if (outputHandler == null) {
-      outputHandler = buildHandler()
-    }
-
-    if (showHelpIfRequested()) {
-      return 0
-    }
-
+  override fun runCommand(runArguments: List<String>): Int {
     try {
-      if (version) {
-        outputHandler!!.info(NAME + " " + versionString())
-        return 0
-      }
-
-      initialise()
-
-      if (showCredentials) {
-        runBlocking {
-          PrintCredentials(client!!, credentialsStore!!, outputHandler!!, serviceInterceptor!!).showCredentials(arguments)
+      runBlocking {
+        when {
+          showCredentials -> PrintCredentials(this@Main).showCredentials(arguments)
+          aliasNames -> printAliasNames()
+          serviceNames -> outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
+          urlComplete -> outputHandler!!.info(urlCompletionList())
+          apiDoc -> showApiDocs()
+          authorize -> authorize()
+          renew -> renew()
+          else -> executeRequests(outputHandler!!)
         }
-        return 0
       }
-
-      if (aliasNames) {
-        printAliasNames()
-        return 0
-      }
-
-      if (serviceNames) {
-        outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
-        return 0
-      }
-
-      if (urlComplete) {
-        outputHandler!!.info(urlCompletionList())
-        return 0
-      }
-
-      if (apiDoc) {
-        runBlocking { showApiDocs() }
-        return 0
-      }
-
-      if (authorize) {
-        runBlocking { authorize() }
-        return 0
-      }
-
-      if (renew) {
-        runBlocking { renew() }
-        return 0
-      }
-
-      return runBlocking { executeRequests(outputHandler!!) }
     } catch (e: UsageException) {
       outputHandler!!.showError("error: " + e.message, null)
       return -1
     } catch (e: Exception) {
       outputHandler!!.showError("unknown error", e)
       return -2
-    } finally {
-      closeClients()
     }
+
+    return 0
   }
 
   override fun createCredentialsStore(): CredentialsStore {
@@ -193,7 +144,7 @@ class Main : CommandLineClient() {
     }
   }
 
-  fun urlCompletionList(): String {
+  suspend fun urlCompletionList(): String {
     val command = getShellCommand()
 
     val commandCompletor = command.completer()
@@ -220,9 +171,7 @@ class Main : CommandLineClient() {
     val originalCompletionUrl = arguments[arguments.size - 1]
 
     if (fullCompletionUrl != null) {
-      val urls = runBlocking {
-        completer.urlList(fullCompletionUrl)
-      }
+      val urls = completer.urlList(fullCompletionUrl)
 
       val strip: Int = if (fullCompletionUrl != originalCompletionUrl) {
         fullCompletionUrl.length - originalCompletionUrl.length
@@ -331,7 +280,7 @@ class Main : CommandLineClient() {
   }
 
   fun processResponses(outputHandler: OutputHandler<Response>,
-                               responses: List<PotentialResponse>): Boolean {
+                       responses: List<PotentialResponse>): Boolean {
     var failed = false
     for (response in responses) {
       when (response) {
@@ -468,13 +417,9 @@ class Main : CommandLineClient() {
   companion object {
     const val NAME = "oksocial"
 
-    private fun fromArgs(vararg args: String): Main {
-      return SingleCommand.singleCommand(Main::class.java).parse(*args)
-    }
-
     @JvmStatic
     fun main(vararg args: String) {
-      val result = fromArgs(*args).run()
+      val result = CommandLineClient.fromArgs<Main>(*args).run()
       System.exit(result)
     }
   }

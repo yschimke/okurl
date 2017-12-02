@@ -8,7 +8,7 @@ class CompletionMappings {
   }
 
   suspend fun replaceVariables(urlList: UrlList): UrlList {
-    var list =  urlList
+    var list = urlList
 
     for (s in mappings) {
       list = s(list)

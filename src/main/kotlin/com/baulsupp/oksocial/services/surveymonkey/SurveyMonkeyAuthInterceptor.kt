@@ -37,7 +37,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising SurveyMonkey API")
 
     val clientId = Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false)
@@ -47,7 +47,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   data class User(val username: String, val first_name: String?, val last_name: String?,
-          val email: String)
+                  val email: String)
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
@@ -61,8 +61,8 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())

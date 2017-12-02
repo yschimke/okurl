@@ -1,59 +1,49 @@
 package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.CommandLineClient
-import com.baulsupp.oksocial.util.LoggingUtil
+import com.baulsupp.oksocial.jjs.OkShell
 import io.airlift.airline.Command
-import io.airlift.airline.SingleCommand
 import java.io.File
-import java.util.logging.Logger
-import kotlin.system.exitProcess
+import javax.script.ScriptException
 
 @Command(name = Main.NAME, description = "Kotlin scripting for APIs")
 class Main : CommandLineClient() {
-  private val logger = Logger.getLogger(Main::class.java.name)
+  override fun initialise() {
+    super.initialise()
 
-  fun executeScript(args: MutableList<String>) {
+    OkShell.instance = OkShell(this)
+  }
+
+  override fun runCommand(runArguments: List<String>): Int {
     val engine = KotlinAppScriptFactory().scriptEngine
 
-    if (args.size < 1) {
+    if (runArguments.isEmpty()) {
       System.err.println("usage: okscript file.kts arguments")
-      exitProcess(-2)
+      return -2
     }
 
-    val script = args[0]
-    val arguments = args.drop(1)
+    val script = runArguments[0]
+    val arguments = runArguments.drop(1)
 
     engine.put("arguments", arguments)
 
-    engine.eval(File(script).readText())
-  }
-
-  fun run(): Int {
-    if (sslDebug) {
-      System.setProperty("javax.net.debug", "ssl,handshake")
-    }
-
-    LoggingUtil.configureLogging(debug, showHttp2Frames)
-
-    if (showHelpIfRequested()) {
+    try {
+      engine.eval(File(script).readText())
       return 0
+    } catch (se: ScriptException) {
+      if (se.cause != null) {
+        throw se.cause!!
+      }
+      throw se
     }
-
-    executeScript(arguments)
-
-    return 0
   }
 
   companion object {
     const val NAME = "okscript"
 
-    private fun fromArgs(vararg args: String): Main {
-      return SingleCommand.singleCommand(Main::class.java).parse(*args)
-    }
-
     @JvmStatic
     fun main(vararg args: String) {
-      val result = fromArgs(*args).run()
+      val result = CommandLineClient.fromArgs<Main>(*args).run()
       System.exit(result)
     }
   }

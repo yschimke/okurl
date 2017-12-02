@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.completion
 import okhttp3.HttpUrl
 
 class BaseUrlCompleter(private val urlList: UrlList,
-        hosts: Collection<String>, private val completionVariableCache: CompletionVariableCache) :
+                       hosts: Collection<String>, private val completionVariableCache: CompletionVariableCache) :
         HostUrlCompleter(hosts) {
   private val mappings = CompletionMappings()
 

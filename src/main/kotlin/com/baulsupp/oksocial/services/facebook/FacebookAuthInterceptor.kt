@@ -40,7 +40,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Facebook API")
 
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
@@ -77,8 +77,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
     return FacebookCompleter(client, hosts())
   }
 

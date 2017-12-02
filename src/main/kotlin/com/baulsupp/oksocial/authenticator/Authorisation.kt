@@ -13,10 +13,10 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
   @Throws(Exception::class)
   suspend fun authorize(auth: AuthInterceptor<*>?, token: String?,
-                authArguments: List<String>) {
+                        authArguments: List<String>) {
     if (auth == null) {
       throw UsageException(
-          "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+              "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
     if (token != null) {
@@ -47,7 +47,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
   suspend fun <T> renew(auth: AuthInterceptor<T>?) {
     if (auth == null) {
       throw UsageException(
-          "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+              "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
     val serviceDefinition = auth.serviceDefinition()

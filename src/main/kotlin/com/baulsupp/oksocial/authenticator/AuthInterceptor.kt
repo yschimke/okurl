@@ -47,9 +47,9 @@ interface AuthInterceptor<T> {
 
   fun apiCompleter(prefix: String, client: OkHttpClient,
                    credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
-      UrlList.fromResource(name())?.let {
-        BaseUrlCompleter(it, hosts(), completionVariableCache)
-      } ?: HostUrlCompleter(hosts())
+          UrlList.fromResource(name())?.let {
+            BaseUrlCompleter(it, hosts(), completionVariableCache)
+          } ?: HostUrlCompleter(hosts())
 
   fun defaultCredentials(): T? = null
 

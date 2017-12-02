@@ -40,7 +40,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Quip API")
 
     outputHandler.openLink("https://quip.com/dev/token")
@@ -52,8 +52,8 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())

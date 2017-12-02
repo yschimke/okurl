@@ -113,4 +113,4 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
 }
 
 private fun Properties.toMutableStringMap(): MutableMap<String, String> =
-    this.entries.associate { it.key.toString() to it.value.toString() }.toMutableMap()
+        this.entries.associate { it.key.toString() to it.value.toString() }.toMutableMap()

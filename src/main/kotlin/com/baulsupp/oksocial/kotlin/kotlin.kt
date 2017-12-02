@@ -3,9 +3,12 @@ package com.baulsupp.oksocial.kotlin
 import com.baulsupp.oksocial.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
 
 inline suspend fun <reified T> OkHttpClient.query(url: String): T = this.query(Request.Builder().url(url).build())
 
@@ -52,4 +55,21 @@ suspend fun OkHttpClient.execute(request: Request): Response {
   }
 
   return response
+}
+
+fun OkHttpClient.warmup(vararg urls: String) {
+  urls.forEach {
+    val request = Request.Builder().url(it).build()
+    val call = client.newCall(request)
+    call.enqueue(object : Callback {
+      override fun onFailure(call: Call, e: IOException) {
+        // ignore
+      }
+
+      override fun onResponse(call: Call, response: Response) {
+        // ignore
+        response.close()
+      }
+    })
+  }
 }

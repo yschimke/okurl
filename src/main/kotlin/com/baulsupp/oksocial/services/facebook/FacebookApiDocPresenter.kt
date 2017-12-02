@@ -11,7 +11,7 @@ import okhttp3.Response
 class FacebookApiDocPresenter(private val sd: ServiceDefinition<Oauth2Token>) : ApiDocPresenter {
 
   override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-          client: OkHttpClient) {
+                                  client: OkHttpClient) {
     outputHandler.info("service: " + sd.shortName())
     outputHandler.info("name: " + sd.serviceName())
     sd.apiDocs()?.let { outputHandler.info("docs: " + it) }

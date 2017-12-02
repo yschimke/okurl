@@ -30,7 +30,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): BasicCredentials {
+                                 authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("User", "httpbin.user", "", false)
     val password = Secrets.prompt("Password", "httpbin.password", "", true)
 

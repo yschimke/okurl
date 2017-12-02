@@ -11,10 +11,10 @@ import okhttp3.Response
 import java.io.IOException
 
 abstract class TwitterAuthFlow(protected val client: OkHttpClient,
-        protected val outputHandler: OutputHandler<Response>) {
+                               protected val outputHandler: OutputHandler<Response>) {
 
   suspend fun generateRequestToken(unauthed: TwitterCredentials,
-          callback: String): TwitterCredentials {
+                                   callback: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_callback", callback).build()
     var request = Request.Builder().url("https://api.twitter.com/oauth/request_token")
             .post(body)
@@ -34,7 +34,7 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
   }
 
   suspend fun generateAccessToken(requestCredentials: TwitterCredentials,
-          verifier: String): TwitterCredentials {
+                                  verifier: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_verifier", verifier).build()
     var request = Request.Builder().url("https://api.twitter.com/oauth/access_token")
             .post(body)

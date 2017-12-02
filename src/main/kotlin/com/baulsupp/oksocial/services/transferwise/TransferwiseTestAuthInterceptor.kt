@@ -22,8 +22,8 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
 
   @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-          credentialsStore: CredentialsStore,
-          completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource("transferwise")!!
 
     val testUrls = urlList.getUrls("")

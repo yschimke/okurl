@@ -54,7 +54,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token> {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-          authArguments: List<String>): Oauth2Token {
+                                 authArguments: List<String>): Oauth2Token {
     System.err.println("Authorising Paypal API")
 
     val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)
