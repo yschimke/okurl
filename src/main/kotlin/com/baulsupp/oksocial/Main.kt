@@ -268,7 +268,7 @@ class Main : HelpOption() {
   private val closeables = mutableListOf<Closeable>()
 
   private fun versionString(): String {
-    return "1"
+    return this.javaClass.`package`.implementationVersion ?: "dev"
   }
 
   fun run(): Int {
