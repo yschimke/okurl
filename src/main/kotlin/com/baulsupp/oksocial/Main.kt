@@ -9,11 +9,10 @@ import com.baulsupp.oksocial.commands.CommandRegistry
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.OksocialCommand
 import com.baulsupp.oksocial.commands.ShellCommand
-import com.baulsupp.oksocial.completion.ArgumentCompleter
+import com.baulsupp.oksocial.completion.CompletionCommand
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.TmpCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
-import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.jjs.OkApiCommand
@@ -101,7 +100,7 @@ class Main : CommandLineClient() {
         showCredentials -> PrintCredentials(this@Main).showCredentials(arguments)
         aliasNames -> printAliasNames()
         serviceNames -> outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
-        urlComplete -> outputHandler!!.info(urlCompletionList())
+        urlComplete -> CompletionCommand(this@Main).complete()
         apiDoc -> showApiDocs()
         authorize -> authorize()
         renew -> renew()
@@ -130,55 +129,8 @@ class Main : CommandLineClient() {
   }
 
   suspend fun showApiDocs() {
-    val docs = ServiceApiDocPresenter(serviceInterceptor!!)
-
     getFullCompletionUrl()?.let { u ->
-      docs.explainApi(u, outputHandler!!, client!!)
-    }
-  }
-
-  suspend fun urlCompletionList(): String {
-    val command = getShellCommand()
-
-    val commandCompletor = command.completer()
-    if (commandCompletor != null) {
-      val urls = runBlocking {
-        commandCompletion(commandCompletor, arguments)
-      }
-
-      val prefix = arguments[arguments.size - 1]
-
-      if (completionFile != null) {
-        urls.toFile(File(completionFile), 0, prefix)
-      }
-
-      return urls.getUrls(prefix).joinToString("\n")
-    }
-
-    val completer = UrlCompleter(serviceInterceptor!!.services(), client!!, credentialsStore!!,
-            completionVariableCache!!)
-
-    val fullCompletionUrl = getFullCompletionUrl()
-
-    // reload hack (in case changed for "" case)
-    val originalCompletionUrl = arguments[arguments.size - 1]
-
-    if (fullCompletionUrl != null) {
-      val urls = completer.urlList(fullCompletionUrl)
-
-      val strip: Int = if (fullCompletionUrl != originalCompletionUrl) {
-        fullCompletionUrl.length - originalCompletionUrl.length
-      } else {
-        0
-      }
-
-      if (completionFile != null) {
-        urls.toFile(File(completionFile), strip, originalCompletionUrl)
-      }
-
-      return urls.getUrls(fullCompletionUrl).joinToString("\n") { it.substring(strip) }
-    } else {
-      return ""
+      ServiceApiDocPresenter(serviceInterceptor!!).explainApi(u, outputHandler!!, client!!)
     }
   }
 
@@ -200,10 +152,6 @@ class Main : CommandLineClient() {
     return requestBuilder.build()
   }
 
-  suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
-    return urlCompleter.urlList(arguments[arguments.size - 1])
-  }
-
   /*
    * The last url in arguments which should be used for completion or apidoc requests.
    * In the case of javascript command expansion, it is expanded first before
@@ -211,7 +159,7 @@ class Main : CommandLineClient() {
    *
    * n.b. arguments may be modified by this call.
    */
-  private fun getFullCompletionUrl(): String? {
+  fun getFullCompletionUrl(): String? {
     if (arguments.isEmpty()) {
       return null
     }
@@ -323,7 +271,7 @@ class Main : CommandLineClient() {
     return responses
   }
 
-  private fun getShellCommand(): ShellCommand {
+  fun getShellCommand(): ShellCommand {
     var shellCommand = commandRegistry.getCommandByName(commandName)
 
     if (shellCommand == null) {
@@ -338,9 +286,7 @@ class Main : CommandLineClient() {
   }
 
   private fun printAliasNames() {
-    val names = commandRegistry.names().sorted()
-
-    names.forEach({ outputHandler!!.info(it) })
+    commandRegistry.names().sorted().forEach({ outputHandler!!.info(it) })
   }
 
   private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
