@@ -11,9 +11,12 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.google.model.AuthError
+import com.baulsupp.oksocial.util.ClientException
 import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -105,4 +108,19 @@ class GoogleAuthInterceptor: AuthInterceptor<Oauth2Token>() {
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(
           discoveryIndex)
+
+
+  override fun errorMessage(ce: ClientException): String {
+    if (ce.code == 401) {
+      try {
+        val message = ce.responseMessage
+
+        return moshi.adapter(AuthError::class.java).fromJson(message)!!.error_description
+      } catch (e: Exception) {
+        // ignore
+      }
+    }
+
+    return super.errorMessage(ce)
+  }
 }

@@ -84,13 +84,17 @@ class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   override fun errorMessage(ce: ClientException): String {
-    return try {
-      val message = ce.responseMessage
+    if (ce.code == 401) {
+      try {
+        val message = ce.responseMessage
 
-      moshi.adapter(ErrorResponse::class.java).fromJson(message)!!.error.message
-    } catch (e: Exception) {
-      super.errorMessage(ce)
+        return moshi.adapter(ErrorResponse::class.java).fromJson(message)!!.error.message
+      } catch (e: Exception) {
+        // ignore
+      }
     }
+
+    return super.errorMessage(ce)
   }
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
