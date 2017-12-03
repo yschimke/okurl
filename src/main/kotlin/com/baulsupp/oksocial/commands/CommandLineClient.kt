@@ -124,7 +124,7 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--resolve"], description = "DNS Overrides (HOST:TARGET)")
   var resolve: List<String>? = null
 
-  @Option(name = ["--certificatePin"], description = "Specific Local Network Interface")
+  @Option(name = ["--certificatePin"], description = "Certificate Pin to define host:pinsha")
   var certificatePins: java.util.List<CertificatePin>? = null
 
   @Option(name = ["--networkInterface"], description = "Specific Local Network Interface")
