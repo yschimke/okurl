@@ -17,7 +17,6 @@ class KotlinAppScriptFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
 
 
   override fun getScriptEngine(): ScriptEngine =
-          //      KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
           KotlinAppScriptEngine(
                   Disposer.newDisposable(),
                   this,
@@ -28,13 +27,7 @@ class KotlinAppScriptFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
           )
 
   private fun classpath(): List<File> {
-    val classpathFromClassloader = ManagementFactory.getRuntimeMXBean().classPath.split(File.pathSeparator).map { File(it) }.toList()
-    //classpathFromClassloader(KotlinAppScriptFactory::class.java.classLoader)!!
-
-//    println("Here " + KotlinAppScriptFactory::class.java.classLoader)
-//    classpathFromClassloader.forEach(::println)
-
-    return classpathFromClassloader
+    return ManagementFactory.getRuntimeMXBean().classPath.split(File.pathSeparator).map { File(it) }.toList()
   }
 
   companion object {
