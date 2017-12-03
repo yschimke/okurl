@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.authenticator.oauth2
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 
 class Oauth2ServiceDefinition(apiHost: String, serviceName: String, shortName: String,
-                              apiDocs: String, accountsLink: String?) : AbstractServiceDefinition<Oauth2Token>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
+                              apiDocs: String?, accountsLink: String?) : AbstractServiceDefinition<Oauth2Token>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
 
   override fun parseCredentialsString(s: String): Oauth2Token {
     val parts = s.split(":")
