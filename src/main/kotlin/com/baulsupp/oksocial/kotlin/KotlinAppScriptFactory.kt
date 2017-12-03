@@ -12,9 +12,7 @@ import javax.script.Bindings
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
-
 class KotlinAppScriptFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
-
 
   override fun getScriptEngine(): ScriptEngine =
           KotlinAppScriptEngine(

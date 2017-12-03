@@ -38,7 +38,6 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Slack Client Id", "slack.clientId", "", false)
     val clientSecret = Secrets.prompt("Slack Client Secret", "slack.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "slack.scopes", Arrays.asList(

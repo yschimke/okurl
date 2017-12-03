@@ -33,7 +33,6 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val apiKey = Secrets.prompt("Mapbox Access Token", "mapbox.accessToken", "", false)
 
     return Oauth2Token(apiKey)

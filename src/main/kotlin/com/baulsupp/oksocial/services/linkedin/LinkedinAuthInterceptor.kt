@@ -38,7 +38,6 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Linkedin Client Id", "linkedin.clientId", "", false)
     val clientSecret = Secrets.prompt("Linkedin Client Secret", "linkedin.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "linkedin.scopes",

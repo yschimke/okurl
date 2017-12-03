@@ -29,7 +29,6 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): TwitterCredentials {
 
-
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
       return TwurlrcImport.authorize(authArguments)
     }

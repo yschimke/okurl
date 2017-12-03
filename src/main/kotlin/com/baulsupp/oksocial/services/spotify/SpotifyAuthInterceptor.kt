@@ -42,7 +42,6 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Spotify Client Id", "spotify.clientId", "", false)
     val clientSecret = Secrets.prompt("Spotify Client Secret", "spotify.clientSecret", "", true)
 

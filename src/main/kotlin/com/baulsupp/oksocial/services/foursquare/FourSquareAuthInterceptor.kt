@@ -38,7 +38,6 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
     val clientSecret = Secrets.prompt("FourSquare Application Secret", "4sq.clientSecret", "", true)
 

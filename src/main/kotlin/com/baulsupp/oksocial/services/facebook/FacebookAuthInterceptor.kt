@@ -42,7 +42,6 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
     val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
     var scopes = Secrets.promptArray("Scopes", "facebook.scopes",

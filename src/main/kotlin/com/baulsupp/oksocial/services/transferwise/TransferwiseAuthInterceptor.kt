@@ -36,7 +36,6 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
     val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "",
             true)

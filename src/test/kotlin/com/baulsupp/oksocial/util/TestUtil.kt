@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.util
 
-
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition

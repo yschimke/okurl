@@ -34,7 +34,6 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
     val clientSecret = Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "instagram.scopes",

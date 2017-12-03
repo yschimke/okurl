@@ -41,7 +41,6 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
     val clientSecret = Secrets.prompt("Uber Client Secret", "uber.clientSecret", "", true)
 

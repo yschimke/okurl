@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.i9n
 
-
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import okhttp3.Protocol

@@ -33,7 +33,6 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
     val clientSecret = Secrets.prompt("Github Client Secret", "github.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "github.scopes",

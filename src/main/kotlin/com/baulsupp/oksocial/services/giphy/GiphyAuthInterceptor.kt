@@ -32,7 +32,6 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
 
     return Oauth2Token(apiKey)

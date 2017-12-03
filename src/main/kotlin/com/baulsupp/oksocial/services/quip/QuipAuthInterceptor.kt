@@ -36,7 +36,6 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     outputHandler.openLink("https://quip.com/dev/token")
 
     // TODO move to IO pool

@@ -50,7 +50,6 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): StackExchangeToken {
 
-
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
     val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret",
             "", true)

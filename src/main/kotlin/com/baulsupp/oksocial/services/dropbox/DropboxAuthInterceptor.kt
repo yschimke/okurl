@@ -52,4 +52,3 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override fun hosts(): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")
 }
 
-

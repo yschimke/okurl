@@ -55,7 +55,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
     val clientSecret = Secrets.prompt("Google Client Secret", "google.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "google.scopes", GoogleUtil.SCOPES)

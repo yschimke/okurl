@@ -9,7 +9,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
 class GithubTest {
   private val main = Main()
   private val output = TestOutputHandler<Response>()

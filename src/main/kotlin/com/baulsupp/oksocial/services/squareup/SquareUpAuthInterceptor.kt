@@ -45,7 +45,6 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
     val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
             true)

@@ -38,7 +38,6 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
-
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
     val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
 
