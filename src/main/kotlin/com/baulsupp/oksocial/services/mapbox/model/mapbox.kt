@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.services.mapbox
+package com.baulsupp.oksocial.services.mapbox.model
 
 import com.baulsupp.oksocial.location.Location
 import com.squareup.moshi.FromJson

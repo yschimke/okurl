@@ -10,7 +10,8 @@ import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
-import com.squareup.moshi.Json
+import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex
+import com.baulsupp.oksocial.services.datasettes.model.DatasetteTables
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -98,16 +99,6 @@ class DatasettesPresenter : ApiDocPresenter {
     outputHandler.info("views: " + datasetteTables.views.joinToString())
   }
 }
-
-data class DatasetteIndex(val name: String, val hash: String, val path: String, @Json(
-        name = "tables_truncated") val tables: List<Any>)
-
-data class DatasetteTable(val name: String, val columns: List<String>, @Json(
-        name = "table_rows") val tableRows: Int)
-
-data class DatasetteTables(val database: String, val tables: List<DatasetteTable>,
-                           val views: List<String>, val source: String, @Json(
-                name = "source_url") val sourceUrl: String)
 
 suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
         client.queryMap<DatasetteIndex>("https://$host/.json").values.toList()
