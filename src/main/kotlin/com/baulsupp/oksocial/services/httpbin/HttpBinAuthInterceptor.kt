@@ -15,7 +15,7 @@ import okhttp3.Response
 /**
  * http://httpbin.org/
  */
-class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials> {
+class HttpBinAuthInterceptor: AuthInterceptor<BasicCredentials>() {
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()

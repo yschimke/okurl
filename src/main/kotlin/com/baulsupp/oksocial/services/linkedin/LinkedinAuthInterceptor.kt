@@ -13,7 +13,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
 
-class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class LinkedinAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.linkedin.com", "Linkedin API", "linkedin",
             "https://developer.linkedin.com/docs/rest-api",

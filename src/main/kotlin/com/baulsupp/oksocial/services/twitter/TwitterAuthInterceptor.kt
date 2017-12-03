@@ -11,7 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials> {
+class TwitterAuthInterceptor: AuthInterceptor<TwitterCredentials>() {
 
   override fun serviceDefinition(): TwitterServiceDefinition {
     return TwitterServiceDefinition()

@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-class UberAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class UberAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Uber API", "uber",
             "https://developer.uber.com/docs/riders/references/api",

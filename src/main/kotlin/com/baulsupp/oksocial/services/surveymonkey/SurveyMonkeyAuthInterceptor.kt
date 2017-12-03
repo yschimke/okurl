@@ -20,7 +20,7 @@ import okhttp3.Response
 /**
  * https://developer.surveymonkey.com/docs/authentication
  */
-class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class SurveyMonkeyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
             "https://developer.surveymonkey.com/api/v3/#scopes",

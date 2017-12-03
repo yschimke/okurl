@@ -12,7 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-class TestAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class TestAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     return chain.proceed(chain.request())

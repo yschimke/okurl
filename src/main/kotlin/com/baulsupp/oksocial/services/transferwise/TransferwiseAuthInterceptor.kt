@@ -16,7 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token> {
+open class TransferwiseAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
             "https://api-docs.transferwise.com/docs/versions/v1/overview",

@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class ImgurAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.imgur.com", "Imgur API", "imgur",
             "https://api.imgur.com/endpoints", "https://imgur.com/account/settings/apps")

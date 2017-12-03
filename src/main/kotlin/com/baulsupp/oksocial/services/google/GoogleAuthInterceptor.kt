@@ -24,7 +24,7 @@ import okhttp3.Response
 /**
  * https://developer.google.com/docs/authentication
  */
-class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class GoogleAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   private val foundHosts by lazy {
     UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }.toSet()
   }

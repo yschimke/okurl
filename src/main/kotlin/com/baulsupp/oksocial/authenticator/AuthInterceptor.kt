@@ -17,43 +17,43 @@ import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-interface AuthInterceptor<T> {
-  fun name(): String = serviceDefinition().shortName()
+abstract class AuthInterceptor<T> {
+  open fun name(): String = serviceDefinition().shortName()
 
-  fun supportsUrl(url: HttpUrl): Boolean = try {
+  open fun supportsUrl(url: HttpUrl): Boolean = try {
     hosts().contains(url.host())
   } catch (e: IOException) {
     logger.log(Level.WARNING, "failed getting hosts", e)
     false
   }
 
-  fun intercept(chain: Interceptor.Chain, credentials: T): Response
+  abstract fun intercept(chain: Interceptor.Chain, credentials: T): Response
 
-  suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
+  abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
 
-  fun serviceDefinition(): ServiceDefinition<T>
+  abstract fun serviceDefinition(): ServiceDefinition<T>
 
-  suspend fun validate(client: OkHttpClient,
-                       credentials: T): ValidatedCredentials =
+  open suspend fun validate(client: OkHttpClient,
+                            credentials: T): ValidatedCredentials =
           ValidatedCredentials()
 
-  fun canRenew(result: Response): Boolean = result.code() == 401
+  open fun canRenew(result: Response): Boolean = result.code() == 401
 
-  fun canRenew(credentials: T): Boolean = false
+  open fun canRenew(credentials: T): Boolean = false
 
-  suspend fun renew(client: OkHttpClient, credentials: T): T? = null
+  open suspend fun renew(client: OkHttpClient, credentials: T): T? = null
 
-  fun hosts(): Set<String>
+  abstract fun hosts(): Set<String>
 
-  fun apiCompleter(prefix: String, client: OkHttpClient,
+  open fun apiCompleter(prefix: String, client: OkHttpClient,
                    credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
           UrlList.fromResource(name())?.let {
             BaseUrlCompleter(it, hosts(), completionVariableCache)
           } ?: HostUrlCompleter(hosts())
 
-  fun defaultCredentials(): T? = null
+  open fun defaultCredentials(): T? = null
 
-  fun apiDocPresenter(url: String): ApiDocPresenter {
+  open fun apiDocPresenter(url: String): ApiDocPresenter {
     return object : ApiDocPresenter {
       override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
         val sd = serviceDefinition()
@@ -69,7 +69,4 @@ interface AuthInterceptor<T> {
   companion object {
     val logger = Logger.getLogger(AuthInterceptor::class.java.name)!!
   }
-
-  // TODO fix up hackery
-  fun cast(credentials: Any): T = credentials as T
 }

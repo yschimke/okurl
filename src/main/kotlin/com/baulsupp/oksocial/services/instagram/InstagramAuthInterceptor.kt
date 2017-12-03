@@ -12,7 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.Arrays
 
-class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class InstagramAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
             "https://www.instagram.com/developer/endpoints/",

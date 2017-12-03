@@ -10,7 +10,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class GiphyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
           Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
                   "https://github.com/Giphy/GiphyAPI", null)

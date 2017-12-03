@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class MapboxAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
           Oauth2ServiceDefinition("api.mapbox.com", "Mapbox API", "mapbox",
                   "https://www.mapbox.com/api-documentation/",

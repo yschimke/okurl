@@ -22,7 +22,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
 
-class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.spotify.com", "Spotify API", "spotify",
             "https://developer.spotify.com/web-api/endpoint-reference/",

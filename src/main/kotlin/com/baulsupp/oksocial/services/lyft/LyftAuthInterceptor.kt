@@ -20,7 +20,7 @@ import java.util.Arrays
 /**
  * https://developer.lyft.com/docs/authentication
  */
-class LyftAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class LyftAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.lyft.com", "Lyft API", "lyft",
             "https://developer.lyft.com/docs", "https://www.lyft.com/developers/manage")

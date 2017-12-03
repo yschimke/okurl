@@ -17,7 +17,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials> {
+class TwilioAuthInterceptor: AuthInterceptor<BasicCredentials>() {
   override fun serviceDefinition(): BasicAuthServiceDefinition {
     return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
             "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")

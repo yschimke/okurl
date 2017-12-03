@@ -16,7 +16,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.util.Arrays
 
-class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class FitbitAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.fitbit.com", "Fitbit API", "fitbit",
             "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/")

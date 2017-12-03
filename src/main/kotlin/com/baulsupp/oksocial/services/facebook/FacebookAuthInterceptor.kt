@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class FacebookAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
             "https://developers.facebook.com/docs/graph-api",

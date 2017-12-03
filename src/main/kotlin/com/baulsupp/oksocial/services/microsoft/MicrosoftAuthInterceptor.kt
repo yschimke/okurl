@@ -18,7 +18,7 @@ import okhttp3.Response
  * https://graph.microsoft.io/en-us/docs/authorization/app_authorization
  * http://graph.microsoft.io/en-us/docs/authorization/permission_scopes
  */
-class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class MicrosoftAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
             "https://graph.microsoft.io/en-us/docs/get-started/rest",

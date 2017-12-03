@@ -11,7 +11,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
 
-class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken> {
+class StackExchangeAuthInterceptor: AuthInterceptor<StackExchangeToken>() {
   override fun serviceDefinition(): StackExchangeServiceDefinition {
     return StackExchangeServiceDefinition()
   }

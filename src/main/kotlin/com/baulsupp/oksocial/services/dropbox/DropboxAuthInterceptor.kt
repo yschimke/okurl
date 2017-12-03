@@ -17,7 +17,7 @@ import okhttp3.Response
 /**
  * https://developer.dropbox.com/docs/authentication
  */
-class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class DropboxAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.dropboxapi.com", "Dropbox API", "dropbox",
             "https://www.dropbox.com/developers", "https://www.dropbox.com/developers/apps")

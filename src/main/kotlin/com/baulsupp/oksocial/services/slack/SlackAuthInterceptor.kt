@@ -15,7 +15,7 @@ import java.util.Arrays
 /**
  * https://api.slack.com/docs/oauth
  */
-class SlackAuthInterceptor : AuthInterceptor<Oauth2Token> {
+class SlackAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("slack.com", "Slack API", "slack", "https://api.slack.com/",
             "https://api.slack.com/apps")
