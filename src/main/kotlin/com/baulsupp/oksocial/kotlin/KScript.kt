@@ -26,13 +26,13 @@ val moshi = Moshi.Builder()
         .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
         .build()!!
 
-suspend fun warmup(vararg urls: String) {
+fun warmup(vararg urls: String) {
   okshell.warmup(*urls)
 }
 
-suspend fun location(): Location? = okshell.location()
+fun location(): Location? = okshell.location()
 
-suspend fun show(url: String) {
+fun show(url: String) {
   okshell.show(url)
 }
 

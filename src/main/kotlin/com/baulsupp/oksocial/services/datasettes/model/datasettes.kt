@@ -11,3 +11,5 @@ data class DatasetteTable(val name: String, val columns: List<String>, @Json(
 data class DatasetteTables(val database: String, val tables: List<DatasetteTable>,
                            val views: List<String>, val source: String, @Json(
                 name = "source_url") val sourceUrl: String)
+
+data class DatasetteResultSet(val database: String, val rows: List<List<Any>>, val truncated: Boolean, val columns: List<String>)
