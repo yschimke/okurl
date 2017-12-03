@@ -12,6 +12,7 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex
 import com.baulsupp.oksocial.services.datasettes.model.DatasetteTables
+import com.google.common.io.Resources
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -79,8 +80,7 @@ class DatasettesPresenter : ApiDocPresenter {
     val datasettes = runBlocking { fetchDatasetteMetadata(urlI.host(), client) }
 
     if (datasettes.size != 1) {
-      outputHandler.showError(
-              "expected 1 datasette: '${datasettes.joinToString { it.path }}'", null)
+      outputHandler.showError("expected 1 datasette: '${datasettes.joinToString { it.path }}'")
     }
 
     val datasette = datasettes.first()
@@ -107,4 +107,8 @@ suspend fun fetchDatasetteTableMetadata(host: String, path: String,
                                         client: OkHttpClient) =
         client.query<DatasetteTables>("https://$host/$path.json")
 
-fun knownHosts(): Set<String> = setOf("fivethirtyeight.datasettes.com", "parlgov.datasettes.com")
+fun knownHosts(): Set<String> {
+  return DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.let {
+    Resources.readLines(it, StandardCharsets.UTF_8)
+  }?.toSet() ?: setOf()
+}

@@ -287,10 +287,10 @@ open class CommandLineClient : HelpOption() {
     try {
       return runCommand(arguments)
     } catch (e: ClientException) {
-      outputHandler!!.showError(e.message, null)
+      outputHandler!!.showError(e.message)
       return -1
     } catch (e: UsageException) {
-      outputHandler!!.showError(e.message, null)
+      outputHandler!!.showError(e.message)
       return -1
     } catch (e: Exception) {
       outputHandler!!.showError("unknown error", e)

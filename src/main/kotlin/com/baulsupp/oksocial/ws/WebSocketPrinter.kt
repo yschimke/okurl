@@ -28,7 +28,7 @@ class WebSocketPrinter(private val outputHandler: OutputHandler<Response>) : Web
   }
 
   override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-    outputHandler.showError(null, t)
+    outputHandler.showError("websocket failure", t)
     latch.countDown()
   }
 }

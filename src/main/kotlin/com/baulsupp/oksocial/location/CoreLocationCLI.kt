@@ -39,7 +39,7 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
         Location(parts[0].toDouble(), parts[1].toDouble())
       } catch (e: TimeoutException) {
         logger.log(Level.FINE, "failed to get location", e)
-        outputHandler.showError("Timeout fetching location, consider populating ~/.oksocial-location.json", null)
+        outputHandler.showError("Timeout fetching location, consider populating ~/.oksocial-location.json")
         return null
       } catch (e: Exception) {
         logger.log(Level.WARNING, "failed to get location", e)

@@ -1,0 +1,8 @@
+fivethirtyeight.datasettes.com
+parlgov.datasettes.com
+baseballdb.lawlesst.net
+nhs-england-hospitals.now.sh
+google-trends.datasettes.com
+polar-bears.now.sh
+australian-dunnies.now.sh
+australian-dogs.now.sh
