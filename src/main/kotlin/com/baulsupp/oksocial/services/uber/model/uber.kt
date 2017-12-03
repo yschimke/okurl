@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.services.uber
+package com.baulsupp.oksocial.services.uber.model
 
 import com.squareup.moshi.Json
 
