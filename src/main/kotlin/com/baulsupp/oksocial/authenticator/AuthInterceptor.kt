@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -64,6 +65,10 @@ abstract class AuthInterceptor<T> {
         sd.accountsLink()?.let { outputHandler.info("apps: " + it) }
       }
     }
+  }
+
+  open fun errorMessage(ce: ClientException): String {
+    return ce.message ?: "response code ${ce.code}"
   }
 
   companion object {

@@ -10,9 +10,12 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.spotify.model.ErrorResponse
+import com.baulsupp.oksocial.util.ClientException
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.Interceptor
@@ -79,6 +82,16 @@ class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun hosts(): Set<String> = setOf("api.spotify.com")
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
+
+  override fun errorMessage(ce: ClientException): String {
+    return try {
+      val message = ce.responseMessage
+
+      moshi.adapter(ErrorResponse::class.java).fromJson(message)!!.error.message
+    } catch (e: Exception) {
+      super.errorMessage(ce)
+    }
+  }
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://accounts.spotify.com/api/token"

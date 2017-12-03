@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CommonPool
@@ -32,8 +31,6 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   private val started: ZonedDateTime = ZonedDateTime.now()
 
   fun <T> printKnownCredentials(future: Deferred<ValidatedCredentials>, a: AuthInterceptor<T>) {
-    val sd = a.serviceDefinition()
-
     try {
       val left = 2000L - ZonedDateTime.now().until(started, ChronoUnit.MILLIS)
       val validated = runBlocking {
@@ -42,22 +39,24 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
         }
       }
 
-      printSuccess(sd, validated)
+      printSuccess(a, validated)
     } catch (e: Exception) {
-      printFailed(sd, e)
+      printFailed(a, e)
     }
   }
 
-  private fun <T> printSuccess(sd: ServiceDefinition<T>, validated: ValidatedCredentials?) {
+  private fun <T> printSuccess(a: AuthInterceptor<T>, validated: ValidatedCredentials?) {
+    val sd = a.serviceDefinition()
     outputHandler.info("%-40s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", validated?.username ?: "-", validated?.clientName ?: "-"))
   }
 
-  private fun <T> printFailed(sd: ServiceDefinition<T>,
-                              e: Throwable) {
+  private fun <T> printFailed(a: AuthInterceptor<T>, e: Throwable) {
+    val sd = a.serviceDefinition()
+
     when (e) {
       is CancellationException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
       is TimeoutException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
-      is ClientException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.message))
+      is ClientException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), a.errorMessage(e)))
       is IOException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
       else -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
     }
