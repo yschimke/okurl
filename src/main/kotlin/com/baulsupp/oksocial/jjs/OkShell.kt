@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.jjs
 
 import com.baulsupp.oksocial.commands.CommandLineClient
+import com.baulsupp.oksocial.kotlin.Main
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.warmup
 import com.baulsupp.oksocial.location.Location
@@ -35,5 +36,10 @@ class OkShell(val commandLine: CommandLineClient) {
 
   companion object {
     var instance: OkShell? = null
+    fun create(): OkShell {
+      val main = Main()
+      main.initialise()
+      return OkShell(commandLine = main)
+    }
   }
 }

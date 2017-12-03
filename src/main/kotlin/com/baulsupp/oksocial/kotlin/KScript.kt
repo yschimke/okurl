@@ -7,15 +7,17 @@ import com.baulsupp.oksocial.services.mapbox.MapboxLatLongAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Rfc3339DateJsonAdapter
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-val okshell: OkShell by lazy { OkShell.instance!! }
+val okshell: OkShell by lazy { OkShell.instance ?: OkShell.create() }
 
 val client: OkHttpClient by lazy { okshell.commandLine.client!! }
 
@@ -25,17 +27,15 @@ val moshi = Moshi.Builder()
         .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
         .build()!!
 
-suspend fun warmup(vararg urls: String) { okshell.warmup(*urls) }
+suspend fun warmup(vararg urls: String) {
+  okshell.warmup(*urls)
+}
 
 suspend fun location(): Location? = okshell.location()
 
-suspend fun show(url: String) { okshell.show(url) }
-
-inline suspend fun <reified T> query(url: String): T = client.query(url)
-
-inline suspend fun <reified V> queryMap(url: String): Map<String, V> = client.queryMap(url)
-
-suspend fun queryForString(url: String): String = client.queryForString(url)
+suspend fun show(url: String) {
+  okshell.show(url)
+}
 
 fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = client.newWebSocket(Request.Builder().url(url).build(), listener)
 
@@ -45,4 +45,5 @@ fun epochSecondsToDate(seconds: Long) = dateOnlyformat.format(Date(seconds * 100
 
 val terminalWidth: Int by lazy { (okshell.commandLine.outputHandler as ConsoleHandler).terminalWidth() }
 
-
+fun jsonPostRequest(url: String, body: String): Request =
+        Request.Builder().url(url).post(RequestBody.create(MediaType.parse("application/json"), body)).build()
