@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.facebook.model
 
-data class Field(val name: String, val description: String, val type: String)
+data class Field(val name: String, val description: String?, val type: String?)
 
 data class Metadata(val type: String, val fields: List<Field>, val connections: Map<String, String>)
 
