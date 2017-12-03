@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.kotlin
 
-import com.baulsupp.oksocial.jjs.OkShell
 import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.services.mapbox.MapboxLatLongAdapter

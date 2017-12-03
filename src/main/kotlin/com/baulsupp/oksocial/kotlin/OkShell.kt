@@ -1,9 +1,6 @@
-package com.baulsupp.oksocial.jjs
+package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.commands.CommandLineClient
-import com.baulsupp.oksocial.kotlin.Main
-import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.kotlin.warmup
 import com.baulsupp.oksocial.location.Location
 import okhttp3.Request
 

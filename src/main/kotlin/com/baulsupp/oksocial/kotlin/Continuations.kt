@@ -62,7 +62,7 @@ suspend fun <T> CompletableFuture<T>.await(): T {
 fun <T> asyncFuture(function: suspend () -> T): CompletableFuture<T> {
   val future = CompletableFuture<T>()
 
-  val x = async(CommonPool) {
+  async(CommonPool) {
     try {
       future.complete(function())
     } catch (e: Exception) {

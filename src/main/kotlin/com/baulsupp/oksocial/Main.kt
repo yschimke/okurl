@@ -15,7 +15,7 @@ import com.baulsupp.oksocial.completion.TmpCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
-import com.baulsupp.oksocial.jjs.OkApiCommand
+import com.baulsupp.oksocial.commands.OkApiCommand
 import com.baulsupp.oksocial.kotlin.await
 import com.baulsupp.oksocial.okhttp.FailedResponse
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor

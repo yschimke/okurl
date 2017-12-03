@@ -34,18 +34,14 @@ inline suspend fun <reified T> OkHttpClient.queryMapValue(url: String, vararg ke
 inline suspend fun <reified T> OkHttpClient.queryMapValue(request: Request, vararg keys: String): T? {
   val queryMap = this.queryMap<Any>(request)
 
-  val result = keys.fold<String, Any>(queryMap as Any, { map, key -> (map as Map<String, Any>)[key]!! })
+  val result = keys.fold(queryMap as Any, { map, key -> (map as Map<String, Any>)[key]!! })
 
   return result as T
 }
 
-inline suspend fun OkHttpClient.queryForString(request: Request): String {
-  val response = this.execute(request)
+suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
 
-  return response.body()!!.string()
-}
-
-inline suspend fun OkHttpClient.queryForString(url: String): String =
+suspend fun OkHttpClient.queryForString(url: String): String =
         this.queryForString(Request.Builder().url(url).build())
 
 suspend fun OkHttpClient.execute(request: Request): Response {

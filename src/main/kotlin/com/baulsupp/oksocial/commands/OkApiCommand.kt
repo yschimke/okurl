@@ -1,8 +1,6 @@
-package com.baulsupp.oksocial.jjs
+package com.baulsupp.oksocial.commands
 
 import com.baulsupp.oksocial.Main
-import com.baulsupp.oksocial.commands.MainAware
-import com.baulsupp.oksocial.commands.ShellCommand
 import com.baulsupp.oksocial.kotlin.KotlinAppScriptFactory
 import com.baulsupp.oksocial.output.util.UsageException
 import okhttp3.OkHttpClient

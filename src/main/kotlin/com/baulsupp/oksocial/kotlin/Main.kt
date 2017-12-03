@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.commands.CommandLineClient
-import com.baulsupp.oksocial.jjs.OkShell
 import io.airlift.airline.Command
 import java.io.File
 import javax.script.ScriptException
