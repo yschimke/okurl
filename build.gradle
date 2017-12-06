@@ -12,6 +12,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'net.nemerosa.versioning' version '2.6.1'
     id "org.jetbrains.kotlin.jvm" version "1.2.0"
+    id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
 apply plugin: 'java'
@@ -19,6 +20,7 @@ apply plugin: 'kotlin'
 apply plugin: 'distribution'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 group = 'com.baulsupp'
 
@@ -52,6 +54,20 @@ compileTestKotlin {
 
 distTar {
     compression = Compression.GZIP
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar, jar
 }
 
 repositories {
@@ -180,6 +196,64 @@ publishing {
 
             artifact sourceJar {
                 classifier "sources"
+            }
+        }
+    }
+}
+
+if (project.hasProperty('ossrhUser')) {
+    signing {
+        sign configurations.archives
+    }
+
+    nexusStaging {
+        username = ossrhUser
+        password = ossrhPassword
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    group 'com.baulsupp'
+                    description "Command Line Output Library"
+                    url "https://github.com/yschimke/oksocial"
+
+                    scm {
+                        connection 'scm:git:https://github.com/yschimke/oksocial.git'
+                        developerConnection 'scm:git:git@github.com:yschimke/oksocial.git'
+                        url 'https://github.com/yschimke/oksocial.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'Apache License'
+                            url 'http://opensource.org/licenses/apache-2.0'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'yschimke'
+                            name = 'Yuri Schimke'
+                            email = 'yuri@schimke.ee'
+                        }
+                    }
+
+                    packaging 'jar'
+                }
             }
         }
     }
