@@ -21,7 +21,10 @@ import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
+import com.baulsupp.oksocial.okhttp.CipherSuiteOption
+import com.baulsupp.oksocial.okhttp.ConnectionSpecOption
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
+import com.baulsupp.oksocial.okhttp.TlsVersionOption
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
@@ -52,6 +55,7 @@ import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
 import okhttp3.Cache
+import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.Dispatcher
 import okhttp3.Dns
@@ -138,6 +142,15 @@ open class CommandLineClient : HelpOption() {
 
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: java.util.List<File>? = null
+
+  @Option(name = ["--connectionSpec"], description = "Connection Spec (MODERN_TLS, COMPATIBLE_TLS)")
+  var connectionSpec: ConnectionSpecOption = ConnectionSpecOption.MODERN_TLS
+
+  @Option(name = ["--cipherSuite"], description = "Cipher Suites")
+  var cipherSuites: java.util.List<CipherSuiteOption>? = null
+
+  @Option(name = ["--tlsVersions"], description = "TLS Versions")
+  var tlsVersions: java.util.List<TlsVersionOption>? = null
 
   @Option(name = ["--opensc"], description = "Send OpenSC Client Certificate (slot)")
   var opensc: Int? = null
@@ -229,6 +242,21 @@ open class CommandLineClient : HelpOption() {
     if (keystoreFile != null) {
       keystore = KeystoreUtils.getKeyStore(keystoreFile)
     }
+
+    if (cipherSuites != null || tlsVersions != null) {
+      val specBuilder = ConnectionSpec.Builder(connectionSpec.spec)
+
+      if (cipherSuites != null) {
+        specBuilder.cipherSuites(*(cipherSuites!!.map { it.suite }.toTypedArray()))
+      }
+
+      if (tlsVersions != null) {
+        specBuilder.tlsVersions(*(tlsVersions!!.map { it.version }.toTypedArray()))
+      }
+
+      builder.connectionSpecs(listOf(specBuilder.build(), ConnectionSpec.CLEARTEXT))
+    }
+
 
     val keyManagers = mutableListOf<KeyManager>()
 
