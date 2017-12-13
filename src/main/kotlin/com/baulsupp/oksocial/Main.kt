@@ -7,15 +7,14 @@ import com.baulsupp.oksocial.authenticator.PrintCredentials
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.commands.CommandRegistry
 import com.baulsupp.oksocial.commands.MainAware
+import com.baulsupp.oksocial.commands.OkApiCommand
 import com.baulsupp.oksocial.commands.OksocialCommand
 import com.baulsupp.oksocial.commands.ShellCommand
 import com.baulsupp.oksocial.completion.CompletionCommand
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.TmpCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
-import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
-import com.baulsupp.oksocial.commands.OkApiCommand
 import com.baulsupp.oksocial.kotlin.await
 import com.baulsupp.oksocial.okhttp.FailedResponse
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
@@ -111,14 +110,6 @@ class Main : CommandLineClient() {
     return 0
   }
 
-  override fun createCredentialsStore(): CredentialsStore {
-    if (token != null && !authorize) {
-      return FixedTokenCredentialsStore(token!!)
-    }
-
-    return super.createCredentialsStore()
-  }
-
   override fun createClientBuilder(): OkHttpClient.Builder {
     val builder = super.createClientBuilder()
 
@@ -195,6 +186,10 @@ class Main : CommandLineClient() {
   }
 
   override fun initialise() {
+    if (token != null && !authorize) {
+      credentialsStore = FixedTokenCredentialsStore(token!!)
+    }
+
     super.initialise()
 
     if (completionVariableCache == null) {

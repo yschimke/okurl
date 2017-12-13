@@ -5,8 +5,7 @@ import com.mcdermottroe.apple.OSXKeychainException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class OSXCredentialsStore @Throws(OSXKeychainException::class)
-@JvmOverloads constructor(private val tokenSet: String? = null) : CredentialsStore {
+class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsStore {
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
   override fun <T> readDefaultCredentials(serviceDefinition: ServiceDefinition<T>): T? {
@@ -24,7 +23,6 @@ class OSXCredentialsStore @Throws(OSXKeychainException::class)
 
       null
     }
-
   }
 
   override fun <T> storeCredentials(credentials: T, serviceDefinition: ServiceDefinition<T>) {
@@ -42,14 +40,18 @@ class OSXCredentialsStore @Throws(OSXKeychainException::class)
       logger.log(Level.WARNING, "Failed to write to keychain", e)
       throw RuntimeException(e)
     }
-
   }
 
-  private fun tokenKey(): String {
-    return "oauth${tokenSet?.let { "." + it } ?: ""}"
-  }
+  private fun tokenKey(): String = "oauth${tokenSet?.let { "." + it } ?: ""}"
 
   companion object {
     private val logger = Logger.getLogger(OSXCredentialsStore::class.java.name)
+
+    fun isAvailable(): Boolean = try {
+      Class.forName("com.mcdermottroe.apple.OSXKeychain")
+      true
+    } catch (e: Exception) {
+      false
+    }
   }
 }

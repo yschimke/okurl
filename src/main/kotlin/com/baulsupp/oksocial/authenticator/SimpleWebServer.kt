@@ -51,7 +51,7 @@ class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
         exchange.close()
         f.complete(code)
       } catch (e: Exception) {
-        out.println(generateFailBody(url, e.toString()))
+        out.println(generateFailBody(e.toString()))
         out.flush()
         exchange.close()
         f.completeExceptionally(e)
@@ -59,24 +59,17 @@ class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
     }
   }
 
-  private fun generateSuccessBody(): String {
-
-    return """<html>
+  private fun generateSuccessBody(): String = """<html>
 <body background="http://win.blogadda.com/wp-content/uploads/2015/08/inspire-win-15.jpg">
 <h1>Authorization Token Received!</h1>
 </body>
 </html>"""
-  }
 
-  private fun generateFailBody(url: HttpUrl, error: String): String {
-//        val params = url.param.joinToString("<br/>") { e -> e.key + " = " + e.value.joinToString(", ") }
-
-    return """<html>
+  private fun generateFailBody(error: String): String = """<html>
 <body background="http://adsoftheworld.com/sites/default/files/fail_moon_aotw.jpg">
 <h1>Authorization Error!</h1>
 <p style="font-size: 600%; font-family: Comic Sans, Comic Sans MS, cursive;">$error</p></body>
 </html>"""
-  }
 
   override fun close() {
     server.stop(0)

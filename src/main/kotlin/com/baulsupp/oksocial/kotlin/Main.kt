@@ -1,12 +1,17 @@
 package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.commands.CommandLineClient
+import com.baulsupp.oksocial.credentials.InMemoryCredentialsStore
 import io.airlift.airline.Command
 import java.io.File
 import javax.script.ScriptException
 
 @Command(name = Main.NAME, description = "Kotlin scripting for APIs")
 class Main : CommandLineClient() {
+  init {
+    this.credentialsStore = InMemoryCredentialsStore()
+  }
+
   override fun initialise() {
     super.initialise()
 

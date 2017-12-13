@@ -9,9 +9,8 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.Authorisation
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor
+import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.credentials.OSXCredentialsStore
-import com.baulsupp.oksocial.credentials.PreferencesCredentialsStore
 import com.baulsupp.oksocial.location.BestLocation
 import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
@@ -28,7 +27,6 @@ import com.baulsupp.oksocial.okhttp.TlsVersionOption
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.security.CertificatePin
 import com.baulsupp.oksocial.security.CertificateUtils
@@ -344,7 +342,7 @@ open class CommandLineClient : HelpOption() {
     }
 
     if (credentialsStore == null) {
-      credentialsStore = createCredentialsStore()
+      credentialsStore = CredentialFactory.createCredentialsStore(tokenSet)
     }
 
     closeables.add(Closeable {
@@ -495,14 +493,6 @@ open class CommandLineClient : HelpOption() {
       outputHandler!!.openLink(link)
     } catch (e: IOException) {
       outputHandler!!.showError("Can't open link", e)
-    }
-  }
-
-  open fun createCredentialsStore(): CredentialsStore {
-    return if (PlatformUtil.isOSX) {
-      OSXCredentialsStore(tokenSet)
-    } else {
-      PreferencesCredentialsStore(tokenSet)
     }
   }
 

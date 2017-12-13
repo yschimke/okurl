@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import okhttp3.Response
 import org.junit.Before
 import org.junit.Test
-import java.io.IOException
 import kotlin.test.assertEquals
 
 class FacebookTest {
