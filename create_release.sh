@@ -37,3 +37,5 @@ echo Created "https://api.github.com/repos/yschimke/oksocial/releases/${RELEASE_
 ./gradlew -q clean distTar
 
 ./oksocial -H "Content-Type: application/x-gzip" -d "@build/distributions/oksocial-${TAG_VERSION}.tgz" "https://uploads.github.com/repos/yschimke/oksocial/releases/${RELEASE_ID}/assets?name=oksocial-${TAG_VERSION}.tgz" | jq ".browser_download_url"
+
+./gradlew uploadArchives closeAndReleaseRepository
