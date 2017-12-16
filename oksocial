@@ -5,11 +5,14 @@ CMD=$(basename "$0")
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
 export INSTALLDIR=.
 
-./gradlew -q installDist
+if [ "$INTELLIJ_BUILD" != "true" -o ! -d "build/install/oksocial/lib" ]; then
+  ./gradlew -q installDist
+  MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-*.jar | grep -v oksocial-output)
+else
+  MAIN_JAR=out/production/classes:out/production/resources
+fi
 
 BCP=
-#DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=localhost:5005,suspend=y
-#DEBUG="-Djavax.net.debug=ssl:handshake -Djava.security.debug=sunpkcs11"
 
 JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
 
@@ -26,5 +29,4 @@ fi
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
-MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-*.jar | grep -v oksocial-output)
-$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
+$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $BCP -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
