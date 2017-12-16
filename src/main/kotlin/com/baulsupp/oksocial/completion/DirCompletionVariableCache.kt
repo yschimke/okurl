@@ -14,11 +14,10 @@ class DirCompletionVariableCache(val dir: File = File(System.getProperty("java.i
     // cache for 5 minutes
     if (f.isFile && f.lastModified() > System.currentTimeMillis() - 300000) {
       try {
-        return Files.readLines(f, StandardCharsets.UTF_8)
+        return Files.readLines(f, StandardCharsets.UTF_8).filterNot { it.isNullOrBlank() }
       } catch (e: IOException) {
         logger.log(Level.WARNING, "failed to read variables", e)
       }
-
     }
 
     return null
@@ -28,11 +27,10 @@ class DirCompletionVariableCache(val dir: File = File(System.getProperty("java.i
     val f = File(dir, "$service-$key.txt")
 
     try {
-      f.writeText(values.joinToString("\n"))
+      f.writeText(values.joinToString(separator = "\n", postfix = "\n"))
     } catch (e: IOException) {
       logger.log(Level.WARNING, "failed to store variables", e)
     }
-
   }
 
   companion object {
