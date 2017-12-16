@@ -7,7 +7,18 @@ import java.nio.charset.StandardCharsets
 
 data class UrlList(val match: Match, val urls: List<String>) {
   enum class Match {
-    EXACT, SITE, HOSTS
+    /**
+     * An exact match that should be recalculated for any change
+     */
+    EXACT,
+    /**
+     * Site specific matches, all subpaths are provided within a site.
+     */
+    SITE,
+    /**
+     * Host selection only
+     */
+    HOSTS
   }
 
   fun getUrls(prefix: String): List<String> {

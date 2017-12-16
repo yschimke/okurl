@@ -7,15 +7,17 @@ interface CompletionVariableCache {
   fun store(service: String, key: String, values: List<String>)
 
   suspend fun compute(service: String, key: String,
-                      s: suspend () -> List<String>): List<String> {
+                      s: suspend () -> List<String>?): List<String> {
     val values = get(service, key)
 
     return if (values != null) {
       values.toList()
     } else {
       val result = s()
-      store(service, key, result)
-      result
+      if (result != null) {
+        store(service, key, result)
+      }
+      result.orEmpty()
     }
   }
 

@@ -20,7 +20,7 @@ import okhttp3.Response
 /**
  * https://developer.surveymonkey.com/docs/authentication
  */
-class SurveyMonkeyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
             "https://developer.surveymonkey.com/api/v3/#scopes",
@@ -62,15 +62,13 @@ class SurveyMonkeyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
                             completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
-
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    if (credentials != null) {
-      completer.withCachedVariable(name(), "survey", {
+    completer.withCachedVariable(name(), "survey", {
+      credentialsStore.readDefaultCredentials(serviceDefinition())?.let {
         client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys").data.map { m -> m.id }
-      })
-    }
+      }
+    })
 
     return completer
   }
