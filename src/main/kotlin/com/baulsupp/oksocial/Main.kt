@@ -12,7 +12,7 @@ import com.baulsupp.oksocial.commands.OksocialCommand
 import com.baulsupp.oksocial.commands.ShellCommand
 import com.baulsupp.oksocial.completion.CompletionCommand
 import com.baulsupp.oksocial.completion.CompletionVariableCache
-import com.baulsupp.oksocial.completion.TmpCompletionVariableCache
+import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.kotlin.await
@@ -67,6 +67,9 @@ class Main : CommandLineClient() {
   @Option(name = ["--renew"], description = "Renew API Authorization")
   var renew: Boolean = false
 
+  @Option(name = ["--remove"], description = "Remove API Authorization")
+  var remove: Boolean = false
+
   @Option(name = ["--token"], description = "Use existing Token for authorization")
   var token: String? = null
 
@@ -103,6 +106,7 @@ class Main : CommandLineClient() {
         apiDoc -> showApiDocs()
         authorize -> authorize()
         renew -> renew()
+        remove -> remove()
         else -> executeRequests(outputHandler!!)
       }
     }
@@ -193,7 +197,7 @@ class Main : CommandLineClient() {
     super.initialise()
 
     if (completionVariableCache == null) {
-      completionVariableCache = TmpCompletionVariableCache()
+      completionVariableCache = DirCompletionVariableCache.TEMP
     }
   }
 
@@ -300,6 +304,11 @@ class Main : CommandLineClient() {
 
   suspend fun renew() {
     authorisation!!.renew(findAuthInterceptor())
+  }
+
+
+  suspend fun remove() {
+    authorisation!!.remove(findAuthInterceptor())
   }
 
   private fun findAuthInterceptor(): AuthInterceptor<*>? {

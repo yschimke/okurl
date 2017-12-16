@@ -11,11 +11,11 @@ class BaseUrlCompleter(private val urlList: UrlList,
     return mappings.replaceVariables(urlList)
   }
 
-  fun withVariable(name: String, values: suspend () -> List<String>) {
-    mappings.withVariable(name, values)
+  fun withVariable(name: String, values: suspend () -> List<String>?) {
+    mappings.withVariable(name, { values().orEmpty() })
   }
 
-  fun withCachedVariable(name: String, field: String, fn: suspend () -> List<String>) {
+  fun withCachedVariable(name: String, field: String, fn: suspend () -> List<String>?) {
     withVariable(field) { completionVariableCache.compute(name, field, fn) }
   }
 }

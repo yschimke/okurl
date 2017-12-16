@@ -7,10 +7,7 @@ import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class TmpCompletionVariableCache : CompletionVariableCache {
-
-  private val dir: File = File(System.getProperty("java.io.tmpdir"))
-
+class DirCompletionVariableCache(val dir: File = File(System.getProperty("java.io.tmpdir"))) : CompletionVariableCache {
   override fun get(service: String, key: String): List<String>? {
     val f = File(dir, "$service-$key.txt")
 
@@ -27,7 +24,7 @@ class TmpCompletionVariableCache : CompletionVariableCache {
     return null
   }
 
-  override fun store(service: String, key: String, values: List<String>) {
+  override fun set(service: String, key: String, values: List<String>) {
     val f = File(dir, "$service-$key.txt")
 
     try {
@@ -39,6 +36,8 @@ class TmpCompletionVariableCache : CompletionVariableCache {
   }
 
   companion object {
-    private val logger = Logger.getLogger(TmpCompletionVariableCache::class.java.name)
+    private val logger = Logger.getLogger(DirCompletionVariableCache::class.java.name)
+
+    val TEMP = DirCompletionVariableCache()
   }
 }

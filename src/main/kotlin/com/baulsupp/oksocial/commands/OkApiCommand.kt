@@ -51,7 +51,7 @@ class OkApiCommand : ShellCommand, MainAware {
       val interceptor = main!!.serviceInterceptor!!.getByName(name)
 
       if (interceptor != null) {
-        return main!!.credentialsStore!!.readDefaultCredentials(interceptor.serviceDefinition())
+        return main!!.credentialsStore!![interceptor.serviceDefinition()]
       }
     }
 

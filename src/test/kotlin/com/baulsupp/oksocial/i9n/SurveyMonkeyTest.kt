@@ -27,9 +27,8 @@ class SurveyMonkeyTest {
   fun completeEndpointWithReplacements() {
     main.arguments = mutableListOf("https://api.surveymonkey.net/")
     main.urlComplete = true
-    completionCache.store("surveymonkey", "survey", listOf("AA", "BB"))
-    credentialsStore.storeCredentials(Oauth2Token(""),
-            SurveyMonkeyAuthInterceptor().serviceDefinition())
+    completionCache["surveymonkey", "survey"] = listOf("AA", "BB")
+    credentialsStore[SurveyMonkeyAuthInterceptor().serviceDefinition()] = Oauth2Token("")
 
     main.run()
 

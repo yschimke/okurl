@@ -10,7 +10,7 @@ class TestCompletionVariableCache : CompletionVariableCache {
     return cache[service + "-" + key]
   }
 
-  override fun store(service: String, key: String, values: List<String>) {
+  override fun set(service: String, key: String, values: List<String>) {
     cache.put(service + "-" + key, values)
   }
 }

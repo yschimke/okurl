@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.location
 
+import com.baulsupp.oksocial.util.FileUtil
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -36,6 +37,6 @@ class FileLocationSource(private val file: File) : LocationSource {
   }
 
   companion object {
-    var FILE = File(System.getenv("HOME"), ".oksocial-location.json")
+    var FILE = File(FileUtil.oksocialSettingsDir, "location.json")
   }
 }

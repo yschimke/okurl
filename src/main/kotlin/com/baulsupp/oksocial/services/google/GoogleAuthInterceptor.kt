@@ -15,6 +15,7 @@ import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.google.firebase.FirebaseCompleter
 import com.baulsupp.oksocial.services.google.model.AuthError
 import com.baulsupp.oksocial.util.ClientException
 import okhttp3.FormBody
@@ -27,11 +28,13 @@ import okhttp3.Response
 /**
  * https://developer.google.com/docs/authentication
  */
-class GoogleAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   private val foundHosts by lazy {
-    UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }.toSet()
+    googleDiscoveryHosts()
   }
+
   private val discoveryIndex by lazy { DiscoveryIndex.loadStatic() }
+  private val firebaseCompleter = FirebaseCompleter()
 
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
@@ -46,13 +49,21 @@ class GoogleAuthInterceptor: AuthInterceptor<Oauth2Token>() {
 
     request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
 
-    return chain.proceed(request)
+    val response = chain.proceed(request)
+
+    if (isFirebaseHost(request.url().host())) {
+      if (response.isSuccessful) {
+        firebaseCompleter.registerKnownHost(request.url().host())
+      }
+    }
+
+    return response
   }
 
   override fun supportsUrl(url: HttpUrl): Boolean {
     val host = url.host()
 
-    return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com")
+    return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
@@ -93,14 +104,32 @@ class GoogleAuthInterceptor: AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter =
-          if (isPastHost(prefix)) {
-            val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
-
-            GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-                    discoveryPaths)
+          if (!isPastHost(prefix)) {
+            hostCompletion(completionVariableCache)
+          } else if (isFirebaseUrl(prefix)) {
+            firebaseCompleter
           } else {
-            BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
+            discoveryCompletion(prefix, client)
           }
+
+  private fun isFirebaseUrl(url: String): Boolean = HttpUrl.parse(url)?.host()?.let { isFirebaseHost(it) }  ?: false
+
+  private fun isFirebaseHost(host: String) = host.endsWith(".firebaseio.com")
+
+  fun discoveryCompletion(prefix: String, client: OkHttpClient): GoogleDiscoveryCompleter {
+    val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
+
+    return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
+            discoveryPaths)
+  }
+
+  fun googleDiscoveryHosts() =
+          UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }.toSet()
+
+  fun hostCompletion(completionVariableCache: CompletionVariableCache) =
+          BaseUrlCompleter(UrlList.fromResource(name())!!, hosts() + firebaseHosts(), completionVariableCache)
+
+  private fun firebaseHosts() = firebaseCompleter.hosts()
 
   override fun hosts(): Set<String> = foundHosts
 

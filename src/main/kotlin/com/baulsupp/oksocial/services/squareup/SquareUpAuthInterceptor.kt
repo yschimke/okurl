@@ -12,12 +12,14 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.squareup.model.LocationList
+import com.baulsupp.oksocial.services.squareup.model.User
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.Arrays
 
-class SquareUpAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup",
             "https://docs.connect.squareup.com/api/connect/v2/",
@@ -63,16 +65,14 @@ class SquareUpAuthInterceptor: AuthInterceptor<Oauth2Token>() {
                             completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
-
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    if (credentials != null) {
-      completer.withCachedVariable(name(), "location", {
+    completer.withCachedVariable(name(), "location", {
+      credentialsStore[serviceDefinition()]?.let {
         client.query<LocationList>(
                 "https://connect.squareup.com/v2/locations").locations.map { it.id }
-      })
-    }
+      }
+    })
 
     return completer
   }

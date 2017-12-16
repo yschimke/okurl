@@ -4,6 +4,8 @@ import com.baulsupp.oksocial.output.util.UsageException
 import java.io.File
 
 object FileUtil {
+  val oksocialSettingsDir = File(System.getenv("HOME"), ".oksocial")
+
   fun expectedFile(name: String): File {
     val file = File(normalize(name))
 

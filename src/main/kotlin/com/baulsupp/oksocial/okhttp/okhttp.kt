@@ -9,9 +9,9 @@ enum class ConnectionSpecOption(val spec: ConnectionSpec) {
 }
 
 class CipherSuiteOption(s: String) {
-  val suite = CipherSuite.forJavaName(s)
+  val suite: CipherSuite = CipherSuite.forJavaName(s)
 }
 
 class TlsVersionOption(s: String) {
-  val version = TlsVersion.forJavaName(s)
+  val version: TlsVersion = TlsVersion.forJavaName(s)
 }

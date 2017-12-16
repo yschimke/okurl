@@ -49,18 +49,16 @@ class QuipAuthInterceptor: AuthInterceptor<Oauth2Token>() {
                             completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val credentials = credentialsStore.readDefaultCredentials(serviceDefinition())
-
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    if (credentials != null) {
-      completer.withCachedVariable(name(), "folderId", {
+    completer.withCachedVariable(name(), "folderId", {
+      credentialsStore[serviceDefinition()]?.let {
         currentUser(client).let {
           listOfNotNull(it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
                   it.archive_folder_id) + it.shared_folder_ids.orEmpty()
         }
-      })
-    }
+      }
+    })
 
     return completer
   }
