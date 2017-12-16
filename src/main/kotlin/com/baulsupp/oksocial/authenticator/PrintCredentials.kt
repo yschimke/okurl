@@ -83,7 +83,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   private fun <T> printCredentials(service: AuthInterceptor<T>) {
     val sd = service.serviceDefinition()
-    val credentialsString = credentialsStore.get(sd)?.let({ sd.formatCredentialsString(it) }) ?: "-"
+    val credentialsString = credentialsStore[sd]?.let({ sd.formatCredentialsString(it) }) ?: "-"
     outputHandler.info(credentialsString)
   }
 
@@ -91,7 +91,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
           services: Iterable<AuthInterceptor<*>>): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = try {
-        credentialsStore.get(sv.serviceDefinition())
+        credentialsStore[sv.serviceDefinition()]
       } catch (e: Exception) {
         logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
         null

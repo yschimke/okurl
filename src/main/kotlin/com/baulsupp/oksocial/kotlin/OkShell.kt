@@ -23,7 +23,7 @@ class OkShell(val commandLine: CommandLineClient) {
     val interceptor = commandLine.serviceInterceptor!!.getByName(name)
 
     if (interceptor != null) {
-      return commandLine.credentialsStore!!.get(interceptor.serviceDefinition())
+      return commandLine.credentialsStore!![interceptor.serviceDefinition()]
     }
 
     return null

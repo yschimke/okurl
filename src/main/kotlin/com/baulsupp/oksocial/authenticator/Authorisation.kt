@@ -28,7 +28,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
   private fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String) {
     val credentials = auth.serviceDefinition().parseCredentialsString(token)
-    credentialsStore.set(auth.serviceDefinition(), credentials)
+    credentialsStore[auth.serviceDefinition()] = credentials
   }
 
   suspend fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>) {
@@ -36,7 +36,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
     val credentials = auth.authorize(client, outputHandler, authArguments)
 
-    credentialsStore.set(auth.serviceDefinition(), credentials)
+    credentialsStore[auth.serviceDefinition()] = credentials
 
     Secrets.instance.saveIfNeeded()
 
@@ -52,7 +52,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
     val serviceDefinition = auth.serviceDefinition()
 
-    val credentials = credentialsStore.get(serviceDefinition) ?: throw UsageException("no existing credentials")
+    val credentials = credentialsStore[serviceDefinition] ?: throw UsageException("no existing credentials")
 
     if (!auth.canRenew(credentials)) {
       throw UsageException("credentials not renewable")
@@ -60,7 +60,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
     val newCredentials = auth.renew(client, credentials) ?: throw UsageException("failed to renew")
 
-    credentialsStore.set(serviceDefinition, newCredentials)
+    credentialsStore[serviceDefinition] = newCredentials
   }
 
   fun remove(auth: AuthInterceptor<*>?) {
