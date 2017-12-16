@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.util.JsonUtil
+import com.baulsupp.oksocial.util.FileUtil
 import com.jakewharton.byteunits.BinaryByteUnit.MEBIBYTES
 import okhttp3.Cache
 import okhttp3.CacheControl
@@ -22,7 +23,7 @@ class DiscoveryRegistry(private val client: OkHttpClient, private val map: Map<S
   }
 
   companion object {
-    private val cache = Cache(File(System.getProperty("user.home"), ".oksocial/google-cache"),
+    private val cache = Cache(File(FileUtil.oksocialSettingsDir, "google-cache"),
             MEBIBYTES.toBytes(20))
 
     private val cacheControl = CacheControl.Builder().maxStale(1, TimeUnit.DAYS).build()

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.secrets
 
+import com.baulsupp.oksocial.util.FileUtil
 import java.io.IOException
-import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties
@@ -37,7 +37,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
     fun loadSecrets(): Secrets {
       val classPathSecrets = loadClasspathDefaults()
 
-      val configFile = FileSystems.getDefault().getPath(System.getenv("HOME"), ".oksocial-secrets.properties")
+      val configFile = FileUtil.oksocialSettingsDir.toPath().resolve("secrets.properties")
 
       val p = Properties()
       if (Files.exists(configFile)) {

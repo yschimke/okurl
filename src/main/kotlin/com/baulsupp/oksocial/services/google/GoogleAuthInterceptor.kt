@@ -49,7 +49,15 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
 
-    return chain.proceed(request)
+    val response = chain.proceed(request)
+
+    if (isFirebaseHost(request.url().host())) {
+      if (response.isSuccessful) {
+
+      }
+    }
+
+    return response
   }
 
   override fun supportsUrl(url: HttpUrl): Boolean {
@@ -98,11 +106,15 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
                             completionVariableCache: CompletionVariableCache): ApiCompleter =
           if (!isPastHost(prefix)) {
             hostCompletion(completionVariableCache)
-          } else if (prefix.contains(".firebaseio.com/")) {
+          } else if (isFirebaseUrl(prefix)) {
             firebaseCompleter
           } else {
             discoveryCompletion(prefix, client)
           }
+
+  private fun isFirebaseUrl(url: String): Boolean = HttpUrl.parse(url)?.host()?.let { isFirebaseHost(it) }  ?: false
+
+  private fun isFirebaseHost(host: String) = host.endsWith(".firebaseio.com")
 
   fun discoveryCompletion(prefix: String, client: OkHttpClient): GoogleDiscoveryCompleter {
     val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)

@@ -1,10 +1,9 @@
 package com.baulsupp.oksocial.completion
 
 interface CompletionVariableCache {
-
   operator fun get(service: String, key: String): List<String>?
 
-  fun store(service: String, key: String, values: List<String>)
+  operator fun set(service: String, key: String, values: List<String>)
 
   suspend fun compute(service: String, key: String,
                       s: suspend () -> List<String>?): List<String> {
@@ -15,7 +14,7 @@ interface CompletionVariableCache {
     } else {
       val result = s()
       if (result != null) {
-        store(service, key, result)
+        this[service, key] = result
       }
       result.orEmpty()
     }
@@ -27,7 +26,8 @@ interface CompletionVariableCache {
         return null
       }
 
-      override fun store(service: String, key: String, values: List<String>) {}
+      override fun set(service: String, key: String, values: List<String>) {
+      }
     }
   }
 }

@@ -12,7 +12,7 @@ import com.baulsupp.oksocial.commands.OksocialCommand
 import com.baulsupp.oksocial.commands.ShellCommand
 import com.baulsupp.oksocial.completion.CompletionCommand
 import com.baulsupp.oksocial.completion.CompletionVariableCache
-import com.baulsupp.oksocial.completion.TmpCompletionVariableCache
+import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.kotlin.await
@@ -193,7 +193,7 @@ class Main : CommandLineClient() {
     super.initialise()
 
     if (completionVariableCache == null) {
-      completionVariableCache = TmpCompletionVariableCache()
+      completionVariableCache = DirCompletionVariableCache.TEMP
     }
   }
 
