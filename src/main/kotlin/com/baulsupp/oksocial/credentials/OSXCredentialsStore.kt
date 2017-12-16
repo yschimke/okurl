@@ -8,7 +8,7 @@ import java.util.logging.Logger
 class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsStore {
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
-  override fun <T> readDefaultCredentials(serviceDefinition: ServiceDefinition<T>): T? {
+  override fun <T> get(serviceDefinition: ServiceDefinition<T>): T? {
     return try {
       val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey())
 
@@ -25,20 +25,25 @@ class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsSto
     }
   }
 
-  override fun <T> storeCredentials(credentials: T, serviceDefinition: ServiceDefinition<T>) {
+  override fun <T> set(
+          serviceDefinition: ServiceDefinition<T>, credentials: T) {
     val credentialsString = serviceDefinition.formatCredentialsString(credentials)
 
-    try {
-      keychain.deleteGenericPassword(serviceDefinition.apiHost(), tokenKey())
-    } catch (e: OSXKeychainException) {
-      logger.log(Level.FINE, "No key to delete", e)
-    }
+    remove(serviceDefinition)
 
     try {
       keychain.addGenericPassword(serviceDefinition.apiHost(), tokenKey(), credentialsString)
     } catch (e: OSXKeychainException) {
       logger.log(Level.WARNING, "Failed to write to keychain", e)
       throw RuntimeException(e)
+    }
+  }
+
+  override fun <T> remove(serviceDefinition: ServiceDefinition<T>) {
+    try {
+      keychain.deleteGenericPassword(serviceDefinition.apiHost(), tokenKey())
+    } catch (e: OSXKeychainException) {
+      logger.log(Level.FINE, "No key to delete", e)
     }
   }
 

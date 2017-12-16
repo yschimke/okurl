@@ -67,7 +67,7 @@ suspend fun OkHttpClient.execute(request: Request): Response {
 fun OkHttpClient.warmup(vararg urls: String) {
   urls.forEach {
     val request = Request.Builder().url(it).build()
-    val call = client.newCall(request)
+    val call = this.newCall(request)
     call.enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
         // ignore

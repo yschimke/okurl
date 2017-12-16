@@ -18,7 +18,6 @@ class DiscoveryApiDocPresenterTest {
   private var p: DiscoveryApiDocPresenter? = null
 
   @Before
-  @Throws(IOException::class)
   fun loadPresenter() {
     val discoveryIndex = DiscoveryIndex.loadStatic()
     p = DiscoveryApiDocPresenter(discoveryIndex)
@@ -50,48 +49,41 @@ class DiscoveryApiDocPresenterTest {
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsExpandedUrl() {
     assertMatch("https://people.googleapis.com/v1/people/me",
         "https://people.googleapis.com/v1/{+resourceName}", "url")
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsExpandedUrl2() {
     assertMatch("https://people.googleapis.com/v1/people:batchGet?resourceNames=me",
         "https://people.googleapis.com/v1/people:batchGet", "url")
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsExpandedUrl3() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
         "https://www.googleapis.com/tasks/v1/users/@me/lists", "url")
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsExpandedUrl4() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists/x",
         "https://www.googleapis.com/tasks/v1/users/@me/lists/{tasklist}", "url")
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsExpandedWWWBeforeSiteUrls() {
     assertMatch("https://www.googleapis.com/tasks/v1/",
         "https://developers.google.com/google-apps/tasks/firstapp", "docs")
   }
 
   @Test
-  @Throws(IOException::class)
   fun testExplainsExpandedWWWAfterSiteUrls() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
         "https://developers.google.com/google-apps/tasks/firstapp", "docs")
   }
 
-  @Throws(IOException::class)
   private fun assertMatch(requested: String, expected: String, field: String) {
     assumeHasNetwork()
 

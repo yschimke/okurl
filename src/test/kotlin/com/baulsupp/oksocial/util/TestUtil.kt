@@ -42,7 +42,7 @@ object TestUtil {
       serviceDefinition: ServiceDefinition<out Any>) {
     initialise()
 
-    val token = credentialsStore!!.readDefaultCredentials(serviceDefinition)
+    val token = credentialsStore!![serviceDefinition]
 
     Assume.assumeTrue(token != null)
   }

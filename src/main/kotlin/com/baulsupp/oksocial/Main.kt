@@ -67,6 +67,9 @@ class Main : CommandLineClient() {
   @Option(name = ["--renew"], description = "Renew API Authorization")
   var renew: Boolean = false
 
+  @Option(name = ["--remove"], description = "Remove API Authorization")
+  var remove: Boolean = false
+
   @Option(name = ["--token"], description = "Use existing Token for authorization")
   var token: String? = null
 
@@ -103,6 +106,7 @@ class Main : CommandLineClient() {
         apiDoc -> showApiDocs()
         authorize -> authorize()
         renew -> renew()
+        remove -> remove()
         else -> executeRequests(outputHandler!!)
       }
     }
@@ -300,6 +304,11 @@ class Main : CommandLineClient() {
 
   suspend fun renew() {
     authorisation!!.renew(findAuthInterceptor())
+  }
+
+
+  suspend fun remove() {
+    authorisation!!.remove(findAuthInterceptor())
   }
 
   private fun findAuthInterceptor(): AuthInterceptor<*>? {

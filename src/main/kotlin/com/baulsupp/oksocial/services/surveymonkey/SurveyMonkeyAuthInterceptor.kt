@@ -65,7 +65,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "survey", {
-      credentialsStore.readDefaultCredentials(serviceDefinition())?.let {
+      credentialsStore.get(serviceDefinition())?.let {
         client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys").data.map { m -> m.id }
       }
     })

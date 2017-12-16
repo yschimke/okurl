@@ -27,8 +27,7 @@ class SquareUpTest {
     main.arguments = mutableListOf("https://connect.squareup.com/")
     main.urlComplete = true
     completionCache["squareup", "location"] = listOf("AA", "bb")
-    credentialsStore.storeCredentials(Oauth2Token("test"),
-        SquareUpAuthInterceptor().serviceDefinition())
+    credentialsStore[SquareUpAuthInterceptor().serviceDefinition()] = Oauth2Token("test")
 
     main.run()
 
