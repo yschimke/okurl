@@ -2,9 +2,11 @@ package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.util.ClientException
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -21,9 +23,11 @@ inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
 inline suspend fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {
   val stringResult = this.queryForString(request)
 
-  val adapter = moshi.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java, V::class.java)) as JsonAdapter<Map<String, V>>
-  return adapter.fromJson(stringResult)!!
+  return moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
+
+inline fun <reified V> Moshi.mapAdapter() =
+        moshi.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java, V::class.java)) as JsonAdapter<Map<String, V>>
 
 inline suspend fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
         this.queryMap(Request.Builder().url(url).build())
@@ -38,6 +42,8 @@ inline suspend fun <reified T> OkHttpClient.queryMapValue(request: Request, vara
 
   return result as T
 }
+
+fun HttpUrl.request() = Request.Builder().url(this).build()
 
 suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
 

@@ -34,7 +34,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   }
 
   private val discoveryIndex by lazy { DiscoveryIndex.loadStatic() }
-  private val firebaseCompleter = FirebaseCompleter()
 
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
@@ -53,7 +52,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     if (isFirebaseHost(request.url().host())) {
       if (response.isSuccessful) {
-        firebaseCompleter.registerKnownHost(request.url().host())
+        FirebaseCompleter.registerKnownHost(request.url().host())
       }
     }
 
@@ -107,7 +106,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
           if (!isPastHost(prefix)) {
             hostCompletion(completionVariableCache)
           } else if (isFirebaseUrl(prefix)) {
-            firebaseCompleter
+            FirebaseCompleter(client)
           } else {
             discoveryCompletion(prefix, client)
           }
@@ -129,7 +128,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   fun hostCompletion(completionVariableCache: CompletionVariableCache) =
           BaseUrlCompleter(UrlList.fromResource(name())!!, hosts() + firebaseHosts(), completionVariableCache)
 
-  private fun firebaseHosts() = firebaseCompleter.hosts()
+  private fun firebaseHosts() = FirebaseCompleter.knownHosts()
 
   override fun hosts(): Set<String> = foundHosts
 
