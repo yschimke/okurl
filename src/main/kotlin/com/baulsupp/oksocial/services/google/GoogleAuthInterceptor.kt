@@ -53,7 +53,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     if (isFirebaseHost(request.url().host())) {
       if (response.isSuccessful) {
-
+        firebaseCompleter.registerKnownHost(request.url().host());
       }
     }
 

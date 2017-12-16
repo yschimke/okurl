@@ -13,8 +13,6 @@ class FirebaseCompleter(private val completionCache: CompletionVariableCache = f
   suspend override fun prefixUrls(): UrlList = UrlList(UrlList.Match.HOSTS, HostUrlCompleter.hostUrls(hosts(), false))
 
   suspend override fun siteUrls(url: HttpUrl): UrlList {
-    completionCache["firebase", "hosts"] = listOf("")
-
     val host = url.host()
     val path = url.pathSegments()
 
@@ -22,6 +20,14 @@ class FirebaseCompleter(private val completionCache: CompletionVariableCache = f
   }
 
   fun hosts(): List<String> = completionCache["firebase", "hosts"].orEmpty()
+
+  fun registerKnownHost(host: String) {
+    val previous = firebaseCache["firebase", "hosts"]
+
+    if (previous == null || !previous.contains(host)) {
+      firebaseCache["firebase", "hosts"] = listOf(host) + (previous ?: listOf())
+    }
+  }
 
   companion object {
     val firebaseCache = DirCompletionVariableCache(File(FileUtil.oksocialSettingsDir, "firebasehosts.txt"))
