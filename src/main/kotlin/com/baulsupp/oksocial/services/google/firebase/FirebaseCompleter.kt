@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.util.FileUtil
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import java.util.logging.Logger
 
 class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   suspend override fun prefixUrls(): UrlList = UrlList(UrlList.Match.HOSTS, HostUrlCompleter.hostUrls(hosts(), false))
@@ -17,6 +18,8 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
     val results = siblings(url) + children(url)
 
     val candidates = results.map { url.newBuilder().encodedPath(it).build().toString() }
+
+    logger.fine("candidates $candidates")
 
     return UrlList(UrlList.Match.EXACT, dedup(candidates + thisNode(url)))
   }
@@ -38,17 +41,15 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun siblings(url: HttpUrl): List<String> {
-    val segments = url.pathSegments()
-
-    if (segments.size < 1) {
+    if (url.encodedPath() == "/" || url.querySize() > 1 || url.encodedPath().contains(".")) {
       return listOf()
     } else {
-      val parentPath = segments.dropLast(1).joinToString(prefix = "/", separator = "/")
+      val parentPath = url.encodedPath().replaceAfterLast("/", "")
 
       val encodedPath = url.newBuilder().encodedPath("$parentPath.json")
       var siblings = keyList(encodedPath)
 
-      return siblings.toList().flatMap { listOf(parentPath + it, parentPath + it + ".json") }
+      return siblings.toList().flatMap { listOf("$parentPath$it", "$parentPath$it.json") }
     }
   }
 
@@ -58,23 +59,25 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun children(url: HttpUrl): List<String> {
-    if (url.encodedPath().contains('.')) {
+    if (url.querySize() > 1 || url.encodedPath().contains(".")) {
       return listOf()
+    } else {
+      val path = url.encodedPath()
+
+      val encodedPath = url.newBuilder().encodedPath("$path.json")
+      var children = keyList(encodedPath)
+
+      val prefixPath = if (path.endsWith("/")) path else path + "/"
+
+      return children.toList().flatMap { listOf(prefixPath + it + "/", prefixPath + it + ".json") }
     }
-
-    val path = url.encodedPath()
-
-    val encodedPath = url.newBuilder().encodedPath("$path.json")
-    var children = keyList(encodedPath)
-
-    val prefixPath = if (path.endsWith("/")) path else path + "/"
-
-    return children.toList().flatMap { listOf(prefixPath + it + "/", prefixPath + it + ".json") }
   }
 
   fun hosts(): List<String> = knownHosts()
 
   companion object {
+    private val logger = Logger.getLogger(FirebaseCompleter::class.java.name)
+
     val firebaseCache = DirCompletionVariableCache(FileUtil.oksocialSettingsDir)
 
     fun knownHosts(): List<String> = firebaseCache["firebase", "hosts"].orEmpty()
