@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CancellationException
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Deferred
@@ -46,6 +47,8 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
     for (f in futures) {
       try {
         results.addAll(f.await().getUrls(prefix))
+      } catch (e: ClientException) {
+        logger.log(Level.WARNING, "http error during url completion", e)
       } catch (e: CancellationException) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       } catch (e: ExecutionException) {

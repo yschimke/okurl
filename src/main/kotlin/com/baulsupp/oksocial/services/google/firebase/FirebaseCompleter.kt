@@ -4,9 +4,7 @@ import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
-import com.baulsupp.oksocial.kotlin.mapAdapter
-import com.baulsupp.oksocial.kotlin.moshi
-import com.baulsupp.oksocial.kotlin.queryForString
+import com.baulsupp.oksocial.kotlin.queryOptionalMap
 import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.util.FileUtil
 import okhttp3.HttpUrl
@@ -16,20 +14,26 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   suspend override fun prefixUrls(): UrlList = UrlList(UrlList.Match.HOSTS, HostUrlCompleter.hostUrls(hosts(), false))
 
   suspend override fun siteUrls(url: HttpUrl): UrlList {
-    val results = thisNode(url) + siblings(url) + children(url);
+    val results = siblings(url) + children(url)
 
-    return UrlList(UrlList.Match.EXACT, results.toSortedSet().toList().map { url.newBuilder().encodedPath(it).build().toString() })
+    val candidates = results.map { url.newBuilder().encodedPath(it).build().toString() }
+
+    return UrlList(UrlList.Match.EXACT, dedup(candidates + thisNode(url)))
   }
+
+  private fun dedup(candidates: List<String>) = candidates.toSortedSet().toList()
 
   suspend fun thisNode(url: HttpUrl): List<String> {
     val path = url.encodedPath()
 
-    if (path.endsWith(".json")) {
-      return listOf(path)
+    if (path.endsWith("/")) {
+      return listOf("$url.json")
+    } else if (path.endsWith(".json") || url.querySize() > 0) {
+      return listOf(url.toString())
     } else if (path.contains('.')) {
-      return listOf(path.replaceAfterLast(".", ".json"))
+      return listOf(url.toString().replaceAfterLast(".", "json"))
     } else {
-      return listOf(path, path + ".json")
+      return listOf()
     }
   }
 
@@ -49,16 +53,8 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun keyList(encodedPath: HttpUrl.Builder): List<String> {
-    val queryJson = client.queryForString(encodedPath.addQueryParameter("shallow", "true").build().request())
-
-    if (queryJson == "null") {
-      return listOf()
-    } else if (queryJson.startsWith("{")) {
-      return moshi.mapAdapter<Any>().fromJson(queryJson)!!.keys.toList()
-    }
-
-    // TODO warn
-    return listOf()
+    val request = encodedPath.addQueryParameter("shallow", "true").build().request()
+    return client.queryOptionalMap<Any>(request)?.keys?.toList().orEmpty()
   }
 
   suspend fun children(url: HttpUrl): List<String> {
@@ -71,7 +67,9 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
     val encodedPath = url.newBuilder().encodedPath("$path.json")
     var children = keyList(encodedPath)
 
-    return children.toList().flatMap { listOf(path + "/" + it + "/", path + "/" + it + ".json") }
+    val prefixPath = if (path.endsWith("/")) path else path + "/"
+
+    return children.toList().flatMap { listOf(prefixPath + it + "/", prefixPath + it + ".json") }
   }
 
   fun hosts(): List<String> = knownHosts()

@@ -2,6 +2,8 @@ package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.Main
 import java.io.File
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class CompletionCommand(val main: Main) {
   suspend fun urlCompletionList(): String {
@@ -48,10 +50,18 @@ class CompletionCommand(val main: Main) {
   }
 
   suspend fun complete() {
-    main.outputHandler!!.info(urlCompletionList())
+    try {
+      main.outputHandler!!.info(urlCompletionList())
+    } catch (e: Exception) {
+      logger.log(Level.FINE, "failure during url completion", e)
+    }
   }
 
   suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
     return urlCompleter.urlList(arguments[arguments.size - 1])
+  }
+
+  companion object {
+    private val logger = Logger.getLogger(CompletionCommand::class.java.name)
   }
 }

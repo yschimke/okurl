@@ -12,6 +12,9 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
+inline fun <reified V> Moshi.mapAdapter() =
+        this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java, V::class.java)) as JsonAdapter<Map<String, V>>
+
 inline suspend fun <reified T> OkHttpClient.query(url: String): T = this.query(Request.Builder().url(url).build())
 
 inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
@@ -26,11 +29,17 @@ inline suspend fun <reified V> OkHttpClient.queryMap(request: Request): Map<Stri
   return moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
 
-inline fun <reified V> Moshi.mapAdapter() =
-        moshi.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java, V::class.java)) as JsonAdapter<Map<String, V>>
-
 inline suspend fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
         this.queryMap(Request.Builder().url(url).build())
+
+inline suspend fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
+  val stringResult = this.queryForString(request)
+
+  return moshi.mapAdapter<V>().fromJson(stringResult)
+}
+
+inline suspend fun <reified V> OkHttpClient.queryOptionalMap(url: String): Map<String, V>? =
+        this.queryOptionalMap(Request.Builder().url(url).build())
 
 inline suspend fun <reified T> OkHttpClient.queryMapValue(url: String, vararg keys: String): T? =
         this.queryMapValue<T>(Request.Builder().url(url).build(), *keys)
@@ -43,7 +52,7 @@ inline suspend fun <reified T> OkHttpClient.queryMapValue(request: Request, vara
   return result as T
 }
 
-fun HttpUrl.request() = Request.Builder().url(this).build()
+fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
 suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
 
