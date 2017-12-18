@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.0'
+    ext.kotlin_version = '1.2.10'
     repositories {
         mavenCentral()
     }
@@ -11,7 +11,7 @@ buildscript {
 plugins {
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'net.nemerosa.versioning' version '2.6.1'
-    id "org.jetbrains.kotlin.jvm" version "1.2.0"
+    id "org.jetbrains.kotlin.jvm" version "1.2.10"
     id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
