@@ -89,9 +89,9 @@ dependencies {
     compile('com.baulsupp:oksocial-output:0.12.0')
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.9.1'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2")
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.3'
     compile('com.twitter:joauth:6.0.2') {
         exclude(module: 'guava')
     }
@@ -107,8 +107,8 @@ dependencies {
     compile 'org.zeroturnaround:zt-exec:1.10'
     compile 'com.google.guava:guava:23.0'
     compile 'com.jakewharton.byteunits:byteunits:0.9.1'
-    compile 'io.netty:netty-all:4.1.17.Final'
-    compile 'io.netty:netty-resolver-dns:4.1.17.Final'
+    compile 'io.netty:netty-all:4.1.19.Final'
+    compile 'io.netty:netty-resolver-dns:4.1.19.Final'
     compile 'io.airlift:airline:0.8'
     compile files('external/osxkeychain.jar')
     compile 'io.zipkin.reporter:zipkin-sender-okhttp3:1.0.2'
@@ -259,3 +259,13 @@ if (project.hasProperty('ossrhUser')) {
     }
 }
 
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = selection.candidate.group == "io.netty" && selection.candidate.version ==~ /5\..*/
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
