@@ -331,6 +331,7 @@ open class CommandLineClient : HelpOption() {
   }
 
   open fun initialise() {
+    System.setProperty("apple.awt.UIElement", "true");
     LoggingUtil.configureLogging(debug, showHttp2Frames, sslDebug)
 
     if (outputHandler == null) {
