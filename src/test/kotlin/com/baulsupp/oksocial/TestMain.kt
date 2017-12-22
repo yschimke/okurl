@@ -4,7 +4,7 @@ object TestMain {
   @Throws(Exception::class)
   @JvmStatic
   fun main(args: Array<String>) {
-    runMain("https://linen-centaur-133323.firebaseio.com/admins/jill/ --urlCompletion")
+    runMain("https://api. --urlCompletion")
   }
 
   private fun runMain(s: String) {

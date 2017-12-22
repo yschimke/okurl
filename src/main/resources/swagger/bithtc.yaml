@@ -1,0 +1,1420 @@
+swagger: '2.0'
+info:
+  title: HitBTC API
+  version: "2.1.0"
+  description: |
+    Create API keys in your profile https://hitbtc.com/settings/api-keys and use public API key as username and secret as password to authorize.
+
+#    #### Error
+#    If errors while do any request
+#    response like:
+#    ```json
+#    {
+#        "error": {
+#            "code": 400,
+#            "message": "Invalid price ...",
+#            "description": "..."
+#        }
+#    }
+#    ```
+
+schemes:
+  - https
+  - http
+
+basePath: /api/2
+produces:
+  - application/json
+
+
+securityDefinitions:
+
+  hitBTCBasic:
+    type: basic
+    description: |
+      You should use apiKey and apiSecret as login & password. [Create api key](https://hitbtc.com/settings/api-keys)
+
+
+paths:
+
+  /public/symbol:
+    get:
+      summary: Available Currency Symbols
+      description: |
+        Get list of avialable Symbols (Currency Pairs). You can read more info at http://www.investopedia.com/terms/c/currencypair.asp
+      tags:
+        - Public
+      responses:
+        200:
+          description: An array of symbols
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Symbol'
+
+  /public/symbol/{symbol}:
+    get:
+      summary: Get symbol info
+      parameters:
+        - name: symbol
+          in: path
+          type: string
+          required: true
+      tags:
+        - Public
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Symbol'
+        400:
+          description: Symbol not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /public/currency:
+    get:
+      summary: Available Currencies
+      description: |
+        Get list of avialable Symbols (Currency Pairs). You can read more info at http://www.investopedia.com/terms/c/currencypair.asp
+      tags:
+        - Public
+      responses:
+        200:
+          description: An array of symbols
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Currency'
+
+  /public/currency/{currency}:
+    get:
+      summary: Get currency info
+      parameters:
+        - name: currency
+          in: path
+          type: string
+          required: true
+      tags:
+        - Public
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Currency'
+        400:
+          description: Currency not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /public/ticker:
+    get:
+      summary: Ticker list for all symbols
+      description: |
+        The Ticker endpoint returns last 24H information about of all symbol.
+      tags:
+        - Public
+      responses:
+        200:
+          description: An array of products
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Ticker'
+
+  /public/ticker/{symbol}:
+    get:
+      summary: Ticker for symbol
+      description: |
+        The Ticker endpoint returns last 24H information about symbol.
+      parameters:
+        - name: symbol
+          in: path
+          type: string
+          required: true
+      tags:
+        - Public
+      responses:
+        200:
+          description: An array of products
+          schema:
+            $ref: '#/definitions/Ticker'
+
+  /public/trades/{symbol}:
+    get:
+      summary: Trades
+      parameters:
+        - name: symbol
+          in: path
+          type: string
+          required: true
+        - name: sort
+          in: query
+          type: string
+          description: Sort direction
+          default: DESC
+          required: false
+          enum:
+            - DESC
+            - ASC
+        - name: by
+          in: query
+          type: string
+          description: Filter field
+          default: timestamp
+          required: false
+          enum:
+            - timestamp
+            - id
+        - name: from
+          in: query
+          type: string
+          description: If filter by timestamp, then datetime in iso format or timestamp in millisecond otherwise trade id
+        - name: till
+          in: query
+          type: string
+          description: If filter by timestamp, then datetime in iso format or timestamp in millisecond otherwise trade id
+        - name: limit
+          in: query
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 1000
+          format: int32
+        - name: offset
+          in: query
+          type: integer
+          format: int32
+      tags:
+        - Public
+      responses:
+        200:
+          description: An array of trades
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicTrade'
+
+  /public/orderbook/{symbol}:
+    get:
+      summary: Orderbook
+      parameters:
+        - name: symbol
+          in: path
+          type: string
+          required: true
+        - name: limit
+          description: 0 - full orderbook otherwise number of levels
+          in: query
+          type: integer
+          default: 100
+      tags:
+        - Public
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Orderbook'
+
+  /public/candles/{symbol}:
+    get:
+      summary: Candles
+      parameters:
+        - name: symbol
+          in: path
+          type: string
+          required: true
+        - name: limit
+          in: query
+          type: integer
+          default: 100
+        - name: period
+          in: query
+          type: string
+          default: M30
+          enum:
+            - M1
+            - M3
+            - M5
+            - M15
+            - M30
+            - H1
+            - H4
+            - D1
+            - D7
+            - 1M
+      tags:
+        - Public
+      responses:
+        200:
+          description: List of candles
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Candle'
+
+  #####################################################################
+  ## TRADING API
+  #####################################################################
+  /order:
+    get:
+      summary: List your current open orders
+      description: List of your currently open orders.
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: symbol
+          in: query
+          type: string
+          required: false
+      tags:
+        - Trading
+      responses:
+        200:
+          description: List of active orders
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      summary: Create new order
+      security:
+        - hitBTCBasic:
+          - order
+      tags:
+        - Trading
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: clientOrderId
+          in: formData
+          type: string
+        - name: symbol
+          in: formData
+          schema:
+          type: string
+          required: true
+        - name: side
+          in: formData
+          required: true
+          default: sell
+          type: string
+          enum:
+            - sell
+            - buy
+        - name: type
+          in: formData
+          type: string
+          default: limit
+          enum:
+            - limit
+            - market
+            - stopLimit
+            - stopMarket
+        - name: timeInForce
+          in: formData
+          type: string
+          default: GTC
+          enum:
+            - GTC
+            - IOC
+            - FOK
+            - Day
+            - GTD
+        - name: quantity
+          in: formData
+          type: string
+          required: true
+        - name: price
+          in: formData
+          type: string
+        - name: stopPrice
+          in: formData
+          type: string
+        - name: expireTime
+          in: formData
+          type: string
+          format: date-time
+        - name: strictValidate
+          in: formData
+          description: Strict validate amount and price precision without rounding
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: Success order create
+          schema:
+            $ref: '#/definitions/Order'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Authorisation required
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      summary: Cancel all open orders
+      security:
+        - hitBTCBasic:
+          - order
+      parameters:
+        - name: symbol
+          in: formData
+          type: string
+          required: false
+      tags:
+        - Trading
+      responses:
+        200:
+          description: Canceled orders
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+        401:
+          description: Authorisation required
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /order/{clientOrderId}:
+    get:
+      summary: Get a single order by clientOrderId
+      description: |
+        The Ticker endpoint returns last 24H information about symbols.
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: clientOrderId
+          in: path
+          type: string
+          required: true
+        - name: wait
+          in: query
+          type: integer
+          format: int32
+          required: false
+          description: Long polling wait timeout in milliseconds. Max 60000.
+      tags:
+        - Trading
+      responses:
+        200:
+          description: Active order
+          schema:
+            $ref: '#/definitions/Order'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      summary: Create new order
+      consumes:
+        - application/x-www-form-urlencoded
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: clientOrderId
+          in: path
+          type: string
+          required: true
+        - name: symbol
+          in: formData
+          schema:
+          type: string
+          required: true
+        - name: side
+          in: formData
+          required: true
+          default: sell
+          type: string
+          enum:
+            - sell
+            - buy
+        - name: type
+          in: formData
+          type: string
+          default: limit
+          enum:
+            - limit
+            - market
+            - stopLimit
+            - stopMarket
+        - name: timeInForce
+          in: formData
+          type: string
+          required: true
+          default: GTC
+          enum:
+            - GTC
+            - IOC
+            - FOK
+            - Day
+            - GTD
+        - name: quantity
+          in: formData
+          type: string
+          required: true
+        - name: price
+          in: formData
+          type: string
+        - name: stopPrice
+          in: formData
+          type: string
+        - name: expireTime
+          in: formData
+          type: string
+          format: date-time
+        - name: strictValidate
+          in: formData
+          description: Strict validate amount and price precision without rounding
+          type: boolean
+          default: false
+      tags:
+        - Trading
+      responses:
+        200:
+          description: Order
+          schema:
+            $ref: '#/definitions/Order'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      summary: Cancel order
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: clientOrderId
+          in: path
+          type: string
+          required: true
+      tags:
+        - Trading
+      responses:
+        200:
+          description: Canceled order
+          schema:
+            $ref: '#/definitions/Order'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    patch:
+      summary: Cancel Replace order
+      consumes:
+        - application/x-www-form-urlencoded
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: clientOrderId
+          in: path
+          type: string
+          required: true
+        - name: quantity
+          in: formData
+          type: string
+          required: true
+        - name: price
+          in: formData
+          type: string
+        - name: requestClientId
+          in: formData
+          type: string
+          required: true
+      tags:
+        - Trading
+      responses:
+        200:
+          description: Replaced order
+          schema:
+            $ref: '#/definitions/Order'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /trading/balance:
+    get:
+      tags:
+        - Trading
+      summary: Get trading balance
+      security:
+        - hitBTCBasic:
+            - order
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Balance'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /trading/fee/{symbol}:
+    get:
+      tags:
+        - Trading
+      summary: Get trading fee rate
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: symbol
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/TradingFee'
+
+  #####################################################################
+  ## HISTORICAL API
+  #####################################################################
+  /history/trades:
+    get:
+      summary: Get historical trades
+      security:
+        - hitBTCBasic:
+            - order
+      tags:
+        - Trading History
+      parameters:
+        - name: symbol
+          in: query
+          type: string
+          required: false
+        - name: sort
+          in: query
+          type: string
+          description: Sort direction
+          default: DESC
+          required: false
+          enum:
+            - DESC
+            - ASC
+        - name: by
+          in: query
+          type: string
+          description: Filter field
+          default: timestamp
+          required: false
+          enum:
+            - timestamp
+            - id
+        - name: from
+          in: query
+          type: string
+          description: If filter by timestamp, then datetime in iso format or timestamp in millisecond otherwise trade id
+        - name: till
+          in: query
+          type: string
+          description: If filter by timestamp, then datetime in iso format or timestamp in millisecond otherwise trade id
+        - name: limit
+          in: query
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 1000
+          format: int32
+        - name: offset
+          in: query
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: List of trades
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trade'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /history/order:
+    get:
+      tags:
+        - Trading History
+      summary: Get historical orders
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: symbol
+          in: query
+          type: string
+          required: false
+        - name: from
+          in: query
+          type: string
+          description: Datetime in iso format or timestamp in millisecond.
+        - name: till
+          in: query
+          type: string
+          description: Datetime in iso format or timestamp in millisecond.
+        - name: limit
+          in: query
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 1000
+          format: int32
+        - name: offset
+          in: query
+          type: integer
+          format: int32
+        - name: clientOrderId
+          in: query
+          type: string
+      responses:
+        200:
+          description: List of orders
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /history/order/{id}/trades:
+    get:
+      tags:
+        - Trading History
+      summary: Get historical trades by specified order
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+      responses:
+        200:
+          description: List of trades by order
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trade'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  #####################################################################
+  ## ACCOUNT API
+  #####################################################################
+  /account/balance:
+    get:
+      tags:
+        - Account
+      summary: Get main acccount balance
+      security:
+        - hitBTCBasic:
+            - order
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Balance'
+
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/transactions:
+    get:
+      tags:
+        - Account
+      summary: Get account transactions
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: currency
+          in: query
+          type: string
+        - name: sort
+          in: query
+          type: string
+          description: Sort direction
+          default: DESC
+          required: false
+          enum:
+            - DESC
+            - ASC
+        - name: by
+          in: query
+          type: string
+          description: Filter field
+          default: timestamp
+          required: false
+          enum:
+            - timestamp
+            - index
+        - name: from
+          in: query
+          type: string
+          description: Datetime in iso format or timestamp in millisecond, or index.
+        - name: till
+          in: query
+          type: string
+          description: Datetime in iso format or timestamp in millisecond, or index.
+        - name: limit
+          in: query
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 1000
+          format: int32
+        - name: offset
+          in: query
+          type: integer
+          format: int32
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+  /account/transactions/{id}:
+    get:
+      tags:
+        - Account
+      summary: Get account transaction by id
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Transaction'
+
+  /account/crypto/withdraw:
+    post:
+      tags:
+        - Account
+      summary: Withdraw crypro
+      consumes:
+        - application/x-www-form-urlencoded
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: currency
+          in: formData
+          type: string
+          required: true
+        - name: amount
+          in: formData
+          type: string
+          required: true
+        - name: address
+          in: formData
+          type: string
+          required: true
+        - name: paymentId
+          in: formData
+          type: string
+        - name: networkFee
+          in: formData
+          type: string
+          description: Suggest preferred network fee.
+        - name: includeFee
+          in: formData
+          type: boolean
+          default: false
+          description: If enabled, then fee will be subtracted from amount.
+        - name: autoCommit
+          in: formData
+          type: boolean
+          default: true
+          description: If Auto commit disabled you should commit it or rollback within 1 hour. After expires 1 hour, the transaction will automatically be rolled back.
+      responses:
+        200:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                required: true
+
+  /account/crypto/withdraw/{id}:
+    put:
+      tags:
+        - Account
+      summary: Commit withdraw crypro
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/WithdrawConfirm'
+
+    delete:
+      tags:
+        - Account
+      summary: Rollback withdraw crypro
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/WithdrawConfirm'
+
+  /account/crypto/address/{currency}:
+    get:
+      tags:
+        - Account
+      summary: Get deposit crypro address
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: currency
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Address'
+    post:
+      tags:
+        - Account
+      summary: Create new deposit crypro address
+      consumes:
+        - application/x-www-form-urlencoded
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: currency
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Address'
+
+  /account/transfer:
+    post:
+      tags:
+        - Account
+      summary: Transfer amount to trading
+      consumes:
+        - application/x-www-form-urlencoded
+      security:
+        - hitBTCBasic:
+            - order
+      parameters:
+        - name: currency
+          in: formData
+          type: string
+          required: true
+        - name: amount
+          in: formData
+          type: string
+          required: true
+        - name: type
+          in: formData
+          type: string
+          required: true
+          enum:
+            - bankToExchange
+            - exchangeToBank
+      responses:
+        200:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                required: true
+definitions:
+
+  Currency:
+    type: object
+    properties:
+      id:
+        type: string
+        required: true
+        description: Currency code
+      fullName:
+        type: string
+        required: true
+      crypto:
+        type: boolean
+        required: true
+        description: True for cryptocurrencies, false for fiat, ICO and others.
+      payinEnabled:
+        type: boolean
+        required: true
+        description: True if cryptocurrency support generate adress or paymentId for deposits
+      payinPaymentId:
+        type: boolean
+        required: true
+        description: True if cryptocurrency requred use paymentId for deposits
+      payinConfirmations:
+        type: integer
+        required: true
+        description: Confirmations count for cryptocurrency deposits
+      payoutEnabled:
+        type: boolean
+        required: true
+      payoutIsPaymentId:
+        type: boolean
+        required: true
+        description: True if cryptocurrency allow use paymentId for withdraw
+      transferEnabled:
+        type: boolean
+        required: true
+
+
+  Balance:
+    type: object
+    properties:
+      currency:
+        type: string
+      available:
+        type: string
+        description: Amount available to spend
+      reserved:
+        type: string
+        description: Amount reserved on orders or payout
+
+  Ticker:
+    type: object
+    properties:
+      symbol:
+        type: string
+      ask:
+        type: string
+        description: Best ASK.
+      bid:
+        type: string
+        description: Best BID.
+      last:
+        type: string
+        description: Last trade price
+      low:
+        type: string
+        description: Min trade price of the last 24 hours.
+      high:
+        type: string
+        description: Max trade price of the last 24 hours.
+      open:
+        type: string
+        description: Trade price 24 hours ago.
+      volume:
+        type: string
+        description: Trading volume in commoduty currency of the last 24 hours.
+      volumeQuoute:
+        type: string
+        description: Trading volume in currency of the last 24 hours.
+      timestamp:
+        type: string
+        format: date-time
+        description: Actual timestamp.
+
+  PublicTrade:
+    type: object
+    properties:
+      id:
+        type: integer
+      price:
+        type: string
+      quantity:
+        type: string
+      side:
+        type: string
+        enum:
+          - sell
+          - buy
+      timestamp:
+        type: string
+        format: date-time
+    example:
+      id: 76502536
+      price: '0.012285'
+      quantity: '6.754'
+      side: 'sell'
+      timestamp: '2017-01-10T12:00:00.672Z'
+
+  Orderbook:
+    type: object
+    properties:
+      ask:
+        type: array
+        items:
+          type: object
+          properties:
+            price:
+             type: string
+            size:
+             type: string
+        example:
+          price: '0.012285'
+          size: '6.754'
+      bid:
+        type: array
+        items:
+          type: object
+          properties:
+            price:
+             type: string
+            size:
+             type: string
+        example:
+          price: '0.012106'
+          size: '43.167'
+      timestamp:
+        type: string
+        format: date-time
+
+  TradingFee:
+    type: object
+    properties:
+      takeLiquidityRate:
+        type: string
+        required: true
+      provideLiquidityRate:
+        type: string
+        required: true
+
+  Symbol:
+    type: object
+    properties:
+      id:
+        type: string
+        required: true
+      baseCurrency:
+        type: string
+        required: true
+      quoteCurrency:
+        type: string
+        required: true
+      quantityIncrement:
+        type: string
+        required: true
+      tickSize:
+        type: string
+        required: true
+        description: A tick size is the minimum price movement of a trading instrument.
+      takeLiquidityRate:
+        type: string
+      provideLiquidityRate:
+        type: string
+      feeCurrency:
+        type: string
+    example:
+      id: ETHBTC
+      baseCurrency: ETH
+      quoteCurrency: BTC
+      quantityIncrement: 0.001
+      tickSize: 0.000001
+      takeLiquidityRate: 0.001
+      provideLiquidityRate: -0.0001
+      feeCurrency: BTC
+
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        required: true
+      clientOrderId:
+        type: string
+        required: true
+      symbol:
+        type: string
+        required: true
+      side:
+        type: string
+        required: true
+        enum:
+          - sell
+          - buy
+      status:
+        type: string
+        required: true
+        enum:
+          - new
+          - suspended
+          - partiallyFilled
+          - filled
+          - canceled
+          - expired
+      type:
+        type: string
+        required: true
+        enum:
+         - limit
+         - market
+         - stopLimit
+         - stopMarket
+      timeInForce:
+        type: string
+        required: true
+        enum:
+          - GTC
+          - IOC
+          - FOK
+          - Day
+          - GTD
+      quantity:
+        type: string
+      price:
+        type: string
+      cumQuantity:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+      stopPrice:
+        type: string
+      expireTime:
+        type: string
+        format: date-time
+      tradesReport:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            required: true
+          quantity:
+            type: string
+          price:
+            type: string
+          fee:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+    example:
+      id: 828680665
+      clientOrderId: 'f4307c6e507e49019907c917b6d7a084'
+      symbol: 'ETHBTC'
+      side: 'sell'
+      status: 'partiallyFilled'
+      type: 'limit'
+      timeInForce: 'GTC'
+      price: '0.011384'
+      quantity: '13.942'
+      cumQuantity: '5.240'
+      createdAt: '2017-01-16T14:18:47.321Z'
+      updatedAt: '2017-01-19T15:23:54.876Z'
+
+  Trade:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        required: true
+      clientOrderId:
+        type: string
+        required: true
+      orderId:
+        type: integer
+        format: int64
+        required: true
+      symbol:
+        type: string
+        required: true
+      side:
+        type: string
+        required: true
+        enum:
+          - sell
+          - buy
+      quantity:
+        type: string
+      fee:
+        type: string
+      price:
+        type: string
+      timestamp:
+        type: string
+        format: date-time
+
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        required: true
+      index:
+        type: string
+        required: true
+      currency:
+        type: string
+        required: true
+      amount:
+        type: string
+        required: true
+      fee:
+        type: string
+      networkFee:
+        type: string
+      address:
+        type: string
+      paymentId:
+        type: string
+      hash:
+        type: string
+
+      status:
+        type: string
+        required: true
+        enum:
+          - created
+          - pending
+          - failed
+          - success
+      type:
+        type: string
+        required: true
+        enum:
+          - payout
+          - payin
+          - deposit
+          - withdraw
+          - bankToExchange
+          - exchangeToBank
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+
+  Address:
+    type: object
+    properties:
+      address:
+        type: string
+        required: true
+      paymentId:
+        type: string
+
+  WithdrawConfirm:
+    type: object
+    properties:
+      result:
+        type: boolean
+        required: true
+    example:
+      result: true
+
+  Candle:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+        required: true
+      open:
+        type: string
+        required: true
+      close:
+        type: string
+        required: true
+      min:
+        type: string
+        required: true
+      max:
+        type: string
+        required: true
+      volume:
+        type: string
+        required: true
+      volumeQuote:
+        type: string
+        required: true
+
+  Error:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code:
+            type: integer
+            format: int32
+            required: true
+              - 500
+              - 504
+              - 503
+              - 2001
+              - 1001
+              - 1002
+              - 2001
+              - 10001
+          message:
+            type: string
+            required: true
+            enum:
+              - Internal Server Error
+              - Gateway Timeout
+              - Service Unavailable
+              - Symbol not found
+              - Authorisation required
+              - Authorisation failed
+              - Validation error
+              - Insufficient funds
+          description:
+            type: string

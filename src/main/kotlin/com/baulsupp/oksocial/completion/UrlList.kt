@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.completion
 
 import com.google.common.io.Resources
 import java.io.File
-import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 data class UrlList(val match: Match, val urls: List<String>) {
@@ -30,7 +29,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
       return this
     }
 
-    val regexToken = "\\{$variable\\}"
+    val regexToken = "\\{$variable}".toRegex()
     val literalToken = "{$variable}"
 
     val replacementList: List<String>
@@ -44,8 +43,8 @@ data class UrlList(val match: Match, val urls: List<String>) {
     }
 
     val newUrls = urls.flatMap { url ->
-      if (url.contains("{"))
-        replacementList.map { s -> url.replace(regexToken.toRegex(), s) }
+      if (url.contains(regexToken))
+        replacementList.map { s -> url.replace(regexToken, s) }
       else
         listOf(url)
     }
@@ -53,7 +52,6 @@ data class UrlList(val match: Match, val urls: List<String>) {
     return UrlList(match, newUrls)
   }
 
-  @Throws(IOException::class)
   fun toFile(file: File, strip: Int, prefix: String) {
     val content = "${regex(prefix)}\n${urls.joinToString("\n") { u -> u.substring(strip) }}"
 
@@ -86,7 +84,6 @@ data class UrlList(val match: Match, val urls: List<String>) {
   override fun toString() = urls.joinToString("\n")
 
   companion object {
-    @Throws(IOException::class)
     fun fromResource(serviceName: String): UrlList? {
       return UrlList::class.java.getResource("/urls/$serviceName.txt")?.let {
         UrlList(Match.SITE, Resources.readLines(it, StandardCharsets.UTF_8))

@@ -15,6 +15,9 @@ import java.io.IOException
 inline fun <reified V> Moshi.mapAdapter() =
         this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java, V::class.java)) as JsonAdapter<Map<String, V>>
 
+inline fun <reified V> Moshi.listAdapter() =
+        this.adapter<Any>(Types.newParameterizedType(List::class.java, V::class.java)) as JsonAdapter<List<V>>
+
 inline suspend fun <reified T> OkHttpClient.query(url: String): T = this.query(Request.Builder().url(url).build())
 
 inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
@@ -31,6 +34,15 @@ inline suspend fun <reified V> OkHttpClient.queryMap(request: Request): Map<Stri
 
 inline suspend fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
         this.queryMap(Request.Builder().url(url).build())
+
+inline suspend fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
+  val stringResult = this.queryForString(request)
+
+  return moshi.listAdapter<V>().fromJson(stringResult)!!
+}
+
+inline suspend fun <reified V> OkHttpClient.queryList(url: String): List<V> =
+        this.queryList(Request.Builder().url(url).build())
 
 inline suspend fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
   val stringResult = this.queryForString(request)

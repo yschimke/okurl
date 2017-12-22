@@ -7,6 +7,7 @@ com.baulsupp.oksocial.services.foursquare.FourSquareAuthInterceptor
 com.baulsupp.oksocial.services.giphy.GiphyAuthInterceptor
 com.baulsupp.oksocial.services.github.GithubAuthInterceptor
 com.baulsupp.oksocial.services.google.GoogleAuthInterceptor
+com.baulsupp.oksocial.services.hitbtc.HitBTCAuthInterceptor
 com.baulsupp.oksocial.services.httpbin.HttpBinAuthInterceptor
 com.baulsupp.oksocial.services.imgur.ImgurAuthInterceptor
 com.baulsupp.oksocial.services.instagram.InstagramAuthInterceptor
