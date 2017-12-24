@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.Authorisation
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor
+import com.baulsupp.oksocial.brotli.BrotliInterceptor
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.location.BestLocation
@@ -386,7 +387,7 @@ open class CommandLineClient : HelpOption() {
 
     authorisation = Authorisation(serviceInterceptor!!, credentialsStore!!, authClient, outputHandler!!)
 
-    clientBuilder.networkInterceptors().add(0, serviceInterceptor)
+    clientBuilder.networkInterceptors().add(serviceInterceptor)
 
     if (zipkin || zipkinTrace) {
       applyZipkin(clientBuilder)
@@ -418,6 +419,7 @@ open class CommandLineClient : HelpOption() {
 
     // TODO move behind AuthInterceptor API
     builder.addNetworkInterceptor(TwitterCachingInterceptor())
+    builder.addNetworkInterceptor(BrotliInterceptor)
     builder.addNetworkInterceptor(TwitterDeflatedResponseInterceptor())
 
     if (curl) {
