@@ -6,6 +6,11 @@ import okhttp3.ResponseBody
 import okio.Okio
 import org.brotli.dec.BrotliInputStream
 
+/**
+ * Transparent Brotli response support.
+ *
+ * Adds Accept-Encoding: br to existing encodings and checks (and strips) for Content-Encoding: br in responses
+ */
 object BrotliInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request().newBuilder().addHeader("Accept-Encoding", "br").build()
@@ -15,9 +20,10 @@ object BrotliInterceptor : Interceptor {
     if (response.header("Content-Encoding") == "br") {
       val body = response.body()!!
       val decompressedSource = Okio.buffer(Okio.source(BrotliInputStream(body.source().inputStream())))
-      val responseBuilder = response.newBuilder()
-      responseBuilder.removeHeader("Content-Encoding")
-      return responseBuilder.body(ResponseBody.create(body.contentType(), body.contentLength(), decompressedSource)).build()
+      return response.newBuilder()
+              .removeHeader("Content-Encoding")
+              .body(ResponseBody.create(body.contentType(), body.contentLength(), decompressedSource))
+              .build()
     }
 
     return response
