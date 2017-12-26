@@ -11,9 +11,14 @@ import com.baulsupp.oksocial.kotlin.queryList
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.gdax.model.Account
+import com.baulsupp.oksocial.services.gdax.model.Product
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okio.Buffer
+import okio.ByteString
+import okio.ByteString.encodeString
+import java.nio.charset.StandardCharsets.UTF_8
 
 class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
   override fun serviceDefinition() = GdaxAuthServiceDefinition()
@@ -21,14 +26,19 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
   override fun intercept(chain: Interceptor.Chain, credentials: GdaxCredentials): Response {
     var request = chain.request()
 
-    val timestamp = System.currentTimeMillis() / 1000;
+    val timestamp = (System.currentTimeMillis() / 1000).toString()
 
-    val signature = ""
+    val decodedKey = ByteString.decodeBase64(credentials.apiSecret)!!
+
+    val sink = Buffer()
+    request.body()?.writeTo(sink)
+    val prehash = "" + timestamp + request.method() + request.url().encodedPath() + sink.snapshot().string(UTF_8)
+    val signature = encodeString(prehash, UTF_8).hmacSha256(decodedKey)
 
     request = request.newBuilder()
             .addHeader("CB-ACCESS-KEY", credentials.apiKey)
-            .addHeader("CB-ACCESS-SIGN", signature)
-            .addHeader("CB-ACCESS-TIMESTAMP", timestamp.toString())
+            .addHeader("CB-ACCESS-SIGN", signature.base64())
+            .addHeader("CB-ACCESS-TIMESTAMP", timestamp)
             .addHeader("CB-ACCESS-PASSPHRASE", credentials.passphrase)
             .build()
 
@@ -57,9 +67,14 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-//    completer.withVariable("AccountSid", {
-//      credentialsStore[serviceDefinition()]?.let { listOf(it.user) }
-//    })
+    credentialsStore[serviceDefinition()]?.let {
+      completer.withVariable("account-id", {
+        client.queryList<Account>("https://api.gdax.com/accounts").map { it.id }
+      })
+      completer.withVariable("product-id", {
+        client.queryList<Product>("https://api.gdax.com/products").map { it.id }
+      })
+    }
 
     return completer
   }

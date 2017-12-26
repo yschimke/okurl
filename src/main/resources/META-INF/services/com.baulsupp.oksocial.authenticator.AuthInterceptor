@@ -4,6 +4,7 @@ com.baulsupp.oksocial.services.dropbox.DropboxAuthInterceptor
 com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
 com.baulsupp.oksocial.services.fitbit.FitbitAuthInterceptor
 com.baulsupp.oksocial.services.foursquare.FourSquareAuthInterceptor
+com.baulsupp.oksocial.services.gdax.GdaxAuthInterceptor
 com.baulsupp.oksocial.services.giphy.GiphyAuthInterceptor
 com.baulsupp.oksocial.services.github.GithubAuthInterceptor
 com.baulsupp.oksocial.services.google.GoogleAuthInterceptor
