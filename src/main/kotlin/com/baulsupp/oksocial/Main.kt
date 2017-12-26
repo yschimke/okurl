@@ -90,7 +90,7 @@ class Main : CommandLineClient() {
 
   var commandName = System.getProperty("command.name", "oksocial")!!
 
-  var completionFile: String? = System.getenv("COMPLETION_FILE")
+  var completionFile: File? = System.getenv("COMPLETION_FILE")?.let { File(it) }
 
   var commandRegistry = CommandRegistry()
 

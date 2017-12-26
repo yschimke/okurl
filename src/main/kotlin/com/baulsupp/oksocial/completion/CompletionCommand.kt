@@ -16,7 +16,7 @@ class CompletionCommand(val main: Main) {
       val prefix = main.arguments.last()
 
       if (main.completionFile != null) {
-        urls.toFile(File(main.completionFile), 0, prefix)
+        urls.toFile(main.completionFile!!, 0, prefix)
       }
 
       return urls.getUrls(prefix).joinToString("\n")
@@ -39,8 +39,14 @@ class CompletionCommand(val main: Main) {
         0
       }
 
-      if (main.completionFile != null) {
-        urls.toFile(File(main.completionFile), strip, originalCompletionUrl)
+      main.completionFile?.let {
+        it.delete()
+
+        if (urls.match == UrlList.Match.HOSTS && urls.urls.isEmpty()) {
+          main.outputHandler!!.showError("Unable to complete hosts")
+        }
+
+        urls.toFile(it, strip, originalCompletionUrl)
       }
 
       return urls.getUrls(fullCompletionUrl).joinToString("\n") { it.substring(strip) }

@@ -6,9 +6,6 @@ import okhttp3.Response
 import org.junit.Before
 import org.junit.Test
 import java.io.File
-import java.io.IOException
-import java.nio.file.FileSystems
-import java.nio.file.Files
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -19,19 +16,17 @@ class CompletionTest {
   private val completionCache = TestCompletionVariableCache()
 
   @Before
-  @Throws(IOException::class)
   fun setup() {
     main.outputHandler = output
     main.credentialsStore = credentialsStore
     main.completionVariableCache = completionCache
-    main.completionFile = File.createTempFile("oksocialtest", ".txt").path
+    main.completionFile = File.createTempFile("oksocialtest", ".txt")
     main.urlComplete = true
 
-    File(main.completionFile).deleteOnExit()
+    main.completionFile!!.deleteOnExit()
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEmpty() {
     main.arguments = mutableListOf("")
 
@@ -45,7 +40,6 @@ class CompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeSingleEndpoint() {
     main.arguments = mutableListOf("https://api1.test.co")
 
@@ -60,7 +54,6 @@ class CompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointShortCommand1() {
     main.commandName = "okapi"
     main.arguments = mutableListOf("src/test/resources/commands/testcommand", "")
@@ -74,7 +67,6 @@ class CompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointShortCommand2() {
     main.commandName = "okapi"
     main.arguments = mutableListOf("src/test/resources/commands/testcommand", "/users")
@@ -88,7 +80,6 @@ class CompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointsForTwitter() {
     main.commandName = "okapi"
     main.arguments = mutableListOf("commands/twitterapi", "/")
@@ -104,7 +95,6 @@ class CompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointsForTwitterApi() {
     main.arguments = mutableListOf("https://api.twitter.com/")
 
@@ -159,8 +149,5 @@ class CompletionTest {
   //  assertTrue(cacheFileContent.contains("/me"));
   //}
 
-  @Throws(IOException::class)
-  private fun readCompletionFile(): List<String> {
-    return Files.readAllLines(FileSystems.getDefault().getPath(main.completionFile))
-  }
+  private fun readCompletionFile(): List<String> = main.completionFile!!.readLines()
 }
