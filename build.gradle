@@ -120,6 +120,7 @@ dependencies {
     compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
     compile 'com.squareup.moshi:moshi-adapters:1.5.0'
     compile 'org.brotli:dec:0.1.2'
+    compile 'com.github.markusbernhardt:proxy-vole:1.0.4'
 
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"

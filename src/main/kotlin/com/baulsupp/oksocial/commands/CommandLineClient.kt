@@ -46,6 +46,7 @@ import com.baulsupp.oksocial.util.ClientException
 import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
 import com.baulsupp.oksocial.util.ProtocolUtil
+import com.github.markusbernhardt.proxy.ProxySearch
 import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Arguments
 import io.airlift.airline.HelpOption
@@ -159,6 +160,9 @@ open class CommandLineClient : HelpOption() {
 
   @Option(name = ["--proxy"], description = "Use HTTP proxy")
   var proxy: InetAddressParam? = null
+
+  @Option(name = ["--os-proxy"], description = "Use OS defined proxy")
+  var osProxy: Boolean = false
 
   @Option(name = ["-s", "--set"], description = "Token Set e.g. work")
   var tokenSet: String? = null
@@ -432,7 +436,11 @@ open class CommandLineClient : HelpOption() {
       builder.networkInterceptors().add(loggingInterceptor)
     }
 
-    if (socksProxy != null) {
+    if (osProxy) {
+      val proxySearch = ProxySearch.getDefaultProxySearch()
+      println(proxySearch.proxySelector)
+      builder.proxySelector(proxySearch.proxySelector)
+    } else if (socksProxy != null) {
       builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
     } else if (proxy != null) {
       builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
