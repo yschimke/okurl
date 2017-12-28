@@ -20,6 +20,7 @@ com.baulsupp.oksocial.services.paypal.PaypalAuthInterceptor
 com.baulsupp.oksocial.services.paypal.PaypalSandboxAuthInterceptor
 com.baulsupp.oksocial.services.quip.QuipAuthInterceptor
 com.baulsupp.oksocial.services.slack.SlackAuthInterceptor
+com.baulsupp.oksocial.services.sheetsu.SheetsuAuthInterceptor
 com.baulsupp.oksocial.services.spotify.SpotifyAuthInterceptor
 com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
 com.baulsupp.oksocial.services.stackexchange.StackExchangeAuthInterceptor
