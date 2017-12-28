@@ -6,8 +6,6 @@ import kotlinx.coroutines.experimental.runBlocking
 import java.net.URLEncoder
 
 runBlocking {
-    val arguments = listOf("euros", "filter:media")
-
     var argumentString = arguments.joinToString("+") { URLEncoder.encode(it, "UTF-8") };
 
     val a = client.query<SearchResults>("https://api.twitter.com/1.1/search/tweets.json?tweet_mode=extended&q=" + argumentString)

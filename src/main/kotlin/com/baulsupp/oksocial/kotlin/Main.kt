@@ -22,9 +22,7 @@ class Main : CommandLineClient() {
     }
 
     val script = runArguments[0]
-    val arguments = runArguments.drop(1)
-
-    engine.put("arguments", arguments)
+    com.baulsupp.oksocial.kotlin.arguments = runArguments.drop(1)
 
     try {
       engine.eval(File(script).readText())

@@ -46,3 +46,5 @@ val terminalWidth: Int by lazy { (okshell.commandLine.outputHandler as ConsoleHa
 
 fun jsonPostRequest(url: String, body: String): Request =
         Request.Builder().url(url).post(RequestBody.create(MediaType.parse("application/json"), body)).build()
+
+var arguments: List<String> = listOf()

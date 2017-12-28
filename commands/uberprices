@@ -66,5 +66,4 @@ fun uberResults(vararg args: String) {
   }
 }
 
-val arguments = bindings["arguments"] as List<String>
 uberResults(*arguments.toTypedArray())
