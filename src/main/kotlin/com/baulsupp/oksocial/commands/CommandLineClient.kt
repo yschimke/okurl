@@ -45,7 +45,6 @@ import com.baulsupp.oksocial.tracing.ZipkinTracingListener
 import com.baulsupp.oksocial.util.ClientException
 import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
-import com.baulsupp.oksocial.util.ProtocolUtil
 import com.github.markusbernhardt.proxy.ProxySearch
 import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Arguments
@@ -60,6 +59,7 @@ import okhttp3.Credentials
 import okhttp3.Dispatcher
 import okhttp3.Dns
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.io.IOUtils
@@ -446,8 +446,11 @@ open class CommandLineClient : HelpOption() {
       builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
     }
 
-    if (protocols != null) {
-      builder.protocols(ProtocolUtil.parseProtocolList(protocols!!))
+    protocols?.let {
+      val protocolList = it.split(",").map { Protocol.get(it) }.let {
+        if (it.contains(Protocol.HTTP_1_1)) it else it + Protocol.HTTP_1_1
+      }
+      builder.protocols(protocolList)
     }
 
     return builder
