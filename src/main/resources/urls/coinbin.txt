@@ -1,0 +1,8 @@
+https://coinbin.org/coins
+https://coinbin.org/{coin}
+https://coinbin.org/{coin}/{amount}
+https://coinbin.org/{coin}/1
+https://coinbin.org/{coin}/to/{coin2}
+https://coinbin.org/{coin}/{amount}/to/{coin2}
+https://coinbin.org/{coin}/1/to/{coin2}
+https://coinbin.org/{coin}/history
