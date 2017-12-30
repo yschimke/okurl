@@ -29,7 +29,6 @@ data class UrlList(val match: Match, val urls: List<String>) {
       return this
     }
 
-    val regexToken = "\\{$variable}".toRegex()
     val literalToken = "{$variable}"
 
     val replacementList: List<String>
@@ -43,8 +42,8 @@ data class UrlList(val match: Match, val urls: List<String>) {
     }
 
     val newUrls = urls.flatMap { url ->
-      if (url.contains(regexToken))
-        replacementList.map { s -> url.replace(regexToken, s) }
+      if (url.contains(literalToken))
+        replacementList.map { s -> url.replace(literalToken, s) }
       else
         listOf(url)
     }
