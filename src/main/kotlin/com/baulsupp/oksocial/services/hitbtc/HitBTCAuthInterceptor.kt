@@ -46,7 +46,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
-    val account = client.queryMap<Any>("https://api.hitbtc.com/api/2/account/balance").let { "?" }
+    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance").let { "✓" }
     return ValidatedCredentials(account)
   }
 
