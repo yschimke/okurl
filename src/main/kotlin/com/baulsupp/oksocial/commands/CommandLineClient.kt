@@ -63,8 +63,8 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.io.IOUtils
-import zipkin.Span
-import zipkin.reporter.Reporter
+import zipkin2.Span
+import zipkin2.reporter.Reporter
 import java.io.Closeable
 import java.io.File
 import java.io.Flushable
@@ -463,12 +463,12 @@ open class CommandLineClient : HelpOption() {
     reporter = if (zipkinSenderUri != null) {
       UriTransportRegistry.forUri(zipkinSenderUri)
     } else {
-      Platform.get()
+      Platform.get().reporter()
     }
 
     val tracing = Tracing.newBuilder()
             .localServiceName("oksocial")
-            .reporter(reporter)
+            .spanReporter(reporter)
             .sampler(Sampler.ALWAYS_SAMPLE)
             .build()
 

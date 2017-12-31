@@ -8,7 +8,8 @@ import java.nio.charset.StandardCharsets
 /*
  * API URL -> Discovery URL
  */
-class DiscoveryIndex(private val map: Map<String, List<String>>) {
+class
+DiscoveryIndex(private val map: Map<String, List<String>>) {
 
   /*
    * Exact search
@@ -26,8 +27,6 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
           indexKey.startsWith(prefix) || prefix.startsWith(indexKey)
 
   companion object {
-
-    @Throws(IOException::class)
     fun loadStatic(): DiscoveryIndex {
       val url = DiscoveryIndex::class.java.getResource("index.json")
 
@@ -36,7 +35,6 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
       return DiscoveryIndex.parse(definition)
     }
 
-    @Throws(IOException::class)
     fun parse(definition: String): DiscoveryIndex {
       val m = JsonUtil.map(definition)
       return DiscoveryIndex(m as Map<String, List<String>>)

@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.tracing
 
-import zipkin.Span
-import zipkin.reporter.AsyncReporter
-import zipkin.reporter.Reporter
-import zipkin.reporter.okhttp3.OkHttpSender
+import zipkin2.Span
+import zipkin2.reporter.AsyncReporter
+import zipkin2.reporter.Reporter
+import zipkin2.reporter.okhttp3.OkHttpSender
 import java.net.URI
 
 class HttpUriHandler : UriHandler {

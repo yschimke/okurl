@@ -2,8 +2,8 @@ package com.baulsupp.oksocial.tracing
 
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.tracing.UriHandler.Companion.loadServices
-import zipkin.Span
-import zipkin.reporter.Reporter
+import zipkin2.Span
+import zipkin2.reporter.Reporter
 import java.net.URI
 import java.util.ArrayList
 import java.util.ServiceLoader

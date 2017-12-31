@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.tracing
 
-import zipkin.Span
-import zipkin.reporter.Reporter
+import zipkin2.Span
+import zipkin2.reporter.Reporter
 import java.net.URI
 import java.util.ServiceLoader
 
