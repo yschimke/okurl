@@ -39,7 +39,7 @@ class GiphyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials("?", null)
+          ValidatedCredentials("ⁿ/ₐ", null)
 
   override fun hosts(): Set<String> = setOf("api.giphy.com")
 }
