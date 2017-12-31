@@ -12,7 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.Arrays
 
-class InstagramAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
             "https://www.instagram.com/developer/endpoints/",
@@ -31,7 +31,7 @@ class InstagramAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
@@ -43,7 +43,7 @@ class InstagramAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials(client.queryMapValue<String>("https://api.instagram.com/v1/users/self", "data", "full_name"))
 

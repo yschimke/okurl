@@ -11,7 +11,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
 
-class StackExchangeAuthInterceptor: AuthInterceptor<StackExchangeToken>() {
+class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   override fun serviceDefinition(): StackExchangeServiceDefinition {
     return StackExchangeServiceDefinition()
   }
@@ -41,13 +41,13 @@ class StackExchangeAuthInterceptor: AuthInterceptor<StackExchangeToken>() {
     }
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: StackExchangeToken): ValidatedCredentials {
     val map = client.queryMap<Any>("https://api.stackexchange.com/2.2/me?site=drupal")
     return ValidatedCredentials(extract(map))
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): StackExchangeToken {
 
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)

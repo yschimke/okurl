@@ -23,7 +23,6 @@ class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X50
       } catch (e: CertificateException) {
         exceptions.add(e)
       }
-
     }
 
     throw bestException(exceptions)

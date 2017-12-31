@@ -38,5 +38,4 @@ object AuthUtil {
 
   suspend fun makeJsonMapRequest(client: OkHttpClient, request: Request): Map<String, Any> =
           JsonUtil.map(makeSimpleRequest(client, request))
-
 }

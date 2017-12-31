@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-class FacebookAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
             "https://developers.facebook.com/docs/graph-api",
@@ -39,7 +39,7 @@ class FacebookAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
@@ -54,7 +54,7 @@ class FacebookAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val userName = client.fbQuery<UserOrPage>("/me").name
     val appName = client.fbQuery<App>("/app").name

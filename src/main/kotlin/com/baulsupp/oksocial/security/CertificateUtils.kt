@@ -71,6 +71,5 @@ object CertificateUtils {
     return if (files != null) {
       Arrays.asList(*files)
     } else null
-
   }
 }

@@ -11,7 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class TwitterAuthInterceptor: AuthInterceptor<TwitterCredentials>() {
+class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
 
   override fun serviceDefinition(): TwitterServiceDefinition {
     return TwitterServiceDefinition()
@@ -26,7 +26,7 @@ class TwitterAuthInterceptor: AuthInterceptor<TwitterCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): TwitterCredentials {
 
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
@@ -51,7 +51,7 @@ class TwitterAuthInterceptor: AuthInterceptor<TwitterCredentials>() {
     return WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: TwitterCredentials): ValidatedCredentials =
           ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json", "name"))
 

@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-class MapboxAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
           Oauth2ServiceDefinition("api.mapbox.com", "Mapbox API", "mapbox",
                   "https://www.mapbox.com/api-documentation/",
@@ -30,7 +30,7 @@ class MapboxAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val apiKey = Secrets.prompt("Mapbox Access Token", "mapbox.accessToken", "", false)
@@ -38,7 +38,7 @@ class MapboxAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(apiKey)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials("✓", null)
 

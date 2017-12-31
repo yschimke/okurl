@@ -25,7 +25,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.Arrays
 
-class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.spotify.com", "Spotify API", "spotify",
             "https://developer.spotify.com/web-api/endpoint-reference/",
@@ -42,7 +42,7 @@ class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Spotify Client Id", "spotify.clientId", "", false)
@@ -74,7 +74,7 @@ class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", "display_name"))
   }
@@ -97,7 +97,7 @@ class SpotifyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return super.errorMessage(ce)
   }
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://accounts.spotify.com/api/token"
 
     val body = FormBody.Builder()

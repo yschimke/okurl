@@ -306,7 +306,6 @@ class Main : CommandLineClient() {
     authorisation!!.renew(findAuthInterceptor())
   }
 
-
   suspend fun remove() {
     authorisation!!.remove(findAuthInterceptor())
   }

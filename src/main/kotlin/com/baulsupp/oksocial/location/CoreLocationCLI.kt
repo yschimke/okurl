@@ -45,7 +45,6 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
         logger.log(Level.WARNING, "failed to get location", e)
         null
       }
-
     } else {
       return null
     }

@@ -13,7 +13,7 @@ import okhttp3.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class FourSquareAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
             "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
@@ -35,7 +35,7 @@ class FourSquareAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("FourSquare Application Id", "4sq.clientId", "", false)
@@ -44,7 +44,7 @@ class FourSquareAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return FourSquareAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val map = client.queryMap<Any>("https://api.foursquare.com/v2/users/self?v=20160603")
     val userMap = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>

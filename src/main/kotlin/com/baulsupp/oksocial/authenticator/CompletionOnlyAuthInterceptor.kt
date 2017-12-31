@@ -8,14 +8,14 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, private val serviceName: String, private val shortName: String, private val apiDocs: String): AuthInterceptor<Nothing>() {
+abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, private val serviceName: String, private val shortName: String, private val apiDocs: String) : AuthInterceptor<Nothing>() {
   override fun intercept(chain: Interceptor.Chain, credentials: Nothing): Response =
           chain.proceed(chain.request())
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =
           throw IOException("authorize not supported")
 
-  override suspend fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
+  suspend override fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
           ValidatedCredentials(null, null)
 
   override fun serviceDefinition(): ServiceDefinition<Nothing> {

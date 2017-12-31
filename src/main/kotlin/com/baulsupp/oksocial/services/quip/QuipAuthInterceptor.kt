@@ -16,7 +16,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class QuipAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
             "https://fb.quip.com/dev/automation/documentation",
@@ -33,7 +33,7 @@ class QuipAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     outputHandler.openLink("https://quip.com/dev/token")
@@ -63,7 +63,7 @@ class QuipAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials(currentUser(client).name)
 

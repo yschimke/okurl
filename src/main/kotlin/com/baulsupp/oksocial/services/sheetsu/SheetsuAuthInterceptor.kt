@@ -26,7 +26,7 @@ class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
     val user =
             Secrets.prompt("Sheetsu API Key", "sheetsu.apiKey", "", false)
     val password =

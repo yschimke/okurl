@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.credentials
 
 import java.util.concurrent.ConcurrentHashMap
 
-class InMemoryCredentialsStore(private val credentialsMap: MutableMap<String, String> = ConcurrentHashMap()): CredentialsStore {
+class InMemoryCredentialsStore(private val credentialsMap: MutableMap<String, String> = ConcurrentHashMap()) : CredentialsStore {
   override fun <T> get(serviceDefinition: ServiceDefinition<T>): T? {
     return credentialsMap.get(serviceDefinition.shortName())?.let { serviceDefinition.parseCredentialsString(it) }
   }

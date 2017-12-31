@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.coinbase
 
-
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token

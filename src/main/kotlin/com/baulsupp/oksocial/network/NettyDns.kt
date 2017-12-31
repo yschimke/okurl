@@ -76,7 +76,6 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
       throw UnknownHostException(e.cause!!.message).initCause(
               e.cause) as UnknownHostException
     }
-
   }
 
   companion object {
@@ -100,7 +99,6 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
               ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()).map { s ->
         InetSocketAddress(s, 53)
       }.toList()
-
     }
 
     private fun getInternetProtocolFamilies(ipMode: IPvMode): ResolvedAddressTypes? {

@@ -18,7 +18,7 @@ import java.util.logging.Logger
 class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val client: OkHttpClient,
                    private val credentialsStore: CredentialsStore,
                    private val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
-  override suspend fun urlList(prefix: String): UrlList {
+  suspend override fun urlList(prefix: String): UrlList {
     val fullUrl = parseUrl(prefix)
 
     return if (fullUrl != null) {

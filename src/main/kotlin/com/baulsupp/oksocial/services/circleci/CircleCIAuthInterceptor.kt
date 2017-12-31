@@ -11,10 +11,8 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryList
-import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.baulsupp.oksocial.services.hitbtc.model.Currency
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -44,11 +42,11 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token =
           Oauth2Token(Secrets.prompt("CircleCI Personal API Token", "circleci.token", "", true))
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me").name)
 

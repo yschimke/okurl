@@ -35,9 +35,7 @@ abstract class AuthInterceptor<T> {
 
   abstract fun serviceDefinition(): ServiceDefinition<T>
 
-  open suspend fun validate(client: OkHttpClient,
-                            credentials: T): ValidatedCredentials =
-          ValidatedCredentials()
+  open suspend fun validate(client: OkHttpClient, credentials: T): ValidatedCredentials = ValidatedCredentials()
 
   open fun canRenew(result: Response): Boolean = result.code() == 401
 
@@ -47,17 +45,14 @@ abstract class AuthInterceptor<T> {
 
   abstract fun hosts(): Set<String>
 
-  open fun apiCompleter(prefix: String, client: OkHttpClient,
-                   credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
-          UrlList.fromResource(name())?.let {
-            BaseUrlCompleter(it, hosts(), completionVariableCache)
-          } ?: HostUrlCompleter(hosts())
+  open fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
+      UrlList.fromResource(name())?.let { BaseUrlCompleter(it, hosts(), completionVariableCache) } ?: HostUrlCompleter(hosts())
 
   open fun defaultCredentials(): T? = null
 
   open fun apiDocPresenter(url: String): ApiDocPresenter {
     return object : ApiDocPresenter {
-      override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+      suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
         val sd = serviceDefinition()
 
         outputHandler.info("service: " + sd.shortName())

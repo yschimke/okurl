@@ -46,7 +46,6 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
         } catch (e: IOException) {
           e.printStackTrace()
         }
-
       }
 
       return Secrets(p.toMutableStringMap(), configFile, { classPathSecrets[it] })

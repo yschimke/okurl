@@ -31,7 +31,6 @@ object HeaderUtil {
     } catch (ioe: IOException) {
       throw UsageException("failed to read header file", ioe)
     }
-
   }
 
   fun stringValue(source: String): String {
@@ -41,7 +40,6 @@ object HeaderUtil {
       } catch (e: IOException) {
         throw UsageException(e.toString())
       }
-
     } else {
       source
     }

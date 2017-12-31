@@ -19,12 +19,12 @@ class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
     mappings.withVariable("userId", { listOf("me") })
   }
 
-  override suspend fun prefixUrls(): UrlList {
+  suspend override fun prefixUrls(): UrlList {
     // not supported for partial urls
     throw UnsupportedOperationException()
   }
 
-  override suspend fun siteUrls(url: HttpUrl): UrlList {
+  suspend override fun siteUrls(url: HttpUrl): UrlList {
     val futures = discoveryDocPaths.map {
       async(CommonPool) {
         discoveryRegistry.load(it).urls

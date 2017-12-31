@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-class UberAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Uber API", "uber",
             "https://developer.uber.com/docs/riders/references/api",
@@ -38,7 +38,7 @@ class UberAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
@@ -53,7 +53,7 @@ class UberAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val map = client.queryMap<Any>("https://api.uber.com/v1/me")
     return ValidatedCredentials("${map["first_name"]} ${map["last_name"]}")
@@ -63,7 +63,7 @@ class UberAuthInterceptor: AuthInterceptor<Oauth2Token>() {
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)

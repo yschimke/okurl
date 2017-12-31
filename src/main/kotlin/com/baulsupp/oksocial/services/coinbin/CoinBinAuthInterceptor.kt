@@ -32,7 +32,7 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
     throw UnsupportedOperationException()
   }
 
@@ -40,7 +40,7 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
           BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
                   "https://coinbin.org/", null)
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials =
           ValidatedCredentials(credentials.user, null)
 

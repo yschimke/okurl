@@ -14,7 +14,7 @@ import java.util.logging.Logger
 class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<String>) :
         HostUrlCompleter(hosts) {
 
-  override suspend fun siteUrls(url: HttpUrl): UrlList {
+  suspend override fun siteUrls(url: HttpUrl): UrlList {
     var result = completePath(url.encodedPath())
 
     if (!url.encodedPath().endsWith("/")) {

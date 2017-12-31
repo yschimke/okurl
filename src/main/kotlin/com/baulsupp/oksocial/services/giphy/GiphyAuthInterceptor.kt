@@ -10,7 +10,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class GiphyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
           Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
                   "https://github.com/Giphy/GiphyAPI", null)
@@ -29,7 +29,7 @@ class GiphyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val apiKey = Secrets.prompt("Giphy API Key", "giphy.apiKey", "", false)
@@ -37,7 +37,7 @@ class GiphyAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(apiKey)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials("ⁿ/ₐ", null)
 

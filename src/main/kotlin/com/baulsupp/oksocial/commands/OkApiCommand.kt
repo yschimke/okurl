@@ -72,7 +72,6 @@ class OkApiCommand : ShellCommand, MainAware {
 
       throw RuntimeException(e)
     }
-
   }
 
   private fun toRequest(o: Any?): Request {

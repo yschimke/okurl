@@ -15,7 +15,7 @@ import okhttp3.Response
 /**
  * http://httpbin.org/
  */
-class HttpBinAuthInterceptor: AuthInterceptor<BasicCredentials>() {
+class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
@@ -27,7 +27,7 @@ class HttpBinAuthInterceptor: AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("User", "httpbin.user", "", false)
     val password = Secrets.prompt("Password", "httpbin.password", "", true)
@@ -39,7 +39,7 @@ class HttpBinAuthInterceptor: AuthInterceptor<BasicCredentials>() {
           BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
                   "https://httpbin.org/", null)
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials =
           ValidatedCredentials(credentials.user, null)
 

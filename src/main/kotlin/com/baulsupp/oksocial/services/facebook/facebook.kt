@@ -9,7 +9,7 @@ import okhttp3.Request
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
-inline suspend fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQueryList(
+suspend inline fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQueryList(
         path: String): T {
   val fields = fbFieldNames(I::class)
 
@@ -18,7 +18,7 @@ inline suspend fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQue
   return moshi.adapter<T>(T::class.java).fromJson(stringResult)!!
 }
 
-inline suspend fun <reified T> OkHttpClient.fbQuery(path: String): T {
+suspend inline fun <reified T> OkHttpClient.fbQuery(path: String): T {
   val fields = fbFieldNames(T::class)
 
   return this.query(

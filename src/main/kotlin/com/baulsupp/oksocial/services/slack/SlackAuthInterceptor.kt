@@ -15,7 +15,7 @@ import java.util.Arrays
 /**
  * https://api.slack.com/docs/oauth
  */
-class SlackAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("slack.com", "Slack API", "slack", "https://api.slack.com/",
             "https://api.slack.com/apps")
@@ -35,7 +35,7 @@ class SlackAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Slack Client Id", "slack.clientId", "", false)
@@ -81,7 +81,7 @@ class SlackAuthInterceptor: AuthInterceptor<Oauth2Token>() {
     return SlackAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test", "user"))
 

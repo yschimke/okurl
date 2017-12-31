@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.Main
-import java.io.File
 import java.util.logging.Level
 import java.util.logging.Logger
 

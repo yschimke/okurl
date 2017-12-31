@@ -7,7 +7,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.junit.Before
 import org.junit.Test
-import java.io.IOException
 import kotlin.test.assertTrue
 import kotlin.test.fail
 

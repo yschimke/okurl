@@ -65,7 +65,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
@@ -75,13 +75,13 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return GoogleAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
           ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo", "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
             .add("refresh_token", credentials.refreshToken!!)
             .add("client_secret", credentials.clientSecret!!)
@@ -111,7 +111,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
             discoveryCompletion(prefix, client)
           }
 
-  private fun isFirebaseUrl(url: String): Boolean = HttpUrl.parse(url)?.host()?.let { isFirebaseHost(it) }  ?: false
+  private fun isFirebaseUrl(url: String): Boolean = HttpUrl.parse(url)?.host()?.let { isFirebaseHost(it) } ?: false
 
   private fun isFirebaseHost(host: String) = host.endsWith(".firebaseio.com")
 
@@ -136,7 +136,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(
           discoveryIndex)
-
 
   override fun errorMessage(ce: ClientException): String {
     if (ce.code == 401) {

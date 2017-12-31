@@ -33,7 +33,6 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
       unknownHostException.initCause(e)
       throw unknownHostException
     }
-
   }
 
   private fun type(mode: IPvMode): String {

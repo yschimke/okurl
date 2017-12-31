@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.services.mapbox.model.MapboxLatLongAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Rfc3339DateJsonAdapter
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,10 +22,10 @@ val okshell: OkShell by lazy { OkShell.instance ?: OkShell.create() }
 val client: OkHttpClient by lazy { okshell.commandLine.client!! }
 
 val moshi = Moshi.Builder()
-        .add(MapboxLatLongAdapter())
-        .add(KotlinJsonAdapterFactory())
-        .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-        .build()!!
+  .add(MapboxLatLongAdapter())
+  .add(KotlinJsonAdapterFactory())
+  .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+  .build()!!
 
 fun warmup(vararg urls: String) {
   okshell.warmup(*urls)
@@ -42,9 +43,9 @@ var dateOnlyformat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
 fun epochSecondsToDate(seconds: Long) = dateOnlyformat.format(Date(seconds * 1000))!!
 
-val terminalWidth: Int by lazy { (okshell.commandLine.outputHandler as ConsoleHandler).terminalWidth() }
+val terminalWidth: Int by lazy { runBlocking { (okshell.commandLine.outputHandler as ConsoleHandler).terminalWidth() } }
 
 fun jsonPostRequest(url: String, body: String): Request =
-        Request.Builder().url(url).post(RequestBody.create(MediaType.parse("application/json"), body)).build()
+  Request.Builder().url(url).post(RequestBody.create(MediaType.parse("application/json"), body)).build()
 
 var arguments: List<String> = listOf()

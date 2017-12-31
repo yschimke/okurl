@@ -17,7 +17,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class TwilioAuthInterceptor: AuthInterceptor<BasicCredentials>() {
+class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun serviceDefinition(): BasicAuthServiceDefinition {
     return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
             "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
@@ -33,7 +33,7 @@ class TwilioAuthInterceptor: AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
@@ -41,7 +41,7 @@ class TwilioAuthInterceptor: AuthInterceptor<BasicCredentials>() {
     return BasicCredentials(user, password)
   }
 
-  override suspend fun validate(client: OkHttpClient,
+  suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
     val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json")
     val username = (map["accounts"] as List<Map<String, Any>>)[0]["friendly_name"] as String

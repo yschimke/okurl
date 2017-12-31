@@ -12,40 +12,28 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 
-class TestAuthInterceptor: AuthInterceptor<Oauth2Token>() {
+class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   @Throws(IOException::class)
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    return chain.proceed(chain.request())
-  }
+  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response = chain.proceed(chain.request())
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                         authArguments: List<String>): Oauth2Token {
-    return if (authArguments.isEmpty()) {
-      Oauth2Token("testToken")
-    } else {
-      Oauth2Token(authArguments[0])
-    }
-  }
-
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
-    return ValidatedCredentials("aaa", null)
-  }
-
-  override fun serviceDefinition(): ServiceDefinition<Oauth2Token> {
-    return Oauth2ServiceDefinition("localhost", "Test Service", "test",
-        "https://docs.test.com", "https://apps.test.com")
-  }
-
-  override fun hosts(): Set<String> {
-    return setOf("test.com", "api1.test.com")
-  }
-
-  override fun apiDocPresenter(url: String): ApiDocPresenter {
-    return object : ApiDocPresenter {
-      override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
-        outputHandler.info("Test: " + url)
+  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Oauth2Token =
+      if (authArguments.isEmpty()) {
+        Oauth2Token("testToken")
+      } else {
+        Oauth2Token(authArguments[0])
       }
+
+  suspend override fun validate(client: OkHttpClient, credentials: Oauth2Token): ValidatedCredentials =
+      ValidatedCredentials("aaa", null)
+
+  override fun serviceDefinition(): ServiceDefinition<Oauth2Token> =
+      Oauth2ServiceDefinition("localhost", "Test Service", "test", "https://docs.test.com", "https://apps.test.com")
+
+  override fun hosts(): Set<String> = setOf("test.com", "api1.test.com")
+
+  override fun apiDocPresenter(url: String): ApiDocPresenter = object : ApiDocPresenter {
+    suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+      outputHandler.info("Test: " + url)
     }
   }
 }

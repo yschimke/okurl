@@ -18,45 +18,45 @@ inline fun <reified V> Moshi.mapAdapter() =
 inline fun <reified V> Moshi.listAdapter() =
         this.adapter<Any>(Types.newParameterizedType(List::class.java, V::class.java)) as JsonAdapter<List<V>>
 
-inline suspend fun <reified T> OkHttpClient.query(url: String): T = this.query(Request.Builder().url(url).build())
+suspend inline fun <reified T> OkHttpClient.query(url: String): T = this.query(Request.Builder().url(url).build())
 
-inline suspend fun <reified T> OkHttpClient.query(request: Request): T {
+suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
   val stringResult = this.queryForString(request)
 
   return moshi.adapter(T::class.java).fromJson(stringResult)!!
 }
 
-inline suspend fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {
+suspend inline fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {
   val stringResult = this.queryForString(request)
 
   return moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
 
-inline suspend fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
+suspend inline fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
         this.queryMap(Request.Builder().url(url).build())
 
-inline suspend fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
+suspend inline fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
   val stringResult = this.queryForString(request)
 
   return moshi.listAdapter<V>().fromJson(stringResult)!!
 }
 
-inline suspend fun <reified V> OkHttpClient.queryList(url: String): List<V> =
+suspend inline fun <reified V> OkHttpClient.queryList(url: String): List<V> =
         this.queryList(Request.Builder().url(url).build())
 
-inline suspend fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
+suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
   val stringResult = this.queryForString(request)
 
   return moshi.mapAdapter<V>().fromJson(stringResult)
 }
 
-inline suspend fun <reified V> OkHttpClient.queryOptionalMap(url: String): Map<String, V>? =
+suspend inline fun <reified V> OkHttpClient.queryOptionalMap(url: String): Map<String, V>? =
         this.queryOptionalMap(Request.Builder().url(url).build())
 
-inline suspend fun <reified T> OkHttpClient.queryMapValue(url: String, vararg keys: String): T? =
+suspend inline fun <reified T> OkHttpClient.queryMapValue(url: String, vararg keys: String): T? =
         this.queryMapValue<T>(Request.Builder().url(url).build(), *keys)
 
-inline suspend fun <reified T> OkHttpClient.queryMapValue(request: Request, vararg keys: String): T? {
+suspend inline fun <reified T> OkHttpClient.queryMapValue(request: Request, vararg keys: String): T? {
   val queryMap = this.queryMap<Any>(request)
 
   val result = keys.fold(queryMap as Any, { map, key -> (map as Map<String, Any>)[key]!! })

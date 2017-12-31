@@ -39,7 +39,6 @@ data class Depth(
         val price: String,
         val size: String)
 
-
 data class Orderbook(
         val ask: List<Depth>,
         val bid: List<Depth>,
