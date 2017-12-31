@@ -46,7 +46,6 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   override fun hosts(): Set<String> = setOf("coinbin.org")
 
-
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter {

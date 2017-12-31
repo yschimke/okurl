@@ -40,7 +40,7 @@ class MapboxAuthInterceptor: AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials("?", null)
+          ValidatedCredentials("✓", null)
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token(
           "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2l0eGRkc245MDAzODJ5cDF2Z3l2czJjaSJ9.9XMBjr0vkbh2WD74DQcd3w")
