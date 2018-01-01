@@ -1,8 +1,6 @@
 package com.baulsupp.oksocial.completion
 
-
 import java.io.File
-import java.nio.charset.StandardCharsets
 
 data class UrlList(val match: Match, val urls: List<String>) {
   enum class Match {
@@ -84,8 +82,8 @@ data class UrlList(val match: Match, val urls: List<String>) {
   companion object {
     fun fromResource(serviceName: String): UrlList? {
       return UrlList::class.java.getResource("/urls/$serviceName.txt")?.let {
-        val readText = it.readText()
-        UrlList(Match.SITE, readText.split('\n'))
+        val readText = it.readText().split('\n').filterNot { it.isBlank() }
+        UrlList(Match.SITE, readText)
       }
     }
   }

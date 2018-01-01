@@ -17,6 +17,7 @@ class CompletionTest {
 
   @Before
   fun setup() {
+    main.debug = true
     main.outputHandler = output
     main.credentialsStore = credentialsStore
     main.completionVariableCache = completionCache

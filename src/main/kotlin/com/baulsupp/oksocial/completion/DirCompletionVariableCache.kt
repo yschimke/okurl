@@ -1,9 +1,7 @@
 package com.baulsupp.oksocial.completion
 
-
 import java.io.File
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 

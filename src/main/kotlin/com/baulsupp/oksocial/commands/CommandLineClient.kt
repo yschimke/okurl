@@ -17,7 +17,6 @@ import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
 import com.baulsupp.oksocial.network.DnsOverride
 import com.baulsupp.oksocial.network.DnsSelector
-import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns

@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 
-
 class TestCredentialsStore : CredentialsStore {
   var tokens: MutableMap<String, String> = linkedMapOf()
 
