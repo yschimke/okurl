@@ -1,9 +1,7 @@
 package com.baulsupp.oksocial.completion
 
-import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -14,7 +12,7 @@ class DirCompletionVariableCache(val dir: File = File(System.getProperty("java.i
     // cache for 5 minutes
     if (f.isFile && f.lastModified() > System.currentTimeMillis() - 300000) {
       try {
-        return Files.readLines(f, StandardCharsets.UTF_8).filterNot { it.isNullOrBlank() }
+        return f.readLines().filterNot { it.isBlank() }
       } catch (e: IOException) {
         logger.log(Level.WARNING, "failed to read variables", e)
       }

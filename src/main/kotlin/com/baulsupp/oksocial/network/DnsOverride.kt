@@ -1,14 +1,14 @@
 package com.baulsupp.oksocial.network
 
 import com.baulsupp.oksocial.output.util.UsageException
-import com.google.common.collect.Maps
+
 import okhttp3.Dns
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.logging.Logger
 
 class DnsOverride(private val dns: Dns) : Dns {
-  private val overrides = Maps.newHashMap<String, String>()
+  private val overrides = linkedMapOf<String, String>()
 
   private fun put(host: String, target: String) {
     overrides.put(host, target)

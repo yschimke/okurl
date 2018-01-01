@@ -1,9 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.output.util.JsonUtil
-import com.google.common.io.Resources
-import java.io.IOException
-import java.nio.charset.StandardCharsets
 
 /*
  * API URL -> Discovery URL
@@ -27,13 +24,8 @@ DiscoveryIndex(private val map: Map<String, List<String>>) {
           indexKey.startsWith(prefix) || prefix.startsWith(indexKey)
 
   companion object {
-    fun loadStatic(): DiscoveryIndex {
-      val url = DiscoveryIndex::class.java.getResource("index.json")
-
-      val definition = Resources.toString(url, StandardCharsets.UTF_8)
-
-      return DiscoveryIndex.parse(definition)
-    }
+    fun loadStatic(): DiscoveryIndex =
+      DiscoveryIndex::class.java.getResource("index.json")!!.let { DiscoveryIndex.parse(it.readText()) }
 
     fun parse(definition: String): DiscoveryIndex {
       val m = JsonUtil.map(definition)

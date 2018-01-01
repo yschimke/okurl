@@ -113,7 +113,6 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'org.slf4j:slf4j-jcl:1.7.25'
     compile 'org.zeroturnaround:zt-exec:1.10'
-    compile 'com.google.guava:guava:23.0'
     compile 'com.jakewharton.byteunits:byteunits:0.9.1'
     compile 'io.netty:netty-all:4.1.19.Final'
     compile 'io.netty:netty-resolver-dns:4.1.19.Final'

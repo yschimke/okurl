@@ -17,10 +17,10 @@ import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
 import com.baulsupp.oksocial.network.DnsOverride
 import com.baulsupp.oksocial.network.DnsSelector
-import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
+import com.baulsupp.oksocial.network.fromHosts
 import com.baulsupp.oksocial.okhttp.CipherSuiteOption
 import com.baulsupp.oksocial.okhttp.ConnectionSpecOption
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
@@ -206,7 +206,7 @@ open class CommandLineClient : HelpOption() {
     dns = when {
       dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers!!)
       dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
-              GoogleDns.fromHosts({ client!! }, ipMode, "216.58.216.142", "216.239.34.10",
+              fromHosts({ client!! }, ipMode, "216.58.216.142", "216.239.34.10",
                       "2607:f8b0:400a:809::200e"))
       else -> {
         if (dnsServers != null) {

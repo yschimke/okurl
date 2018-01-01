@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.twitter
 
-import com.google.common.collect.Sets
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -33,6 +32,6 @@ class TwitterCachingInterceptor : Interceptor {
   }
 
   companion object {
-    private val permanentHosts = Sets.newHashSet("pbs.twimg.com")
+    private val permanentHosts = setOf("pbs.twimg.com")
   }
 }

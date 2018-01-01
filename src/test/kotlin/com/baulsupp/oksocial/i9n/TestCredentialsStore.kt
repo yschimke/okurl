@@ -2,10 +2,9 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import com.google.common.collect.Maps
 
 class TestCredentialsStore : CredentialsStore {
-  var tokens: MutableMap<String, String> = Maps.newHashMap()
+  var tokens: MutableMap<String, String> = linkedMapOf()
 
   override fun <T> get(serviceDefinition: ServiceDefinition<T>): T? {
     return tokens[serviceDefinition.apiHost()]
