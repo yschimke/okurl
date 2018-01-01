@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.completion
 
-import com.google.common.io.Resources
+
 import java.io.File
 import java.nio.charset.StandardCharsets
 
@@ -84,7 +84,8 @@ data class UrlList(val match: Match, val urls: List<String>) {
   companion object {
     fun fromResource(serviceName: String): UrlList? {
       return UrlList::class.java.getResource("/urls/$serviceName.txt")?.let {
-        UrlList(Match.SITE, Resources.readLines(it, StandardCharsets.UTF_8))
+        val readText = it.readText()
+        UrlList(Match.SITE, readText.split('\n'))
       }
     }
   }

@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.util.FileUtil
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.google.common.collect.Maps
+
 import java.io.File
 import java.io.IOException
 
@@ -29,7 +29,7 @@ class FileLocationSource(private val file: File) : LocationSource {
     val mapper = ObjectMapper()
     mapper.registerModule(KotlinModule())
 
-    val map = Maps.newLinkedHashMap<String, Double>()
+    val map = linkedMapOf<String, Double>()
     map.put("latitude", location.latitude)
     map.put("longitude", location.longitude)
 

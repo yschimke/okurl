@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.network
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
-import com.google.common.net.InetAddresses
+
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Dns
 import okhttp3.HttpUrl
@@ -11,11 +11,17 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.UnknownHostException
 
+fun fromHosts(clientSupplier: () -> OkHttpClient, mode: IPvMode,
+              vararg ips: String): GoogleDns {
+  val hosts = ips.map { InetAddress.getByName(it) }
+
+  return GoogleDns(hosts, mode, clientSupplier)
+}
+
 class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMode,
                 private val client: () -> OkHttpClient) : Dns {
 
   // TODO implement DnsMode internally
-  @Throws(UnknownHostException::class)
   override fun lookup(host: String): List<InetAddress> {
     if (host == "dns.google.com") {
       return dnsHosts
@@ -43,7 +49,6 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
     }
   }
 
-  @Throws(UnknownHostException::class)
   private fun responseToList(result: Map<String, Any>): List<InetAddress> {
     if (result["Status"] != 0) {
       // TODO response codes
@@ -54,20 +59,6 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
 
     return answer
             .filter { a -> a["type"] == 1 || a["type"] == 28 }
-            .map { a -> InetAddresses.forString(a["data"] as String) }
-  }
-
-  companion object {
-
-    fun fromResourceList(): GoogleDns {
-      throw UnsupportedOperationException()
-    }
-
-    fun fromHosts(clientSupplier: () -> OkHttpClient, mode: IPvMode,
-                  vararg ips: String): GoogleDns {
-      val hosts = ips.map { InetAddresses.forString(it) }
-
-      return GoogleDns(hosts, mode, clientSupplier)
-    }
+            .map { a -> InetAddress.getByName(a["data"] as String) }
   }
 }

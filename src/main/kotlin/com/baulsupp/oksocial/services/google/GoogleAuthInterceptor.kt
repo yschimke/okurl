@@ -123,7 +123,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   }
 
   fun googleDiscoveryHosts() =
-          UrlList.fromResource(name())!!.getUrls("").map { HttpUrl.parse(it)!!.host() }.toSet()
+          UrlList.fromResource(name())!!.getUrls("").map {
+            HttpUrl.parse(it)!!.host()
+          }.toSet()
 
   fun hostCompletion(completionVariableCache: CompletionVariableCache) =
           BaseUrlCompleter(UrlList.fromResource(name())!!, hosts() + firebaseHosts(), completionVariableCache)

@@ -12,7 +12,7 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex
 import com.baulsupp.oksocial.services.datasettes.model.DatasetteTables
-import com.google.common.io.Resources
+
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -107,8 +107,5 @@ suspend fun fetchDatasetteTableMetadata(host: String, path: String,
                                         client: OkHttpClient) =
         client.query<DatasetteTables>("https://$host/$path.json")
 
-fun knownHosts(): Set<String> {
-  return DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.let {
-    Resources.readLines(it, StandardCharsets.UTF_8)
-  }?.toSet() ?: setOf()
-}
+fun knownHosts(): Set<String> =
+  DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.readText()?.split('\n')?.toSet() ?: setOf()

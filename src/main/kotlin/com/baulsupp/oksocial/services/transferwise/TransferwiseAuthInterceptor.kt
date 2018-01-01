@@ -8,7 +8,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.google.common.collect.Sets
+
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.Interceptor
@@ -71,7 +71,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
             credentials.clientSecret)
   }
 
-  override fun hosts(): Set<String> = Sets.newHashSet(host())
+  override fun hosts(): Set<String> = setOf(host())
 
   open fun host() = "api.transferwise.com"
 }
