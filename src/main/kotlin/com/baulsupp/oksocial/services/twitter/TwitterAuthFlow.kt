@@ -2,8 +2,9 @@ package com.baulsupp.oksocial.services.twitter
 
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.output.OutputHandler
-import com.twitter.joauth.keyvalue.KeyValueHandler
-import com.twitter.joauth.keyvalue.KeyValueParser
+import com.baulsupp.oksocial.services.twitter.joauth.KeyValueHandler
+import com.baulsupp.oksocial.services.twitter.joauth.KeyValueParser
+import com.baulsupp.oksocial.services.twitter.joauth.Signature
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request

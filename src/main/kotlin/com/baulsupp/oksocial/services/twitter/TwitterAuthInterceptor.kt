@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.twitter.joauth.Signature
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlrcImport
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

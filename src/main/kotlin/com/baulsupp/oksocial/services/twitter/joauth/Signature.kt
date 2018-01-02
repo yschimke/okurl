@@ -1,13 +1,10 @@
-package com.baulsupp.oksocial.services.twitter
+package com.baulsupp.oksocial.services.twitter.joauth
 
-import com.twitter.joauth.Normalizer
-import com.twitter.joauth.OAuthParams
-import com.twitter.joauth.Signer
-import com.twitter.joauth.UrlCodec
-import com.twitter.joauth.keyvalue.KeyValueHandler
-import com.twitter.joauth.keyvalue.KeyValueParser
+import com.baulsupp.oksocial.services.twitter.TwitterAuthInterceptor
+import com.baulsupp.oksocial.services.twitter.TwitterCredentials
 import okhttp3.FormBody
 import okhttp3.Request
+import okhttp3.RequestBody
 import okio.Buffer
 import java.nio.charset.Charset
 import java.security.SecureRandom
@@ -37,40 +34,36 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
     val timestampSecs = generateTimestamp()
     val nonce = generateNonce()
 
-    val normalizer = Normalizer.getStandardNormalizer()
-    val signer = Signer.getStandardSigner()
+    val normalizer = Normalizer.standardNormalizer
+    val signer = Signer.standardSigner
 
     val oAuth1Params = OAuthParams.OAuth1Params(
-            credentials.token, credentials.consumerKey, nonce, timestampSecs,
+            credentials.token, credentials.consumerKey!!, nonce, timestampSecs,
             java.lang.Long.toString(timestampSecs), "", OAuthParams.HMAC_SHA1,
             OAuthParams.ONE_DOT_OH
     )
 
-    val javaParams = ArrayList<com.twitter.joauth.Request.Pair>()
+    val javaParams: MutableList<Pair<String, String>> = mutableListOf<Pair<String, String>>()
 
     val queryParamNames = request.url().queryParameterNames()
     for (queryParam in queryParamNames) {
-      val values = request.url().queryParameterValues(queryParam)
+      val values: MutableList<String> = request.url().queryParameterValues(queryParam)
 
       values.mapTo(javaParams) {
-        com.twitter.joauth.Request.Pair(UrlCodec.encode(queryParam),
-                UrlCodec.encode(it))
+        Pair(UrlCodec.encode(queryParam)!!, UrlCodec.encode(it)!!)
       }
     }
 
     if (request.method() == "POST") {
-      val body = request.body()
+      val body: RequestBody = request.body()!!
 
       if (body is FormBody) {
-        val formBody = body as FormBody?
-
-        (0 until formBody!!.size()).mapTo(javaParams) {
-          com.twitter.joauth.Request.Pair(formBody.encodedName(it),
-                  formBody.encodedValue(it))
+        (0 until body.size()).mapTo(javaParams) {
+          Pair(body.encodedName(it), body.encodedValue(it))
         }
       } else if (isFormContentType(request)) {
         val buffer = Buffer()
-        body!!.writeTo(buffer)
+        body.writeTo(buffer)
         val encodedBody = buffer.readString(Charset.forName("UTF-8"))
 
         val handler = KeyValueHandler.DuplicateKeyValueHandler()
@@ -91,7 +84,7 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
     log.log(Level.FINE, "secret " + credentials.secret)
     log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret)
 
-    val signature = signer.getString(normalized, credentials.secret, credentials.consumerSecret)
+    val signature = signer.getString(normalized, credentials.secret!!, credentials.consumerSecret!!)
 
     val oauthHeaders = LinkedHashMap<String, String>()
     if (credentials.consumerKey != null) {
