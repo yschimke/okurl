@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.services.twitter.joauth
 
 import com.baulsupp.oksocial.services.twitter.TwitterAuthInterceptor
 import com.baulsupp.oksocial.services.twitter.TwitterCredentials
+import com.baulsupp.oksocial.services.twitter.joauth.Signer.StandardSigner
 import okhttp3.FormBody
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -9,12 +10,11 @@ import okio.Buffer
 import java.nio.charset.Charset
 import java.security.SecureRandom
 import java.time.Clock
-import java.util.ArrayList
 import java.util.LinkedHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class Signature @JvmOverloads constructor(private val clock: Clock = Clock.systemDefaultZone(),
+class Signature constructor(private val clock: Clock = Clock.systemDefaultZone(),
                                           private val random: () -> Long = { SecureRandom().nextLong() }) {
 
   private fun quoted(str: String): String {
@@ -34,8 +34,8 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
     val timestampSecs = generateTimestamp()
     val nonce = generateNonce()
 
-    val normalizer = Normalizer.standardNormalizer
-    val signer = Signer.standardSigner
+    val normalizer = Normalizer.StandardNormalizer()
+    val signer = StandardSigner()
 
     val oAuth1Params = OAuthParams.OAuth1Params(
             credentials.token, credentials.consumerKey!!, nonce, timestampSecs,
@@ -43,7 +43,7 @@ class Signature @JvmOverloads constructor(private val clock: Clock = Clock.syste
             OAuthParams.ONE_DOT_OH
     )
 
-    val javaParams: MutableList<Pair<String, String>> = mutableListOf<Pair<String, String>>()
+    val javaParams: MutableList<Pair<String, String>> = mutableListOf()
 
     val queryParamNames = request.url().queryParameterNames()
     for (queryParam in queryParamNames) {
