@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-
 /**
  * the standard implementation of the Signer trait. Though stateless and threadsafe,
  * this is a class rather than an object to allow easy access from Java. Scala codebases
@@ -16,12 +15,10 @@ import javax.crypto.spec.SecretKeySpec
  */
 object StandardSigner {
   fun getString(str: String, signatureMethod: String, tokenSecret: String, consumerSecret: String): String {
-
     return UrlCodec.encode(ByteString.of(*getBytes(str, signatureMethod, tokenSecret, consumerSecret)).base64())!!
   }
 
   private fun getBytes(str: String, signatureMethod: String, tokenSecret: String, consumerSecret: String): ByteArray {
-
     val algorithm = getSignerAlgorithm(signatureMethod)
     val key = consumerSecret + AND + tokenSecret
     val signingKey = SecretKeySpec(key.toByteArray(StandardCharsets.UTF_8), algorithm)

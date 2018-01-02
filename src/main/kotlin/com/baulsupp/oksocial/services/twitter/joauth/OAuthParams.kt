@@ -12,8 +12,6 @@
 
 package com.baulsupp.oksocial.services.twitter.joauth
 
-import java.util.ArrayList
-
 object OAuthParams {
   val AND = "&"
   val HMACSHA1 = "HmacSHA1"
@@ -63,7 +61,7 @@ object OAuthParams {
     }
 
     fun toList(includeSig: Boolean): List<Pair<String, String>> {
-      val buf = ArrayList<Pair<String, String>>()
+      val buf = mutableListOf<Pair<String, String>>()
 
       buf.add(Pair(OAUTH_CONSUMER_KEY, consumerKey))
       buf.add(Pair(OAUTH_NONCE, nonce))

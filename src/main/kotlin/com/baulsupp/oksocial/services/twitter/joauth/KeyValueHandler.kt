@@ -12,9 +12,6 @@
 
 package com.baulsupp.oksocial.services.twitter.joauth
 
-import java.util.ArrayList
-import java.util.LinkedHashMap
-
 /**
  * KeyValueHandler is a trait for a callback with a key and a value.
  * What you do with the key and value are up to you.
@@ -27,7 +24,7 @@ interface KeyValueHandler {
    * value pairs, allowing duplicate values for keys.
    */
   class DuplicateKeyValueHandler : KeyValueHandler {
-    private val buffer = ArrayList<Pair<String, String>>()
+    private val buffer = mutableListOf<Pair<String, String>>()
 
     override fun handle(key: String, value: String) {
       buffer.add(Pair(key, value))
@@ -44,7 +41,7 @@ interface KeyValueHandler {
    * duplicate values for keys, using the last value encountered
    */
   class SingleKeyValueHandler : KeyValueHandler {
-    private val kv = LinkedHashMap<String, String>()
+    private val kv = linkedMapOf<String, String>()
 
     override fun handle(key: String, value: String) {
       kv.put(key, value)
@@ -56,7 +53,7 @@ interface KeyValueHandler {
 
     fun toList(): List<Pair<String, String>> {
       val iterator = kv.entries.iterator()
-      val list = ArrayList<Pair<String, String>>(kv.size)
+      val list = mutableListOf<Pair<String, String>>()
 
       while (iterator.hasNext()) {
         val next = iterator.next()

@@ -9,7 +9,6 @@ import okio.Buffer
 import java.nio.charset.Charset
 import java.security.SecureRandom
 import java.time.Clock
-import java.util.LinkedHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -39,11 +38,11 @@ class Signature(private val clock: Clock = Clock.systemDefaultZone(),
       OAuthParams.ONE_DOT_OH
     )
 
-    val javaParams: MutableList<Pair<String, String>> = mutableListOf()
+    val javaParams = mutableListOf<Pair<String, String>>()
 
     val queryParamNames = request.url().queryParameterNames()
     for (queryParam in queryParamNames) {
-      val values: MutableList<String> = request.url().queryParameterValues(queryParam)
+      val values = request.url().queryParameterValues(queryParam)
 
       values.mapTo(javaParams) {
         Pair(UrlCodec.encode(queryParam)!!, UrlCodec.encode(it)!!)
@@ -82,7 +81,7 @@ class Signature(private val clock: Clock = Clock.systemDefaultZone(),
 
     val signature = StandardSigner.getString(normalized, OAuthParams.HMAC_SHA1, credentials.secret!!, credentials.consumerSecret!!)
 
-    val oauthHeaders = LinkedHashMap<String, String>()
+    val oauthHeaders = linkedMapOf<String, String>()
     if (credentials.consumerKey != null) {
       oauthHeaders.put(OAuthParams.OAUTH_CONSUMER_KEY, quoted(credentials.consumerKey!!))
     }
