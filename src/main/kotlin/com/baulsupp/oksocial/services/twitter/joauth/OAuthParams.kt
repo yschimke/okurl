@@ -15,6 +15,9 @@ package com.baulsupp.oksocial.services.twitter.joauth
 import java.util.ArrayList
 
 object OAuthParams {
+  val AND = "&"
+  val HMACSHA1 = "HmacSHA1"
+  val HMACSHA256 = "HmacSHA256"
 
   val OAUTH_TOKEN = "oauth_token"
   val OAUTH_CONSUMER_KEY = "oauth_consumer_key"
@@ -53,10 +56,6 @@ object OAuthParams {
 
     fun consumerKey(): String {
       return consumerKey
-    }
-
-    fun signature(): String {
-      return signature
     }
 
     fun version(): String? {

@@ -12,7 +12,8 @@
 
 package com.baulsupp.oksocial.services.twitter.joauth
 
-import java.util.*
+import java.util.ArrayList
+import java.util.LinkedHashMap
 
 /**
  * KeyValueHandler is a trait for a callback with a key and a value.

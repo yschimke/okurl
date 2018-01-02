@@ -3,8 +3,8 @@ package com.baulsupp.oksocial.services.twitter
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.services.twitter.joauth.KeyValueHandler
-import com.baulsupp.oksocial.services.twitter.joauth.KeyValueParser
 import com.baulsupp.oksocial.services.twitter.joauth.Signature
+import com.baulsupp.oksocial.services.twitter.joauth.StandardKeyValueParser
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -66,7 +66,7 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
     protected fun parseTokenMap(tokenDetails: String): Map<String, String> {
       val handler = KeyValueHandler.SingleKeyValueHandler()
 
-      val bodyParser = KeyValueParser.StandardKeyValueParser("&", "=")
+      val bodyParser = StandardKeyValueParser("&", "=")
       bodyParser.parse(tokenDetails, listOf<KeyValueHandler>(handler))
 
       return handler.toMap()

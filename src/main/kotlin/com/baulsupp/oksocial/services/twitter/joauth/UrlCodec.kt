@@ -12,7 +12,6 @@
 
 package com.baulsupp.oksocial.services.twitter.joauth
 
-import java.net.URLDecoder
 import java.nio.charset.Charset
 import kotlin.experimental.and
 
@@ -68,7 +67,4 @@ object UrlCodec {
     return if (sb == null) s else sb.toString()
   }
 
-  fun decode(s: String?): String? {
-    return if (s == null) null else URLDecoder.decode(s, UrlCodec.UTF_8)
-  }
 }

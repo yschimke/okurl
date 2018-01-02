@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.twitter.joauth
 
 import com.baulsupp.oksocial.services.twitter.TwitterAuthInterceptor
 import com.baulsupp.oksocial.services.twitter.TwitterCredentials
-import com.baulsupp.oksocial.services.twitter.joauth.Signer.StandardSigner
 import okhttp3.FormBody
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -14,8 +13,8 @@ import java.util.LinkedHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class Signature constructor(private val clock: Clock = Clock.systemDefaultZone(),
-                                          private val random: () -> Long = { SecureRandom().nextLong() }) {
+class Signature(private val clock: Clock = Clock.systemDefaultZone(),
+                private val random: () -> Long = { SecureRandom().nextLong() }) {
 
   private fun quoted(str: String): String {
     return "\"" + str + "\""
@@ -34,13 +33,10 @@ class Signature constructor(private val clock: Clock = Clock.systemDefaultZone()
     val timestampSecs = generateTimestamp()
     val nonce = generateNonce()
 
-    val normalizer = Normalizer.StandardNormalizer()
-    val signer = StandardSigner()
-
     val oAuth1Params = OAuthParams.OAuth1Params(
-            credentials.token, credentials.consumerKey!!, nonce, timestampSecs,
-            java.lang.Long.toString(timestampSecs), "", OAuthParams.HMAC_SHA1,
-            OAuthParams.ONE_DOT_OH
+      credentials.token, credentials.consumerKey!!, nonce, timestampSecs,
+      java.lang.Long.toString(timestampSecs), "", OAuthParams.HMAC_SHA1,
+      OAuthParams.ONE_DOT_OH
     )
 
     val javaParams: MutableList<Pair<String, String>> = mutableListOf()
@@ -68,23 +64,23 @@ class Signature constructor(private val clock: Clock = Clock.systemDefaultZone()
 
         val handler = KeyValueHandler.DuplicateKeyValueHandler()
 
-        val bodyParser = KeyValueParser.StandardKeyValueParser("&", "=")
+        val bodyParser = StandardKeyValueParser("&", "=")
         bodyParser.parse(encodedBody, listOf<KeyValueHandler>(handler))
 
         javaParams.addAll(handler.toList())
       }
     }
 
-    val normalized = normalizer.normalize(
-            if (request.isHttps) "https" else "http", request.url().host(), request.url().port(),
-            request.method(), request.url().encodedPath(), javaParams, oAuth1Params
+    val normalized = StandardNormalizer.normalize(
+      if (request.isHttps) "https" else "http", request.url().host(), request.url().port(),
+      request.method(), request.url().encodedPath(), javaParams, oAuth1Params
     )
 
     log.log(Level.FINE, "normalised " + normalized)
     log.log(Level.FINE, "secret " + credentials.secret)
     log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret)
 
-    val signature = signer.getString(normalized, credentials.secret!!, credentials.consumerSecret!!)
+    val signature = StandardSigner.getString(normalized, OAuthParams.HMAC_SHA1, credentials.secret!!, credentials.consumerSecret!!)
 
     val oauthHeaders = LinkedHashMap<String, String>()
     if (credentials.consumerKey != null) {
@@ -104,7 +100,7 @@ class Signature constructor(private val clock: Clock = Clock.systemDefaultZone()
 
   private fun isFormContentType(request: Request): Boolean {
     return request.body()!!.contentType()!!.toString().startsWith(
-            "application/x-www-form-urlencoded")
+      "application/x-www-form-urlencoded")
   }
 
   companion object {
