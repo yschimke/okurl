@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.twitter
 
+import com.baulsupp.oksocial.services.twitter.joauth.Signature
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody

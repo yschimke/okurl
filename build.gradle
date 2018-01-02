@@ -100,9 +100,6 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.3")
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.3'
-    compile('com.twitter:joauth:6.0.2') {
-        exclude(module: 'guava')
-    }
     compile('com.github.mrmike:ok2curl:0.3.2') {
         exclude(module: 'okhttp')
     }
