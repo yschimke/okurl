@@ -486,7 +486,7 @@ open class CommandLineClient : HelpOption() {
       })
     }
 
-    clientBuilder.eventListenerFactory { call -> ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace) }
+    clientBuilder.eventListenerFactory { call -> ZipkinTracingListener(tracer, opener, zipkinTrace) }
 
     clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
 

@@ -11,7 +11,6 @@ import java.util.ServiceLoader
 /**
  * Registry for looking up transports by URI.
  *
- *
  * Uses the Jar Services mechanism with services defined by [UriHandler].
  */
 class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
@@ -29,12 +28,7 @@ class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
   }
 
   companion object {
-
-    fun fromServices(): UriTransportRegistry {
-      val services = loadServices()
-
-      return UriTransportRegistry(services)
-    }
+    fun fromServices(): UriTransportRegistry = UriTransportRegistry(loadServices())
 
     fun forUri(uri: String): Reporter<Span> {
       return UriTransportRegistry.fromServices().findClient(uri)
