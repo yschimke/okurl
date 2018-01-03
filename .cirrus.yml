@@ -1,6 +1,6 @@
 container:
   image: gradle:4.3.0-jdk8
-  cpu: 8
-  memory: 20G
+  cpu: 2
+  memory: 4G
 task:
   script: gradle check
