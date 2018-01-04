@@ -1,6 +1,7 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.20-eap-45'
     repositories {
+        maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
         mavenCentral()
         jcenter()
     }
@@ -14,7 +15,7 @@ plugins {
     id "com.gradle.build-scan" version "1.11"
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'net.nemerosa.versioning' version '2.6.1'
-    id "org.jetbrains.kotlin.jvm" version "1.2.10"
+//    id "org.jetbrains.kotlin.jvm" version "1.2.20-eap-45"
     id 'io.codearte.nexus-staging' version '0.11.0'
     id "org.jlleitschuh.gradle.ktlint" version "3.0.0"
 }
@@ -82,6 +83,7 @@ repositories {
     maven { url 'https://dl.bintray.com/reactivesocket/RSocket' }
     maven { url "https://jitpack.io" }
     maven { url "https://oss.sonatype.org/content/repositories/releases" }
+    maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
     mavenCentral()
     jcenter()
 }
@@ -277,22 +279,22 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 task resolveDependencies {
-  setDescription "Resolves all projects dependencies from the repository."
-  setGroup "Build Server"
+    setDescription "Resolves all projects dependencies from the repository."
+    setGroup "Build Server"
 
-  doLast {
-    rootProject.allprojects { project ->
-      project.buildscript.configurations.forEach { configuration ->
-        if (configuration.canBeResolved) {
-          configuration.resolve()
-        }
-      }
+    doLast {
+        rootProject.allprojects { project ->
+            project.buildscript.configurations.forEach { configuration ->
+                if (configuration.canBeResolved) {
+                    configuration.resolve()
+                }
+            }
 
-      project.configurations.forEach { configuration ->
-        if (configuration.canBeResolved) {
-          configuration.resolve()
+            project.configurations.forEach { configuration ->
+                if (configuration.canBeResolved) {
+                    configuration.resolve()
+                }
+            }
         }
-      }
     }
-  }
 }
