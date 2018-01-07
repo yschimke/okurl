@@ -37,7 +37,6 @@ import com.baulsupp.oksocial.security.InsecureTrustManager
 import com.baulsupp.oksocial.security.KeystoreUtils
 import com.baulsupp.oksocial.security.OpenSCUtil
 import com.baulsupp.oksocial.services.twitter.TwitterCachingInterceptor
-import com.baulsupp.oksocial.services.twitter.TwitterDeflatedResponseInterceptor
 import com.baulsupp.oksocial.tracing.UriTransportRegistry
 import com.baulsupp.oksocial.tracing.ZipkinConfig
 import com.baulsupp.oksocial.tracing.ZipkinTracingInterceptor
@@ -423,7 +422,6 @@ open class CommandLineClient : HelpOption() {
     // TODO move behind AuthInterceptor API
     builder.addNetworkInterceptor(TwitterCachingInterceptor())
     builder.addNetworkInterceptor(BrotliInterceptor)
-    builder.addNetworkInterceptor(TwitterDeflatedResponseInterceptor())
 
     if (curl) {
       builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
