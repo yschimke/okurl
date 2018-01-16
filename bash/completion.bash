@@ -39,6 +39,18 @@ function _oksocial_complete ()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
 
+  idx=0
+  tokenset=
+  for i in "${COMP_WORDS[@]}"; do
+    #_ok_social_debug i $i
+    idx=$(expr $idx + 1)
+    if [ "$i" = "-s" ]; then
+      tokenset=${COMP_WORDS[$idx]}
+    fi
+  done
+
+  _ok_social_debug tokenset $tokenset
+
   case $prev in
         -d | --data | -H | --header | -A | --user-agent | --connect-timeout | --read-timeout \
         | -e | --referer | --cache | --token | --resolve | --certificatePin | --keystore \
@@ -84,12 +96,12 @@ function _oksocial_complete ()
 
   _get_comp_words_by_ref -n : cur
 
-  cache_file=$TMPDIR$(basename $job)-complete.cache
+  cache_file=$TMPDIR$(basename $job)${tokenset:+-$tokenset}-complete.cache
 
   if _oksocial_is_cache_valid $cache_file $cur; then
-    _ok_social_debug compute
+    _ok_social_debug compute $job ${tokenset:+-s $tokenset} --urlCompletion "$cur"
 
-    paths=$(COMPLETION_FILE=$cache_file $job --urlCompletion "$cur")
+    paths=$(COMPLETION_FILE=$cache_file $job ${tokenset:+-s $tokenset} --urlCompletion "$cur")
 
     _ok_social_debug result $(wc -l $cache_file)
   else
