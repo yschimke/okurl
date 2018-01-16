@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.facebook
 
+import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
@@ -15,6 +16,10 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
         HostUrlCompleter(hosts) {
 
   suspend override fun siteUrls(url: HttpUrl): UrlList {
+    if (url.host() == "www.facebook.com") {
+      return UrlList.fromResource("facebook")!!
+    }
+
     var result = completePath(url.encodedPath())
 
     if (!url.encodedPath().endsWith("/")) {

@@ -30,11 +30,13 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
-    val token = credentials.accessToken
+    if (isGraphApi(request.url()) || isScimApi(request.url())) {
+      val token = credentials.accessToken
 
-    val newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build()
+      val newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build()
 
-    request = request.newBuilder().url(newUrl).build()
+      request = request.newBuilder().url(newUrl).build()
+    }
 
     return chain.proceed(request)
   }
@@ -64,8 +66,13 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> = FacebookUtil.API_HOSTS
 
-  override fun supportsUrl(url: HttpUrl): Boolean =
-          url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
+  override fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || url.host().equals("www.facebook.com")
+
+  fun isScimApi(url: HttpUrl) =
+    url.host().equals("www.facebook.com") && url.encodedPath().startsWith("/scim/v1/")
+
+  fun isGraphApi(url: HttpUrl) =
+    url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,

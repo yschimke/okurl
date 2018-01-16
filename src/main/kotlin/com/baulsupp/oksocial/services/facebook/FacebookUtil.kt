@@ -11,7 +11,7 @@ import okhttp3.Request
 object FacebookUtil {
   val VERSION = "v2.11"
 
-  val API_HOSTS = setOf("graph.facebook.com")
+  val API_HOSTS = setOf("graph.facebook.com", "www.facebook.com")
 
   fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
     return requestBuilder.url("https://graph.facebook.com" + s).build()
