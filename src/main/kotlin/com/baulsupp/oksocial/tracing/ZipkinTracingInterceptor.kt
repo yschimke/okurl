@@ -14,7 +14,6 @@ class ZipkinTracingInterceptor(private val tracing: Tracing) : Interceptor {
     injector = tracing.propagation().injector { request, header, value -> request.header(header, value) }
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
 
