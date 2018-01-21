@@ -1,6 +1,7 @@
 com.baulsupp.oksocial.services.circleci.CircleCIAuthInterceptor
 com.baulsupp.oksocial.services.coinbase.CoinbaseAuthInterceptor
 com.baulsupp.oksocial.services.coinbin.CoinBinAuthInterceptor
+com.baulsupp.oksocial.services.companieshouse.CompaniesHouseAuthInterceptor
 com.baulsupp.oksocial.services.datasettes.DatasettesAuthInterceptor
 com.baulsupp.oksocial.services.dropbox.DropboxAuthInterceptor
 com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
