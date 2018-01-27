@@ -12,6 +12,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 
 /**
@@ -29,6 +30,11 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val token = credentials.accessToken
 
     val builder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
+
+    if (request.method() == "GET") {
+      builder.method("POST", RequestBody.create(MediaType.parse("application/json"), "{}"))
+    }
+
     request = builder.build()
 
     return chain.proceed(request)
