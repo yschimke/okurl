@@ -344,15 +344,25 @@ class Main : CommandLineClient() {
       return null
     }
 
-    val mimeType = headerMap.keys
-            .firstOrNull { "Content-Type".equals(it, ignoreCase = true) }
-            ?.let { headerMap.remove(it)!! }
-            ?: "application/x-www-form-urlencoded"
-
     return try {
-      RequestBody.create(MediaType.parse(mimeType), FileContent.readParamBytes(data!!))
+      val content = FileContent.readParamBytes(data!!)
+
+      val mimeType = headerMap.keys
+        .firstOrNull { "Content-Type".equals(it, ignoreCase = true) }
+        ?.let { headerMap.remove(it)!! }
+        ?: predictContentType(content)
+
+      RequestBody.create(MediaType.parse(mimeType), content)
     } catch (e: IOException) {
       throw UsageException(e.message!!)
+    }
+  }
+
+  private fun predictContentType(content: ByteArray): String {
+    if (content.size > 0 && content[0] == '{'.toByte()) {
+      return "application/json"
+    } else {
+      return "application/x-www-form-urlencoded"
     }
   }
 
