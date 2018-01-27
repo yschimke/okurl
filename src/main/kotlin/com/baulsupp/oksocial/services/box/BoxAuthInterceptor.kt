@@ -4,9 +4,16 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.completion.ApiCompleter
+import com.baulsupp.oksocial.completion.BaseUrlCompleter
+import com.baulsupp.oksocial.completion.CompletionVariableCache
+import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.box.model.FolderItems
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -68,6 +75,30 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 //      credentials.refreshToken, credentials.clientId,
 //      credentials.clientSecret)
 //  }
+
+  override fun apiCompleter(prefix: String, client: OkHttpClient,
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache): ApiCompleter {
+    val urlList = UrlList.fromResource(name())
+
+    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+
+    completer.withCachedVariable(name(), "file_id", {
+      credentialsStore[serviceDefinition()]?.let {
+        client.query<FolderItems>(
+          "https://api.box.com/2.0/folders/0/items").entries.filter { it.type == "file" }.map { it.id }
+      }
+    })
+
+    completer.withCachedVariable(name(), "folder_id", {
+      credentialsStore[serviceDefinition()]?.let {
+        listOf("0") + client.query<FolderItems>(
+          "https://api.box.com/2.0/folders/0/items").entries.filter { it.type == "folder" }.map { it.id }
+      }
+    })
+
+    return completer
+  }
 
   override fun hosts(): Set<String> = setOf("api.box.com")
 }

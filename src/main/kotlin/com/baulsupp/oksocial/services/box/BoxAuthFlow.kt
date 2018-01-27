@@ -8,13 +8,12 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.net.URLEncoder
 
 object BoxAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
                     clientSecret: String, scopes: List<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
-      val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
+      //      val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
       //&scope=$scopesString
       val loginUrl = "https://account.box.com/api/oauth2/authorize?client_id=$clientId&response_type=code&state=x&redirect_uri=${s.redirectUri}"
