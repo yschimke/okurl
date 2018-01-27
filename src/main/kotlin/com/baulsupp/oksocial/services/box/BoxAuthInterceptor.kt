@@ -40,13 +40,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Box Client Id", "box.clientId", "", false)
     val clientSecret = Secrets.prompt("Box Client Secret", "box.clientSecret", "", true)
 
-    val scopes = Secrets.promptArray("Scopes", "box.scopes", listOf("item_read",
-      "item_readwrite",
-      "item_preview",
-      "item_upload",
-      "item_share",
-      "item_delete",
-      "item_download"))
+    val scopes = Secrets.promptArray("Scopes", "box.scopes", listOf("root_readwrite"))
 
     return BoxAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
