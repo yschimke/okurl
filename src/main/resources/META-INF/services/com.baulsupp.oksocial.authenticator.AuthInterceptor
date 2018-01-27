@@ -1,3 +1,4 @@
+com.baulsupp.oksocial.services.box.BoxAuthInterceptor
 com.baulsupp.oksocial.services.circleci.CircleCIAuthInterceptor
 com.baulsupp.oksocial.services.coinbase.CoinbaseAuthInterceptor
 com.baulsupp.oksocial.services.coinbin.CoinBinAuthInterceptor
