@@ -66,10 +66,10 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> = FacebookUtil.API_HOSTS
 
-  override fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || url.host().equals("www.facebook.com")
+  override fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || isScimApi(url)
 
   fun isScimApi(url: HttpUrl) =
-    url.host().equals("www.facebook.com") && url.encodedPath().startsWith("/scim/v1/")
+    url.host().startsWith("www.") && url.host().endsWith(".facebook.com") && url.encodedPath().contains("/scim/v1/")
 
   fun isGraphApi(url: HttpUrl) =
     url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
