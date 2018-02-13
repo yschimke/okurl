@@ -14,19 +14,8 @@ fi
 
 BCP=
 
-JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
-
-if [ $? -ne 0 ]; then
-  JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
-
-  if [ $? -eq 0 ]; then
-    ALPN=$(ls build/install/oksocial/alpn/alpn-boot-*.jar)
-    BCP="-Xbootclasspath/p:$ALPN"
-  fi
-else
-  VMOPTS="--add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
-fi
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 
-$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $BCP -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
+$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
