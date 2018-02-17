@@ -242,11 +242,11 @@ class Main : CommandLineClient() {
 
   fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
       if (logger.isLoggable(Level.FINE)) {
-          logger.fine("OkHttp Platform: " + Platform.get().javaClass.getSimpleName());
-          logger.fine("TLS Version: " + response.handshake().tlsVersion());
-          logger.fine("Protocol: " + response.protocol());
-          logger.fine("Cipher: " + response.handshake().cipherSuite());
-          logger.fine("Peer Principal: " + response.handshake().peerPrincipal());
+          logger.fine("OkHttp Platform: " + Platform.get().javaClass.getSimpleName())
+          logger.fine("TLS Version: " + response.handshake().tlsVersion())
+          logger.fine("Protocol: " + response.protocol())
+          logger.fine("Cipher: " + response.handshake().cipherSuite())
+          logger.fine("Peer Principal: " + response.handshake().peerPrincipal())
         }
 
     if (showHeaders) {
