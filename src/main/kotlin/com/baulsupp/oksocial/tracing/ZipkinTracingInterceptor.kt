@@ -5,7 +5,6 @@ import brave.propagation.TraceContext
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 class ZipkinTracingInterceptor(private val tracing: Tracing) : Interceptor {
   private val injector: TraceContext.Injector<Request.Builder>

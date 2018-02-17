@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION

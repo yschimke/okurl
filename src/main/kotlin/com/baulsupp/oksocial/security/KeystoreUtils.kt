@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.security
 
+import okhttp3.internal.platform.Platform
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -12,7 +13,6 @@ import java.security.cert.CertificateException
 import java.util.Arrays
 import javax.net.ssl.KeyManager
 import javax.net.ssl.KeyManagerFactory
-import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -33,7 +33,7 @@ object KeystoreUtils {
   @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
   fun createSslSocketFactory(keyManagers: Array<KeyManager>?,
                              trustManagers: X509TrustManager): SSLSocketFactory {
-    val context = SSLContext.getInstance("TLS")
+    val context = Platform.get().sslContext
 
     context.init(keyManagers, arrayOf<TrustManager>(trustManagers), null)
 
