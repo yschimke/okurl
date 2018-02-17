@@ -11,9 +11,6 @@ if [ -x /usr/libexec/java_home ]; then
   
   if [ $? -ne 0 ]; then
     JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
-
-    ALPN=$(ls $INSTALLDIR/lib/alpn/alpn-boot-*.jar)
-    BCP="-Xbootclasspath/p:$ALPN"
   else
     VMOPTS="--add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
   fi
@@ -27,4 +24,4 @@ for i in `find $PLUGINDIR -name lib 2>/dev/null`; do
   PLUGINS=$PLUGINS:$i/\*
 done
 
-$JAVA_CMD -Dio.netty.processId=$$ $BCP $VMOPTS -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.kotlin.Main "$@"
+$JAVA_CMD -Dio.netty.processId=$$ $VMOPTS -classpath $INSTALLDIR/lib/\*$PLUGINS -Dcommand.name=$CMD com.baulsupp.oksocial.kotlin.Main "$@"
