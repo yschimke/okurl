@@ -34,8 +34,11 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.StatusLine
+import okhttp3.internal.platform.Platform
+import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.io.IOException
+import java.security.Security
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -238,6 +241,14 @@ class Main : CommandLineClient() {
   }
 
   fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
+      if (logger.isLoggable(Level.FINE)) {
+          logger.fine("OkHttp Platform: " + Platform.get().javaClass.getSimpleName())
+          logger.fine("TLS Version: " + response.handshake().tlsVersion())
+          logger.fine("Protocol: " + response.protocol())
+          logger.fine("Cipher: " + response.handshake().cipherSuite())
+          logger.fine("Peer Principal: " + response.handshake().peerPrincipal())
+        }
+
     if (showHeaders) {
       outputHandler.info(StatusLine.get(response).toString())
       val headers = response.headers()
@@ -371,6 +382,7 @@ class Main : CommandLineClient() {
 
     @JvmStatic
     fun main(vararg args: String) {
+      Security.insertProviderAt(OpenSSLProvider(), 1)
       val result = CommandLineClient.fromArgs<Main>(*args).run()
       System.exit(result)
     }
