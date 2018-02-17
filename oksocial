@@ -12,8 +12,6 @@ else
   MAIN_JAR=out/production/classes:out/production/resources
 fi
 
-BCP=
-
 JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
 
 JAVA_CMD="$JAVA_HOME/bin/java"
