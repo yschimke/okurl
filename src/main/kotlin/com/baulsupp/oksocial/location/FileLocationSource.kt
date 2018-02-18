@@ -6,12 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 import java.io.File
-import java.io.IOException
 
 class FileLocationSource(private val file: File) : LocationSource {
-
-  @Throws(IOException::class)
-  override fun read(): Location? {
+  suspend override fun read(): Location? {
     if (file.isFile) {
       val mapper = ObjectMapper()
       mapper.registerModule(KotlinModule())
@@ -24,7 +21,6 @@ class FileLocationSource(private val file: File) : LocationSource {
     return null
   }
 
-  @Throws(IOException::class)
   fun save(location: Location) {
     val mapper = ObjectMapper()
     mapper.registerModule(KotlinModule())

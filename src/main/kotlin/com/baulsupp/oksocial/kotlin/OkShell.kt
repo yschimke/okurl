@@ -29,7 +29,7 @@ class OkShell(val commandLine: CommandLineClient) {
     return null
   }
 
-  fun location(): Location? = commandLine.locationSource!!.read()
+  suspend fun location(): Location? = commandLine.locationSource!!.read()
 
   companion object {
     var instance: OkShell? = null

@@ -78,7 +78,7 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
     }
 
     dnsSpan!!.tag("dns.results",
-            inetAddressList!!.joinToString(", ", transform = { it.toString() }))
+      inetAddressList!!.joinToString(", ", transform = { it.toString() }))
 
     dnsSpan!!.finish()
   }
@@ -201,8 +201,6 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
     }
 
     requestSpan = finish(requestSpan)
-
-    responseSpan = tracer.newChild(callSpan!!.context()).start().name("response")
   }
 
   override fun responseHeadersEnd(call: Call?, response: Response?) {
@@ -210,7 +208,7 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
       return
     }
 
-    responseSpan!!.tag("responseHeaderLength", "" + response!!.headers().byteCount())
+    responseSpan = tracer.newChild(callSpan!!.context()).start().name("response").tag("responseHeaderLength", "" + response!!.headers().byteCount())
   }
 
   override fun responseBodyEnd(call: Call?, bytesRead: Long) {

@@ -11,9 +11,15 @@ data class ExecResult(val exitCode: Int, val output: ByteString) {
 }
 
 suspend fun exec(vararg command: String): ExecResult {
+  return exec(command.toList())
+}
+
+suspend fun exec(command: List<String>, configure: ProcessExecutor.() -> Unit = {}): ExecResult {
   val pe = ProcessExecutor().command(command.toList())
     .readOutput(true)
     .redirectError(Slf4jStream.ofCaller().asInfo())
+
+  configure(pe)
 
   return run {
     val pr = pe.execute()

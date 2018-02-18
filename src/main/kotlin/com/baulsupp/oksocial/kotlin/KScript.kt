@@ -31,7 +31,7 @@ fun warmup(vararg urls: String) {
   okshell.warmup(*urls)
 }
 
-fun location(): Location? = okshell.location()
+suspend fun location(): Location? = okshell.location()
 
 fun show(url: String) {
   okshell.show(url)

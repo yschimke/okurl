@@ -81,9 +81,9 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder()
-            .add("client_id", credentials.clientId)
-            .add("client_secret", credentials.clientSecret)
-            .add("refresh_token", credentials.refreshToken)
+            .add("client_id", credentials.clientId!!)
+            .add("client_secret", credentials.clientSecret!!)
+            .add("refresh_token", credentials.refreshToken!!)
             .add("grant_type", "refresh_token")
             .build()
 

@@ -3,8 +3,8 @@ package com.baulsupp.oksocial.location
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.process.exec
 import okhttp3.Response
-import org.zeroturnaround.exec.ProcessExecutor
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -17,19 +17,21 @@ import java.util.logging.Logger
 class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSource {
   private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
-  override fun read(): Location? {
+  suspend override fun read(): Location? {
     if (PlatformUtil.isOSX) {
       if (!File(LOCATION_APP).exists()) {
         throw UsageException("Missing " + LOCATION_APP)
       }
 
       return try {
-        val process = ProcessExecutor().command(LOCATION_APP, "-format",
-                "%latitude,%longitude", "-once", "yes")
-                .readOutput(true).timeout(5, TimeUnit.SECONDS).execute()
-        val line = process.outputUTF8()
+        val process = exec(listOf(LOCATION_APP, "-format",
+          "%latitude,%longitude", "-once", "yes")) {
+          timeout(5, TimeUnit.SECONDS)
+        }
 
-        if (process.exitValue != 0) {
+        val line = process.outputString()
+
+        if (!process.success) {
           logger.log(Level.INFO, "failed to get location $line")
           return null
         }
@@ -51,6 +53,6 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
   }
 
   companion object {
-    val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
+    const val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
   }
 }
