@@ -8,12 +8,10 @@ import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.queryList
-import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.process.exec
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
-import com.baulsupp.oksocial.services.gdax.model.Account
 import com.baulsupp.oksocial.services.travisci.model.RepositoryList
 import com.baulsupp.oksocial.services.travisci.model.User
 import okhttp3.Interceptor
@@ -60,12 +58,31 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): TravisToken {
-    throw UsageException("Use 'travis login --org' or 'travis login --pro'")
+    if (!isTravisInstalled()) {
+      throw UsageException("Requires travis command line installed")
+    }
+
+    // TODO support pro as well
+    val token = travisToken(false)
+
+    return TravisToken(token)
+  }
+
+  private suspend fun isTravisInstalled(): Boolean = exec("which", "travis").success
+
+  private suspend fun travisToken(pro: Boolean): String {
+    val result = exec("travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org")
+
+    if (!result.success) {
+      throw UsageException("Use 'travis login --org' or 'travis login --pro'")
+    }
+
+    return result.outputString().trim()
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: TravisToken): ValidatedCredentials {
-    val user = client.query<User>("https://api.travis-ci.org/users")
+    val user = client.query<User>("https://api.travis-ci.org/user")
     return ValidatedCredentials(user.name)
   }
 
