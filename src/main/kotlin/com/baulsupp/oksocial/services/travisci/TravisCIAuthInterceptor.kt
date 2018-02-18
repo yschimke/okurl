@@ -97,7 +97,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
       listOf(client.query<User>("https://api.travis-ci.org/user").id)
     })
     completer.withVariable("repository.id", {
-      client.query<RepositoryList>("https://api.travis-ci.org/repos").repositories.map { it.slug }
+      client.query<RepositoryList>("https://api.travis-ci.org/repos").repositories.map { it.slug.replace("/", "%2F") }
     })
 
     return completer
