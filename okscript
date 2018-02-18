@@ -13,12 +13,7 @@ BCP=
 
 JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
 
-if [ $? -eq 0 ]; then
-  ALPN=$(ls build/install/oksocial/alpn/alpn-boot-*.jar)
-  BCP="-Xbootclasspath/p:$ALPN"
-fi
-
 JAVA_CMD="$JAVA_HOME/bin/java"
 
 MAIN_JAR=$(ls build/install/oksocial/lib/oksocial-*.jar | grep -v oksocial-output)
-$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $DEBUG $BCP -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.kotlin.Main "$@"
+$JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS $DEBUG -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.kotlin.Main "$@"

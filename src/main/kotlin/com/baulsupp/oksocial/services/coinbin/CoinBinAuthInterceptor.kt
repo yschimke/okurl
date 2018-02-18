@@ -26,8 +26,8 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     var request = chain.request()
 
     request = request.newBuilder()
-            .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-            .build()
+      .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+      .build()
 
     return chain.proceed(request)
   }
@@ -37,12 +37,12 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   }
 
   override fun serviceDefinition(): ServiceDefinition<BasicCredentials> =
-          BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
-                  "https://coinbin.org/", null)
+    BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
+      "https://coinbin.org/", null)
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials =
-          ValidatedCredentials(credentials.user, null)
+    ValidatedCredentials(credentials.user, null)
 
   override fun hosts(): Set<String> = setOf("coinbin.org")
 

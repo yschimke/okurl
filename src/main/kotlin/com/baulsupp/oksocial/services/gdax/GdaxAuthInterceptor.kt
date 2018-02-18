@@ -36,11 +36,11 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     val signature = encodeString(prehash, UTF_8).hmacSha256(decodedKey)
 
     request = request.newBuilder()
-            .addHeader("CB-ACCESS-KEY", credentials.apiKey)
-            .addHeader("CB-ACCESS-SIGN", signature.base64())
-            .addHeader("CB-ACCESS-TIMESTAMP", timestamp)
-            .addHeader("CB-ACCESS-PASSPHRASE", credentials.passphrase)
-            .build()
+      .addHeader("CB-ACCESS-KEY", credentials.apiKey)
+      .addHeader("CB-ACCESS-SIGN", signature.base64())
+      .addHeader("CB-ACCESS-TIMESTAMP", timestamp)
+      .addHeader("CB-ACCESS-PASSPHRASE", credentials.passphrase)
+      .build()
 
     return chain.proceed(request)
   }

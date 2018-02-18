@@ -23,7 +23,7 @@ object UrlCodec {
 
   private fun isUnreserved(c: Char): Boolean {
     return c in 'a'..'z' || c in 'A'..'Z' ||
-            c in '0'..'9' || c == '.' || c == '-' || c == '_' || c == '~'
+      c in '0'..'9' || c == '.' || c == '-' || c == '_' || c == '~'
   }
 
   fun encode(s: String?): String? {

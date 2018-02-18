@@ -12,5 +12,5 @@ class BasicAuthServiceDefinition(apiHost: String, serviceName: String, shortName
   }
 
   override fun formatCredentialsString(credentials: BasicCredentials) =
-          credentials.user + ":" + credentials.password
+    credentials.user + ":" + credentials.password
 }

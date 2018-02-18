@@ -16,8 +16,8 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
 
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Transferwise Test API", "transferwise-test",
-            "https://api-docs.transferwise.com/",
-            "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
+      "https://api-docs.transferwise.com/",
+      "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
   }
 
   @Throws(IOException::class)
@@ -27,7 +27,7 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
     val urlList = UrlList.fromResource("transferwise")!!
 
     val testUrls = urlList.getUrls("")
-            .map { s -> s.replace("api.transferwise.com", host()) }
+      .map { s -> s.replace("api.transferwise.com", host()) }
 
     return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts(), completionVariableCache)
   }

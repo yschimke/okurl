@@ -16,8 +16,8 @@ import java.util.Arrays
 class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.linkedin.com", "Linkedin API", "linkedin",
-            "https://developer.linkedin.com/docs/rest-api",
-            "https://www.linkedin.com/developer/apps")
+      "https://developer.linkedin.com/docs/rest-api",
+      "https://www.linkedin.com/developer/apps")
   }
 
   @Throws(IOException::class)
@@ -41,7 +41,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Linkedin Client Id", "linkedin.clientId", "", false)
     val clientSecret = Secrets.prompt("Linkedin Client Secret", "linkedin.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "linkedin.scopes",
-            Arrays.asList("r_basicprofile", "r_emailaddress", "rw_company_admin", "w_share"))
+      Arrays.asList("r_basicprofile", "r_emailaddress", "rw_company_admin", "w_share"))
 
     return LinkedinAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
@@ -53,6 +53,6 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> {
     return setOf((
-            "api.linkedin.com"))
+      "api.linkedin.com"))
   }
 }

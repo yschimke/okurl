@@ -17,7 +17,7 @@ import okhttp3.Response
 class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.imgur.com", "Imgur API", "imgur",
-            "https://api.imgur.com/endpoints", "https://imgur.com/account/settings/apps")
+      "https://api.imgur.com/endpoints", "https://imgur.com/account/settings/apps")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -41,7 +41,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me", "data", "url"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me", "data", "url"))
 
   override fun canRenew(result: Response): Boolean = result.code() == 403
 
@@ -49,20 +49,20 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("refresh_token", credentials.refreshToken!!)
-            .add("client_id", credentials.clientId!!)
-            .add("client_secret", credentials.clientSecret!!)
-            .add("grant_type", "refresh_token")
-            .build()
+      .add("client_id", credentials.clientId!!)
+      .add("client_secret", credentials.clientSecret!!)
+      .add("grant_type", "refresh_token")
+      .build()
     val request = Request.Builder().url("https://api.imgur.com/oauth2/token")
-            .method("POST", body)
-            .build()
+      .method("POST", body)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            credentials.refreshToken, credentials.clientId,
-            credentials.clientSecret)
+      credentials.refreshToken, credentials.clientId,
+      credentials.clientSecret)
   }
 
   override fun hosts(): Set<String> = setOf("api.imgur.com")

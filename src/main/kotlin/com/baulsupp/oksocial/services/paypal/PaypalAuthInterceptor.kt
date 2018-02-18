@@ -17,8 +17,8 @@ import okhttp3.Response
 open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Paypal API", shortName(),
-            "https://developer.paypal.com/docs/api/",
-            "https://developer.paypal.com/developer/applications/")
+      "https://developer.paypal.com/docs/api/",
+      "https://developer.paypal.com/developer/applications/")
   }
 
   open fun shortName() = "paypal"
@@ -37,7 +37,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.paypal.com/v1/oauth2/token/userinfo?schema=openid", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.paypal.com/v1/oauth2/token/userinfo?schema=openid", "name"))
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {

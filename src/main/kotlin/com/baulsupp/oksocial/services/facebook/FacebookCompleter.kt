@@ -12,7 +12,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<String>) :
-        HostUrlCompleter(hosts) {
+  HostUrlCompleter(hosts) {
 
   suspend override fun siteUrls(url: HttpUrl): UrlList {
     if (url.host() == "www.facebook.com") {
@@ -52,11 +52,11 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     when {
       path == "/" -> {
         return UrlList(UrlList.Match.EXACT,
-                (topLevel() + VERSION).map(addPath("https://graph.facebook.com/")))
+          (topLevel() + VERSION).map(addPath("https://graph.facebook.com/")))
       }
       path.matches("/v\\d.\\d+/?".toRegex()) -> {
         return UrlList(UrlList.Match.EXACT,
-                topLevel().map(addPath("https://graph.facebook.com" + path)))
+          topLevel().map(addPath("https://graph.facebook.com" + path)))
       }
       else -> {
         val prefix = "https://graph.facebook.com" + path

@@ -47,7 +47,8 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   private fun <T> printSuccess(a: AuthInterceptor<T>, validated: ValidatedCredentials?) {
     val sd = a.serviceDefinition()
-    outputHandler.info("%-40s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", validated?.username ?: "-", validated?.clientName ?: "-"))
+    outputHandler.info("%-40s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", validated?.username
+      ?: "-", validated?.clientName ?: "-"))
   }
 
   private fun <T> printFailed(a: AuthInterceptor<T>, e: Throwable) {
@@ -88,7 +89,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   fun validate(
-          services: Iterable<AuthInterceptor<*>>): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
+    services: Iterable<AuthInterceptor<*>>): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = try {
         credentialsStore[sv.serviceDefinition()]
@@ -106,5 +107,5 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   // TODO fix up hackery
   suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any?) =
-          sv.validate(commandLineClient.client!!, credentials as T)
+    sv.validate(commandLineClient.client!!, credentials as T)
 }

@@ -23,15 +23,15 @@ object GithubAuthFlow {
       val code = s.waitForCode()
 
       val body = FormBody.Builder().add("client_id", clientId)
-              .add("client_id", clientId)
-              .add("code", code)
-              .add("client_secret", clientSecret)
-              .add("redirect_uri", s.redirectUri)
-              .build()
+        .add("client_id", clientId)
+        .add("code", code)
+        .add("client_secret", clientSecret)
+        .add("redirect_uri", s.redirectUri)
+        .build()
       val request = Request.Builder().url("https://github.com/login/oauth/access_token")
-              .header("Accept", "application/json")
-              .post(body)
-              .build()
+        .header("Accept", "application/json")
+        .post(body)
+        .build()
 
       val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 

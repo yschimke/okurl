@@ -17,8 +17,8 @@ class Oauth2ServiceDefinition(apiHost: String, serviceName: String, shortName: S
 
   override fun formatCredentialsString(credentials: Oauth2Token): String {
     return if (credentials.refreshToken != null
-            && credentials.clientId != null
-            && credentials.clientSecret != null) {
+      && credentials.clientId != null
+      && credentials.clientSecret != null) {
       "${credentials.accessToken}:${credentials.refreshToken}:${credentials.clientId}:${credentials.clientSecret}"
     } else {
       credentials.accessToken

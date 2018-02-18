@@ -20,15 +20,15 @@ import okhttp3.Response
 class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun serviceDefinition(): BasicAuthServiceDefinition {
     return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
-            "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
+      "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()
-            .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-            .build()
+      .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+      .build()
 
     return chain.proceed(request)
   }

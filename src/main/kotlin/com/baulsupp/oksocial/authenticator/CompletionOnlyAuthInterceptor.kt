@@ -10,17 +10,17 @@ import java.io.IOException
 
 abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, private val serviceName: String, private val shortName: String, private val apiDocs: String) : AuthInterceptor<Nothing>() {
   override fun intercept(chain: Interceptor.Chain, credentials: Nothing): Response =
-          chain.proceed(chain.request())
+    chain.proceed(chain.request())
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =
-          throw IOException("authorize not supported")
+    throw IOException("authorize not supported")
 
   suspend override fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
-          ValidatedCredentials(null, null)
+    ValidatedCredentials(null, null)
 
   override fun serviceDefinition(): ServiceDefinition<Nothing> {
     return object : AbstractServiceDefinition<Nothing>(apiHost, serviceName, shortName,
-            apiDocs, null) {
+      apiDocs, null) {
       override fun parseCredentialsString(s: String): Nothing {
         throw NotImplementedError()
       }

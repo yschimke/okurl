@@ -23,7 +23,7 @@ import okhttp3.Response
 class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("circleci.com", "CircleCI API", "circleci",
-            "https://circleci.com/docs/api/v1-reference/", "https://circleci.com/account/api")
+      "https://circleci.com/docs/api/v1-reference/", "https://circleci.com/account/api")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -44,11 +44,11 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token =
-          Oauth2Token(Secrets.prompt("CircleCI Personal API Token", "circleci.token", "", true))
+    Oauth2Token(Secrets.prompt("CircleCI Personal API Token", "circleci.token", "", true))
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me").name)
+    ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me").name)
 
   override fun hosts(): Set<String> = setOf("circleci.com")
 

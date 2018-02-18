@@ -18,47 +18,47 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
                                    callback: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_callback", callback).build()
     var request = Request.Builder().url("https://api.twitter.com/oauth/request_token")
-            .post(body)
-            .build()
+      .post(body)
+      .build()
 
     request = request.newBuilder()
-            .header("Authorization",
-                    Signature().generateAuthorization(request, unauthed))
-            .build()
+      .header("Authorization",
+        Signature().generateAuthorization(request, unauthed))
+      .build()
 
     val response = AuthUtil.makeSimpleRequest(client, request)
 
     val tokenMap = parseTokenMap(response)
     return TwitterCredentials(unauthed.username, unauthed.consumerKey,
-            unauthed.consumerSecret,
-            tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
+      unauthed.consumerSecret,
+      tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
   }
 
   suspend fun generateAccessToken(requestCredentials: TwitterCredentials,
                                   verifier: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_verifier", verifier).build()
     var request = Request.Builder().url("https://api.twitter.com/oauth/access_token")
-            .post(body)
-            .build()
+      .post(body)
+      .build()
 
     request = request.newBuilder()
-            .header("Authorization",
-                    Signature().generateAuthorization(request, requestCredentials))
-            .build()
+      .header("Authorization",
+        Signature().generateAuthorization(request, requestCredentials))
+      .build()
 
     val response = AuthUtil.makeSimpleRequest(client, request)
 
     val tokenMap = parseTokenMap(response)
 
     return TwitterCredentials(tokenMap["screen_name"], requestCredentials.consumerKey,
-            requestCredentials.consumerSecret,
-            tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
+      requestCredentials.consumerSecret,
+      tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
   }
 
   @Throws(IOException::class)
   protected fun showUserLogin(newCredentials: TwitterCredentials) {
     outputHandler.openLink(
-            "https://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token)
+      "https://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token)
   }
 
   companion object {

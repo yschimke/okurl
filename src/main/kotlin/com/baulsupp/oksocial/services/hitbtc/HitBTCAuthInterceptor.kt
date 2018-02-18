@@ -22,15 +22,15 @@ import okhttp3.Response
 class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun serviceDefinition(): BasicAuthServiceDefinition {
     return BasicAuthServiceDefinition("api.hitbtc.com", "HitBTC API", "hitbtc",
-            "https://api.hitbtc.com/", "https://hitbtc.com/settings/api-keys")
+      "https://api.hitbtc.com/", "https://hitbtc.com/settings/api-keys")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()
-            .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-            .build()
+      .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+      .build()
 
     return chain.proceed(request)
   }

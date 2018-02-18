@@ -17,7 +17,7 @@ class ZipkinTracingInterceptor(private val tracing: Tracing) : Interceptor {
     val request = chain.request()
 
     val traceContext = tracing.currentTraceContext().get() ?: // expect an existing trace
-            return chain.proceed(request)
+    return chain.proceed(request)
 
     val newRequest = request.newBuilder()
 

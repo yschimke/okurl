@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class WebAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Response>) :
-        TwitterAuthFlow(client, outputHandler) {
+  TwitterAuthFlow(client, outputHandler) {
 
   suspend fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
     SimpleWebServer({

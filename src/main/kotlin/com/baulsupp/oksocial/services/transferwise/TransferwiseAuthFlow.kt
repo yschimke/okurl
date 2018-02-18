@@ -23,17 +23,17 @@ object TransferwiseAuthFlow {
       val code = s.waitForCode()
 
       val body = FormBody.Builder().add("client_id", clientId).add("redirect_uri", serverUri)
-              .add("grant_type", "authorization_code").add("code", code).build()
+        .add("grant_type", "authorization_code").add("code", code).build()
       val basic = Credentials.basic(clientId, clientSecret)
       val request = Request.Builder().url("https://$host/oauth/token")
-              .post(body)
-              .header("Authorization", basic)
-              .build()
+        .post(body)
+        .header("Authorization", basic)
+        .build()
 
       val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
       return Oauth2Token(responseMap["access_token"] as String,
-              responseMap["refresh_token"] as String, clientId, clientSecret)
+        responseMap["refresh_token"] as String, clientId, clientSecret)
     }
   }
 }

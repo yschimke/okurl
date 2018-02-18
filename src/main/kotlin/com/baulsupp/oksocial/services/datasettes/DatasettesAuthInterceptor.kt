@@ -24,12 +24,12 @@ import java.nio.charset.StandardCharsets
  * https://datasettes.com/
  */
 class DatasettesAuthInterceptor :
-        CompletionOnlyAuthInterceptor("datasettes.com", "Datasettes", "datasettes",
-                "https://github.com/simonw/datasette") {
+  CompletionOnlyAuthInterceptor("datasettes.com", "Datasettes", "datasettes",
+    "https://github.com/simonw/datasette") {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter =
-          DatasettesCompleter(client)
+    DatasettesCompleter(client)
 
   override fun hosts(): Set<String> = knownHosts()
 
@@ -69,7 +69,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend override fun prefixUrls(): UrlList =
-          UrlList(UrlList.Match.HOSTS, knownHosts().map { "https://$it/" })
+    UrlList(UrlList.Match.HOSTS, knownHosts().map { "https://$it/" })
 }
 
 class DatasettesPresenter : ApiDocPresenter {
@@ -101,11 +101,11 @@ class DatasettesPresenter : ApiDocPresenter {
 }
 
 suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
-        client.queryMap<DatasetteIndex>("https://$host/.json").values.toList()
+  client.queryMap<DatasetteIndex>("https://$host/.json").values.toList()
 
 suspend fun fetchDatasetteTableMetadata(host: String, path: String,
                                         client: OkHttpClient) =
-        client.query<DatasetteTables>("https://$host/$path.json")
+  client.query<DatasetteTables>("https://$host/$path.json")
 
 fun knownHosts(): Set<String> =
   DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.readText()?.split('\n')?.toSet() ?: setOf()

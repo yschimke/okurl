@@ -21,8 +21,8 @@ import okhttp3.Response
 class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
-            "https://graph.microsoft.io/en-us/docs/get-started/rest",
-            "https://apps.dev.microsoft.com/#/appList")
+      "https://graph.microsoft.io/en-us/docs/get-started/rest",
+      "https://apps.dev.microsoft.com/#/appList")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -51,28 +51,28 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder().add("grant_type", "refresh_token")
-            .add("redirect_uri", "http://localhost:3000/callback")
-            .add("client_id", credentials.clientId!!)
-            .add("client_secret", credentials.clientSecret!!)
-            .add("refresh_token", credentials.refreshToken!!)
-            .add("resource", "https://graph.microsoft.com/")
-            .build()
+      .add("redirect_uri", "http://localhost:3000/callback")
+      .add("client_id", credentials.clientId!!)
+      .add("client_secret", credentials.clientSecret!!)
+      .add("refresh_token", credentials.refreshToken!!)
+      .add("resource", "https://graph.microsoft.com/")
+      .build()
 
     val request = Request.Builder().url("https://login.microsoftonline.com/common/oauth2/token")
-            .post(body)
-            .build()
+      .post(body)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            credentials.refreshToken, credentials.clientId,
-            credentials.clientSecret)
+      credentials.refreshToken, credentials.clientId,
+      credentials.clientSecret)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", "displayName"))
+    ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", "displayName"))
 
   override fun hosts(): Set<String> = setOf("graph.microsoft.com")
 }

@@ -21,10 +21,10 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
     var request = chain.request()
 
     val newUrl = request.url()
-            .newBuilder()
-            .addQueryParameter("access_token", credentials.accessToken)
-            .addQueryParameter("key", credentials.key)
-            .build()
+      .newBuilder()
+      .addQueryParameter("access_token", credentials.accessToken)
+      .addQueryParameter("key", credentials.key)
+      .build()
 
     request = request.newBuilder().url(newUrl).build()
 
@@ -52,15 +52,15 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
 
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
     val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret",
-            "", true)
+      "", true)
     val clientKey = Secrets.prompt("StackExchange Key", "stackexchange.key", "", false)
     val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", Arrays.asList("read_inbox",
-            "no_expiry",
-            "write_access",
-            "private_info"))
+      "no_expiry",
+      "write_access",
+      "private_info"))
 
     return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey,
-            scopes)
+      scopes)
   }
 
   override fun hosts(): Set<String> = setOf("api.stackexchange.com")

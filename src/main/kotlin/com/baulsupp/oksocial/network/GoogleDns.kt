@@ -58,7 +58,7 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
     val answer = result["Answer"] as List<Map<String, Any>>
 
     return answer
-            .filter { a -> a["type"] == 1 || a["type"] == 28 }
-            .map { a -> InetAddress.getByName(a["data"] as String) }
+      .filter { a -> a["type"] == 1 || a["type"] == 28 }
+      .map { a -> InetAddress.getByName(a["data"] as String) }
   }
 }

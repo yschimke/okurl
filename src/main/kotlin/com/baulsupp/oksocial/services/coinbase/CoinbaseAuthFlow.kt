@@ -20,12 +20,12 @@ object CoinbaseAuthFlow {
       val code = s.waitForCode()
 
       val body = FormBody.Builder()
-              .add("client_id", clientId)
-              .add("client_secret", clientSecret)
-              .add("redirect_uri", s.redirectUri)
-              .add("code", code)
-              .add("grant_type", "authorization_code")
-              .build()
+        .add("client_id", clientId)
+        .add("client_secret", clientSecret)
+        .add("redirect_uri", s.redirectUri)
+        .add("code", code)
+        .add("grant_type", "authorization_code")
+        .build()
 
       val request = Request.Builder().url("https://api.coinbase.com/oauth/token").method("POST", body).build()
 

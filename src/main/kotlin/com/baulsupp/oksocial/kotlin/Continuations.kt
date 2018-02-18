@@ -28,7 +28,7 @@ suspend fun Call.await(): Response {
 }
 
 private class ContinuationConsumer<T>(
-        @Volatile @JvmField var cont: Continuation<T>?
+  @Volatile @JvmField var cont: Continuation<T>?
 ) : BiConsumer<T?, Throwable?> {
   @Suppress("UNCHECKED_CAST")
   override fun accept(result: T?, exception: Throwable?) {

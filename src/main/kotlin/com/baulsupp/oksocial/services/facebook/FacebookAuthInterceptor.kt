@@ -22,8 +22,8 @@ import java.io.IOException
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
-            "https://developers.facebook.com/docs/graph-api",
-            "https://developers.facebook.com/apps/")
+      "https://developers.facebook.com/docs/graph-api",
+      "https://developers.facebook.com/apps/")
   }
 
   @Throws(IOException::class)
@@ -47,7 +47,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
     val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
     var scopes = Secrets.promptArray("Scopes", "facebook.scopes",
-            listOf("public_profile", "user_friends", "email"))
+      listOf("public_profile", "user_friends", "email"))
 
     if (scopes.contains("all")) {
       scopes = ALL_PERMISSIONS
@@ -77,7 +77,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter =
-          FacebookCompleter(client, hosts())
+    FacebookCompleter(client, hosts())
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition())
 }

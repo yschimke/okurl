@@ -18,7 +18,7 @@ import java.util.Arrays
 class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("slack.com", "Slack API", "slack", "https://api.slack.com/",
-            "https://api.slack.com/apps")
+      "https://api.slack.com/apps")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -41,49 +41,49 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Slack Client Id", "slack.clientId", "", false)
     val clientSecret = Secrets.prompt("Slack Client Secret", "slack.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "slack.scopes", Arrays.asList(
-            "bot",
-            "channels:history",
-            "channels:read",
-            "channels:write",
-            "chat:write:bot",
-            "dnd:read",
-            "dnd:write",
-            "emoji:read",
-            "files:read",
-            "files:write:bot",
-            "groups:history",
-            "groups:read",
-            "groups:write",
-            "im:history",
-            "im:read",
-            "im:write",
-            "mpim:history",
-            "mpim:read",
-            "mpim:write",
-            "pins:read",
-            "pins:write",
-            "reactions:read",
-            "reactions:write",
-            "reminders:read",
-            "reminders:write",
-            "reminders:write",
-            "search:read",
-            "stars:read",
-            "stars:write",
-            "team:read",
-            "usergroups:read",
-            "usergroups:write",
-            "users.profile:read",
-            "users.profile:write",
-            "users:read",
-            "users:write"))
+      "bot",
+      "channels:history",
+      "channels:read",
+      "channels:write",
+      "chat:write:bot",
+      "dnd:read",
+      "dnd:write",
+      "emoji:read",
+      "files:read",
+      "files:write:bot",
+      "groups:history",
+      "groups:read",
+      "groups:write",
+      "im:history",
+      "im:read",
+      "im:write",
+      "mpim:history",
+      "mpim:read",
+      "mpim:write",
+      "pins:read",
+      "pins:write",
+      "reactions:read",
+      "reactions:write",
+      "reminders:read",
+      "reminders:write",
+      "reminders:write",
+      "search:read",
+      "stars:read",
+      "stars:write",
+      "team:read",
+      "usergroups:read",
+      "usergroups:write",
+      "users.profile:read",
+      "users.profile:write",
+      "users:read",
+      "users:write"))
 
     return SlackAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test", "user"))
+    ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test", "user"))
 
   override fun hosts(): Set<String> = setOf("slack.com")
 }

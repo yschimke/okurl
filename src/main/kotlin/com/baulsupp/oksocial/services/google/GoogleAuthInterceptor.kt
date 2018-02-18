@@ -37,8 +37,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
-            "https://developers.google.com/",
-            "https://console.developers.google.com/apis/credentials")
+      "https://developers.google.com/",
+      "https://console.developers.google.com/apis/credentials")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -77,39 +77,39 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo", "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
-            .add("refresh_token", credentials.refreshToken!!)
-            .add("client_secret", credentials.clientSecret!!)
-            .add("grant_type", "refresh_token")
-            .build()
+      .add("refresh_token", credentials.refreshToken!!)
+      .add("client_secret", credentials.clientSecret!!)
+      .add("grant_type", "refresh_token")
+      .build()
 
     val request = Request.Builder().url("https://www.googleapis.com/oauth2/v4/token")
-            .post(body)
-            .build()
+      .post(body)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            credentials.refreshToken!!, credentials.clientId!!,
-            credentials.clientSecret!!)
+      credentials.refreshToken!!, credentials.clientId!!,
+      credentials.clientSecret!!)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter =
-          if (!isPastHost(prefix)) {
-            hostCompletion(completionVariableCache)
-          } else if (isFirebaseUrl(prefix)) {
-            FirebaseCompleter(client)
-          } else {
-            discoveryCompletion(prefix, client)
-          }
+    if (!isPastHost(prefix)) {
+      hostCompletion(completionVariableCache)
+    } else if (isFirebaseUrl(prefix)) {
+      FirebaseCompleter(client)
+    } else {
+      discoveryCompletion(prefix, client)
+    }
 
   private fun isFirebaseUrl(url: String): Boolean = HttpUrl.parse(url)?.host()?.let { isFirebaseHost(it) } ?: false
 
@@ -119,7 +119,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
 
     return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-            discoveryPaths)
+      discoveryPaths)
   }
 
   fun googleDiscoveryHosts(): Set<String> {
@@ -129,7 +129,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   }
 
   fun hostCompletion(completionVariableCache: CompletionVariableCache) =
-          BaseUrlCompleter(UrlList.fromResource(name())!!, hosts() + firebaseHosts(), completionVariableCache)
+    BaseUrlCompleter(UrlList.fromResource(name())!!, hosts() + firebaseHosts(), completionVariableCache)
 
   private fun firebaseHosts() = FirebaseCompleter.knownHosts()
 
@@ -138,7 +138,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(
-          discoveryIndex)
+    discoveryIndex)
 
   override fun errorMessage(ce: ClientException): String {
     if (ce.code == 401) {

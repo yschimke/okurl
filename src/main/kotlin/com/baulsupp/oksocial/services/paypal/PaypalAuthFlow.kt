@@ -14,10 +14,10 @@ object PaypalAuthFlow {
 
     val basic = Credentials.basic(clientId, clientSecret)
     val request = Request.Builder().url("https://$host/v1/oauth2/token")
-            .post(body)
-            .header("Authorization", basic)
-            .header("Accept", "application/json")
-            .build()
+      .post(body)
+      .header("Authorization", basic)
+      .header("Accept", "application/json")
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 

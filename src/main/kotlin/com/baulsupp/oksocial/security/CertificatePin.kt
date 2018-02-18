@@ -17,7 +17,7 @@ class CertificatePin(patternAndPin: String) {
   fun getPin(): String {
     if (pin == null) {
       throw UsageException(
-              "--certificatePin expects host:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        "--certificatePin expects host:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     }
 
     return pin

@@ -30,10 +30,10 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
 
   private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String): UrlList {
     return (services
-            .firstOrNull { it.supportsUrl(fullUrl) }
-            ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
-            ?.siteUrls(fullUrl)
-            ?: UrlList(UrlList.Match.EXACT, listOf()))
+      .firstOrNull { it.supportsUrl(fullUrl) }
+      ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+      ?.siteUrls(fullUrl)
+      ?: UrlList(UrlList.Match.EXACT, listOf()))
   }
 
   private suspend fun UrlCompleter.hostCompletion(prefix: String): UrlList {

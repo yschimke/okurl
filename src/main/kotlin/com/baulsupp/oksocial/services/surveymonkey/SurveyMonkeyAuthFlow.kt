@@ -22,15 +22,15 @@ object SurveyMonkeyAuthFlow {
       val code = s.waitForCode()
 
       val body = FormBody.Builder().add("client_secret", clientSecret)
-              .add("client_id", clientId)
-              .add("code", code)
-              .add("redirect_uri", redirectUri)
-              .add("grant_type", "authorization_code")
-              .build()
+        .add("client_id", clientId)
+        .add("code", code)
+        .add("redirect_uri", redirectUri)
+        .add("grant_type", "authorization_code")
+        .build()
 
       val request = Request.Builder().url("https://api.surveymonkey.net/oauth/token")
-              .post(body)
-              .build()
+        .post(body)
+        .build()
 
       data class TokenResponse(val access_token: String)
 

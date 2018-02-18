@@ -38,14 +38,14 @@ object OAuthParams {
    * The token is optional to allow for OAuth 1.0 two-legged requests.
    */
   class OAuth1Params(
-          private val token: String?,
-          private val consumerKey: String,
-          private val nonce: String,
-          private val timestampSecs: Long?,
-          private val timestampStr: String,
-          private val signature: String,
-          private val signatureMethod: String,
-          private val version: String?
+    private val token: String?,
+    private val consumerKey: String,
+    private val nonce: String,
+    private val timestampSecs: Long?,
+    private val timestampStr: String,
+    private val signature: String,
+    private val signatureMethod: String,
+    private val version: String?
   ) {
 
     fun token(): String? {
@@ -78,13 +78,13 @@ object OAuthParams {
     // effeciency when printing the class for debugging
     override fun toString(): String {
       return String.format("%s=%s,%s=%s,%s=%s,%s=%s(->%s),%s=%s,%s=%s,%s=%s",
-              OAUTH_TOKEN, valueOrUnset(token),
-              OAUTH_CONSUMER_KEY, valueOrUnset(consumerKey),
-              OAUTH_NONCE, valueOrUnset(nonce),
-              OAUTH_TIMESTAMP, timestampStr, timestampSecs,
-              OAUTH_SIGNATURE, valueOrUnset(signature),
-              OAUTH_SIGNATURE_METHOD, valueOrUnset(signatureMethod),
-              OAUTH_VERSION, valueOrUnset(version))
+        OAUTH_TOKEN, valueOrUnset(token),
+        OAUTH_CONSUMER_KEY, valueOrUnset(consumerKey),
+        OAUTH_NONCE, valueOrUnset(nonce),
+        OAUTH_TIMESTAMP, timestampStr, timestampSecs,
+        OAUTH_SIGNATURE, valueOrUnset(signature),
+        OAUTH_SIGNATURE_METHOD, valueOrUnset(signatureMethod),
+        OAUTH_VERSION, valueOrUnset(version))
     }
   }
 

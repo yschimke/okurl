@@ -21,9 +21,9 @@ object BrotliInterceptor : Interceptor {
       val body = response.body()!!
       val decompressedSource = Okio.buffer(Okio.source(BrotliInputStream(body.source().inputStream())))
       return response.newBuilder()
-              .removeHeader("Content-Encoding")
-              .body(ResponseBody.create(body.contentType(), -1, decompressedSource))
-              .build()
+        .removeHeader("Content-Encoding")
+        .body(ResponseBody.create(body.contentType(), -1, decompressedSource))
+        .build()
     }
 
     return response

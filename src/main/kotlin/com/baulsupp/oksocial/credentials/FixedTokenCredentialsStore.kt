@@ -7,7 +7,7 @@ class FixedTokenCredentialsStore(private val token: String) : CredentialsStore {
   }
 
   override fun <T> set(
-          serviceDefinition: ServiceDefinition<T>, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>, credentials: T) {
     throw UnsupportedOperationException()
   }
 

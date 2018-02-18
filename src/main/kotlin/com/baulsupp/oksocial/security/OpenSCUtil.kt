@@ -21,7 +21,7 @@ object OpenSCUtil {
       pkcs11 = Security.getProvider("SunPKCS11")
 
       pkcs11 = Provider::class.java.getMethod("configure", String::class.java)
-              .invoke(pkcs11, "--" + config) as Provider
+        .invoke(pkcs11, "--" + config) as Provider
 
       Security.addProvider(pkcs11)
 
@@ -29,7 +29,7 @@ object OpenSCUtil {
     } else {
       val ctor = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(InputStream::class.java)
       pkcs11 = ctor.newInstance(
-              ByteArrayInputStream(config.toByteArray(StandardCharsets.UTF_8))) as Provider
+        ByteArrayInputStream(config.toByteArray(StandardCharsets.UTF_8))) as Provider
 
       Security.addProvider(pkcs11)
 

@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
-            "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
+      "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {

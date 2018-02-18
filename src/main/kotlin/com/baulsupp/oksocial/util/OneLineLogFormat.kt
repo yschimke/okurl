@@ -20,15 +20,15 @@ import java.util.logging.LogRecord
  */
 class OneLineLogFormat : Formatter() {
   private val d = DateTimeFormatterBuilder()
-          .appendValue(HOUR_OF_DAY, 2)
-          .appendLiteral(':')
-          .appendValue(MINUTE_OF_HOUR, 2)
-          .optionalStart()
-          .appendLiteral(':')
-          .appendValue(SECOND_OF_MINUTE, 2)
-          .optionalStart()
-          .appendFraction(NANO_OF_SECOND, 3, 3, true)
-          .toFormatter()
+    .appendValue(HOUR_OF_DAY, 2)
+    .appendLiteral(':')
+    .appendValue(MINUTE_OF_HOUR, 2)
+    .optionalStart()
+    .appendLiteral(':')
+    .appendValue(SECOND_OF_MINUTE, 2)
+    .optionalStart()
+    .appendFraction(NANO_OF_SECOND, 3, 3, true)
+    .toFormatter()
 
   private val offset = ZoneOffset.systemDefault()
 

@@ -43,7 +43,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
 
     if (!authArguments.isEmpty()) {
       throw UsageException(
-              "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" "))
+        "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" "))
     }
 
     val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
@@ -54,7 +54,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: TwitterCredentials): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json", "name"))
 
   override fun hosts(): Set<String> = TwitterUtil.TWITTER_API_HOSTS
 }

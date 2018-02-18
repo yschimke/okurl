@@ -19,7 +19,7 @@ import java.util.Arrays
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.fitbit.com", "Fitbit API", "fitbit",
-            "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/")
+      "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -38,38 +38,38 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Fitbit Client Id", "fitbit.clientId", "", false)
     val clientSecret = Secrets.prompt("Fitbit Client Secret", "fitbit.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "fitbit.scopes",
-            Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",
-                    "settings", "sleep", "social", "weight"))
+      Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",
+        "settings", "sleep", "social", "weight"))
 
     return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json", "user", "fullName"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json", "user", "fullName"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.refreshToken != null
-            && credentials.clientId != null
-            && credentials.clientSecret != null
+      && credentials.clientId != null
+      && credentials.clientSecret != null
   }
 
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("grant_type", "refresh_token")
-            .add("refresh_token", credentials.refreshToken!!)
-            .build()
+      .add("refresh_token", credentials.refreshToken!!)
+      .build()
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
     val request = Request.Builder().url("https://api.fitbit.com/oauth2/token")
-            .post(body)
-            .header("Authorization", basic)
-            .build()
+      .post(body)
+      .header("Authorization", basic)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            credentials.refreshToken!!, credentials.clientId!!,
-            credentials.clientSecret!!)
+      credentials.refreshToken!!, credentials.clientId!!,
+      credentials.clientSecret!!)
   }
 
   override fun hosts(): Set<String> = setOf("api.fitbit.com")

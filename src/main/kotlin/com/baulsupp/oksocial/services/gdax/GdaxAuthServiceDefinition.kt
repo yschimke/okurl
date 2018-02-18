@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.services.gdax
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 
 class GdaxAuthServiceDefinition() : AbstractServiceDefinition<GdaxCredentials>("api.gdax.com", "GDAX API", "gdax",
-        "https://docs.gdax.com/", "https://www.gdax.com/settings/api") {
+  "https://docs.gdax.com/", "https://www.gdax.com/settings/api") {
 
   override fun parseCredentialsString(s: String): GdaxCredentials {
     val parts = s.split(":".toRegex(), 3)
@@ -11,5 +11,5 @@ class GdaxAuthServiceDefinition() : AbstractServiceDefinition<GdaxCredentials>("
   }
 
   override fun formatCredentialsString(credentials: GdaxCredentials) =
-          "${credentials.apiKey}:${credentials.apiSecret}:${credentials.passphrase}"
+    "${credentials.apiKey}:${credentials.apiSecret}:${credentials.passphrase}"
 }

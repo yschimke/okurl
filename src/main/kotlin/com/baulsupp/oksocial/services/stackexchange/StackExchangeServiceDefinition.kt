@@ -15,7 +15,7 @@ class StackExchangeServiceDefinition : ServiceDefinition<StackExchangeToken> {
   }
 
   override fun formatCredentialsString(credentials: StackExchangeToken) =
-          credentials.accessToken + ":" + credentials.key
+    credentials.accessToken + ":" + credentials.key
 
   override fun apiDocs() = "https://api.stackexchange.com/docs"
 

@@ -16,7 +16,7 @@ class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsSto
     } catch (e: OSXKeychainException) {
       if ("The specified item could not be found in the keychain." == e.message) {
         logger.log(Level.FINE,
-                "No OSX Keychain entry for '" + serviceDefinition.apiHost() + "' '" + tokenKey() + "'")
+          "No OSX Keychain entry for '" + serviceDefinition.apiHost() + "' '" + tokenKey() + "'")
       } else {
         logger.log(Level.FINE, "Failed to read from keychain", e)
       }
@@ -26,7 +26,7 @@ class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsSto
   }
 
   override fun <T> set(
-          serviceDefinition: ServiceDefinition<T>, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>, credentials: T) {
     val credentialsString = serviceDefinition.formatCredentialsString(credentials)
 
     remove(serviceDefinition)

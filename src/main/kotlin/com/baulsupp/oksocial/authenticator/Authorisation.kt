@@ -16,7 +16,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
                         authArguments: List<String>) {
     if (auth == null) {
       throw UsageException(
-              "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
     if (token != null) {
@@ -47,7 +47,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
   suspend fun <T> renew(auth: AuthInterceptor<T>?) {
     if (auth == null) {
       throw UsageException(
-              "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
     val serviceDefinition = auth.serviceDefinition()
@@ -66,7 +66,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
   fun remove(auth: AuthInterceptor<*>?) {
     if (auth == null) {
       throw UsageException(
-              "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
     credentialsStore.remove(auth.serviceDefinition())

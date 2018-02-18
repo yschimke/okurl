@@ -22,8 +22,8 @@ import java.util.Arrays
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup",
-            "https://docs.connect.squareup.com/api/connect/v2/",
-            "https://connect.squareup.com/apps")
+      "https://docs.connect.squareup.com/api/connect/v2/",
+      "https://connect.squareup.com/apps")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -42,19 +42,19 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me").name)
+    ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me").name)
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
     val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
-            true)
+      true)
     val scopes = Secrets.promptArray("Scopes", "squareup.scopes", Arrays.asList(
-            "MERCHANT_PROFILE_READ",
-            "PAYMENTS_READ",
-            "SETTLEMENTS_READ",
-            "BANK_ACCOUNTS_READ"
+      "MERCHANT_PROFILE_READ",
+      "PAYMENTS_READ",
+      "SETTLEMENTS_READ",
+      "BANK_ACCOUNTS_READ"
     ))
 
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
@@ -70,7 +70,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completer.withCachedVariable(name(), "location", {
       credentialsStore[serviceDefinition()]?.let {
         client.query<LocationList>(
-                "https://connect.squareup.com/v2/locations").locations.map { it.id }
+          "https://connect.squareup.com/v2/locations").locations.map { it.id }
       }
     })
 

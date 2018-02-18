@@ -5,11 +5,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class PinAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Response>) :
-        TwitterAuthFlow(client, outputHandler) {
+  TwitterAuthFlow(client, outputHandler) {
 
   private suspend fun promptForPin(newCredentials: TwitterCredentials): String {
     System.err.println(
-            "Authorise by entering the PIN through a web browser")
+      "Authorise by entering the PIN through a web browser")
 
     showUserLogin(newCredentials)
 

@@ -13,8 +13,8 @@ class DiscoveryDocument(private val map: Map<String, Any>) {
 
   val urls: List<String>
     get() = endpoints
-            .map { e -> e.url() }
-            .distinct()
+      .map { e -> e.url() }
+      .distinct()
 
   val endpoints: List<DiscoveryEndpoint>
     get() = expandEndpoints(map)

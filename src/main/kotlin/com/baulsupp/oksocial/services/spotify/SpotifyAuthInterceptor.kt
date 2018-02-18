@@ -28,8 +28,8 @@ import java.util.Arrays
 class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.spotify.com", "Spotify API", "spotify",
-            "https://developer.spotify.com/web-api/endpoint-reference/",
-            "https://developer.spotify.com/my-applications/")
+      "https://developer.spotify.com/web-api/endpoint-reference/",
+      "https://developer.spotify.com/my-applications/")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -49,20 +49,20 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientSecret = Secrets.prompt("Spotify Client Secret", "spotify.clientSecret", "", true)
 
     val scopes = Secrets.promptArray("Scopes", "spotify.scopes",
-            Arrays.asList("playlist-read-private",
-                    "playlist-read-collaborative",
-                    "playlist-modify-public",
-                    "playlist-modify-private",
-                    "streaming",
-                    "ugc-image-upload",
-                    "user-follow-modify",
-                    "user-follow-read",
-                    "user-library-read",
-                    "user-library-modify",
-                    "user-read-private",
-                    "user-read-birthdate",
-                    "user-read-email",
-                    "user-top-read"))
+      Arrays.asList("playlist-read-private",
+        "playlist-read-collaborative",
+        "playlist-modify-public",
+        "playlist-modify-private",
+        "streaming",
+        "ugc-image-upload",
+        "user-follow-modify",
+        "user-follow-read",
+        "user-library-read",
+        "user-library-modify",
+        "user-read-private",
+        "user-read-birthdate",
+        "user-read-email",
+        "user-top-read"))
 
     return SpotifyAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
@@ -101,20 +101,20 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val tokenUrl = "https://accounts.spotify.com/api/token"
 
     val body = FormBody.Builder()
-            .add("refresh_token", credentials.refreshToken!!)
-            .add("grant_type", "refresh_token")
-            .build()
+      .add("refresh_token", credentials.refreshToken!!)
+      .add("grant_type", "refresh_token")
+      .build()
 
     val request = Request.Builder().header("Authorization",
-            Credentials.basic(credentials.clientId!!, credentials.clientSecret!!))
-            .url(tokenUrl)
-            .method("POST", body)
-            .build()
+      Credentials.basic(credentials.clientId!!, credentials.clientSecret!!))
+      .url(tokenUrl)
+      .method("POST", body)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     return Oauth2Token(responseMap["access_token"] as String,
-            responseMap["refresh_token"] as String?, credentials.clientId,
-            credentials.clientSecret)
+      responseMap["refresh_token"] as String?, credentials.clientId,
+      credentials.clientSecret)
   }
 }

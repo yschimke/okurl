@@ -19,8 +19,8 @@ import okhttp3.Response
 class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
-            "https://fb.quip.com/dev/automation/documentation",
-            "https://quip.com/dev/token")
+      "https://fb.quip.com/dev/automation/documentation",
+      "https://quip.com/dev/token")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -55,7 +55,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentialsStore[serviceDefinition()]?.let {
         currentUser(client).let {
           listOfNotNull(it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
-                  it.archive_folder_id) + it.shared_folder_ids.orEmpty()
+            it.archive_folder_id) + it.shared_folder_ids.orEmpty()
         }
       }
     })
@@ -65,10 +65,10 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(currentUser(client).name)
+    ValidatedCredentials(currentUser(client).name)
 
   private suspend fun currentUser(client: OkHttpClient) =
-          client.query<User>("https://platform.quip.com/1/users/current")
+    client.query<User>("https://platform.quip.com/1/users/current")
 
   override fun hosts(): Set<String> = setOf("platform.quip.com")
 }

@@ -18,7 +18,7 @@ object FacebookAuthFlow {
       val serverUri = s.redirectUri
 
       val loginUrl = "https://www.facebook.com/dialog/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
-              scopes.joinToString(","), "UTF-8")
+        scopes.joinToString(","), "UTF-8")
 
       outputHandler.openLink(loginUrl)
 

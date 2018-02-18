@@ -21,8 +21,8 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     var request = chain.request()
 
     request = request.newBuilder()
-            .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
-            .build()
+      .addHeader("Authorization", Credentials.basic(credentials.user, credentials.password))
+      .build()
 
     return chain.proceed(request)
   }
@@ -36,14 +36,14 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   }
 
   override fun serviceDefinition(): ServiceDefinition<BasicCredentials> =
-          BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
-                  "https://httpbin.org/", null)
+    BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
+      "https://httpbin.org/", null)
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials =
-          ValidatedCredentials(credentials.user, null)
+    ValidatedCredentials(credentials.user, null)
 
   override fun hosts(): Set<String> = setOf((
-          "httpbin.org")
+    "httpbin.org")
   )
 }

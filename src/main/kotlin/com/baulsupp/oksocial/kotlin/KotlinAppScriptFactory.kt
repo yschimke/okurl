@@ -15,14 +15,16 @@ import javax.script.ScriptEngine
 class KotlinAppScriptFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
 
   override fun getScriptEngine(): ScriptEngine =
-          KotlinAppScriptEngine(
-                  Disposer.newDisposable(),
-                  this,
-                  classpath(),
-                  KotlinStandardJsr223ScriptTemplate::class.qualifiedName!!,
-                  { ctx, types -> ScriptArgsWithTypes(arrayOf(ctx.getBindings(ScriptContext.ENGINE_SCOPE)), types ?: emptyArray()) },
-                  arrayOf(Bindings::class)
-          )
+    KotlinAppScriptEngine(
+      Disposer.newDisposable(),
+      this,
+      classpath(),
+      KotlinStandardJsr223ScriptTemplate::class.qualifiedName!!,
+      { ctx, types ->
+        ScriptArgsWithTypes(arrayOf(ctx.getBindings(ScriptContext.ENGINE_SCOPE)), types ?: emptyArray())
+      },
+      arrayOf(Bindings::class)
+    )
 
   private fun classpath(): List<File> {
     return ManagementFactory.getRuntimeMXBean().classPath.split(File.pathSeparator).map { File(it) }.toList()

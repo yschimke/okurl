@@ -22,8 +22,8 @@ import okhttp3.Response
 class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Uber API", "uber",
-            "https://developer.uber.com/docs/riders/references/api",
-            "https://developer.uber.com/dashboard/")
+      "https://developer.uber.com/docs/riders/references/api",
+      "https://developer.uber.com/dashboard/")
   }
 
   private fun host(): String = "api.uber.com"
@@ -67,17 +67,17 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
-            .add("client_secret", credentials.clientSecret!!)
-            .add("refresh_token", credentials.refreshToken!!)
-            .add("grant_type", "refresh_token")
-            .build()
+      .add("client_secret", credentials.clientSecret!!)
+      .add("refresh_token", credentials.refreshToken!!)
+      .add("grant_type", "refresh_token")
+      .build()
 
     val request = Request.Builder().url(tokenUrl).method("POST", body).build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     return Oauth2Token(responseMap["access_token"] as String,
-            responseMap["refresh_token"] as String, credentials.clientId,
-            credentials.clientSecret)
+      responseMap["refresh_token"] as String, credentials.clientId,
+      credentials.clientSecret)
   }
 }

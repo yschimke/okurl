@@ -25,12 +25,12 @@ object SlackAuthFlow {
       val code = s.waitForCode()
 
       val url = HttpUrl.parse("https://api.slack.com/api/oauth.access")!!
-              .newBuilder()
-              .addQueryParameter("client_id", clientId)
-              .addQueryParameter("client_secret", clientSecret)
-              .addQueryParameter("redirect_uri", s.redirectUri)
-              .addQueryParameter("code", code)
-              .build()
+        .newBuilder()
+        .addQueryParameter("client_id", clientId)
+        .addQueryParameter("client_secret", clientSecret)
+        .addQueryParameter("redirect_uri", s.redirectUri)
+        .addQueryParameter("code", code)
+        .build()
 
       val request = Request.Builder().url(url).build()
 

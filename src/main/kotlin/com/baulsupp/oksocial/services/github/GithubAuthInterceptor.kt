@@ -17,7 +17,7 @@ import okhttp3.Response
 class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.github.com", "Github API", "github",
-            "https://developer.github.com/v3/", "https://github.com/settings/developers")
+      "https://developer.github.com/v3/", "https://github.com/settings/developers")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -36,14 +36,14 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
     val clientSecret = Secrets.prompt("Github Client Secret", "github.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "github.scopes",
-            listOf("user", "repo", "gist", "admin:org"))
+      listOf("user", "repo", "gist", "admin:org"))
 
     return GithubAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user", "name"))
 
   override fun hosts(): Set<String> = setOf("api.github.com", "uploads.github.com")
 }

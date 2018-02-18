@@ -205,8 +205,8 @@ open class CommandLineClient : HelpOption() {
     dns = when {
       dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers!!)
       dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
-              fromHosts({ client!! }, ipMode, "216.58.216.142", "216.239.34.10",
-                      "2607:f8b0:400a:809::200e"))
+        fromHosts({ client!! }, ipMode, "216.58.216.142", "216.239.34.10",
+          "2607:f8b0:400a:809::200e"))
       else -> {
         if (dnsServers != null) {
           throw UsageException("unable to set dns servers with java DNS")
@@ -233,7 +233,8 @@ open class CommandLineClient : HelpOption() {
   }
 
   fun getSocketFactory(): SocketFactory =
-          InterfaceSocketFactory.byName(networkInterface!!) ?: throw UsageException("networkInterface '$networkInterface' not found")
+    InterfaceSocketFactory.byName(networkInterface!!)
+      ?: throw UsageException("networkInterface '$networkInterface' not found")
 
   fun configureTls(builder: OkHttpClient.Builder) {
     val callbackHandler = ConsoleCallbackHandler()
@@ -290,7 +291,7 @@ open class CommandLineClient : HelpOption() {
     }
 
     builder.sslSocketFactory(KeystoreUtils.createSslSocketFactory(KeystoreUtils.keyManagerArray(keyManagers), trustManager),
-            trustManager)
+      trustManager)
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
@@ -373,8 +374,8 @@ open class CommandLineClient : HelpOption() {
           null
         } else {
           response.request().newBuilder()
-                  .header("Authorization", credential)
-                  .build()
+            .header("Authorization", credential)
+            .build()
         }
       })
     }
@@ -465,10 +466,10 @@ open class CommandLineClient : HelpOption() {
     }
 
     val tracing = Tracing.newBuilder()
-            .localServiceName("oksocial")
-            .spanReporter(reporter)
-            .sampler(Sampler.ALWAYS_SAMPLE)
-            .build()
+      .localServiceName("oksocial")
+      .spanReporter(reporter)
+      .sampler(Sampler.ALWAYS_SAMPLE)
+      .build()
 
     val httpTracing = HttpTracing.create(tracing)
 

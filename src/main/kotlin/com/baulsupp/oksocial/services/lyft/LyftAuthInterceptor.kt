@@ -23,7 +23,7 @@ import java.util.Arrays
 class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.lyft.com", "Lyft API", "lyft",
-            "https://developer.lyft.com/docs", "https://www.lyft.com/developers/manage")
+      "https://developer.lyft.com/docs", "https://www.lyft.com/developers/manage")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -46,10 +46,10 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       LyftClientAuthFlow.login(client, clientId, clientSecret)
     } else {
       val scopes = Secrets.promptArray("Scopes", "lyft.scopes", Arrays.asList("public",
-              "rides.read",
-              "offline",
-              "rides.request",
-              "profile"))
+        "rides.read",
+        "offline",
+        "rides.request",
+        "profile"))
 
       LyftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
     }
@@ -57,27 +57,27 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile", "id"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile", "id"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
     val body = RequestBody.create(MediaType.parse("application/json"),
-            "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""
-                    + credentials.refreshToken + "\"}")
+      "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""
+        + credentials.refreshToken + "\"}")
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
     val request = Request.Builder().url("https://api.lyft.com/oauth/token")
-            .post(body)
-            .header("Authorization", basic)
-            .build()
+      .post(body)
+      .header("Authorization", basic)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            credentials.refreshToken, credentials.clientId,
-            credentials.clientSecret)
+      credentials.refreshToken, credentials.clientId,
+      credentials.clientSecret)
   }
 
   override fun hosts(): Set<String> = setOf("api.lyft.com")

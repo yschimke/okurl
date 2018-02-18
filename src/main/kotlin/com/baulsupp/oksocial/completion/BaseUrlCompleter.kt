@@ -4,7 +4,7 @@ import okhttp3.HttpUrl
 
 class BaseUrlCompleter(private val urlList: UrlList,
                        hosts: Collection<String>, private val completionVariableCache: CompletionVariableCache) :
-        HostUrlCompleter(hosts) {
+  HostUrlCompleter(hosts) {
   private val mappings = CompletionMappings()
 
   suspend override fun siteUrls(url: HttpUrl): UrlList {

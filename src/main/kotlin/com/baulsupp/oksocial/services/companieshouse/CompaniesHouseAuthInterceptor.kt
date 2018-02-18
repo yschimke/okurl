@@ -17,8 +17,8 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
     var request = chain.request()
 
     request = request.newBuilder()
-            .addHeader("Authorization", Credentials.basic(credentials, ""))
-            .build()
+      .addHeader("Authorization", Credentials.basic(credentials, ""))
+      .build()
 
     return chain.proceed(request)
   }
@@ -31,7 +31,7 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
 
   override fun serviceDefinition(): ServiceDefinition<String> =
     object : AbstractServiceDefinition<String>("api.companieshouse.gov.uk", "Companies House", "companieshouse",
-                  "https://developer.companieshouse.gov.uk/api/docs/", "https://developer.companieshouse.gov.uk/developer/applications") {
+      "https://developer.companieshouse.gov.uk/api/docs/", "https://developer.companieshouse.gov.uk/developer/applications") {
       override fun parseCredentialsString(s: String): String = s
 
       override fun formatCredentialsString(credentials: String): String = credentials
@@ -39,7 +39,7 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: String): ValidatedCredentials =
-          ValidatedCredentials(credentials, null)
+    ValidatedCredentials(credentials, null)
 
   override fun hosts(): Set<String> = setOf("api.companieshouse.gov.uk", "account.companieshouse.gov.uk", "document-api.companieshouse.gov.uk")
 }

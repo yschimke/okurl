@@ -17,11 +17,11 @@ DiscoveryIndex(private val map: Map<String, List<String>>) {
    * Prefix search (returns longest)
    */
   fun getDiscoveryUrlForPrefix(prefix: String): List<String> = map.entries
-          .filter { s1 -> match(prefix, s1.key) }
-          .flatMap { s -> s.value }
+    .filter { s1 -> match(prefix, s1.key) }
+    .flatMap { s -> s.value }
 
   internal fun match(prefix: String, indexKey: String): Boolean =
-          indexKey.startsWith(prefix) || prefix.startsWith(indexKey)
+    indexKey.startsWith(prefix) || prefix.startsWith(indexKey)
 
   companion object {
     fun loadStatic(): DiscoveryIndex =

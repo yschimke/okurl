@@ -15,8 +15,8 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
   @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain): Response {
     services
-            .filter { it.supportsUrl(chain.request().url()) }
-            .forEach { return runBlocking { intercept(it, chain) } }
+      .filter { it.supportsUrl(chain.request().url()) }
+      .forEach { return runBlocking { intercept(it, chain) } }
 
     return chain.proceed(chain.request())
   }
@@ -48,7 +48,7 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
   fun services(): List<AuthInterceptor<*>> = services
 
   fun getByName(authName: String): AuthInterceptor<*>? =
-          services.firstOrNull { n -> n.name() == authName }
+    services.firstOrNull { n -> n.name() == authName }
 
   fun getByUrl(url: String): AuthInterceptor<*>? {
     val httpUrl = HttpUrl.parse(url)

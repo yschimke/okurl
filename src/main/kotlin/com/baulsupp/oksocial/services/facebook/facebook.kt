@@ -10,11 +10,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 suspend inline fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQueryList(
-        path: String): T {
+  path: String): T {
   val fields = fbFieldNames(I::class)
 
   val stringResult = this.queryForString(Request.Builder().url(
-          "https://graph.facebook.com/v2.11$path?fields=" + fields.joinToString(",")).build())
+    "https://graph.facebook.com/v2.11$path?fields=" + fields.joinToString(",")).build())
   return moshi.adapter<T>(T::class.java).fromJson(stringResult)!!
 }
 
@@ -22,7 +22,7 @@ suspend inline fun <reified T> OkHttpClient.fbQuery(path: String): T {
   val fields = fbFieldNames(T::class)
 
   return this.query(
-          "https://graph.facebook.com/v2.11$path?fields=${fields.joinToString(",")}")
+    "https://graph.facebook.com/v2.11$path?fields=${fields.joinToString(",")}")
 }
 
 fun fbFieldNames(kClass: KClass<*>): Collection<String> {

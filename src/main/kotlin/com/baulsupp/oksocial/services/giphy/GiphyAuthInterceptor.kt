@@ -12,8 +12,8 @@ import okhttp3.Response
 
 class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
-          Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
-                  "https://github.com/Giphy/GiphyAPI", null)
+    Oauth2ServiceDefinition("api.giphy.com", "Giphy API", "giphy",
+      "https://github.com/Giphy/GiphyAPI", null)
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token("dc6zaTOxFJmzC")
 
@@ -39,7 +39,7 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials("ⁿ/ₐ", null)
+    ValidatedCredentials("ⁿ/ₐ", null)
 
   override fun hosts(): Set<String> = setOf("api.giphy.com")
 }

@@ -19,8 +19,8 @@ import okhttp3.Response
 open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
-            "https://api-docs.transferwise.com/docs/versions/v1/overview",
-            "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
+      "https://api-docs.transferwise.com/docs/versions/v1/overview",
+      "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -38,14 +38,14 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
     val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "",
-            true)
+      true)
 
     return TransferwiseAuthFlow.login(client, outputHandler, host(), clientId, clientSecret)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.isRenewable()
@@ -54,21 +54,21 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder()
-            .add("grant_type", "refresh_token")
-            .add("refresh_token", credentials.refreshToken!!)
-            .build()
+      .add("grant_type", "refresh_token")
+      .add("refresh_token", credentials.refreshToken!!)
+      .build()
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
     val request = Request.Builder().url("https://" + host() + "/oauth/token")
-            .post(body)
-            .header("Authorization", basic)
-            .build()
+      .post(body)
+      .header("Authorization", basic)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            responseMap["refresh_token"] as String, credentials.clientId,
-            credentials.clientSecret)
+      responseMap["refresh_token"] as String, credentials.clientId,
+      credentials.clientSecret)
   }
 
   override fun hosts(): Set<String> = setOf(host())

@@ -25,7 +25,7 @@ import java.util.Arrays
 class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
-            "https://www.coinbase.com/settings/api")
+      "https://www.coinbase.com/settings/api")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -42,19 +42,19 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Coinbase Client Id", "coinbase.clientId", "", false)
     val clientSecret = Secrets.prompt("Coinbase Client Secret", "coinbase.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "coinbase.scopes", Arrays.asList(
-            "wallet:accounts:read",
-            "wallet:addresses:read",
-            "wallet:buys:read",
-            "wallet:checkouts:read",
-            "wallet:deposits:read",
-            "wallet:notifications:read",
-            "wallet:orders:read",
-            "wallet:payment-methods:read",
-            "wallet:payment-methods:limits",
-            "wallet:sells:read",
-            "wallet:transactions:read",
-            "wallet:user:read",
-            "wallet:withdrawals:read"
+      "wallet:accounts:read",
+      "wallet:addresses:read",
+      "wallet:buys:read",
+      "wallet:checkouts:read",
+      "wallet:deposits:read",
+      "wallet:notifications:read",
+      "wallet:orders:read",
+      "wallet:payment-methods:read",
+      "wallet:payment-methods:limits",
+      "wallet:sells:read",
+      "wallet:transactions:read",
+      "wallet:user:read",
+      "wallet:withdrawals:read"
 //            "wallet:accounts:update",
 //            "wallet:accounts:create",
 //            "wallet:accounts:delete",
@@ -81,22 +81,22 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder()
-            .add("client_id", credentials.clientId!!)
-            .add("client_secret", credentials.clientSecret!!)
-            .add("refresh_token", credentials.refreshToken!!)
-            .add("grant_type", "refresh_token")
-            .build()
+      .add("client_id", credentials.clientId!!)
+      .add("client_secret", credentials.clientSecret!!)
+      .add("refresh_token", credentials.refreshToken!!)
+      .add("grant_type", "refresh_token")
+      .build()
 
     val request = Request.Builder().url("https://api.coinbase.com/oauth/token")
-            .post(body)
-            .build()
+      .post(body)
+      .build()
 
     val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-            credentials.refreshToken, credentials.clientId,
-            credentials.clientSecret)
+      credentials.refreshToken, credentials.clientId,
+      credentials.clientSecret)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
@@ -109,7 +109,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completer.withCachedVariable(name(), "account_id", {
       credentialsStore[serviceDefinition()]?.let {
         client.query<AccountList>(
-                "https://api.coinbase.com/v2/accounts").data.map { it.id }
+          "https://api.coinbase.com/v2/accounts").data.map { it.id }
       }
     })
 
@@ -118,7 +118,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user", "data", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user", "data", "name"))
 
   override fun hosts(): Set<String> = setOf("api.coinbase.com")
 }

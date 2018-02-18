@@ -11,4 +11,4 @@ data class Balance(val amount: Double, val currency: String)
 data class Account(val id: String, val name: String, val type: String, val currency: Currency, val balance: Balance, val created_at: String, val updated_at: String, val resource: String, val resource_path: String)
 
 data class AccountList(override val data: List<Account>, override val pagination: Paging) :
-        PageableResult<Account>(data, pagination)
+  PageableResult<Account>(data, pagination)

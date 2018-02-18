@@ -15,8 +15,8 @@ import java.util.Arrays
 class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
-            "https://www.instagram.com/developer/endpoints/",
-            "https://www.instagram.com/developer/clients/manage/")
+      "https://www.instagram.com/developer/endpoints/",
+      "https://www.instagram.com/developer/clients/manage/")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -37,15 +37,15 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
     val clientSecret = Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "instagram.scopes",
-            Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships",
-                    "likes"))
+      Arrays.asList("basic", "public_content", "follower_list", "comments", "relationships",
+        "likes"))
 
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-          ValidatedCredentials(client.queryMapValue<String>("https://api.instagram.com/v1/users/self", "data", "full_name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.instagram.com/v1/users/self", "data", "full_name"))
 
   override fun hosts(): Set<String> = setOf("api.instagram.com")
 }

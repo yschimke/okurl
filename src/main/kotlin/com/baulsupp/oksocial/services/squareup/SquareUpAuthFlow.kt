@@ -20,8 +20,8 @@ object SquareUpAuthFlow {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://connect.squareup.com/oauth2/authorize?client_id=$clientId&redirect_uri=${encode(
-              s.redirectUri, "UTF-8")}&response_type=code&scope=${encode(
-              scopes.joinToString(" "), "UTF-8")}"
+        s.redirectUri, "UTF-8")}&response_type=code&scope=${encode(
+        scopes.joinToString(" "), "UTF-8")}"
 
       outputHandler.openLink(loginUrl)
 
@@ -29,7 +29,7 @@ object SquareUpAuthFlow {
 
       val tokenUrl = "https://connect.squareup.com/oauth2/token"
       val map = mapOf("client_id" to clientId, "client_secret" to clientSecret,
-              "code" to code, "redirect_uri" to s.redirectUri)
+        "code" to code, "redirect_uri" to s.redirectUri)
 
       val reqBody = RequestBody.create(MediaType.parse("application/json"), JsonUtil.toJson(map))
       val request = Request.Builder().url(tokenUrl).post(reqBody).build()

@@ -15,7 +15,7 @@ class PreferencesCredentialsStore(private val tokenSet: String?) : CredentialsSt
   }
 
   override fun <T> set(
-          serviceDefinition: ServiceDefinition<T>, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>, credentials: T) {
     val credentialsString = serviceDefinition.formatCredentialsString(credentials)
     userNode.put(tokenKey(serviceDefinition.apiHost()), credentialsString)
   }

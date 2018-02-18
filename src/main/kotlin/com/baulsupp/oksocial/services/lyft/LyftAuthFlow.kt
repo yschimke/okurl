@@ -25,17 +25,17 @@ object LyftAuthFlow {
       val code = s.waitForCodeAsync()
 
       val body = RequestBody.create(MediaType.parse("application/json"),
-              "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
+        "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
       val basic = Credentials.basic(clientId, clientSecret)
       val request = Request.Builder().url("https://api.lyft.com/oauth/token")
-              .post(body)
-              .header("Authorization", basic)
-              .build()
+        .post(body)
+        .header("Authorization", basic)
+        .build()
 
       val responseMap = client.queryMap<String>(request)
 
       return Oauth2Token(responseMap["access_token"] as String,
-              responseMap["refresh_token"] as String, clientId, clientSecret)
+        responseMap["refresh_token"] as String, clientId, clientSecret)
     }
   }
 }

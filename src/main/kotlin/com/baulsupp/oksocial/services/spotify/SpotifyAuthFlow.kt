@@ -26,20 +26,20 @@ object SpotifyAuthFlow {
 
       val tokenUrl = "https://accounts.spotify.com/api/token"
       val body = FormBody.Builder().add("client_id", clientId)
-              .add("redirect_uri", s.redirectUri)
-              .add("code", code)
-              .add("grant_type", "authorization_code")
-              .build()
+        .add("redirect_uri", s.redirectUri)
+        .add("code", code)
+        .add("grant_type", "authorization_code")
+        .build()
       val request = Request.Builder().header("Authorization",
-              Credentials.basic(clientId, clientSecret))
-              .url(tokenUrl)
-              .method("POST", body)
-              .build()
+        Credentials.basic(clientId, clientSecret))
+        .url(tokenUrl)
+        .method("POST", body)
+        .build()
 
       val responseMap = AuthUtil.makeJsonMapRequest(client, request)
 
       return Oauth2Token(responseMap["access_token"] as String,
-              responseMap["refresh_token"] as String, clientId, clientSecret)
+        responseMap["refresh_token"] as String, clientId, clientSecret)
     }
   }
 }

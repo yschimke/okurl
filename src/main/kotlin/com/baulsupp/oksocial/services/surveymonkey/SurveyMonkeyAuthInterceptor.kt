@@ -23,13 +23,13 @@ import okhttp3.Response
 class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
-            "https://developer.surveymonkey.com/api/v3/#scopes",
-            "https://developer.surveymonkey.com/apps/")
+      "https://developer.surveymonkey.com/api/v3/#scopes",
+      "https://developer.surveymonkey.com/apps/")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val newRequest = chain.request().newBuilder().addHeader("Authorization",
-            "bearer " + credentials.accessToken).build()
+      "bearer " + credentials.accessToken).build()
 
     return chain.proceed(newRequest)
   }
@@ -39,7 +39,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val clientId = Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false)
     val clientSecret = Secrets.prompt("SurveyMonkey Client Secret", "surveymonkey.clientSecret", "",
-            true)
+      true)
     return SurveyMonkeyAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
