@@ -157,6 +157,7 @@ distributions {
             }
             into('lib') {
                 from jar
+                from(project.configurations.runtime)
             }
         }
     }
