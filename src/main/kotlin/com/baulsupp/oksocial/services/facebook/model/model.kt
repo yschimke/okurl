@@ -16,7 +16,7 @@ open class IdResult(open val id: String) : Result()
 
 data class MetadataResult(override val metadata: Metadata?) : Result()
 
-data class Account(override val id: String, val username: String) : IdResult(id)
+data class Account(override val id: String, val username: String?) : IdResult(id)
 
 data class App(override val id: String, val name: String) : IdResult(id)
 

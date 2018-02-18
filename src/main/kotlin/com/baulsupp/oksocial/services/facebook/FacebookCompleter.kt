@@ -39,7 +39,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
 
   suspend fun topLevel(): List<String> {
     return try {
-      client.fbQueryList<Account, AccountList>("/me/accounts").data.map { it.username } + "me"
+      client.fbQueryList<Account, AccountList>("/me/accounts").data.map { it.username ?: it.id } + "me"
     } catch (ce: ClientException) {
       if (ce.code != 400) {
         throw ce
