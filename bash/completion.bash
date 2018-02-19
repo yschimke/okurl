@@ -107,7 +107,12 @@ function _oksocial_complete ()
   else
     _ok_social_debug cached
 
-    paths=$(tail -n +2 $cache_file)
+    if [ -f "$cache_file" ]; then
+      paths=$(tail -n +2 $cache_file)
+    else
+      _ok_social_debug missing cache file $cache_file
+      paths=
+    fi
   fi
 
   COMPREPLY=( $( compgen -o nospace -W "$paths" -- "$cur" ) )
