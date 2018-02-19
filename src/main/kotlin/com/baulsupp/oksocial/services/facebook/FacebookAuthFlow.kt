@@ -34,7 +34,7 @@ object FacebookAuthFlow {
 
       val longTokenBody = makeJsonMapRequest(client, uriGetRequest(exchangeUrl))
 
-      return Oauth2Token(longTokenBody["access_token"] as String)
+      return Oauth2Token(longTokenBody["access_token"] as String, "", clientId, clientSecret)
     }
   }
 }

@@ -17,6 +17,7 @@ import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okio.ByteString
 import java.io.IOException
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
@@ -33,7 +34,17 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     if (isGraphApi(request.url()) || isScimApi(request.url())) {
       val token = credentials.accessToken
 
-      val newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build()
+      val builder = request.url().newBuilder().addQueryParameter("access_token", token)
+
+      if (credentials.clientSecret != null) {
+        val appsecretTime = (System.currentTimeMillis() / 1000).toString()
+        val appsecretProof = ByteString.encodeUtf8("$token|$appsecretTime").hmacSha256(
+          ByteString.encodeUtf8(credentials.clientSecret)).hex()
+        builder.addQueryParameter("appsecret_proof", appsecretProof)
+        builder.addQueryParameter("appsecret_time", appsecretTime)
+      }
+
+      val newUrl = builder.build()
 
       request = request.newBuilder().url(newUrl).build()
     }
