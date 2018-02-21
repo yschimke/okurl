@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
 import com.baulsupp.oksocial.services.facebook.model.Account
 import com.baulsupp.oksocial.services.facebook.model.AccountList
+import com.baulsupp.oksocial.services.facebook.model.UserOrPage
 import com.baulsupp.oksocial.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -38,13 +39,37 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
   }
 
   suspend fun topLevel(): List<String> {
-    return try {
-      client.fbQueryList<Account, AccountList>("/me/accounts").data.map { it.username ?: it.id } + "me"
+    val topLevel = mutableListOf("me")
+
+    if (isWorkplace()) {
+      topLevel.add("community")
+    } else {
+      topLevel += listAccounts()
+    }
+
+    return topLevel
+  }
+
+  private suspend fun listAccounts(): List<String> {
+    try {
+      return client.fbQueryList<Account, AccountList>("/me/accounts").data.map { it.username ?: it.id }
     } catch (ce: ClientException) {
       if (ce.code != 400) {
-        throw ce
+        logger.log(Level.FINE, "Failed to load accounts", ce)
       }
-      listOf("me")
+      return listOf()
+    }
+  }
+
+  private suspend fun isWorkplace(): Boolean {
+    try {
+      client.fbQuery<UserOrPage>("/community")
+      return true
+    } catch (ce: ClientException) {
+      if (ce.code != 400) {
+        logger.log(Level.FINE, "Failed to load accounts", ce)
+      }
+      return false
     }
   }
 
