@@ -30,7 +30,7 @@ class DiscoveryApiDocPresenterTest {
       p!!.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client)
     }
 
-    val es = listOf("name: Google People API",
+    val es = listOf("name: People API",
         "docs: https://developers.google.com/people/",
         "url: https://people.googleapis.com/v1/{+resourceName}"
     )
