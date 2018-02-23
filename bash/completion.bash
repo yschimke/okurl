@@ -54,7 +54,8 @@ function _oksocial_complete ()
   case $prev in
         -d | --data | -H | --header | -A | --user-agent | --connect-timeout | --read-timeout \
         | -e | --referer | --cache | --token | --resolve | --certificatePin | --keystore \
-        | --socks | --proxy | -s | --set | --cert | --clientauth | --dnsServers | --user)
+        | --socks | --proxy | -s | --set | --cert | --clientauth | --dnsServers | --user \
+        | --ping-interval)
             return
             ;;
         --authorize)

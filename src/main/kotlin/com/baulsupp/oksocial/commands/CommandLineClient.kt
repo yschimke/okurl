@@ -88,6 +88,9 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--read-timeout"], description = "Maximum time allowed for reading data (seconds)")
   var readTimeout: Int? = null
 
+  @Option(name = ["--ping-interval"], description = "Interval between pings")
+  var pingInterval: Int? = null
+
   @Option(name = ["-k", "--insecure"], description = "Allow connections to SSL sites without certs")
   var allowInsecure = false
 
@@ -406,6 +409,9 @@ open class CommandLineClient : HelpOption() {
     }
     if (readTimeout != null) {
       builder.readTimeout(readTimeout!!.toLong(), TimeUnit.SECONDS)
+    }
+    if (pingInterval != null) {
+      builder.pingInterval(pingInterval!!.toLong(), TimeUnit.SECONDS)
     }
 
     builder.dns(buildDns())
