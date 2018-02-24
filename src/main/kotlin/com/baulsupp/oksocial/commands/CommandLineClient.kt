@@ -82,14 +82,14 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["-A", "--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
 
-  @Option(name = ["--connect-timeout"], description = "Maximum time allowed for connection (seconds)")
-  var connectTimeout: Int? = null
+  @Option(name = ["--connect-timeout"], description = "Maximum time allowed for connection (seconds). (0 = disabled)")
+  var connectTimeout: Int = 5
 
-  @Option(name = ["--read-timeout"], description = "Maximum time allowed for reading data (seconds)")
-  var readTimeout: Int? = null
+  @Option(name = ["--read-timeout"], description = "Maximum time allowed for reading data (seconds). (0 = disabled)")
+  var readTimeout: Int = 20
 
-  @Option(name = ["--ping-interval"], description = "Interval between pings")
-  var pingInterval: Int? = null
+  @Option(name = ["--ping-interval"], description = "Interval between pings. (0 = disabled)")
+  var pingInterval: Int = 5
 
   @Option(name = ["-k", "--insecure"], description = "Allow connections to SSL sites without certs")
   var allowInsecure = false
@@ -404,15 +404,9 @@ open class CommandLineClient : HelpOption() {
 
   open fun createClientBuilder(): OkHttpClient.Builder {
     val builder = OkHttpClient.Builder()
-    if (connectTimeout != null) {
-      builder.connectTimeout(connectTimeout!!.toLong(), TimeUnit.SECONDS)
-    }
-    if (readTimeout != null) {
-      builder.readTimeout(readTimeout!!.toLong(), TimeUnit.SECONDS)
-    }
-    if (pingInterval != null) {
-      builder.pingInterval(pingInterval!!.toLong(), TimeUnit.SECONDS)
-    }
+    builder.connectTimeout(connectTimeout.toLong(), TimeUnit.SECONDS)
+    builder.readTimeout(readTimeout.toLong(), TimeUnit.SECONDS)
+    builder.pingInterval(pingInterval.toLong(), TimeUnit.SECONDS)
 
     builder.dns(buildDns())
 

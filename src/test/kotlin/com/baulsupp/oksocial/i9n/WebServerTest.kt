@@ -4,9 +4,9 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.security.CertificatePin
 import okhttp3.Response
-import okhttp3.internal.tls.SslClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.internal.tls.SslClient
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test

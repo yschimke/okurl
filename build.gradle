@@ -7,16 +7,16 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.shyiko:ktlint:0.15.0"
+        classpath "com.github.shyiko:ktlint:0.15.1"
     }
 }
 
 plugins {
-    id "com.gradle.build-scan" version "1.11"
+    id "com.gradle.build-scan" version "1.12.1"
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'net.nemerosa.versioning' version '2.6.1'
     id 'io.codearte.nexus-staging' version '0.11.0'
-    id "org.jlleitschuh.gradle.ktlint" version "3.0.0"
+    id "org.jlleitschuh.gradle.ktlint" version "3.0.1"
 }
 
 buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'yes' }
@@ -101,7 +101,7 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     compile 'org.conscrypt:conscrypt-openjdk-uber:1.0.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
-    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4'
+    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.4'
     compile('com.github.mrmike:ok2curl:0.4.0') {
         exclude(module: 'okhttp')
@@ -111,13 +111,13 @@ dependencies {
     compile 'org.slf4j:slf4j-jdk14:1.7.25'
     compile 'org.zeroturnaround:zt-exec:1.10'
     compile 'com.jakewharton.byteunits:byteunits:0.9.1'
-    compile 'io.netty:netty-resolver-dns:4.1.20.Final'
+    compile 'io.netty:netty-resolver-dns:4.1.22.Final'
     compile 'io.airlift:airline:0.8'
     compile files('external/osxkeychain.jar')
-    compile 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.3.1'
+    compile 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.3.3'
     compile 'io.zipkin.brave:brave-okhttp:4.13.4'
-    compile 'io.zipkin.brave:brave-instrumentation-okhttp3:4.14.1'
-    compile 'io.zipkin.brave:brave:4.14.1'
+    compile 'io.zipkin.brave:brave-instrumentation-okhttp3:4.16.1'
+    compile 'io.zipkin.brave:brave:4.16.1'
     compile 'com.squareup.moshi:moshi:1.5.0'
     compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
     compile 'com.squareup.moshi:moshi-adapters:1.5.0'
@@ -127,8 +127,8 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-    testCompile 'com.squareup.okhttp3:okhttp-testing-support:3.9.1'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
+    testCompile 'com.squareup.okhttp3:okhttp-testing-support:3.10.0'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.10.0'
 }
 
 distributions {
