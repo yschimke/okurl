@@ -60,7 +60,7 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completer.withCachedVariable(name(), "collection_uid", {
       credentialsStore[serviceDefinition()]?.let {
         client.query<CollectionsResult>(
-          "https://api.getpostman.com/collections").collections.map { it.name }
+          "https://api.getpostman.com/collections").collections.map { it.id }
       }
     })
 
