@@ -1,0 +1,10 @@
+https://api.getpostman.com/collections
+https://api.getpostman.com/collections/{collection_uid}
+https://api.getpostman.com/environments
+https://api.getpostman.com/environments/{environment_uid}
+https://api.getpostman.com/me
+https://api.getpostman.com/mocks
+https://api.getpostman.com/mocks/{mock_uid}
+https://api.getpostman.com/monitors
+https://api.getpostman.com/monitors/{monitor_uid}
+https://api.getpostman.com/monitors/{monitor_uid}/run

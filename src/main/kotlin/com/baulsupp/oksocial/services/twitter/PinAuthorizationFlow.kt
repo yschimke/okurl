@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.twitter
 
+import com.baulsupp.oksocial.kotlin.readPasswordString
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -13,8 +14,7 @@ class PinAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Re
 
     showUserLogin(newCredentials)
 
-    // TODO move to IO pool
-    return String(System.console().readPassword("Enter PIN: "))
+    return System.console().readPasswordString("Enter PIN: ")
   }
 
   suspend fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {

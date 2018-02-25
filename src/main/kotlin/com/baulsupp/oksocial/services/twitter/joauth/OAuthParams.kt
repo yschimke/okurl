@@ -87,5 +87,4 @@ object OAuthParams {
         OAUTH_VERSION, valueOrUnset(version))
     }
   }
-
 }

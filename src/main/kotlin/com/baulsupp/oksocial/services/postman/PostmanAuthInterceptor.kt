@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.services.quip
+package com.baulsupp.oksocial.services.postman
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -12,16 +12,17 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.readPasswordString
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.services.quip.model.User
+import com.baulsupp.oksocial.services.postman.model.CollectionsResult
+import com.baulsupp.oksocial.services.postman.model.UserResult
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
-      "https://fb.quip.com/dev/automation/documentation",
-      "https://quip.com/dev/token")
+    return Oauth2ServiceDefinition("api.getpostman.com", "Postman API", "postman",
+      "https://docs.api.getpostman.com/",
+      "https://app.getpostman.com/dashboard/integrations")
   }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
@@ -29,46 +30,40 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("X-Api-Key", token).build()
 
     return chain.proceed(request)
   }
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
-
-    outputHandler.openLink("https://quip.com/dev/token")
+    authArguments: List<String>): Oauth2Token {
+    outputHandler.openLink("https://app.getpostman.com/dashboard/integrations/pm_pro_api/list")
 
     val token = System.console().readPasswordString("Enter Token: ")
 
     return Oauth2Token(token)
   }
 
+  suspend override fun validate(client: OkHttpClient,
+    credentials: Oauth2Token): ValidatedCredentials =
+    ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me").user.id)
+
+  override fun hosts(): Set<String> = setOf("api.getpostman.com")
+
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache): ApiCompleter {
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "folderId", {
+    completer.withCachedVariable(name(), "collection_uid", {
       credentialsStore[serviceDefinition()]?.let {
-        currentUser(client).let {
-          listOfNotNull(it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
-            it.archive_folder_id) + it.shared_folder_ids.orEmpty()
-        }
+        client.query<CollectionsResult>(
+          "https://api.getpostman.com/collections").collections.map { it.name }
       }
     })
 
     return completer
   }
-
-  suspend override fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(currentUser(client).name)
-
-  private suspend fun currentUser(client: OkHttpClient) =
-    client.query<User>("https://platform.quip.com/1/users/current")
-
-  override fun hosts(): Set<String> = setOf("platform.quip.com")
 }

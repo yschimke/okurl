@@ -66,5 +66,4 @@ object UrlCodec {
 
     return if (sb == null) s else sb.toString()
   }
-
 }

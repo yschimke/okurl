@@ -41,8 +41,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
     val newUrls = urls.flatMap { url ->
       if (url.contains(literalToken))
-        replacementList.map { s -> url.replace(literalToken, s) } else
-        listOf(url)
+        replacementList.map { s -> url.replace(literalToken, s) } else listOf(url)
     }
 
     return UrlList(match, newUrls)
