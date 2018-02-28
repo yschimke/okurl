@@ -24,7 +24,7 @@ class MapboxLatLongAdapter {
   }
 
   @FromJson
-  @Throws(Exception::class)
+
   fun fromJson(dimensions: DoubleArray): Location {
     if (dimensions.size != 2) {
       throw Exception("Expected 2 elements but was $dimensions")

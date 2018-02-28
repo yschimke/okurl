@@ -89,9 +89,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile("org.jetbrains.kotlin:kotlin-script-util:$kotlin_version") {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation("org.jetbrains.kotlin:kotlin-script-util:$kotlin_version") {
         exclude(module: 'kotlin-compiler')
     }
     implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
@@ -123,8 +123,9 @@ dependencies {
     implementation 'com.github.markusbernhardt:proxy-vole:1.0.4'
     implementation 'commons-io:commons-io:2.5'
 
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
@@ -290,4 +291,13 @@ task resolveDependencies {
             }
         }
     }
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'slow'
+        includeEngines 'junit-jupiter', 'junit-vintage'
+    }
+
+    failFast = true
 }

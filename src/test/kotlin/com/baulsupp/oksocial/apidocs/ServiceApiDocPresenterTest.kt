@@ -5,7 +5,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.OkHttpClient
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ServiceApiDocPresenterTest {

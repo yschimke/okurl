@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.output.util.UsageException
 
 import okhttp3.Dns
 import java.net.InetAddress
-import java.net.UnknownHostException
 import java.util.logging.Logger
 
 class DnsOverride(private val dns: Dns) : Dns {
@@ -14,7 +13,6 @@ class DnsOverride(private val dns: Dns) : Dns {
     overrides.put(host, target)
   }
 
-  @Throws(UnknownHostException::class)
   override fun lookup(hostname: String): List<InetAddress> {
     val override = overrides[hostname]
 

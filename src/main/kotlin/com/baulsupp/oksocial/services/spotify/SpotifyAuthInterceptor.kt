@@ -22,7 +22,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 import java.util.Arrays
 
 class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
@@ -67,7 +66,6 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return SpotifyAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter {

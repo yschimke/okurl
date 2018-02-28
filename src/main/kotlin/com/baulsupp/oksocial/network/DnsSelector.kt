@@ -4,12 +4,10 @@ import okhttp3.Dns
 import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
-import java.net.UnknownHostException
 import java.util.logging.Logger
 
 class DnsSelector(private val mode: IPvMode, private val delegate: Dns) : Dns {
 
-  @Throws(UnknownHostException::class)
   override fun lookup(hostname: String): List<InetAddress> {
     var addresses = delegate.lookup(hostname)
 

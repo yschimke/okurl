@@ -2,20 +2,13 @@ package com.baulsupp.oksocial.security
 
 import com.baulsupp.oksocial.security.KeystoreUtils.createKeyManager
 import com.baulsupp.oksocial.security.KeystoreUtils.getKeyStore
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.security.InvalidKeyException
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.KeyStoreException
-import java.security.NoSuchAlgorithmException
-import java.security.NoSuchProviderException
-import java.security.SignatureException
 import java.security.cert.Certificate
-import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import javax.security.auth.callback.CallbackHandler
 import javax.security.auth.callback.PasswordCallback
@@ -23,7 +16,6 @@ import javax.security.auth.callback.UnsupportedCallbackException
 
 class KeystoreUtilsTest {
   @Test
-  @Throws(Exception::class)
   fun loadEmptyPassword() {
     val f = writeFile("")
 
@@ -31,7 +23,6 @@ class KeystoreUtilsTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun loadNonEmptyPassword() {
     val f = writeFile("a")
 
@@ -51,10 +42,6 @@ class KeystoreUtilsTest {
   }
 
   companion object {
-
-    @Throws(KeyStoreException::class, CertificateException::class, NoSuchAlgorithmException::class,
-        IOException::class, InvalidKeyException::class, NoSuchProviderException::class,
-        SignatureException::class)
     fun writeFile(keyPw: String): File {
       val temp = File.createTempFile("tempkey", ".keystore")
       temp.deleteOnExit()
@@ -93,8 +80,6 @@ class KeystoreUtilsTest {
       -----END CERTIFICATE-----
       """.trimIndent()
 
-    @Throws(NoSuchAlgorithmException::class, CertificateException::class,
-        NoSuchProviderException::class, InvalidKeyException::class, SignatureException::class)
     fun generateCertificate(): Array<Certificate> {
       val cf = CertificateFactory.getInstance("X.509")
       return arrayOf(cf.generateCertificate(ByteArrayInputStream(certificate.toByteArray())))

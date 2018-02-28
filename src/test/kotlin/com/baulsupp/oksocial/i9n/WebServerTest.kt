@@ -7,9 +7,9 @@ import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.internal.tls.SslClient
-import org.junit.Ignore
 import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
 import kotlin.test.assertEquals
@@ -30,7 +30,6 @@ class WebServerTest {
   private val sslClient = SslClient.localhost()
 
   @Test
-  @Throws(Exception::class)
   fun httpsRequestInsecureFails() {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
@@ -45,7 +44,6 @@ class WebServerTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun httpsRequestInsecure() {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
@@ -60,8 +58,7 @@ class WebServerTest {
   }
 
   @Test
-  @Ignore
-  @Throws(Exception::class)
+  @Disabled
   fun httpsRequestSecure() {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
@@ -75,7 +72,6 @@ class WebServerTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun rejectedWithPin() {
     server.useHttps(sslClient.socketFactory, false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))

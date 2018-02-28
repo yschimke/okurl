@@ -1,14 +1,13 @@
 package com.baulsupp.oksocial.services.google
 
-import org.junit.Test
-import java.io.IOException
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DiscoveryIndexTest {
   @Test
-  @Throws(IOException::class)
+
   fun loadStatic() {
     val r = DiscoveryIndex.loadStatic()
 
@@ -18,7 +17,7 @@ class DiscoveryIndexTest {
   }
 
   @Test
-  @Throws(IOException::class)
+
   fun getsUniqueResult() {
     val r = DiscoveryIndex.loadStatic()
 
@@ -29,7 +28,7 @@ class DiscoveryIndexTest {
   }
 
   @Test
-  @Throws(IOException::class)
+
   fun mergesAllResultsForLongPrefix() {
     val r = DiscoveryIndex.loadStatic()
 
@@ -42,7 +41,7 @@ class DiscoveryIndexTest {
   }
 
   @Test
-  @Throws(IOException::class)
+
   fun mergesAllResults() {
     val r = DiscoveryIndex.loadStatic()
 

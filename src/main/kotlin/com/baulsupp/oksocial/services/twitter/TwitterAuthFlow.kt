@@ -9,7 +9,6 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
 
 abstract class TwitterAuthFlow(protected val client: OkHttpClient,
                                protected val outputHandler: OutputHandler<Response>) {
@@ -55,7 +54,6 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
       tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
   }
 
-  @Throws(IOException::class)
   protected fun showUserLogin(newCredentials: TwitterCredentials) {
     outputHandler.openLink(
       "https://api.twitter.com/oauth/authenticate?oauth_token=" + newCredentials.token)

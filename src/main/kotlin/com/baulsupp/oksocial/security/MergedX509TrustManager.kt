@@ -7,12 +7,10 @@ import javax.net.ssl.X509TrustManager
 
 class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X509TrustManager {
 
-  @Throws(CertificateException::class)
   override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
     throw UnsupportedOperationException()
   }
 
-  @Throws(CertificateException::class)
   override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
     val exceptions = mutableListOf<CertificateException>()
 
@@ -28,7 +26,6 @@ class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X50
     throw bestException(exceptions)
   }
 
-  @Throws(CertificateException::class)
   fun bestException(exceptions: List<CertificateException>): CertificateException {
     if (exceptions.isNotEmpty()) {
       // last is probably system keystore

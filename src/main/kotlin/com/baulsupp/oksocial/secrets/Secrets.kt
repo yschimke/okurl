@@ -23,7 +23,6 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
     changed = true
   }
 
-  @Throws(IOException::class)
   fun saveIfNeeded() {
     if (changed && file != null) {
       val p = Properties()

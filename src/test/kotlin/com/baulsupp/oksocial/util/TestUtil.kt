@@ -17,7 +17,7 @@ object TestUtil {
   fun assumeHasNetwork() {
     initialise()
 
-    Assume.assumeTrue(cachedException == null)
+    Assumptions.assumeTrue(cachedException == null)
   }
 
   private fun initialise() {
@@ -44,6 +44,6 @@ object TestUtil {
 
     val token = credentialsStore!![serviceDefinition]
 
-    Assume.assumeTrue(token != null)
+    Assumptions.assumeTrue(token != null)
   }
 }

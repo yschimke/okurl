@@ -7,9 +7,9 @@ import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.internal.tls.SslClient
-import org.junit.AfterClass
+import org.junit.jupiter.api.AfterAll
 import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.logging.LogManager
 import kotlin.test.assertEquals
 
@@ -28,7 +28,6 @@ class LoggingTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun logsData() {
     server.useHttps(sslClient.socketFactory, false)
     server.setProtocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
@@ -42,7 +41,6 @@ class LoggingTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun version() {
     val output = TestOutputHandler<Response>()
 
@@ -55,7 +53,7 @@ class LoggingTest {
 
   companion object {
 
-    @AfterClass
+    @AfterAll
     fun resetLogging() {
       LogManager.getLogManager().reset()
     }

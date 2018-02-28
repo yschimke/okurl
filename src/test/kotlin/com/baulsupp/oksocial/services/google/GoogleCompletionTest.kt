@@ -5,7 +5,7 @@ import com.baulsupp.oksocial.i9n.TestCredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -20,7 +20,6 @@ class GoogleCompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completePeopleEndpointSite() {
     assumeHasNetwork()
 
@@ -34,7 +33,6 @@ class GoogleCompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completePeopleEndpointPath() {
     assumeHasNetwork()
 
@@ -48,7 +46,6 @@ class GoogleCompletionTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeGmailUserId() {
     assumeHasNetwork()
 

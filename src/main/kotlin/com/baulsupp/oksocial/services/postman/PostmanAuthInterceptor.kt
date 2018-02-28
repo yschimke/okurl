@@ -13,10 +13,8 @@ import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.readPasswordString
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.services.postman.model.CollectionResult
 import com.baulsupp.oksocial.services.postman.model.CollectionsResult
 import com.baulsupp.oksocial.services.postman.model.UserResult
-import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
