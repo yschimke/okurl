@@ -1,21 +1,20 @@
 package com.baulsupp.oksocial.services.google
 
-import org.junit.Before
-import org.junit.Test
-import java.io.IOException
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class DiscoveryDocumentTest {
   private var doc: DiscoveryDocument? = null
 
-  @Before
-  @Throws(IOException::class)
+  @BeforeEach
+
   fun loadStaticIndex() {
     doc = DiscoveryDocument.parse(DiscoveryDocumentTest::class.java.getResource("urlshortener.json").readText())
   }
 
   @Test
-  @Throws(IOException::class)
+
   fun getUrlsFromFile() {
     assertEquals("https://www.googleapis.com/urlshortener/v1/", doc!!.baseUrl)
 
@@ -24,7 +23,7 @@ class DiscoveryDocumentTest {
   }
 
   @Test
-  @Throws(IOException::class)
+
   fun loadGmail() {
     val gmailDoc = DiscoveryDocument.parse(DiscoveryDocumentTest::class.java.getResource("gmail.json").readText())
 

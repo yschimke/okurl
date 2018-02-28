@@ -10,7 +10,6 @@ import java.util.concurrent.CountDownLatch
 class WebSocketPrinter(private val outputHandler: OutputHandler<Response>) : WebSocketListener() {
   private val latch = CountDownLatch(1)
 
-  @Throws(InterruptedException::class)
   fun waitForExit() {
     latch.await()
   }

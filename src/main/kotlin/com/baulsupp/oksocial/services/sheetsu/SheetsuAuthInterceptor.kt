@@ -9,13 +9,11 @@ import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun serviceDefinition(): BasicAuthServiceDefinition =
     BasicAuthServiceDefinition("sheetsu.com", "Sheetsu API", "sheetsu", "https://docs.sheetsu.com/", "https://sheetsu.com/dashboard")
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 

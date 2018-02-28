@@ -58,7 +58,6 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
   private fun singleProvider(address: InetSocketAddress): SingletonDnsServerAddressStreamProvider =
     SingletonDnsServerAddressStreamProvider(address)
 
-  @Throws(UnknownHostException::class)
   override fun lookup(hostname: String): List<InetAddress> {
     val f = r.resolveAll(hostname)
 

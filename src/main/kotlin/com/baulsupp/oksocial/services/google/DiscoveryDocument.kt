@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.output.util.JsonUtil
-import java.io.IOException
 
 /**
  * https://developers.google.com/discovery/v1/using
@@ -58,7 +57,7 @@ class DiscoveryDocument(private val map: Map<String, Any>) {
   }
 
   companion object {
-    @Throws(IOException::class)
+
     fun parse(definition: String): DiscoveryDocument {
       return DiscoveryDocument(JsonUtil.map(definition))
     }

@@ -6,8 +6,7 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import org.junit.Test
-import java.io.IOException
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -18,7 +17,7 @@ class GoogleAuthInterceptorTest {
   private val credentialsStore = TestCredentialsStore()
 
   @Test
-  @Throws(IOException::class)
+
   fun hasManyHosts() {
     assertTrue(interceptor.hosts().size > 10)
     assertTrue(interceptor.hosts().contains("www.googleapis.com"))
@@ -26,7 +25,7 @@ class GoogleAuthInterceptorTest {
   }
 
   @Test
-  @Throws(IOException::class)
+
   fun supportsAnyGoogleApi() {
     assertTrue(interceptor.supportsUrl(HttpUrl.parse("https://altrightfanfiction.googleapis.com")!!))
   }

@@ -1,41 +1,34 @@
 package com.baulsupp.oksocial.network
 
-import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.Socket
-import java.net.SocketException
 import java.net.UnknownHostException
 import javax.net.SocketFactory
 
 class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFactory() {
   private val systemFactory = SocketFactory.getDefault()
 
-  @Throws(IOException::class)
   override fun createSocket(): Socket {
     val s = systemFactory.createSocket()
     s.bind(InetSocketAddress(localAddress, 0))
     return s
   }
 
-  @Throws(IOException::class)
   override fun createSocket(host: String, port: Int): Socket {
     return systemFactory.createSocket(host, port, localAddress, 0)
   }
 
-  @Throws(IOException::class)
   override fun createSocket(address: InetAddress, port: Int): Socket {
     return systemFactory.createSocket(address, port, localAddress, 0)
   }
 
-  @Throws(IOException::class)
   override fun createSocket(host: String, port: Int, localAddr: InetAddress,
                             localPort: Int): Socket {
     return systemFactory.createSocket(host, port, localAddr, localPort)
   }
 
-  @Throws(IOException::class)
   override fun createSocket(address: InetAddress, port: Int, localAddr: InetAddress,
                             localPort: Int): Socket {
     return systemFactory.createSocket(address, port, localAddr, localPort)
@@ -43,7 +36,6 @@ class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFact
 
   companion object {
 
-    @Throws(SocketException::class)
     fun byName(ipOrInterface: String): SocketFactory? {
       val localAddress = try {
         // example 192.168.0.51

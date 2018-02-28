@@ -7,7 +7,6 @@ import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import okhttp3.OkHttpClient
-import java.io.IOException
 
 class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
   override fun host(): String {
@@ -20,7 +19,6 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
       "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
   }
 
-  @Throws(IOException::class)
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache): ApiCompleter {

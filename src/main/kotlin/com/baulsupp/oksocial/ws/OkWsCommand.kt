@@ -23,7 +23,6 @@ class OkWsCommand : ShellCommand, MainAware {
     return true
   }
 
-  @Throws(Exception::class)
   override fun buildRequests(client: OkHttpClient, arguments: List<String>): List<Request> {
     if (arguments.size != 1) {
       throw UsageException("usage: okws wss://host")

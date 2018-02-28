@@ -8,7 +8,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 import java.util.Arrays
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
@@ -16,7 +15,6 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
     return StackExchangeServiceDefinition()
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
     var request = chain.request()
 

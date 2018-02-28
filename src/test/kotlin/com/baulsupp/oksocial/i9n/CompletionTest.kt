@@ -3,8 +3,8 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import okhttp3.Response
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,7 +15,7 @@ class CompletionTest {
   private val credentialsStore = TestCredentialsStore()
   private val completionCache = TestCompletionVariableCache()
 
-  @Before
+  @BeforeEach
   fun setup() {
     main.debug = true
     main.outputHandler = output
@@ -47,8 +47,8 @@ class CompletionTest {
     main.run()
 
     assertEquals(listOf(
-        "https://api1.test.com\nhttps://api1.test.com/"),
-        output.stdout)
+      "https://api1.test.com\nhttps://api1.test.com/"),
+      output.stdout)
 
     val cacheFileContent = readCompletionFile()
     assertEquals("[^/]*:?/?/?[^/]*", cacheFileContent[0])

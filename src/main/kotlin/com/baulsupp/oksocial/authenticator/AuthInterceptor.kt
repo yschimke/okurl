@@ -28,7 +28,6 @@ abstract class AuthInterceptor<T> {
     false
   }
 
-  @Throws(IOException::class)
   abstract fun intercept(chain: Interceptor.Chain, credentials: T): Response
 
   abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T

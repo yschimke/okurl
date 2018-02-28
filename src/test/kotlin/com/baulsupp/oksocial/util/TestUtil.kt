@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.mcdermottroe.apple.OSXKeychainException
-import org.junit.Assume
+import org.junit.jupiter.api.Assumptions
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -17,7 +17,7 @@ object TestUtil {
   fun assumeHasNetwork() {
     initialise()
 
-    Assume.assumeTrue(cachedException == null)
+    Assumptions.assumeTrue(cachedException == null)
   }
 
   private fun initialise() {
@@ -44,6 +44,6 @@ object TestUtil {
 
     val token = credentialsStore!![serviceDefinition]
 
-    Assume.assumeTrue(token != null)
+    Assumptions.assumeTrue(token != null)
   }
 }

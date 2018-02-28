@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.tracing
 import brave.propagation.TraceContext
 import java.io.File
 import java.io.FileReader
-import java.io.IOException
 import java.util.Properties
 
 class ZipkinConfig(private val senderUri: String?, private val displayUrl: String?) {
@@ -19,7 +18,6 @@ class ZipkinConfig(private val senderUri: String?, private val displayUrl: Strin
   companion object {
     private val zipkinRc = File(System.getenv("HOME"), ".zipkinrc")
 
-    @Throws(IOException::class)
     fun load(): ZipkinConfig {
       if (zipkinRc.exists()) {
         FileReader(zipkinRc).use { r ->

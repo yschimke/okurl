@@ -21,7 +21,6 @@ class OkApiCommand : ShellCommand, MainAware {
     this.main = main
   }
 
-  @Throws(Exception::class)
   override fun buildRequests(client: OkHttpClient,
                              arguments: List<String>): List<Request> {
     val args = arguments.toMutableList()

@@ -18,7 +18,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okio.ByteString
-import java.io.IOException
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -27,7 +26,6 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       "https://developers.facebook.com/apps/")
   }
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 

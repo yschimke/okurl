@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ImgurTest {
@@ -17,7 +17,6 @@ class ImgurTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun setToken() {
     main.authorize = true
     main.token = "abc"

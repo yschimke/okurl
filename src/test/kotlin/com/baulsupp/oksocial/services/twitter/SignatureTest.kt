@@ -4,11 +4,8 @@ import com.baulsupp.oksocial.services.twitter.joauth.Signature
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
-import java.io.IOException
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -16,7 +13,6 @@ import kotlin.test.assertEquals
 
 class SignatureTest {
   @Test
-  @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class, IOException::class)
   fun testInitialRequestAuth() {
     val clock = Clock.fixed(Instant.ofEpochMilli(1460432867000L), ZoneId.of("UTC"))
     val s = Signature(clock) { 9L }

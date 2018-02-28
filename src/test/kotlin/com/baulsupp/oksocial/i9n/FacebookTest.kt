@@ -7,8 +7,8 @@ import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
 import com.baulsupp.oksocial.services.facebook.FacebookUtil
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import okhttp3.Response
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class FacebookTest {
@@ -23,7 +23,7 @@ class FacebookTest {
   private val sd = FacebookAuthInterceptor().serviceDefinition()
   private var p: FacebookApiDocPresenter? = null
 
-  @Before
+  @BeforeEach
   fun loadPresenter() {
     p = FacebookApiDocPresenter(sd)
   }

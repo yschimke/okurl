@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class AuthorizationTest {
@@ -17,7 +17,6 @@ class AuthorizationTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun setToken() {
     main.authorize = true
     main.token = "abc"
@@ -29,7 +28,6 @@ class AuthorizationTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun authorize() {
     main.authorize = true
     main.arguments = mutableListOf("test")
@@ -40,7 +38,6 @@ class AuthorizationTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun authorizeByHost() {
     main.authorize = true
     main.arguments = mutableListOf("https://test.com/test")
@@ -51,7 +48,6 @@ class AuthorizationTest {
   }
 
   @Test
-  @Throws(Exception::class)
   fun authorizeWithArgs() {
     main.authorize = true
     main.arguments = mutableListOf("test", "TOKENARG")

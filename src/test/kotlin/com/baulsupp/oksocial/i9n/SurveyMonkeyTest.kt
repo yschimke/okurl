@@ -5,7 +5,7 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -23,7 +23,6 @@ class SurveyMonkeyTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun completeEndpointWithReplacements() {
     main.arguments = mutableListOf("https://api.surveymonkey.net/")
     main.urlComplete = true
