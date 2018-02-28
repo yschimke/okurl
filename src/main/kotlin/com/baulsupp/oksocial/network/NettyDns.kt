@@ -14,12 +14,10 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.UnknownHostException
 import java.util.Arrays
-import java.util.Arrays.stream
 import java.util.concurrent.ExecutionException
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.stream.Collectors.joining
-import kotlin.streams.toList
 
 class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressTypes?,
                dnsServers: List<InetSocketAddress>) : Dns {
@@ -95,8 +93,8 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
       return if (dnsServers == "google") {
         Arrays.asList(InetSocketAddress("8.8.8.8", 53),
           InetSocketAddress("8.8.4.4", 53))
-      } else stream(dnsServers.split(
-        ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()).map { s ->
+      } else dnsServers.split(
+        ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().map { s ->
         InetSocketAddress(s, 53)
       }.toList()
     }

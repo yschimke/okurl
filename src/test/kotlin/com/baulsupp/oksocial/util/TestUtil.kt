@@ -3,8 +3,8 @@ package com.baulsupp.oksocial.util
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import com.mcdermottroe.apple.OSXKeychainException
-import org.junit.Assume
+import org.junit.jupiter.api.Assumptions
+import pt.davidafsilva.apple.OSXKeychainException
 import java.net.InetAddress
 import java.net.UnknownHostException
 

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.credentials
 
-import com.mcdermottroe.apple.OSXKeychain
-import com.mcdermottroe.apple.OSXKeychainException
+import pt.davidafsilva.apple.OSXKeychain
+import pt.davidafsilva.apple.OSXKeychainException
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -9,20 +9,9 @@ class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsSto
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
   override fun <T> get(serviceDefinition: ServiceDefinition<T>): T? {
-    return try {
-      val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey())
+    val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey())
 
-      serviceDefinition.parseCredentialsString(pw)
-    } catch (e: OSXKeychainException) {
-      if ("The specified item could not be found in the keychain." == e.message) {
-        logger.log(Level.FINE,
-          "No OSX Keychain entry for '" + serviceDefinition.apiHost() + "' '" + tokenKey() + "'")
-      } else {
-        logger.log(Level.FINE, "Failed to read from keychain", e)
-      }
-
-      null
-    }
+    return pw.map { serviceDefinition.parseCredentialsString(it) }.orElse(null)
   }
 
   override fun <T> set(
@@ -53,7 +42,7 @@ class OSXCredentialsStore(private val tokenSet: String? = null) : CredentialsSto
     private val logger = Logger.getLogger(OSXCredentialsStore::class.java.name)
 
     fun isAvailable(): Boolean = try {
-      Class.forName("com.mcdermottroe.apple.OSXKeychain")
+      Class.forName("pt.davidafsilva.apple.OSXKeychain")
       true
     } catch (e: Exception) {
       false
