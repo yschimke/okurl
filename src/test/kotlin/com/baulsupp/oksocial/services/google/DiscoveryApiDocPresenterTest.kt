@@ -5,8 +5,8 @@ import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -16,7 +16,7 @@ class DiscoveryApiDocPresenterTest {
 
   private var p: DiscoveryApiDocPresenter? = null
 
-  @Before
+  @BeforeEach
   fun loadPresenter() {
     val discoveryIndex = DiscoveryIndex.loadStatic()
     p = DiscoveryApiDocPresenter(discoveryIndex)

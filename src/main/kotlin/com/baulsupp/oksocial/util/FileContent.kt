@@ -3,13 +3,11 @@ package com.baulsupp.oksocial.util
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
-import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
 object FileContent {
 
-  @Throws(IOException::class)
   fun readParamBytes(param: String): ByteArray {
     if (param == "@-") {
       return IOUtils.toByteArray(System.`in`)
@@ -21,7 +19,6 @@ object FileContent {
     }
   }
 
-  @Throws(IOException::class)
   fun readParamString(param: String): String {
     if (param == "@-") {
       return IOUtils.toString(System.`in`, Charset.defaultCharset())

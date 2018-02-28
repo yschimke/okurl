@@ -13,3 +13,5 @@ buildCache {
     push = isMasterBranch
   }
 }
+
+//enableFeaturePreview('IMPROVED_POM_SUPPORT')

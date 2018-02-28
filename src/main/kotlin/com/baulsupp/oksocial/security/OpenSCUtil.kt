@@ -10,7 +10,7 @@ import javax.net.ssl.KeyManager
 import javax.net.ssl.KeyManagerFactory
 
 object OpenSCUtil {
-  @Throws(Exception::class)
+
   fun getKeyManagers(password: ConsoleCallbackHandler, slot: Int): Array<KeyManager> {
     val config = "name=OpenSC\nlibrary=/Library/OpenSC/lib/opensc-pkcs11.so\nslot=$slot\n"
 

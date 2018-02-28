@@ -10,10 +10,9 @@ import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  @Throws(IOException::class)
+
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response = chain.proceed(chain.request())
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Oauth2Token =

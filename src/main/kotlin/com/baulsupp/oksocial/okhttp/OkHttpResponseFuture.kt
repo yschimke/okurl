@@ -13,7 +13,6 @@ class OkHttpResponseFuture : Callback {
     future.completeExceptionally(e)
   }
 
-  @Throws(IOException::class)
   override fun onResponse(call: Call, response: Response) {
     future.complete(response)
   }

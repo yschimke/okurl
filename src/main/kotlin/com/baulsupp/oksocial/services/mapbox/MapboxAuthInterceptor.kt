@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.io.IOException
 
 class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition =
@@ -17,7 +16,6 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       "https://www.mapbox.com/api-documentation/",
       "https://www.mapbox.com/studio/account/tokens/")
 
-  @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 

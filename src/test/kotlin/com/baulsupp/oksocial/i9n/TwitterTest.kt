@@ -3,7 +3,7 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class TwitterTest {
@@ -18,7 +18,6 @@ class TwitterTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun setToken() {
     main.authorize = true
     main.token = "PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET"
@@ -35,7 +34,6 @@ class TwitterTest {
   }
 
   @Test
-  @Throws(Throwable::class)
   fun importFromTwurl() {
     main.authorize = true
     main.arguments = mutableListOf("twitter", "--twurlrc",
