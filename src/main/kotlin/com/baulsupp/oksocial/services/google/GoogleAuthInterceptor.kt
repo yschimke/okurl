@@ -102,7 +102,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache): ApiCompleter =
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: String?): ApiCompleter =
     if (!isPastHost(prefix)) {
       hostCompletion(completionVariableCache)
     } else if (isFirebaseUrl(prefix)) {

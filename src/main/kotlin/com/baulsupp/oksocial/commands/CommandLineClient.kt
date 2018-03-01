@@ -187,17 +187,17 @@ open class CommandLineClient : HelpOption() {
   @Arguments(title = "arguments", description = "Remote resource URLs")
   var arguments: MutableList<String> = ArrayList()
 
-  var serviceInterceptor: ServiceInterceptor? = null
+  lateinit var serviceInterceptor: ServiceInterceptor
 
-  var authorisation: Authorisation? = null
+  lateinit var authorisation: Authorisation
 
-  var client: OkHttpClient? = null
+  lateinit var client: OkHttpClient
 
-  var outputHandler: OutputHandler<Response>? = null
+  lateinit var outputHandler: OutputHandler<Response>
 
-  var credentialsStore: CredentialsStore? = null
+  lateinit var credentialsStore: CredentialsStore
 
-  var locationSource: LocationSource? = null
+  lateinit var locationSource: LocationSource
 
   var eventLoopGroup: NioEventLoopGroup? = null
 
@@ -313,20 +313,20 @@ open class CommandLineClient : HelpOption() {
     initialise()
 
     if (version) {
-      outputHandler!!.info(Main.NAME + " " + versionString())
+      outputHandler.info(Main.NAME + " " + versionString())
       return 0
     }
 
     try {
       return runCommand(arguments)
     } catch (e: ClientException) {
-      outputHandler!!.showError(e.message)
+      outputHandler.showError(e.message)
       return -1
     } catch (e: UsageException) {
-      outputHandler!!.showError(e.message)
+      outputHandler.showError(e.message)
       return -1
     } catch (e: Exception) {
-      outputHandler!!.showError("unknown error", e)
+      outputHandler.showError("unknown error", e)
       return -2
     } finally {
       closeClients()
@@ -341,16 +341,16 @@ open class CommandLineClient : HelpOption() {
     System.setProperty("apple.awt.UIElement", "true")
     LoggingUtil.configureLogging(debug, showHttp2Frames, sslDebug)
 
-    if (outputHandler == null) {
+    if (!this::outputHandler.isInitialized) {
       outputHandler = buildHandler()
     }
 
-    if (locationSource == null) {
-      locationSource = BestLocation(outputHandler!!)
+    if (!this::locationSource.isInitialized) {
+      locationSource = BestLocation(outputHandler)
     }
 
-    if (credentialsStore == null) {
-      credentialsStore = CredentialFactory.createCredentialsStore(tokenSet)
+    if (!this::credentialsStore.isInitialized) {
+      credentialsStore = CredentialFactory.createCredentialsStore()
     }
 
     closeables.add(Closeable {
@@ -389,9 +389,9 @@ open class CommandLineClient : HelpOption() {
     clientBuilder.dispatcher(dispatcher)
 
     val authClient = clientBuilder.build()
-    serviceInterceptor = ServiceInterceptor(authClient, credentialsStore!!)
+    serviceInterceptor = ServiceInterceptor(authClient, credentialsStore, tokenSet)
 
-    authorisation = Authorisation(serviceInterceptor!!, credentialsStore!!, authClient, outputHandler!!)
+    authorisation = Authorisation(serviceInterceptor!!, credentialsStore, authClient, outputHandler, tokenSet)
 
     clientBuilder.networkInterceptors().add(serviceInterceptor)
 
@@ -502,9 +502,9 @@ open class CommandLineClient : HelpOption() {
 
   fun openLink(link: String) {
     try {
-      outputHandler!!.openLink(link)
+      outputHandler.openLink(link)
     } catch (e: IOException) {
-      outputHandler!!.showError("Can't open link", e)
+      outputHandler.showError("Can't open link", e)
     }
   }
 

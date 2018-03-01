@@ -12,7 +12,7 @@ class UrlCompleterTest {
   private val services = listOf<AuthInterceptor<*>>(TestAuthInterceptor())
 
   private val completer = UrlCompleter(services, OkHttpClient(), CredentialsStore.NONE,
-          CompletionVariableCache.NONE)
+          CompletionVariableCache.NONE, null)
 
   @Test
   fun returnsAllUrls() {

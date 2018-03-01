@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.readPasswordString
 import com.baulsupp.oksocial.output.OutputHandler
@@ -52,14 +51,15 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun hosts(): Set<String> = setOf("api.getpostman.com")
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-    credentialsStore: CredentialsStore,
-    completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: String?): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "collection_uid", {
-      credentialsStore[serviceDefinition()]?.let {
+      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
         client.query<CollectionsResult>(
           "https://api.getpostman.com/collections").collections.map { it.id }
       }

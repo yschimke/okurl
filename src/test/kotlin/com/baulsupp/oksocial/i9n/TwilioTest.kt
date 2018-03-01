@@ -22,7 +22,7 @@ class TwilioTest {
 
   @Test
   fun completeEndpointWithReplacements() {
-    credentialsStore[service] = BasicCredentials("ABC", "PW")
+    credentialsStore.set(service, null, BasicCredentials("ABC", "PW"))
 
     main.arguments = mutableListOf("https://api.twilio.com/")
     main.urlComplete = true

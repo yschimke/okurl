@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.ServiceLoader
 
-class ServiceInterceptor(private val authClient: OkHttpClient, private val credentialsStore: CredentialsStore) : Interceptor {
+class ServiceInterceptor(private val authClient: OkHttpClient, private val credentialsStore: CredentialsStore, val defaultTokenSet: String?) : Interceptor {
   private val services = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader).toList()
 
   override fun intercept(chain: Interceptor.Chain): Response {
@@ -20,7 +20,7 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
   }
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
-    val credentials = credentialsStore[interceptor.serviceDefinition()] ?: interceptor.defaultCredentials()
+    val credentials = credentialsStore.get(interceptor.serviceDefinition(), defaultTokenSet) ?: interceptor.defaultCredentials()
 
     if (credentials != null) {
       val result = interceptor.intercept(chain, credentials)
@@ -30,7 +30,7 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
           val newCredentials = interceptor.renew(authClient, credentials)
 
           if (newCredentials != null) {
-            credentialsStore[interceptor.serviceDefinition()] = newCredentials
+            credentialsStore.set(interceptor.serviceDefinition(), defaultTokenSet, newCredentials)
           }
         }
       }

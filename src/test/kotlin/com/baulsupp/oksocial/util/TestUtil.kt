@@ -4,14 +4,13 @@ import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import org.junit.jupiter.api.Assumptions
-import pt.davidafsilva.apple.OSXKeychainException
 import java.net.InetAddress
 import java.net.UnknownHostException
 
 object TestUtil {
   private var cachedException: UnknownHostException? = null
   private var initialised = false
-  private var credentialsStore: CredentialsStore? = null
+  lateinit var credentialsStore: CredentialsStore
 
   @Synchronized
   fun assumeHasNetwork() {
@@ -28,9 +27,8 @@ object TestUtil {
         cachedException = e
       }
 
-      try {
-        credentialsStore = CredentialFactory.createCredentialsStore(null)
-      } catch (e: OSXKeychainException) {
+      if (!this::credentialsStore.isInitialized) {
+        credentialsStore = CredentialFactory.createCredentialsStore()
       }
 
       initialised = true
@@ -42,7 +40,7 @@ object TestUtil {
       serviceDefinition: ServiceDefinition<out Any>) {
     initialise()
 
-    val token = credentialsStore!![serviceDefinition]
+    val token = credentialsStore.get(serviceDefinition, null)
 
     Assumptions.assumeTrue(token != null)
   }

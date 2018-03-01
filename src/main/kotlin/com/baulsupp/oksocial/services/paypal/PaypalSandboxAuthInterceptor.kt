@@ -14,7 +14,8 @@ class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache): ApiCompleter {
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: String?): ApiCompleter {
     val testUrls = UrlList.fromResource("paypal")!!.getUrls("")
       .map { s -> s.replace("api.paypal.com", host()) }
 

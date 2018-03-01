@@ -22,15 +22,15 @@ import java.util.logging.Logger
 class PrintCredentials(private val commandLineClient: CommandLineClient) {
   private val logger = Logger.getLogger(PrintCredentials::class.java.name)
 
-  val outputHandler: OutputHandler<Response> = commandLineClient.outputHandler!!
+  val outputHandler: OutputHandler<Response> = commandLineClient.outputHandler
 
-  val serviceInterceptor: ServiceInterceptor = commandLineClient.serviceInterceptor!!
+  val serviceInterceptor: ServiceInterceptor = commandLineClient.serviceInterceptor
 
-  val credentialsStore: CredentialsStore = commandLineClient.credentialsStore!!
+  val credentialsStore: CredentialsStore = commandLineClient.credentialsStore
 
   private val started: ZonedDateTime = ZonedDateTime.now()
 
-  fun <T> printKnownCredentials(future: Deferred<ValidatedCredentials>, a: AuthInterceptor<T>) {
+  private fun printKnownCredentials(future: Deferred<ValidatedCredentials>, key: Key) {
     try {
       val left = 2000L - ZonedDateTime.now().until(started, ChronoUnit.MILLIS)
       val validated = runBlocking {
@@ -39,27 +39,27 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
         }
       }
 
-      printSuccess(a, validated)
+      printSuccess(key, validated)
     } catch (e: Exception) {
-      printFailed(a, e)
+      printFailed(key, e)
     }
   }
 
-  private fun <T> printSuccess(a: AuthInterceptor<T>, validated: ValidatedCredentials?) {
-    val sd = a.serviceDefinition()
-    outputHandler.info("%-40s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", validated?.username
+  private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
+    val sd = key.auth.serviceDefinition()
+    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", key.tokenSet.orEmpty(), validated?.username
       ?: "-", validated?.clientName ?: "-"))
   }
 
-  private fun <T> printFailed(a: AuthInterceptor<T>, e: Throwable) {
-    val sd = a.serviceDefinition()
+  private fun printFailed(key: Key, e: Throwable) {
+    val sd = key.auth.serviceDefinition()
 
     when (e) {
-      is CancellationException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
-      is TimeoutException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), "timeout"))
-      is ClientException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), a.errorMessage(e)))
-      is IOException -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
-      else -> outputHandler.info("%-20s	%s".format(sd.serviceName(), e.toString()))
+      is CancellationException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), "timeout"))
+      is TimeoutException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), "timeout"))
+      is ClientException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), key.auth.errorMessage(e)))
+      is IOException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), e.toString()))
+      else -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), e.toString()))
     }
   }
 
@@ -74,25 +74,27 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
     val futures = validate(services)
 
-    for ((service, future) in futures) {
-      printKnownCredentials(future, service)
+    for ((key, future) in futures) {
+      printKnownCredentials(future, key)
       if (full) {
-        printCredentials(service)
+        printCredentials(key.auth)
       }
     }
   }
 
+  data class Key(val auth: AuthInterceptor<*>, val tokenSet: String?)
+
   private fun <T> printCredentials(service: AuthInterceptor<T>) {
     val sd = service.serviceDefinition()
-    val credentialsString = credentialsStore[sd]?.let({ sd.formatCredentialsString(it) }) ?: "-"
+    val credentialsString = credentialsStore.get(sd, commandLineClient.tokenSet)?.let({ sd.formatCredentialsString(it) }) ?: "-"
     outputHandler.info(credentialsString)
   }
 
   fun validate(
-    services: Iterable<AuthInterceptor<*>>): Map<AuthInterceptor<*>, Deferred<ValidatedCredentials>> {
+    services: Iterable<AuthInterceptor<*>>): Map<Key, Deferred<ValidatedCredentials>> {
     return services.mapNotNull { sv ->
       val credentials = try {
-        credentialsStore[sv.serviceDefinition()]
+        credentialsStore.get(sv.serviceDefinition(), commandLineClient.tokenSet)
       } catch (e: Exception) {
         logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
         null
@@ -100,12 +102,12 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
       credentials?.let {
         val x = async(CommonPool) { v(sv, credentials) }
-        Pair(sv, x)
+        Pair(Key(sv, commandLineClient.tokenSet), x)
       }
     }.toMap()
   }
 
   // TODO fix up hackery
   suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any?) =
-    sv.validate(commandLineClient.client!!, credentials as T)
+    sv.validate(commandLineClient.client, credentials as T)
 }

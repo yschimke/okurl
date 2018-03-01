@@ -33,7 +33,7 @@ class GoogleAuthInterceptorTest {
   @Test
   fun completesHosts() {
     runBlocking {
-      val hostCompleter = interceptor.apiCompleter("https://", client, credentialsStore, cache)
+      val hostCompleter = interceptor.apiCompleter("https://", client, credentialsStore, cache, null)
 
       val urls = hostCompleter.prefixUrls().getUrls("https://")
 
@@ -46,7 +46,7 @@ class GoogleAuthInterceptorTest {
   fun completesWwwPaths() {
     runBlocking {
       val hostCompleter = interceptor.apiCompleter("https://people.googleapis.com", client,
-              credentialsStore, cache)
+        credentialsStore, cache, null)
 
       val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!)
               .getUrls("https://people.googleapis.com")
@@ -62,8 +62,8 @@ class GoogleAuthInterceptorTest {
       assumeHasNetwork()
 
       val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/urlshortener/v1/url",
-              client,
-              credentialsStore, cache)
+        client,
+        credentialsStore, cache, null)
 
       val urlList = hostCompleter.siteUrls(
               HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!)
@@ -83,7 +83,7 @@ class GoogleAuthInterceptorTest {
       assumeHasNetwork()
 
       val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/", client,
-              credentialsStore, cache)
+        credentialsStore, cache, null)
 
       val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!)
 
