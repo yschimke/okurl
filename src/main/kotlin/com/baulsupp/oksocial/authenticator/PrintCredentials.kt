@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CommonPool
@@ -65,49 +66,58 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   suspend fun showCredentials(arguments: List<String>) {
     var services: Iterable<AuthInterceptor<*>> = serviceInterceptor.services()
+    var names = listOf<String?>(null)
 
     val full = !arguments.isEmpty()
 
     if (!arguments.isEmpty()) {
       services = arguments.mapNotNull { serviceInterceptor.findAuthInterceptor(it) }
+      names = commandLineClient.credentialsStore.names().toSortedSet().toList()
     }
 
-    val futures = validate(services)
+    val futures = validate(services, names)
 
     for ((key, future) in futures) {
       printKnownCredentials(future, key)
       if (full) {
-        printCredentials(key.auth)
+        printCredentials(key)
       }
     }
   }
 
   data class Key(val auth: AuthInterceptor<*>, val tokenSet: String?)
 
-  private fun <T> printCredentials(service: AuthInterceptor<T>) {
-    val sd = service.serviceDefinition()
-    val credentialsString = credentialsStore.get(sd, commandLineClient.tokenSet)?.let({ sd.formatCredentialsString(it) }) ?: "-"
+  private fun printCredentials(key: Key) {
+    val sd: ServiceDefinition<*> = key.auth.serviceDefinition()
+    val credentialsString = credentialsStore.get(sd, key.tokenSet)?.let({ s(sd, it) })
+      ?: "-"
     outputHandler.info(credentialsString)
   }
 
   fun validate(
-    services: Iterable<AuthInterceptor<*>>): Map<Key, Deferred<ValidatedCredentials>> {
-    return services.mapNotNull { sv ->
-      val credentials = try {
-        credentialsStore.get(sv.serviceDefinition(), commandLineClient.tokenSet)
-      } catch (e: Exception) {
-        logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
-        null
-      }
+    services: Iterable<AuthInterceptor<*>>, names: List<String?>): Map<Key, Deferred<ValidatedCredentials>> {
+    val pairs = names.flatMap { name ->
+      services.mapNotNull { sv ->
+        val credentials = try {
+          credentialsStore.get(sv.serviceDefinition(), name)
+        } catch (e: Exception) {
+          logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
+          null
+        }
 
-      credentials?.let {
-        val x = async(CommonPool) { v(sv, credentials) }
-        Pair(Key(sv, commandLineClient.tokenSet), x)
+        credentials?.let {
+          val x = async(CommonPool) { v(sv, credentials) }
+          Pair(Key(sv, name), x)
+        }
       }
-    }.toMap()
+    }
+    return pairs.toMap()
   }
 
   // TODO fix up hackery
   suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any?) =
     sv.validate(commandLineClient.client, credentials as T)
+
+  fun <T> s(sd: ServiceDefinition<T>, credentials: Any?) =
+    sd.formatCredentialsString(credentials as T)
 }
