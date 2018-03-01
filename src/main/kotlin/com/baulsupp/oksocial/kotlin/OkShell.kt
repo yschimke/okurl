@@ -16,14 +16,14 @@ class OkShell(val commandLine: CommandLineClient) {
 
     val response = call.execute()
 
-    commandLine.outputHandler!!.showOutput(response)
+    commandLine.outputHandler.showOutput(response)
   }
 
   fun credentials(name: String): Any? {
-    val interceptor = commandLine.serviceInterceptor!!.getByName(name)
+    val interceptor = commandLine.serviceInterceptor.getByName(name)
 
     if (interceptor != null) {
-      return commandLine.credentialsStore!![interceptor.serviceDefinition()]
+      return commandLine.credentialsStore.get(interceptor.serviceDefinition(), commandLine.tokenSet)
     }
 
     return null

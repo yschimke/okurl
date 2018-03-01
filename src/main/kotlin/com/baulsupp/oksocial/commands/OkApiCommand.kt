@@ -11,7 +11,7 @@ import javax.script.ScriptException
 import kotlin.system.exitProcess
 
 class OkApiCommand : ShellCommand, MainAware {
-  private var main: Main? = null
+  private lateinit var main: Main
 
   override fun name(): String {
     return "okapi"
@@ -46,11 +46,11 @@ class OkApiCommand : ShellCommand, MainAware {
   }
 
   fun credentials(name: String): Any? {
-    if (main != null) {
-      val interceptor = main!!.serviceInterceptor!!.getByName(name)
+    if (!this::main.isInitialized) {
+      val interceptor = main.serviceInterceptor.getByName(name)
 
       if (interceptor != null) {
-        return main!!.credentialsStore!![interceptor.serviceDefinition()]
+        return main.credentialsStore.get(interceptor.serviceDefinition(), main.tokenSet)
       }
     }
 

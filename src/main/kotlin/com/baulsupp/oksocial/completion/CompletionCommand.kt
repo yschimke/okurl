@@ -21,8 +21,8 @@ class CompletionCommand(val main: Main) {
       return urls.getUrls(prefix).joinToString("\n")
     }
 
-    val completer = UrlCompleter(main.serviceInterceptor!!.services(), main.client!!, main.credentialsStore!!,
-      main.completionVariableCache!!)
+    val completer = UrlCompleter(main.serviceInterceptor.services(), main.client, main.credentialsStore,
+      main.completionVariableCache, main.tokenSet)
 
     val fullCompletionUrl = main.getFullCompletionUrl()
 
@@ -42,7 +42,7 @@ class CompletionCommand(val main: Main) {
         it.delete()
 
         if (urls.match == UrlList.Match.HOSTS && urls.urls.isEmpty()) {
-          main.outputHandler!!.showError("Unable to complete hosts")
+          main.outputHandler.showError("Unable to complete hosts")
         }
 
         urls.toFile(it, strip, originalCompletionUrl)
@@ -56,7 +56,7 @@ class CompletionCommand(val main: Main) {
 
   suspend fun complete() {
     try {
-      main.outputHandler!!.info(urlCompletionList())
+      main.outputHandler.info(urlCompletionList())
     } catch (e: Exception) {
       logger.log(Level.FINE, "failure during url completion", e)
     }

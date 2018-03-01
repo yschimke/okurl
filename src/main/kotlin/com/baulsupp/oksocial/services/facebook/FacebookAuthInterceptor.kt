@@ -85,7 +85,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache): ApiCompleter =
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: String?): ApiCompleter =
     FacebookCompleter(client, hosts())
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition())

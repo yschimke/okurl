@@ -27,7 +27,7 @@ class SurveyMonkeyTest {
     main.arguments = mutableListOf("https://api.surveymonkey.net/")
     main.urlComplete = true
     completionCache["surveymonkey", "survey"] = listOf("AA", "BB")
-    credentialsStore[SurveyMonkeyAuthInterceptor().serviceDefinition()] = Oauth2Token("")
+    credentialsStore.set(SurveyMonkeyAuthInterceptor().serviceDefinition(), null, Oauth2Token(""))
 
     main.run()
 

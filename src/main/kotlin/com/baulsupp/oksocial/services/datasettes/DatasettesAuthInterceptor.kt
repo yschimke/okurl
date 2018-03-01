@@ -28,7 +28,8 @@ class DatasettesAuthInterceptor :
     "https://github.com/simonw/datasette") {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache): ApiCompleter =
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: String?): ApiCompleter =
     DatasettesCompleter(client)
 
   override fun hosts(): Set<String> = knownHosts()

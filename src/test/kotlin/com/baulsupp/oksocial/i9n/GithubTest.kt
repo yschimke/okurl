@@ -22,7 +22,7 @@ class GithubTest {
 
   @Test
   fun completeEndpointShortCommand1() {
-    credentialsStore[service] = Oauth2Token("ABC")
+    credentialsStore.set(service, null, Oauth2Token("ABC"))
 
     main.commandName = "okapi"
     main.arguments = mutableListOf("commands/githubapi", "/")
@@ -36,7 +36,7 @@ class GithubTest {
 
   @Test
   fun completeEndpoint() {
-    credentialsStore[service] = Oauth2Token("ABC")
+    credentialsStore.set(service, null, Oauth2Token("ABC"))
 
     main.arguments = mutableListOf("https://api.github.com/")
     main.urlComplete = true

@@ -97,20 +97,20 @@ class Main : CommandLineClient() {
 
   var commandRegistry = CommandRegistry()
 
-  var completionVariableCache: CompletionVariableCache? = null
+  lateinit var completionVariableCache: CompletionVariableCache
 
   override fun runCommand(runArguments: List<String>): Int {
     runBlocking {
       when {
         showCredentials -> PrintCredentials(this@Main).showCredentials(arguments)
         aliasNames -> printAliasNames()
-        serviceNames -> outputHandler!!.info(serviceInterceptor!!.names().joinToString(" "))
+        serviceNames -> outputHandler.info(serviceInterceptor!!.names().joinToString(" "))
         urlComplete -> CompletionCommand(this@Main).complete()
         apiDoc -> showApiDocs()
         authorize -> authorize()
         renew -> renew()
         remove -> remove()
-        else -> executeRequests(outputHandler!!)
+        else -> executeRequests(outputHandler)
       }
     }
 
@@ -128,7 +128,7 @@ class Main : CommandLineClient() {
 
   suspend fun showApiDocs() {
     getFullCompletionUrl()?.let { u ->
-      ServiceApiDocPresenter(serviceInterceptor!!).explainApi(u, outputHandler!!, client!!)
+      ServiceApiDocPresenter(serviceInterceptor).explainApi(u, outputHandler, client!!)
     }
   }
 
@@ -199,7 +199,7 @@ class Main : CommandLineClient() {
 
     super.initialise()
 
-    if (completionVariableCache == null) {
+    if (!this::completionVariableCache.isInitialized) {
       completionVariableCache = DirCompletionVariableCache.TEMP
     }
   }
@@ -296,7 +296,7 @@ class Main : CommandLineClient() {
   }
 
   private fun printAliasNames() {
-    commandRegistry.names().sorted().forEach({ outputHandler!!.info(it) })
+    commandRegistry.names().sorted().forEach({ outputHandler.info(it) })
   }
 
   private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
@@ -310,15 +310,15 @@ class Main : CommandLineClient() {
   }
 
   suspend fun authorize() {
-    authorisation!!.authorize(findAuthInterceptor(), token, arguments)
+    authorisation.authorize(findAuthInterceptor(), token, arguments, tokenSet)
   }
 
   suspend fun renew() {
-    authorisation!!.renew(findAuthInterceptor())
+    authorisation.renew(findAuthInterceptor(), tokenSet)
   }
 
   suspend fun remove() {
-    authorisation!!.remove(findAuthInterceptor())
+    authorisation.remove(findAuthInterceptor(), tokenSet)
   }
 
   private fun findAuthInterceptor(): AuthInterceptor<*>? {
@@ -328,13 +328,13 @@ class Main : CommandLineClient() {
     var auth: AuthInterceptor<*>? = null
 
     if (authenticator != null) {
-      auth = serviceInterceptor!!.getByName(authenticator)
+      auth = serviceInterceptor.getByName(authenticator)
     }
 
     if (auth == null && !arguments.isEmpty()) {
       val name = arguments.removeAt(0)
 
-      auth = serviceInterceptor!!.findAuthInterceptor(name)
+      auth = serviceInterceptor.findAuthInterceptor(name)
     }
     return auth
   }

@@ -12,7 +12,7 @@ class ServiceApiDocPresenterTest {
   private val outputHandler = TestOutputHandler<Any>()
   private val client = OkHttpClient()
   private val credentialsStore = CredentialsStore.NONE
-  private val presenter = ServiceApiDocPresenter(ServiceInterceptor(client, credentialsStore))
+  private val presenter = ServiceApiDocPresenter(ServiceInterceptor(client, credentialsStore, null))
 
   @Test
   fun returnsAllUrls() {

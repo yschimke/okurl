@@ -44,7 +44,7 @@ abstract class AuthInterceptor<T> {
 
   abstract fun hosts(): Set<String>
 
-  open fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache): ApiCompleter =
+  open fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: String?): ApiCompleter =
     UrlList.fromResource(name())?.let { BaseUrlCompleter(it, hosts(), completionVariableCache) }
       ?: HostUrlCompleter(hosts())
 

@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val client: OkHttpClient,
-                   private val credentialsStore: CredentialsStore,
-                   private val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
+class UrlCompleter(val services: List<AuthInterceptor<*>>, val client: OkHttpClient,
+                   val credentialsStore: CredentialsStore,
+                   val completionVariableCache: CompletionVariableCache, val tokenSet: String?) : ArgumentCompleter {
   suspend override fun urlList(prefix: String): UrlList {
     val fullUrl = parseUrl(prefix)
 
@@ -31,7 +31,7 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
   private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String): UrlList {
     return (services
       .firstOrNull { it.supportsUrl(fullUrl) }
-      ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache)
+      ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache, tokenSet)
       ?.siteUrls(fullUrl)
       ?: UrlList(UrlList.Match.EXACT, listOf()))
   }
@@ -40,7 +40,7 @@ class UrlCompleter(private val services: List<AuthInterceptor<*>>, private val c
     val futures = services.map {
       async(CommonPool) {
         withTimeout(2, TimeUnit.SECONDS) {
-          it.apiCompleter("", client, credentialsStore, completionVariableCache).prefixUrls()
+          it.apiCompleter("", client, credentialsStore, completionVariableCache, tokenSet).prefixUrls()
         }
       }
     }

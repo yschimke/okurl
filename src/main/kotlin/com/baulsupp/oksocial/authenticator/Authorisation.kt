@@ -7,41 +7,41 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class Authorisation(private val interceptor: ServiceInterceptor, private val credentialsStore: CredentialsStore,
-                    private val client: OkHttpClient, private val outputHandler: OutputHandler<Response>) {
+class Authorisation(val interceptor: ServiceInterceptor, val credentialsStore: CredentialsStore,
+                    val client: OkHttpClient, val outputHandler: OutputHandler<Response>, val defaultTokenSet: String?) {
 
   suspend fun authorize(auth: AuthInterceptor<*>?, token: String?,
-                        authArguments: List<String>) {
+                        authArguments: List<String>, tokenSet: String?) {
     if (auth == null) {
       throw UsageException(
         "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
     if (token != null) {
-      storeCredentials(auth, token)
+      storeCredentials(auth, token, tokenSet)
     } else {
-      authRequest(auth, authArguments)
+      authRequest(auth, authArguments, tokenSet)
     }
   }
 
-  private fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String) {
+  private fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String, tokenSet: String?) {
     val credentials = auth.serviceDefinition().parseCredentialsString(token)
-    credentialsStore[auth.serviceDefinition()] = credentials
+    credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
   }
 
-  suspend fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>) {
+  suspend fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>, tokenSet: String?) {
     auth.serviceDefinition().accountsLink()?.let { outputHandler.info("Accounts: " + it) }
 
     val credentials = auth.authorize(client, outputHandler, authArguments)
 
-    credentialsStore[auth.serviceDefinition()] = credentials
+    credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
 
     Secrets.instance.saveIfNeeded()
 
     // TODO validate credentials
   }
 
-  suspend fun <T> renew(auth: AuthInterceptor<T>?) {
+  suspend fun <T> renew(auth: AuthInterceptor<T>?, tokenSet: String?) {
     if (auth == null) {
       throw UsageException(
         "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
@@ -49,7 +49,7 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
     val serviceDefinition = auth.serviceDefinition()
 
-    val credentials = credentialsStore[serviceDefinition] ?: throw UsageException("no existing credentials")
+    val credentials = credentialsStore.get(serviceDefinition, tokenSet) ?: throw UsageException("no existing credentials")
 
     if (!auth.canRenew(credentials)) {
       throw UsageException("credentials not renewable")
@@ -57,15 +57,15 @@ class Authorisation(private val interceptor: ServiceInterceptor, private val cre
 
     val newCredentials = auth.renew(client, credentials) ?: throw UsageException("failed to renew")
 
-    credentialsStore[serviceDefinition] = newCredentials
+    credentialsStore.set(serviceDefinition, tokenSet, newCredentials)
   }
 
-  fun remove(auth: AuthInterceptor<*>?) {
+  fun remove(auth: AuthInterceptor<*>?, tokenSet: String?) {
     if (auth == null) {
       throw UsageException(
         "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
     }
 
-    credentialsStore.remove(auth.serviceDefinition())
+    credentialsStore.remove(auth.serviceDefinition(), tokenSet)
   }
 }
