@@ -72,7 +72,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
     if (!arguments.isEmpty()) {
       services = arguments.mapNotNull { serviceInterceptor.findAuthInterceptor(it) }
-      names = commandLineClient.credentialsStore.names().toSortedSet().toList()
+      names = listOf<String?>(null) + commandLineClient.credentialsStore.names().toList()
     }
 
     val futures = validate(services, names)
@@ -106,7 +106,9 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
         }
 
         credentials?.let {
-          val x = async(CommonPool) { v(sv, credentials) }
+          val x = async(CommonPool) {
+            v(sv, credentials)
+          }
           Pair(Key(sv, name), x)
         }
       }

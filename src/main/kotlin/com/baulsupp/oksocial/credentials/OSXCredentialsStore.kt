@@ -1,8 +1,6 @@
 package com.baulsupp.oksocial.credentials
 
 import com.baulsupp.oksocial.process.exec
-import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
-import kotlinx.coroutines.experimental.runBlocking
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
 import java.nio.charset.StandardCharsets
@@ -52,13 +50,5 @@ class OSXCredentialsStore() : CredentialsStore {
 
   companion object {
     private val logger = Logger.getLogger(OSXCredentialsStore::class.java.name)
-  }
-}
-
-fun main(args: Array<String>) {
-  val x = runBlocking {
-    val x = OSXCredentialsStore().findAllNamed(FacebookAuthInterceptor().serviceDefinition())
-
-    println(x.toString())
   }
 }

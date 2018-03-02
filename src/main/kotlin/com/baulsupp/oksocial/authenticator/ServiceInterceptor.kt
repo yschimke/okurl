@@ -20,7 +20,14 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
   }
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
-    val credentials = credentialsStore.get(interceptor.serviceDefinition(), defaultTokenSet) ?: interceptor.defaultCredentials()
+    val tokenSet = defaultTokenSet
+
+    val definedCredentials = credentialsStore.get(interceptor.serviceDefinition(), tokenSet)
+    val credentials = if (definedCredentials != null || tokenSet == null) {
+      definedCredentials
+    } else {
+      interceptor.defaultCredentials()
+    }
 
     if (credentials != null) {
       val result = interceptor.intercept(chain, credentials)
@@ -30,7 +37,7 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
           val newCredentials = interceptor.renew(authClient, credentials)
 
           if (newCredentials != null) {
-            credentialsStore.set(interceptor.serviceDefinition(), defaultTokenSet, newCredentials)
+            credentialsStore.set(interceptor.serviceDefinition(), tokenSet, newCredentials)
           }
         }
       }
