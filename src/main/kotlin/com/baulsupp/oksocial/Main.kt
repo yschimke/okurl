@@ -58,7 +58,7 @@ class Main : CommandLineClient() {
   @Option(name = ["--no-follow"], description = "Follow redirects")
   var dontFollowRedirects = false
 
-  @Option(name = ["-e", "--referer"], description = "Referer URL")
+  @Option(name = ["--referer"], description = "Referer URL")
   var referer: String? = null
 
   @Option(name = ["-o", "--output"], description = "Output file/directory")
@@ -79,11 +79,8 @@ class Main : CommandLineClient() {
   @Option(name = ["--show-credentials"], description = "Show Credentials")
   var showCredentials = false
 
-  @Option(name = ["--alias-names"], description = "Show Alias Names")
-  var aliasNames = false
-
-  @Option(name = ["--serviceNames"], description = "Service Names")
-  var serviceNames = false
+  @Option(name = ["--complete"], description = "Complete options")
+  var complete: String? = null
 
   @Option(name = ["--urlCompletion"], description = "URL Completion")
   var urlComplete: Boolean = false
@@ -103,8 +100,7 @@ class Main : CommandLineClient() {
     runBlocking {
       when {
         showCredentials -> PrintCredentials(this@Main).showCredentials(arguments)
-        aliasNames -> printAliasNames()
-        serviceNames -> outputHandler.info(serviceInterceptor!!.names().joinToString(" "))
+        complete != null -> completeOption()
         urlComplete -> CompletionCommand(this@Main).complete()
         apiDoc -> showApiDocs()
         authorize -> authorize()
@@ -115,6 +111,10 @@ class Main : CommandLineClient() {
     }
 
     return 0
+  }
+
+  private suspend fun Main.completeOption() {
+    return outputHandler.info(listOptions(complete!!).toSortedSet().joinToString(" "))
   }
 
   override fun createClientBuilder(): OkHttpClient.Builder {
@@ -207,14 +207,14 @@ class Main : CommandLineClient() {
   suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
     val command = getShellCommand()
 
-    val requests = command.buildRequests(client!!, arguments).map(this::applyRequestFields)
+    val requests = command.buildRequests(client, arguments).map(this::applyRequestFields)
 
     if (!command.handlesRequests()) {
       if (requests.isEmpty()) {
         throw UsageException("no urls specified")
       }
 
-      val responses = enqueueRequests(requests, client!!)
+      val responses = enqueueRequests(requests, client)
       val failed = processResponses(outputHandler, responses)
       return if (failed) -5 else 0
     }
@@ -293,10 +293,6 @@ class Main : CommandLineClient() {
     }
 
     return shellCommand
-  }
-
-  private fun printAliasNames() {
-    commandRegistry.names().sorted().forEach({ outputHandler.info(it) })
   }
 
   private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
