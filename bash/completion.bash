@@ -52,23 +52,34 @@ function _oksocial_complete ()
   _ok_social_debug tokenset $tokenset
 
   case $prev in
-        -d | --data | -H | --header | -A | --user-agent | --connect-timeout | --read-timeout \
-        | -e | --referer | --cache | --token | --resolve | --certificatePin | --keystore \
-        | --socks | --proxy | -s | --set | --cert | --clientauth | --dnsServers | --user \
+        -d | --data | -H | --header | --user-agent | --connect-timeout | --read-timeout \
+        | --referer | --cache | --token | --resolve | --certificatePin | --keystore \
+        | --socks | --proxy | --cert | --clientauth | --dnsServers | --user \
         | --ping-interval)
             return
             ;;
         --authorize)
-            _oksocial_services=${_oksocial_services:=$(oksocial --serviceNames)}
-            COMPREPLY=( $( compgen -W "$_oksocial_services" -- "$cur" ) )
+            COMPREPLY=( $( compgen -W "${_oksocial_service=$(oksocial --complete service)}" -- "$cur" ) )
             return
             ;;
         --ip)
-            COMPREPLY=( $( compgen -W "system ipv4 ipv6 ipv4only ipv6only" -- "$cur" ) )
+            COMPREPLY=( $( compgen -W "${_oksocial_ipmode=$(oksocial --complete ipmode)}" -- "$cur" ) )
             return
             ;;
         --dns)
-            COMPREPLY=( $( compgen -W "java netty dnsgoogle" -- "$cur" ) )
+            COMPREPLY=( $( compgen -W "${_oksocial_dnsmode=$(oksocial --complete dnsmode)}" -- "$cur" ) )
+            return
+            ;;
+        --protocols)
+            COMPREPLY=( $( compgen -W "${_oksocial_protocol=$(oksocial --complete protocol)}" -- "$cur" ) )
+            return
+            ;;
+        -X|--request)
+            COMPREPLY=( $( compgen -W "${_oksocial_method=$(oksocial --complete method)}" -- "$cur" ) )
+            return
+            ;;
+        -s|--set)
+            COMPREPLY=( $( compgen -W "${_oksocial_tokenset=$(oksocial --complete tokenset)}" -- "$cur" ) )
             return
             ;;
         --networkInterface)
@@ -79,12 +90,8 @@ function _oksocial_complete ()
             _filedir
             return
             ;;
-        --protocols)
-            COMPREPLY=($(compgen -W 'http/1.1 h2' -- "$curlast"))
-            return
-            ;;
-        -X|--request)
-            COMPREPLY=( $( compgen -W "GET HEAD POST DELETE PUT PATCH" -- "$cur" ) )
+        --cache)
+            _filedir
             return
             ;;
   esac

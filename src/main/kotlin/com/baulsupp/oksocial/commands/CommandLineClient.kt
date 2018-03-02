@@ -79,7 +79,7 @@ import javax.net.ssl.X509TrustManager
 
 open class CommandLineClient : HelpOption() {
 
-  @Option(name = ["-A", "--user-agent"], description = "User-Agent to send to server")
+  @Option(name = ["--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
 
   @Option(name = ["--connect-timeout"], description = "Maximum time allowed for connection (seconds). (0 = disabled)")
@@ -121,7 +121,7 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)", allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(name = ["--dns"], description = "DNS (netty, java)", allowedValues = ["java", "netty"])
+  @Option(name = ["--dns"], description = "DNS (netty, java, dnsgoogle)", allowedValues = ["java", "netty", "dnsgoogle"])
   var dnsMode = DnsMode.JAVA
 
   @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
