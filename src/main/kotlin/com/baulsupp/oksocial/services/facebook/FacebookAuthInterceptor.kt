@@ -52,7 +52,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
@@ -67,7 +67,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val userName = client.fbQuery<UserOrPage>("/me", TokenValue(credentials)).name
     val appName = client.fbQuery<App>("/app", TokenValue(credentials)).name

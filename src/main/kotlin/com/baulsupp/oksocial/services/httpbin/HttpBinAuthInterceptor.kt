@@ -27,7 +27,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("User", "httpbin.user", "", false)
     val password = Secrets.prompt("Password", "httpbin.password", "", true)
@@ -39,7 +39,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
       "https://httpbin.org/", null)
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials =
     ValidatedCredentials(credentials.user, null)
 

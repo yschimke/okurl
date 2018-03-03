@@ -37,7 +37,7 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
     outputHandler.openLink("https://app.getpostman.com/dashboard/integrations/pm_pro_api/list")
 
@@ -46,7 +46,7 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(token)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me", TokenValue(credentials)).user.id)
 

@@ -11,7 +11,7 @@ class PreferencesCredentialsStore : CredentialsStore {
   }
 
   private fun tokenKey(name: String, tokenSet: String): String {
-    return "$name.token${tokenSet?.let { "." + tokenSet }.orEmpty()}"
+    return "$name.token.$tokenSet"
   }
 
   override fun <T> set(

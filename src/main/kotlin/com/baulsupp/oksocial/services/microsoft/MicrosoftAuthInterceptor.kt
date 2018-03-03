@@ -36,7 +36,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
@@ -49,7 +49,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return credentials.isRenewable()
   }
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder().add("grant_type", "refresh_token")
       .add("redirect_uri", "http://localhost:3000/callback")
@@ -71,7 +71,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", TokenValue(credentials), "displayName"))
 

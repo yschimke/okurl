@@ -47,7 +47,7 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): GdaxCredentials {
     val apiKey = Secrets.prompt("GDAX API Key", "gdax.apiKey", "", false)
     val apiSecret = Secrets.prompt("GDAX API Secret", "gdax.apiSecret", "", true)
@@ -56,7 +56,7 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     return GdaxCredentials(apiKey, apiSecret, apiPassphrase)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: GdaxCredentials): ValidatedCredentials {
     val accounts = client.queryList<Account>("https://api.gdax.com/accounts", TokenValue(credentials))
     return ValidatedCredentials(accounts.map { it.id }.first())

@@ -8,7 +8,7 @@ class BaseUrlCompleter(private val urlList: UrlList,
   HostUrlCompleter(hosts) {
   private val mappings = CompletionMappings()
 
-  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
+  override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     return mappings.replaceVariables(urlList)
   }
 

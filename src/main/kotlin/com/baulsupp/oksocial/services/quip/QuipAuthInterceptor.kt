@@ -36,7 +36,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     outputHandler.openLink("https://quip.com/dev/token")
@@ -66,7 +66,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(currentUser(client, TokenValue(credentials)).name)
 

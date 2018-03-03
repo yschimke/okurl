@@ -36,7 +36,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Box Client Id", "box.clientId", "", false)
@@ -47,7 +47,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return BoxAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.box.com/2.0/users/me", TokenValue(credentials), "name"))
 

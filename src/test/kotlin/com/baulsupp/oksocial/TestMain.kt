@@ -3,7 +3,7 @@ package com.baulsupp.oksocial
 object TestMain {
   @JvmStatic
   fun main(args: Array<String>) {
-    runMain("https://api. --urlCompletion")
+    runMain("--show-credentials facebook")
   }
 
   private fun runMain(s: String) {

@@ -10,7 +10,7 @@ interface ApiDocPresenter {
 
   companion object {
     val NONE = object : ApiDocPresenter {
-      suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) =
+      override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) =
         outputHandler.info("No documentation for: $url")
     }
   }

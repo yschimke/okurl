@@ -10,7 +10,7 @@ class DnsOverride(private val dns: Dns) : Dns {
   private val overrides = linkedMapOf<String, String>()
 
   private fun put(host: String, target: String) {
-    overrides.put(host, target)
+    overrides[host] = target
   }
 
   override fun lookup(hostname: String): List<InetAddress> {

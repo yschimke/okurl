@@ -40,7 +40,7 @@ class DatasettesAuthInterceptor :
 }
 
 class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
-  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
+  override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     val host = url.host()
 
     val path = url.pathSegments()
@@ -71,12 +71,12 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/${path.first()}/$it" })
   }
 
-  suspend override fun prefixUrls(): UrlList =
+  override suspend fun prefixUrls(): UrlList =
     UrlList(UrlList.Match.HOSTS, knownHosts().map { "https://$it/" })
 }
 
 class DatasettesPresenter : ApiDocPresenter {
-  suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>,
+  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>,
                                   client: OkHttpClient, tokenSet: Token) {
     val urlI = HttpUrl.parse(url) ?: throw UsageException("Unable to parse Url '$url'")
 

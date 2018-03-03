@@ -38,7 +38,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Coinbase Client Id", "coinbase.clientId", "", false)
@@ -81,7 +81,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun canRenew(credentials: Oauth2Token) = credentials.isRenewable()
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder()
       .add("client_id", credentials.clientId!!)
       .add("client_secret", credentials.clientSecret!!)
@@ -120,7 +120,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user", TokenValue(credentials), "data", "name"))
 

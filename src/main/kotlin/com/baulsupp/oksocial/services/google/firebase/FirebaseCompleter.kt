@@ -13,9 +13,9 @@ import okhttp3.OkHttpClient
 import java.util.logging.Logger
 
 class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
-  suspend override fun prefixUrls(): UrlList = UrlList(UrlList.Match.HOSTS, HostUrlCompleter.hostUrls(hosts(), false))
+  override suspend fun prefixUrls(): UrlList = UrlList(UrlList.Match.HOSTS, HostUrlCompleter.hostUrls(hosts(), false))
 
-  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
+  override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     val results = siblings(url, tokenSet) + children(url, tokenSet)
 
     val candidates = results.map { url.newBuilder().encodedPath(it).build().toString() }
@@ -30,27 +30,27 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   suspend fun thisNode(url: HttpUrl): List<String> {
     val path = url.encodedPath()
 
-    if (path.endsWith("/")) {
-      return listOf("$url.json")
+    return if (path.endsWith("/")) {
+      listOf("$url.json")
     } else if (path.endsWith(".json") || url.querySize() > 0) {
-      return listOf(url.toString())
+      listOf(url.toString())
     } else if (path.contains('.')) {
-      return listOf(url.toString().replaceAfterLast(".", "json"))
+      listOf(url.toString().replaceAfterLast(".", "json"))
     } else {
-      return listOf()
+      listOf()
     }
   }
 
   suspend fun siblings(url: HttpUrl, tokenSet: Token): List<String> {
-    if (url.encodedPath() == "/" || url.querySize() > 1 || url.encodedPath().contains(".")) {
-      return listOf()
+    return if (url.encodedPath() == "/" || url.querySize() > 1 || url.encodedPath().contains(".")) {
+      listOf()
     } else {
       val parentPath = url.encodedPath().replaceAfterLast("/", "")
 
       val encodedPath = url.newBuilder().encodedPath("$parentPath.json")
-      var siblings = keyList(encodedPath, tokenSet)
+      val siblings = keyList(encodedPath, tokenSet)
 
-      return siblings.toList().flatMap { listOf("$parentPath$it", "$parentPath$it.json") }
+      siblings.toList().flatMap { listOf("$parentPath$it", "$parentPath$it.json") }
     }
   }
 
@@ -60,17 +60,17 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun children(url: HttpUrl, tokenSet: Token): List<String> {
-    if (url.querySize() > 1 || url.encodedPath().contains(".")) {
-      return listOf()
+    return if (url.querySize() > 1 || url.encodedPath().contains(".")) {
+      listOf()
     } else {
       val path = url.encodedPath()
 
       val encodedPath = url.newBuilder().encodedPath("$path.json")
-      var children = keyList(encodedPath, tokenSet)
+      val children = keyList(encodedPath, tokenSet)
 
       val prefixPath = if (path.endsWith("/")) path else path + "/"
 
-      return children.toList().flatMap { listOf(prefixPath + it + "/", prefixPath + it + ".json") }
+      children.toList().flatMap { listOf(prefixPath + it + "/", prefixPath + it + ".json") }
     }
   }
 

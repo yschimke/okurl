@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class ServiceApiDocPresenter(private val services: ServiceInterceptor) : ApiDocPresenter {
-  suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
+  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
     val presenter = services.getByUrl(url)?.apiDocPresenter(url)
 
     if (presenter != null) {

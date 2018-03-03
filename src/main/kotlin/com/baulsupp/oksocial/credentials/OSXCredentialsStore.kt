@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class OSXCredentialsStore() : CredentialsStore {
+class OSXCredentialsStore : CredentialsStore {
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
   override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
@@ -38,7 +38,7 @@ class OSXCredentialsStore() : CredentialsStore {
     }
   }
 
-  suspend override fun names(): Set<String> {
+  override suspend fun names(): Set<String> {
     val output = exec("security", "dump-keychain").output.string(StandardCharsets.UTF_8)
 
     val names = output.lines().filter { it.matches(".*\"acct\".*\"oauth\\..*\".*".toRegex()) }.map { it.replace(".*oauth\\.(\\w+).*".toRegex(), "$1") }

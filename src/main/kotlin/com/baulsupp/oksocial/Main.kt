@@ -365,12 +365,10 @@ class Main : CommandLineClient() {
     }
   }
 
-  private fun predictContentType(content: ByteArray): String {
-    if (content.size > 0 && content[0] == '{'.toByte()) {
-      return "application/json"
-    } else {
-      return "application/x-www-form-urlencoded"
-    }
+  private fun predictContentType(content: ByteArray): String = if (content.isNotEmpty() && content[0] == '{'.toByte()) {
+    "application/json"
+  } else {
+    "application/x-www-form-urlencoded"
   }
 
   companion object {

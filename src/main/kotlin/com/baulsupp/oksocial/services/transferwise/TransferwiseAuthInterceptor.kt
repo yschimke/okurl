@@ -34,7 +34,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
@@ -44,7 +44,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return TransferwiseAuthFlow.login(client, outputHandler, host(), clientId, clientSecret)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", TokenValue(credentials), "name"))
 
@@ -52,7 +52,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return credentials.isRenewable()
   }
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder()
       .add("grant_type", "refresh_token")

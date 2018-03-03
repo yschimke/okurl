@@ -320,17 +320,17 @@ open class CommandLineClient : HelpOption() {
       return 0
     }
 
-    try {
-      return runCommand(arguments)
+    return try {
+      runCommand(arguments)
     } catch (e: ClientException) {
       outputHandler.showError(e.message)
-      return -1
+      -1
     } catch (e: UsageException) {
       outputHandler.showError(e.message)
-      return -1
+      -1
     } catch (e: Exception) {
       outputHandler.showError("unknown error", e)
-      return -2
+      -2
     } finally {
       closeClients()
     }

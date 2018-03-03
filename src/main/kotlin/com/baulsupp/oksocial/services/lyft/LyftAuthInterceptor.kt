@@ -37,7 +37,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Lyft Client Id", "lyft.clientId", "", false)
@@ -56,13 +56,13 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     }
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile", TokenValue(credentials), "id"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
     val body = RequestBody.create(MediaType.parse("application/json"),
       "{\"grant_type\": \"refresh_token\", \"refresh_token\": \""

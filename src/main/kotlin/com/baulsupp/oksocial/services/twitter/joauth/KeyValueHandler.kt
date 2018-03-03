@@ -44,7 +44,7 @@ interface KeyValueHandler {
     private val kv = linkedMapOf<String, String>()
 
     override fun handle(key: String, value: String) {
-      kv.put(key, value)
+      kv[key] = value
     }
 
     fun toMap(): Map<String, String> {

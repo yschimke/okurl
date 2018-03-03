@@ -1,11 +1,12 @@
 package com.baulsupp.oksocial.credentials
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.Token
 import org.jetbrains.kotlin.utils.keysToMapExceptNulls
 
 interface CredentialsStore {
   fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: Token): T? {
-    TODO()
+    return tokenSet.name()?.let { get(serviceDefinition, it) }
   }
 
   fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T?
@@ -22,7 +23,7 @@ interface CredentialsStore {
 
   suspend fun names(): Set<String> {
     // TODO implement for other sources
-    return setOf("default")
+    return setOf(DefaultToken.name)
   }
 
   companion object {

@@ -10,7 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 object FacebookUtil {
-  val VERSION = "v2.11"
+  const val VERSION = "v2.11"
 
   val API_HOSTS = setOf("graph.facebook.com", "www.facebook.com")
 

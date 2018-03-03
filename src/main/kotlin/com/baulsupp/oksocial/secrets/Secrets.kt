@@ -19,7 +19,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
   }
 
   private fun put(key: String, value: String) {
-    secrets.put(key, value)
+    secrets[key] = value
     changed = true
   }
 

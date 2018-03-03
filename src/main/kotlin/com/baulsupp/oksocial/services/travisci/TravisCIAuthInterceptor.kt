@@ -58,7 +58,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return TravisToken.external()
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): TravisToken {
     if (!isTravisInstalled()) {
       throw UsageException("Requires travis command line installed")
@@ -82,7 +82,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return result.outputString().trim()
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: TravisToken): ValidatedCredentials {
     val user = client.query<User>("https://api.travis-ci.org/user", TokenValue(credentials))
     return ValidatedCredentials(user.name)

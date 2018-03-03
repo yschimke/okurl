@@ -44,11 +44,11 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token =
     Oauth2Token(Secrets.prompt("CircleCI Personal API Token", "circleci.token", "", true))
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me", TokenValue(credentials)).name)
 

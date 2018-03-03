@@ -16,7 +16,7 @@ import java.util.logging.Logger
 class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<String>) :
   HostUrlCompleter(hosts) {
 
-  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
+  override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     if (url.host() == "www.facebook.com") {
       return UrlList.fromResource("facebook")!!
     }
@@ -51,27 +51,23 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     return topLevel
   }
 
-  private suspend fun listAccounts(tokenSet: Token): List<String> {
-    try {
-      return client.fbQueryList<Account, AccountList>("/me/accounts", tokenSet).data.map { it.username ?: it.id }
-    } catch (ce: ClientException) {
-      if (ce.code != 400) {
-        logger.log(Level.FINE, "Failed to load accounts", ce)
-      }
-      return listOf()
+  private suspend fun listAccounts(tokenSet: Token): List<String> = try {
+    client.fbQueryList<Account, AccountList>("/me/accounts", tokenSet).data.map { it.username ?: it.id }
+  } catch (ce: ClientException) {
+    if (ce.code != 400) {
+      logger.log(Level.FINE, "Failed to load accounts", ce)
     }
+    listOf()
   }
 
-  private suspend fun isWorkplace(tokenSet: Token): Boolean {
-    try {
-      client.fbQuery<UserOrPage>("/community", tokenSet)
-      return true
-    } catch (ce: ClientException) {
-      if (ce.code != 400) {
-        logger.log(Level.FINE, "Failed to load accounts", ce)
-      }
-      return false
+  private suspend fun isWorkplace(tokenSet: Token): Boolean = try {
+    client.fbQuery<UserOrPage>("/community", tokenSet)
+    true
+  } catch (ce: ClientException) {
+    if (ce.code != 400) {
+      logger.log(Level.FINE, "Failed to load accounts", ce)
     }
+    false
   }
 
   suspend fun completePath(path: String, tokenSet: Token): UrlList {

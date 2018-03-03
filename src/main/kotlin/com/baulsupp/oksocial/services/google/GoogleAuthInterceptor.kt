@@ -67,7 +67,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
@@ -77,13 +77,13 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return GoogleAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo", TokenValue(credentials), "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
       .add("refresh_token", credentials.refreshToken!!)
       .add("client_secret", credentials.clientSecret!!)

@@ -23,7 +23,7 @@ data class Request(val method: String, val url: Any) {
   }
 
   fun urlStruct(): Map<*, *>? {
-    return if (url is Map<*, *>) url else null
+    return url as? Map<*, *>
   }
 }
 

@@ -1,5 +1,9 @@
 package com.baulsupp.oksocial.authenticator
 
+import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.NoToken
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
@@ -20,24 +24,29 @@ class ServiceInterceptor(private val authClient: OkHttpClient, private val crede
   }
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
-    val tokenSet = chain.request().tag() as? String ?: "default"
+    // TODO log bad tags?
+    val tokenSet = chain.request().tag() as? Token ?: NoToken
 
-    val definedCredentials = credentialsStore.get(interceptor.serviceDefinition(), tokenSet)
-    val credentials = if (definedCredentials != null || tokenSet != "default") {
-      definedCredentials
-    } else {
-      interceptor.defaultCredentials()
+    val definedCredentials = when (tokenSet) {
+      // TODO make this safe
+      is TokenValue -> tokenSet.token as T
+      else -> credentialsStore.get(interceptor.serviceDefinition(), tokenSet)
     }
+
+    val credentials = definedCredentials ?: interceptor.defaultCredentials()
 
     if (credentials != null) {
       val result = interceptor.intercept(chain, credentials)
 
-      if (result.code() in 400..499) {
-        if (interceptor.canRenew(result) && interceptor.canRenew(credentials)) {
-          val newCredentials = interceptor.renew(authClient, credentials)
+      val tokenSetName = tokenSet.name()
+      if (tokenSetName != null) {
+        if (result.code() in 400..499) {
+          if (interceptor.canRenew(result) && interceptor.canRenew(credentials)) {
+            val newCredentials = interceptor.renew(authClient, credentials)
 
-          if (newCredentials != null) {
-            credentialsStore.set(interceptor.serviceDefinition(), tokenSet, newCredentials)
+            if (newCredentials != null) {
+              credentialsStore.set(interceptor.serviceDefinition(), tokenSetName, newCredentials)
+            }
           }
         }
       }

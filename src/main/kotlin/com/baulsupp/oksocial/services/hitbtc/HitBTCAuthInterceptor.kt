@@ -37,7 +37,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("BitHTC API Key", "bithtc.apiKey", "", false)
     val password = Secrets.prompt("BitHTC Secret Key", "bithtc.secretKey", "", true)
@@ -45,7 +45,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return BasicCredentials(user, password)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
     val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance", TokenValue(credentials)).let { "✓" }
     return ValidatedCredentials(account)
