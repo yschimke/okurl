@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.gdax
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -56,24 +58,24 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: GdaxCredentials): ValidatedCredentials {
-    val accounts = client.queryList<Account>("https://api.gdax.com/accounts")
+    val accounts = client.queryList<Account>("https://api.gdax.com/accounts", TokenValue(credentials))
     return ValidatedCredentials(accounts.map { it.id }.first())
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     credentialsStore.get(serviceDefinition(), tokenSet)?.let {
       completer.withVariable("account-id", {
-        client.queryList<Account>("https://api.gdax.com/accounts").map { it.id }
+        client.queryList<Account>("https://api.gdax.com/accounts", tokenSet).map { it.id }
       })
       completer.withVariable("product-id", {
-        client.queryList<Product>("https://api.gdax.com/products").map { it.id }
+        client.queryList<Product>("https://api.gdax.com/products", tokenSet).map { it.id }
       })
     }
 

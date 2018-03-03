@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.twilio
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -43,7 +45,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json")
+    val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json", TokenValue(credentials))
     val username = (map["accounts"] as List<Map<String, Any>>)[0]["friendly_name"] as String
     return ValidatedCredentials(username)
   }
@@ -51,7 +53,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

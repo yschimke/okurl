@@ -10,14 +10,14 @@ import java.util.logging.Logger
 class OSXCredentialsStore() : CredentialsStore {
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
-  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String?): T? {
+  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
 
     return pw.map { serviceDefinition.parseCredentialsString(it) }.orElse(null)
   }
 
   override fun <T> set(
-    serviceDefinition: ServiceDefinition<T>, tokenSet: String?, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {
     val credentialsString = serviceDefinition.formatCredentialsString(credentials)
 
     remove(serviceDefinition, tokenSet)
@@ -30,7 +30,7 @@ class OSXCredentialsStore() : CredentialsStore {
     }
   }
 
-  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String?) {
+  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
     try {
       keychain.deleteGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
     } catch (e: OSXKeychainException) {
@@ -46,7 +46,7 @@ class OSXCredentialsStore() : CredentialsStore {
     return names.toSortedSet()
   }
 
-  private fun tokenKey(tokenSet: String?): String = "oauth${tokenSet?.let { "." + it } ?: ""}"
+  private fun tokenKey(tokenSet: String): String = "oauth${tokenSet?.let { "." + it } ?: ""}"
 
   companion object {
     private val logger = Logger.getLogger(OSXCredentialsStore::class.java.name)

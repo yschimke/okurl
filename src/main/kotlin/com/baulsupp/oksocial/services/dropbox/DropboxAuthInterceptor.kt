@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.dropbox
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -52,7 +53,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
                                 credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
     val request = Request.Builder().url("https://api.dropboxapi.com/2/users/get_current_account").post(body).build()
-    return ValidatedCredentials(client.queryMapValue<String>(request, "email"))
+    return ValidatedCredentials(client.queryMapValue<String>(request, TokenValue(credentials), "email"))
   }
 
   override fun hosts(): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")

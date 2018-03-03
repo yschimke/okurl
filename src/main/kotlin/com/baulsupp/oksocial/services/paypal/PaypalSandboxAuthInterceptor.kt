@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.paypal
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
@@ -15,7 +16,7 @@ class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val testUrls = UrlList.fromResource("paypal")!!.getUrls("")
       .map { s -> s.replace("api.paypal.com", host()) }
 

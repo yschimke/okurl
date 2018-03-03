@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.facebook
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
@@ -15,12 +16,12 @@ import java.util.logging.Logger
 class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<String>) :
   HostUrlCompleter(hosts) {
 
-  suspend override fun siteUrls(url: HttpUrl): UrlList {
+  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     if (url.host() == "www.facebook.com") {
       return UrlList.fromResource("facebook")!!
     }
 
-    var result = completePath(url.encodedPath())
+    var result = completePath(url.encodedPath(), tokenSet)
 
     if (!url.encodedPath().endsWith("/")) {
       val parentPaths = url.encodedPathSegments()
@@ -28,7 +29,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
 
       val parentPath = "/" + parentPaths.joinToString("/")
 
-      result = result.combine(completePath(parentPath))
+      result = result.combine(completePath(parentPath, tokenSet))
     }
 
     return result
@@ -38,21 +39,21 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     return { c: String -> prefix + (if (prefix.endsWith("/")) "" else "/") + c }
   }
 
-  suspend fun topLevel(): List<String> {
+  suspend fun topLevel(tokenSet: Token): List<String> {
     val topLevel = mutableListOf("me")
 
-    if (isWorkplace()) {
+    if (isWorkplace(tokenSet)) {
       topLevel.add("community")
     } else {
-      topLevel += listAccounts()
+      topLevel += listAccounts(tokenSet)
     }
 
     return topLevel
   }
 
-  private suspend fun listAccounts(): List<String> {
+  private suspend fun listAccounts(tokenSet: Token): List<String> {
     try {
-      return client.fbQueryList<Account, AccountList>("/me/accounts").data.map { it.username ?: it.id }
+      return client.fbQueryList<Account, AccountList>("/me/accounts", tokenSet).data.map { it.username ?: it.id }
     } catch (ce: ClientException) {
       if (ce.code != 400) {
         logger.log(Level.FINE, "Failed to load accounts", ce)
@@ -61,9 +62,9 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     }
   }
 
-  private suspend fun isWorkplace(): Boolean {
+  private suspend fun isWorkplace(tokenSet: Token): Boolean {
     try {
-      client.fbQuery<UserOrPage>("/community")
+      client.fbQuery<UserOrPage>("/community", tokenSet)
       return true
     } catch (ce: ClientException) {
       if (ce.code != 400) {
@@ -73,20 +74,20 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     }
   }
 
-  suspend fun completePath(path: String): UrlList {
+  suspend fun completePath(path: String, tokenSet: Token): UrlList {
     when {
       path == "/" -> {
         return UrlList(UrlList.Match.EXACT,
-          (topLevel() + VERSION).map(addPath("https://graph.facebook.com/")))
+          (topLevel(tokenSet) + VERSION).map(addPath("https://graph.facebook.com/")))
       }
       path.matches("/v\\d.\\d+/?".toRegex()) -> {
         return UrlList(UrlList.Match.EXACT,
-          topLevel().map(addPath("https://graph.facebook.com" + path)))
+          topLevel(tokenSet).map(addPath("https://graph.facebook.com$path")))
       }
       else -> {
-        val prefix = "https://graph.facebook.com" + path
+        val prefix = "https://graph.facebook.com$path"
 
-        val metadata = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!)
+        val metadata = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!, tokenSet)
 
         return try {
           if (metadata == null) {

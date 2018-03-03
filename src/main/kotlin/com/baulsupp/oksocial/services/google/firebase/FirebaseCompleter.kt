@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google.firebase
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.HostUrlCompleter
@@ -14,8 +15,8 @@ import java.util.logging.Logger
 class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   suspend override fun prefixUrls(): UrlList = UrlList(UrlList.Match.HOSTS, HostUrlCompleter.hostUrls(hosts(), false))
 
-  suspend override fun siteUrls(url: HttpUrl): UrlList {
-    val results = siblings(url) + children(url)
+  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
+    val results = siblings(url, tokenSet) + children(url, tokenSet)
 
     val candidates = results.map { url.newBuilder().encodedPath(it).build().toString() }
 
@@ -40,32 +41,32 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
     }
   }
 
-  suspend fun siblings(url: HttpUrl): List<String> {
+  suspend fun siblings(url: HttpUrl, tokenSet: Token): List<String> {
     if (url.encodedPath() == "/" || url.querySize() > 1 || url.encodedPath().contains(".")) {
       return listOf()
     } else {
       val parentPath = url.encodedPath().replaceAfterLast("/", "")
 
       val encodedPath = url.newBuilder().encodedPath("$parentPath.json")
-      var siblings = keyList(encodedPath)
+      var siblings = keyList(encodedPath, tokenSet)
 
       return siblings.toList().flatMap { listOf("$parentPath$it", "$parentPath$it.json") }
     }
   }
 
-  suspend fun keyList(encodedPath: HttpUrl.Builder): List<String> {
+  suspend fun keyList(encodedPath: HttpUrl.Builder, tokenSet: Token): List<String> {
     val request = encodedPath.addQueryParameter("shallow", "true").build().request()
-    return client.queryOptionalMap<Any>(request)?.keys?.toList().orEmpty()
+    return client.queryOptionalMap<Any>(request, tokenSet)?.keys?.toList().orEmpty()
   }
 
-  suspend fun children(url: HttpUrl): List<String> {
+  suspend fun children(url: HttpUrl, tokenSet: Token): List<String> {
     if (url.querySize() > 1 || url.encodedPath().contains(".")) {
       return listOf()
     } else {
       val path = url.encodedPath()
 
       val encodedPath = url.newBuilder().encodedPath("$path.json")
-      var children = keyList(encodedPath)
+      var children = keyList(encodedPath, tokenSet)
 
       val prefixPath = if (path.endsWith("/")) path else path + "/"
 

@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.coinbase
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -102,7 +104,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
@@ -110,7 +112,8 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completer.withCachedVariable(name(), "account_id", {
       credentialsStore.get(serviceDefinition(), tokenSet)?.let {
         client.query<AccountList>(
-          "https://api.coinbase.com/v2/accounts").data.map { it.id }
+          "https://api.coinbase.com/v2/accounts",
+          tokenSet).data.map { it.id }
       }
     })
 
@@ -119,7 +122,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user", "data", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user", TokenValue(credentials), "data", "name"))
 
   override fun hosts(): Set<String> = setOf("api.coinbase.com")
 }

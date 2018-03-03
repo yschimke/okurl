@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.postman
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.services.postman.model.CollectionResult
@@ -7,13 +8,14 @@ import com.baulsupp.oksocial.services.postman.model.CollectionsResult
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 
-suspend fun postmanCollectionUrls(): List<String> {
+suspend fun postmanCollectionUrls(tokenSet: Token): List<String> {
   val collections = client.query<CollectionsResult>(
-    "https://api.getpostman.com/collections").collections.map { it.id }
+    "https://api.getpostman.com/collections",
+    tokenSet).collections.map { it.id }
 
   val jobs = collections.map {
     async(CommonPool) {
-      client.query<CollectionResult>("https://api.getpostman.com/collections/" + it)
+      client.query<CollectionResult>("https://api.getpostman.com/collections/$it", tokenSet)
     }
   }
 

@@ -128,7 +128,7 @@ class Main : CommandLineClient() {
 
   suspend fun showApiDocs() {
     getFullCompletionUrl()?.let { u ->
-      ServiceApiDocPresenter(serviceInterceptor).explainApi(u, outputHandler, client!!)
+      ServiceApiDocPresenter(serviceInterceptor).explainApi(u, outputHandler, client, token())
     }
   }
 

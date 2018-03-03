@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.squareup
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -42,7 +44,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me").name)
+    ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me", TokenValue(credentials)).name)
 
   suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
@@ -63,7 +65,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
@@ -71,7 +73,8 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completer.withCachedVariable(name(), "location", {
       credentialsStore.get(serviceDefinition(), tokenSet)?.let {
         client.query<LocationList>(
-          "https://connect.squareup.com/v2/locations").locations.map { it.id }
+          "https://connect.squareup.com/v2/locations",
+          tokenSet).locations.map { it.id }
       }
     })
 

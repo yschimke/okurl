@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.spotify
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -69,13 +71,13 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", "display_name"))
+    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", TokenValue(credentials), "display_name"))
   }
 
   override fun hosts(): Set<String> = setOf("api.spotify.com")

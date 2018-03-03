@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.datasettes
 
+import com.baulsupp.oksocial.NoToken
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.CompletionOnlyAuthInterceptor
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -29,7 +31,7 @@ class DatasettesAuthInterceptor :
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter =
+                            tokenSet: Token): ApiCompleter =
     DatasettesCompleter(client)
 
   override fun hosts(): Set<String> = knownHosts()
@@ -38,7 +40,7 @@ class DatasettesAuthInterceptor :
 }
 
 class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
-  suspend override fun siteUrls(url: HttpUrl): UrlList {
+  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     val host = url.host()
 
     val path = url.pathSegments()
@@ -75,7 +77,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
 
 class DatasettesPresenter : ApiDocPresenter {
   suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-                                  client: OkHttpClient) {
+                                  client: OkHttpClient, tokenSet: Token) {
     val urlI = HttpUrl.parse(url) ?: throw UsageException("Unable to parse Url '$url'")
 
     val datasettes = runBlocking { fetchDatasetteMetadata(urlI.host(), client) }
@@ -102,11 +104,11 @@ class DatasettesPresenter : ApiDocPresenter {
 }
 
 suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
-  client.queryMap<DatasetteIndex>("https://$host/.json").values.toList()
+  client.queryMap<DatasetteIndex>("https://$host/.json", NoToken).values.toList()
 
 suspend fun fetchDatasetteTableMetadata(host: String, path: String,
                                         client: OkHttpClient) =
-  client.query<DatasetteTables>("https://$host/$path.json")
+  client.query<DatasetteTables>("https://$host/$path.json", NoToken)
 
 fun knownHosts(): Set<String> =
   DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.readText()?.split('\n')?.toSet() ?: setOf()

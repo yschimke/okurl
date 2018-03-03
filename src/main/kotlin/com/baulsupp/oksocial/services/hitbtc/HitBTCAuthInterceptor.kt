@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.hitbtc
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -45,23 +47,23 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
-    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance").let { "✓" }
+    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance", TokenValue(credentials)).let { "✓" }
     return ValidatedCredentials(account)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withVariable("currency", {
-      client.queryList<Currency>("https://api.hitbtc.com/api/2/public/currency").map { it.id }
+      client.queryList<Currency>("https://api.hitbtc.com/api/2/public/currency", tokenSet).map { it.id }
     })
     completer.withVariable("symbol", {
-      client.queryList<Symbol>("https://api.hitbtc.com/api/2/public/symbol").map { it.id }
+      client.queryList<Symbol>("https://api.hitbtc.com/api/2/public/symbol", tokenSet).map { it.id }
     })
 
     return completer

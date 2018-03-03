@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.imgur
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -41,7 +42,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me", "data", "url"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me", TokenValue(credentials), "data", "url"))
 
   override fun canRenew(result: Response): Boolean = result.code() == 403
 

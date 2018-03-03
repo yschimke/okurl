@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.travisci
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.kotlin.Rest
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.queryPages
@@ -10,7 +11,7 @@ suspend fun queryAllBuilds(slug: String? = null, id: Int? = null, branch: String
   val repo = slug?.replace("/", "%2F") ?: id.toString()
   val url = "https://api.travis-ci.org/repo/$repo/builds?limit=100"
 
-  return client.queryPages<BuildList>(url) {
+  return client.queryPages<BuildList>(url, {
     Rest(pagination.limit.rangeTo(pagination.count).step(pagination.limit).map { "$url&offset=$it" })
-  }.flatMap { it.builds }.filter { branch == null || it.branch?.name == branch }
+  }, DefaultToken).flatMap { it.builds }.filter { branch == null || it.branch?.name == branch }
 }

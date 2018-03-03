@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.lyft
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -57,7 +58,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile", "id"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile", TokenValue(credentials), "id"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 

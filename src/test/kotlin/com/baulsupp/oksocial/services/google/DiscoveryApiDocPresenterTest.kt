@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import kotlinx.coroutines.experimental.runBlocking
@@ -27,7 +28,7 @@ class DiscoveryApiDocPresenterTest {
     assumeHasNetwork()
 
     runBlocking {
-      p!!.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client)
+      p!!.explainApi("https://people.googleapis.com/v1/{+resourceName}", outputHandler, client, DefaultToken)
     }
 
     val es = listOf("name: People API",
@@ -87,7 +88,7 @@ class DiscoveryApiDocPresenterTest {
     assumeHasNetwork()
 
     runBlocking {
-      p!!.explainApi(requested, outputHandler, client)
+      p!!.explainApi(requested, outputHandler, client, DefaultToken)
     }
 
     val contains = outputHandler.stdout.contains(field + ": " + expected)

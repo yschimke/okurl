@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.facebook
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.services.facebook.model.Metadata
 import com.baulsupp.oksocial.services.facebook.model.MetadataResult
@@ -17,12 +18,12 @@ object FacebookUtil {
     return requestBuilder.url("https://graph.facebook.com" + s).build()
   }
 
-  suspend fun getMetadata(client: OkHttpClient, url: HttpUrl): Metadata? {
+  suspend fun getMetadata(client: OkHttpClient, url: HttpUrl, tokenSet: Token): Metadata? {
     val newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
     val request = Request.Builder().url(newUrl).build()
 
     return try {
-      val response = client.query<MetadataResult>(request)
+      val response = client.query<MetadataResult>(request, tokenSet)
       response.metadata
     } catch (ce: ClientException) {
       if (ce.code != 404) {

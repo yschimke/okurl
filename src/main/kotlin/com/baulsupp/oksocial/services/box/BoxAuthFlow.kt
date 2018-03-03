@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.box
 
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.queryMap
@@ -27,7 +28,7 @@ object BoxAuthFlow {
         .post(body)
         .build()
 
-      val responseMap = client.queryMap<Any>(request)
+      val responseMap = client.queryMap<Any>(request, NoToken)
 
       return Oauth2Token(responseMap["access_token"] as String,
         responseMap["refresh_token"] as String, clientId, clientSecret)

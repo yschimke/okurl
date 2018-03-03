@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.microsoft
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -72,7 +73,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", "displayName"))
+    ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", TokenValue(credentials), "displayName"))
 
   override fun hosts(): Set<String> = setOf("graph.microsoft.com")
 }

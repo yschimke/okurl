@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.i9n
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
@@ -27,7 +28,7 @@ class SquareUpTest {
     main.arguments = mutableListOf("https://connect.squareup.com/")
     main.urlComplete = true
     completionCache["squareup", "location"] = listOf("AA", "bb")
-    credentialsStore.set(SquareUpAuthInterceptor().serviceDefinition(), null, Oauth2Token("test"))
+    credentialsStore.set(SquareUpAuthInterceptor().serviceDefinition(), DefaultToken.name, Oauth2Token("test"))
 
     main.run()
 

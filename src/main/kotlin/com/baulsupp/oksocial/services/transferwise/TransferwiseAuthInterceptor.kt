@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.transferwise
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -45,7 +46,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", TokenValue(credentials), "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.isRenewable()

@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.query
@@ -34,7 +35,7 @@ object SurveyMonkeyAuthFlow {
 
       data class TokenResponse(val access_token: String)
 
-      val response = client.query<TokenResponse>(request)
+      val response = client.query<TokenResponse>(request, NoToken)
 
       return Oauth2Token(response.access_token)
     }

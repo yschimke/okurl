@@ -5,7 +5,10 @@ import brave.http.HttpTracing
 import brave.internal.Platform
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenSet
 import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.Authorisation
 import com.baulsupp.oksocial.authenticator.ServiceInterceptor
@@ -167,7 +170,7 @@ open class CommandLineClient : HelpOption() {
   var osProxy: Boolean = false
 
   @Option(name = ["-s", "--set"], description = "Token Set e.g. work")
-  var tokenSet: String? = null
+  var tokenSet: String = DefaultToken.name
 
   @Option(name = ["--ssldebug"], description = "SSL Debug")
   var sslDebug: Boolean = false
@@ -389,7 +392,7 @@ open class CommandLineClient : HelpOption() {
     clientBuilder.dispatcher(dispatcher)
 
     val authClient = clientBuilder.build()
-    serviceInterceptor = ServiceInterceptor(authClient, credentialsStore, tokenSet)
+    serviceInterceptor = ServiceInterceptor(authClient, credentialsStore)
 
     authorisation = Authorisation(serviceInterceptor!!, credentialsStore, authClient, outputHandler, tokenSet)
 
@@ -517,6 +520,10 @@ open class CommandLineClient : HelpOption() {
   open fun buildHandler(): OutputHandler<Response> = when {
     rawOutput -> DownloadHandler(OkHttpResponseExtractor(), File("-"))
     else -> ConsoleHandler.instance(OkHttpResponseExtractor()) as OutputHandler<Response>
+  }
+
+  fun token(): Token {
+    return TokenSet(tokenSet)
   }
 
   companion object {

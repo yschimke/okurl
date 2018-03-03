@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.output.OutputHandler
 import kotlinx.coroutines.experimental.CancellationException
@@ -13,14 +14,14 @@ import java.util.concurrent.TimeUnit
 class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
 
   suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-                                  client: OkHttpClient) {
+                                  client: OkHttpClient, tokenSet: Token) {
     val discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url)
 
     val registry = DiscoveryRegistry.instance(client)
 
     val docs = discoveryPaths.map { p ->
       async(CommonPool) {
-        withTimeout(5, TimeUnit.SECONDS) { registry.load(p) }
+        withTimeout(5, TimeUnit.SECONDS) { registry.load(p, tokenSet) }
       }
     }.mapNotNull {
       try {

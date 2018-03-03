@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.i9n.TestCredentialsStore
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
@@ -33,7 +34,7 @@ class GoogleAuthInterceptorTest {
   @Test
   fun completesHosts() {
     runBlocking {
-      val hostCompleter = interceptor.apiCompleter("https://", client, credentialsStore, cache, null)
+      val hostCompleter = interceptor.apiCompleter("https://", client, credentialsStore, cache, DefaultToken)
 
       val urls = hostCompleter.prefixUrls().getUrls("https://")
 
@@ -46,9 +47,9 @@ class GoogleAuthInterceptorTest {
   fun completesWwwPaths() {
     runBlocking {
       val hostCompleter = interceptor.apiCompleter("https://people.googleapis.com", client,
-        credentialsStore, cache, null)
+        credentialsStore, cache, DefaultToken)
 
-      val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!)
+      val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!, DefaultToken)
               .getUrls("https://people.googleapis.com")
 
       assertEquals(listOf("https://people.googleapis.com/"), urls)
@@ -63,10 +64,10 @@ class GoogleAuthInterceptorTest {
 
       val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/urlshortener/v1/url",
         client,
-        credentialsStore, cache, null)
+        credentialsStore, cache, DefaultToken)
 
       val urlList = hostCompleter.siteUrls(
-              HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!)
+              HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!, DefaultToken)
 
       val urls = urlList
               .getUrls("https://www.googleapis.com/urlshortener/v1/url")
@@ -83,9 +84,9 @@ class GoogleAuthInterceptorTest {
       assumeHasNetwork()
 
       val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/", client,
-        credentialsStore, cache, null)
+        credentialsStore, cache, DefaultToken)
 
-      val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!)
+      val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!, DefaultToken)
 
       val urls = urlList
               .getUrls("https://www.googleapis.com/")

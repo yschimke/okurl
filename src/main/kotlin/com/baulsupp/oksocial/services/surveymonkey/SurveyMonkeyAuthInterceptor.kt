@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -48,7 +50,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    val user = client.query<User>("https://api.surveymonkey.net/v3/users/me")
+    val user = client.query<User>("https://api.surveymonkey.net/v3/users/me", TokenValue(credentials))
 
     return if (user.first_name != null && user.last_name != null) {
       ValidatedCredentials(user.first_name + " " + user.last_name)
@@ -60,14 +62,14 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "survey", {
       credentialsStore.get(serviceDefinition(), tokenSet)?.let {
-        client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys").data.map { m -> m.id }
+        client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys", tokenSet).data.map { m -> m.id }
       }
     })
 

@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.util.JsonUtil
 import com.baulsupp.oksocial.util.FileUtil
@@ -15,9 +16,9 @@ class DiscoveryRegistry(private val client: OkHttpClient, private val map: Map<S
   private val items: Map<String, Map<String, Any>>
     get() = map["items"] as Map<String, Map<String, Any>>
 
-  suspend fun load(discoveryDocPath: String): DiscoveryDocument {
+  suspend fun load(discoveryDocPath: String, tokenSet: Token): DiscoveryDocument {
     val request = Request.Builder().url(discoveryDocPath).cacheControl(cacheControl).build()
-    val map = client.queryMap<Any>(request)
+    val map = client.queryMap<Any>(request, tokenSet)
 
     return DiscoveryDocument(map)
   }

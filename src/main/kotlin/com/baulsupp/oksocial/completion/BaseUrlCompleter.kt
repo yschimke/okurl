@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.completion
 
+import com.baulsupp.oksocial.Token
 import okhttp3.HttpUrl
 
 class BaseUrlCompleter(private val urlList: UrlList,
@@ -7,7 +8,7 @@ class BaseUrlCompleter(private val urlList: UrlList,
   HostUrlCompleter(hosts) {
   private val mappings = CompletionMappings()
 
-  suspend override fun siteUrls(url: HttpUrl): UrlList {
+  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     return mappings.replaceVariables(urlList)
   }
 

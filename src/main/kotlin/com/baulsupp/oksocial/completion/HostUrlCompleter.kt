@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.completion
 
+import com.baulsupp.oksocial.Token
 import okhttp3.HttpUrl
 
 open class HostUrlCompleter(private val hosts: Iterable<String>) : ApiCompleter {
 
-  suspend override fun siteUrls(url: HttpUrl): UrlList = UrlList(UrlList.Match.SITE, urls(true))
+  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList = UrlList(UrlList.Match.SITE, urls(true))
 
   private fun urls(siteOnly: Boolean): List<String> = hostUrls(hosts, siteOnly)
 

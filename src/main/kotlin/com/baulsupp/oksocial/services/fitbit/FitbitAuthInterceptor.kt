@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.fitbit
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -46,7 +47,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json", "user", "fullName"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json", TokenValue(credentials), "user", "fullName"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.refreshToken != null

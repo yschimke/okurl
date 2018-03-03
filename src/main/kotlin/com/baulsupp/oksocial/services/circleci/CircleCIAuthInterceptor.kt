@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.circleci
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -48,20 +50,20 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me").name)
+    ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me", TokenValue(credentials)).name)
 
   override fun hosts(): Set<String> = setOf("circleci.com")
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "project-path", {
-      client.queryList<Project>("https://circleci.com/api/v1.1/projects").map { it.vcs_type + "/" + it.username + "/" + it.reponame }
+      client.queryList<Project>("https://circleci.com/api/v1.1/projects", tokenSet).map { it.vcs_type + "/" + it.username + "/" + it.reponame }
     })
 
     return completer

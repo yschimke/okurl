@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.facebook
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -67,8 +69,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    val userName = client.fbQuery<UserOrPage>("/me").name
-    val appName = client.fbQuery<App>("/app").name
+    val userName = client.fbQuery<UserOrPage>("/me", TokenValue(credentials)).name
+    val appName = client.fbQuery<App>("/app", TokenValue(credentials)).name
 
     return ValidatedCredentials(userName, appName)
   }
@@ -86,7 +88,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter =
+                            tokenSet: Token): ApiCompleter =
     FacebookCompleter(client, hosts())
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition())

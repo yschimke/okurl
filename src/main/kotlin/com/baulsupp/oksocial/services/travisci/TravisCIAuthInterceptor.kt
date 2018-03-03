@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.travisci
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -82,23 +84,23 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: TravisToken): ValidatedCredentials {
-    val user = client.query<User>("https://api.travis-ci.org/user")
+    val user = client.query<User>("https://api.travis-ci.org/user", TokenValue(credentials))
     return ValidatedCredentials(user.name)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withVariable("user.id", {
-      listOf(client.query<User>("https://api.travis-ci.org/user").id)
+      listOf(client.query<User>("https://api.travis-ci.org/user", tokenSet).id)
     })
     completer.withVariable("repository.id", {
-      client.query<RepositoryList>("https://api.travis-ci.org/repos").repositories.map { it.slug.replace("/", "%2F") }
+      client.query<RepositoryList>("https://api.travis-ci.org/repos", tokenSet).repositories.map { it.slug.replace("/", "%2F") }
     })
 
     return completer

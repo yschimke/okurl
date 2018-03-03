@@ -22,7 +22,7 @@ class CompletionCommand(val main: Main) {
     }
 
     val completer = UrlCompleter(main.serviceInterceptor.services(), main.client, main.credentialsStore,
-      main.completionVariableCache, main.tokenSet)
+      main.completionVariableCache)
 
     val fullCompletionUrl = main.getFullCompletionUrl()
 
@@ -30,7 +30,7 @@ class CompletionCommand(val main: Main) {
     val originalCompletionUrl = main.arguments.last()
 
     if (fullCompletionUrl != null) {
-      val urls = completer.urlList(fullCompletionUrl)
+      val urls = completer.urlList(fullCompletionUrl, main.token())
 
       val strip: Int = if (fullCompletionUrl != originalCompletionUrl) {
         fullCompletionUrl.length - originalCompletionUrl.length
@@ -63,7 +63,7 @@ class CompletionCommand(val main: Main) {
   }
 
   suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
-    return urlCompleter.urlList(arguments[arguments.size - 1])
+    return urlCompleter.urlList(arguments[arguments.size - 1], main.token())
   }
 
   companion object {

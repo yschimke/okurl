@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.test
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -31,7 +32,7 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun hosts(): Set<String> = setOf("test.com", "api1.test.com")
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = object : ApiDocPresenter {
-    suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+    suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
       outputHandler.info("Test: " + url)
     }
   }

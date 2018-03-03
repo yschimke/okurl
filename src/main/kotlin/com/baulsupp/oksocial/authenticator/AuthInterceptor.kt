@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.authenticator
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter
@@ -44,7 +45,7 @@ abstract class AuthInterceptor<T> {
 
   abstract fun hosts(): Set<String>
 
-  open fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: String?): ApiCompleter =
+  open fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter =
     UrlList.fromResource(name())?.let { BaseUrlCompleter(it, hosts(), completionVariableCache) }
       ?: HostUrlCompleter(hosts())
 
@@ -52,7 +53,7 @@ abstract class AuthInterceptor<T> {
 
   open fun apiDocPresenter(url: String): ApiDocPresenter {
     return object : ApiDocPresenter {
-      suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
+      override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
         val sd = serviceDefinition()
 
         outputHandler.info("service: " + sd.shortName())

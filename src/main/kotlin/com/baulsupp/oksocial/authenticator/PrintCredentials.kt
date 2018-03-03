@@ -66,13 +66,13 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   suspend fun showCredentials(arguments: List<String>) {
     var services: Iterable<AuthInterceptor<*>> = serviceInterceptor.services()
-    var names = listOf<String?>(null)
+    var names = listOf<String>("default")
 
     val full = !arguments.isEmpty()
 
     if (!arguments.isEmpty()) {
       services = arguments.mapNotNull { serviceInterceptor.findAuthInterceptor(it) }
-      names = listOf<String?>(null) + commandLineClient.credentialsStore.names().toList()
+      names = commandLineClient.credentialsStore.names().toList()
     }
 
     val futures = validate(services, names)
@@ -85,7 +85,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     }
   }
 
-  data class Key(val auth: AuthInterceptor<*>, val tokenSet: String?)
+  data class Key(val auth: AuthInterceptor<*>, val tokenSet: String)
 
   private fun printCredentials(key: Key) {
     val sd: ServiceDefinition<*> = key.auth.serviceDefinition()
@@ -95,7 +95,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   fun validate(
-    services: Iterable<AuthInterceptor<*>>, names: List<String?>): Map<Key, Deferred<ValidatedCredentials>> {
+    services: Iterable<AuthInterceptor<*>>, names: List<String>): Map<Key, Deferred<ValidatedCredentials>> {
     val pairs = names.flatMap { name ->
       services.mapNotNull { sv ->
         val credentials = try {

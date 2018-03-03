@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.uber
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -50,13 +52,13 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
   suspend override fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.uber.com/v1/me")
+    val map = client.queryMap<Any>("https://api.uber.com/v1/me", TokenValue(credentials))
     return ValidatedCredentials("${map["first_name"]} ${map["last_name"]}")
   }
 

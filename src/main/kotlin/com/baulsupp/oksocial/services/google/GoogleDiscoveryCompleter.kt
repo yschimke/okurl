@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionMappings
 import com.baulsupp.oksocial.completion.UrlList
@@ -20,14 +21,13 @@ class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
   }
 
   suspend override fun prefixUrls(): UrlList {
-    // not supported for partial urls
     throw UnsupportedOperationException()
   }
 
-  suspend override fun siteUrls(url: HttpUrl): UrlList {
+  suspend override fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     val futures = discoveryDocPaths.map {
       async(CommonPool) {
-        discoveryRegistry.load(it).urls
+        discoveryRegistry.load(it, tokenSet).urls
       }
     }.mapNotNull {
       try {
