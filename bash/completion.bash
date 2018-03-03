@@ -59,27 +59,33 @@ function _oksocial_complete ()
             return
             ;;
         --authorize)
-            COMPREPLY=( $( compgen -W "${_oksocial_service=$(oksocial --complete service)}" -- "$cur" ) )
+            _oksocial_service=${_oksocial_service=$(oksocial --complete service)}
+            COMPREPLY=( $( compgen -W "${_oksocial_service}" -- "$cur" ) )
             return
             ;;
         --ip)
-            COMPREPLY=( $( compgen -W "${_oksocial_ipmode=$(oksocial --complete ipmode)}" -- "$cur" ) )
+            _oksocial_ipmode=${_oksocial_ipmode=$(oksocial --complete ipmode)}
+            COMPREPLY=( $( compgen -W "${_oksocial_ipmode}" -- "$cur" ) )
             return
             ;;
         --dns)
-            COMPREPLY=( $( compgen -W "${_oksocial_dnsmode=$(oksocial --complete dnsmode)}" -- "$cur" ) )
+            _oksocial_dnsmode=${_oksocial_dnsmode=$(oksocial --complete dnsmode)}
+            COMPREPLY=( $( compgen -W "${_oksocial_dnsmode}" -- "$cur" ) )
             return
             ;;
         --protocols)
-            COMPREPLY=( $( compgen -W "${_oksocial_protocol=$(oksocial --complete protocol)}" -- "$cur" ) )
+            _oksocial_protocol=${_oksocial_protocol=$(oksocial --complete protocol)}
+            COMPREPLY=( $( compgen -W "${_oksocial_protocol}" -- "$cur" ) )
             return
             ;;
         -X|--request)
-            COMPREPLY=( $( compgen -W "${_oksocial_method=$(oksocial --complete method)}" -- "$cur" ) )
+            _oksocial_method=${_oksocial_method=$(oksocial --complete method)}
+            COMPREPLY=( $( compgen -W "${_oksocial_method}" -- "$cur" ) )
             return
             ;;
         -s|--set)
-            COMPREPLY=( $( compgen -W "${_oksocial_tokenset=$(oksocial --complete tokenset)}" -- "$cur" ) )
+            _oksocial_tokenset=${_oksocial_tokenset=$(oksocial --complete tokenset)}
+            COMPREPLY=( $( compgen -W "${_oksocial_tokenset}" -- "$cur" ) )
             return
             ;;
         --networkInterface)
