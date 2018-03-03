@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.services.fitbit
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
@@ -27,12 +28,12 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
 
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Fitbit Client Id", "fitbit.clientId", "", false)
@@ -44,9 +45,9 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json", "user", "fullName"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json", TokenValue(credentials), "user", "fullName"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.refreshToken != null
@@ -54,7 +55,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       && credentials.clientSecret != null
   }
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder().add("grant_type", "refresh_token")
       .add("refresh_token", credentials.refreshToken!!)
       .build()
@@ -64,12 +65,12 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .header("Authorization", basic)
       .build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
-      credentials.refreshToken!!, credentials.clientId!!,
-      credentials.clientSecret!!)
+      credentials.refreshToken, credentials.clientId,
+      credentials.clientSecret)
   }
 
   override fun hosts(): Set<String> = setOf("api.fitbit.com")

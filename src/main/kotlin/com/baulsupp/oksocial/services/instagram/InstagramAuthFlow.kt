@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.services.instagram
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -30,7 +30,7 @@ object InstagramAuthFlow {
         .build()
       val request = Request.Builder().url(tokenUrl).method("POST", body).build()
 
-      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = client.queryMap<Any>(request)
 
       return Oauth2Token(responseMap["access_token"] as String)
     }

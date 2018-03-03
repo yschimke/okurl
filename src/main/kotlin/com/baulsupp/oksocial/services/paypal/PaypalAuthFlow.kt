@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.paypal
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -19,7 +19,7 @@ object PaypalAuthFlow {
       .header("Accept", "application/json")
       .build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     return Oauth2Token(responseMap["access_token"] as String)
   }

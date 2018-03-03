@@ -1,15 +1,16 @@
 package com.baulsupp.oksocial.kotlin
 
+import kotlinx.coroutines.experimental.async
 import java.io.Console
 
 suspend fun Console.readPasswordString(prompt: String): String {
-  return run {
-    String(System.console().readPassword(prompt))
-  }
+  return async {
+    String(readPassword(prompt))
+  }.await()
 }
 
 suspend fun Console.readString(prompt: String): String {
-  return run {
-    System.console().readLine(prompt)
-  }
+  return async {
+    readLine(prompt)
+  }.await()
 }

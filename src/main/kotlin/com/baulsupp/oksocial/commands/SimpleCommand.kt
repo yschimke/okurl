@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.commands
 
+import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.output.util.UsageException
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,7 +14,7 @@ open class SimpleCommand(val name: String, private val prefix: String, val authe
   override fun buildRequests(client: OkHttpClient,
                              arguments: List<String>): List<Request> {
     return try {
-      arguments.map { u -> Request.Builder().url(prefix + u).build() }
+      arguments.map { u -> request(prefix + u) }
     } catch (iae: IllegalArgumentException) {
       throw UsageException(iae.message.orEmpty())
     }

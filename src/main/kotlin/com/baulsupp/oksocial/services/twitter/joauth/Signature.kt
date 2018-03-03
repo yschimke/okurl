@@ -75,7 +75,7 @@ class Signature(private val clock: Clock = Clock.systemDefaultZone(),
       request.method(), request.url().encodedPath(), javaParams, oAuth1Params
     )
 
-    log.log(Level.FINE, "normalised " + normalized)
+    log.log(Level.FINE, "normalised $normalized")
     log.log(Level.FINE, "secret " + credentials.secret)
     log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret)
 
@@ -83,16 +83,16 @@ class Signature(private val clock: Clock = Clock.systemDefaultZone(),
 
     val oauthHeaders = linkedMapOf<String, String>()
     if (credentials.consumerKey != null) {
-      oauthHeaders.put(OAuthParams.OAUTH_CONSUMER_KEY, quoted(credentials.consumerKey!!))
+      oauthHeaders[OAuthParams.OAUTH_CONSUMER_KEY] = quoted(credentials.consumerKey!!)
     }
-    oauthHeaders.put(OAuthParams.OAUTH_NONCE, quoted(nonce))
-    oauthHeaders.put(OAuthParams.OAUTH_SIGNATURE, quoted(signature))
-    oauthHeaders.put(OAuthParams.OAUTH_SIGNATURE_METHOD, quoted(OAuthParams.HMAC_SHA1))
-    oauthHeaders.put(OAuthParams.OAUTH_TIMESTAMP, quoted(java.lang.Long.toString(timestampSecs)))
+    oauthHeaders[OAuthParams.OAUTH_NONCE] = quoted(nonce)
+    oauthHeaders[OAuthParams.OAUTH_SIGNATURE] = quoted(signature)
+    oauthHeaders[OAuthParams.OAUTH_SIGNATURE_METHOD] = quoted(OAuthParams.HMAC_SHA1)
+    oauthHeaders[OAuthParams.OAUTH_TIMESTAMP] = quoted(java.lang.Long.toString(timestampSecs))
     if (credentials.token != null) {
-      oauthHeaders.put(OAuthParams.OAUTH_TOKEN, quoted(credentials.token!!))
+      oauthHeaders[OAuthParams.OAUTH_TOKEN] = quoted(credentials.token!!)
     }
-    oauthHeaders.put(OAuthParams.OAUTH_VERSION, quoted(OAuthParams.ONE_DOT_OH))
+    oauthHeaders[OAuthParams.OAUTH_VERSION] = quoted(OAuthParams.ONE_DOT_OH)
 
     return "OAuth " + oauthHeaders.entries.joinToString(", ") { it.key + "=" + it.value }
   }

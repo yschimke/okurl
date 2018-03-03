@@ -12,10 +12,10 @@ abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, privat
   override fun intercept(chain: Interceptor.Chain, credentials: Nothing): Response =
     chain.proceed(chain.request())
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =
     throw IOException("authorize not supported")
 
-  suspend override fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
+  override suspend fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
     ValidatedCredentials(null, null)
 
   override fun serviceDefinition(): ServiceDefinition<Nothing> {

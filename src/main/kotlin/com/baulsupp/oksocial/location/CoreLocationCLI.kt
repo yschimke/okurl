@@ -17,10 +17,10 @@ import java.util.logging.Logger
 class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSource {
   private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
-  suspend override fun read(): Location? {
+  override suspend fun read(): Location? {
     if (PlatformUtil.isOSX) {
       if (!File(LOCATION_APP).exists()) {
-        throw UsageException("Missing " + LOCATION_APP)
+        throw UsageException("Missing $LOCATION_APP")
       }
 
       return try {

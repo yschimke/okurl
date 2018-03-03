@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.coinbin
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -12,6 +13,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.util.UsageException
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -32,15 +34,15 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
-    throw UnsupportedOperationException()
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
+    throw UsageException("authorization not required")
   }
 
   override fun serviceDefinition(): ServiceDefinition<BasicCredentials> =
     BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
       "https://coinbin.org/", null)
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials =
     ValidatedCredentials(credentials.user, null)
 
@@ -49,13 +51,13 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "coin", {
-      client.query<Coins>("https://coinbin.org/coins").coins.keys.toList()
+      client.query<Coins>("https://coinbin.org/coins", tokenSet).coins.keys.toList()
     })
 
     return completer

@@ -21,7 +21,7 @@ object OpenSCUtil {
       pkcs11 = Security.getProvider("SunPKCS11")
 
       pkcs11 = Provider::class.java.getMethod("configure", String::class.java)
-        .invoke(pkcs11, "--" + config) as Provider
+        .invoke(pkcs11, "--$config") as Provider
 
       Security.addProvider(pkcs11)
 

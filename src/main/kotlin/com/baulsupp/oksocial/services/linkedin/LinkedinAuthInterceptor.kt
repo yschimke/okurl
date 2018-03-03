@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.linkedin
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -24,7 +25,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    val requestBuilder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
+    val requestBuilder = request.newBuilder().addHeader("Authorization", "Bearer $token")
 
     if (request.url().queryParameter("format") == null && request.header("x-li-format") == null) {
       requestBuilder.addHeader("x-li-format", "json")
@@ -33,7 +34,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(requestBuilder.build())
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Linkedin Client Id", "linkedin.clientId", "", false)
@@ -44,9 +45,9 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return LinkedinAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    return ValidatedCredentials(client.queryMapValue<String>("https://api.linkedin.com/v1/people/~:(formatted-name)", "formattedName"))
+    return ValidatedCredentials(client.queryMapValue<String>("https://api.linkedin.com/v1/people/~:(formatted-name)", TokenValue(credentials), "formattedName"))
   }
 
   override fun hosts(): Set<String> {

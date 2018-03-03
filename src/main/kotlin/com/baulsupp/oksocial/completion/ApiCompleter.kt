@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.completion
 
+import com.baulsupp.oksocial.Token
 import okhttp3.HttpUrl
 
 interface ApiCompleter {
@@ -9,5 +10,5 @@ interface ApiCompleter {
   suspend fun prefixUrls(): UrlList
 
   /** Site specific url completion usually within a single service e.g. https://api.twitter.com/ */
-  suspend fun siteUrls(url: HttpUrl): UrlList
+  suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList
 }

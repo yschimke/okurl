@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.slack
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -35,7 +36,7 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Slack Client Id", "slack.clientId", "", false)
@@ -81,9 +82,9 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return SlackAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test", "user"))
+    ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test", TokenValue(credentials), "user"))
 
   override fun hosts(): Set<String> = setOf("slack.com")
 }

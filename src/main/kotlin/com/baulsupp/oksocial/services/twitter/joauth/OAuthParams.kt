@@ -13,21 +13,21 @@
 package com.baulsupp.oksocial.services.twitter.joauth
 
 object OAuthParams {
-  val AND = "&"
-  val HMACSHA1 = "HmacSHA1"
-  val HMACSHA256 = "HmacSHA256"
+  const val AND = "&"
+  const val HMACSHA1 = "HmacSHA1"
+  const val HMACSHA256 = "HmacSHA256"
 
-  val OAUTH_TOKEN = "oauth_token"
-  val OAUTH_CONSUMER_KEY = "oauth_consumer_key"
-  val OAUTH_SIGNATURE = "oauth_signature"
-  val OAUTH_NONCE = "oauth_nonce"
-  val OAUTH_TIMESTAMP = "oauth_timestamp"
-  val OAUTH_SIGNATURE_METHOD = "oauth_signature_method"
-  val OAUTH_VERSION = "oauth_version"
-  private val UNSET = "(unset)"
+  const val OAUTH_TOKEN = "oauth_token"
+  const val OAUTH_CONSUMER_KEY = "oauth_consumer_key"
+  const val OAUTH_SIGNATURE = "oauth_signature"
+  const val OAUTH_NONCE = "oauth_nonce"
+  const val OAUTH_TIMESTAMP = "oauth_timestamp"
+  const val OAUTH_SIGNATURE_METHOD = "oauth_signature_method"
+  const val OAUTH_VERSION = "oauth_version"
+  private const val UNSET = "(unset)"
 
-  val HMAC_SHA1 = "HMAC-SHA1"
-  val ONE_DOT_OH = "1.0"
+  const val HMAC_SHA1 = "HMAC-SHA1"
+  const val ONE_DOT_OH = "1.0"
 
   private fun valueOrUnset(value: String?): String {
     return value ?: UNSET

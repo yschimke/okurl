@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.kotlin
 
+import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -20,8 +22,8 @@ inline fun <reified V> Moshi.mapAdapter() =
 inline fun <reified V> Moshi.listAdapter() =
   this.adapter<Any>(Types.newParameterizedType(List::class.java, V::class.java)) as JsonAdapter<List<V>>
 
-suspend inline fun <reified T> OkHttpClient.query(url: String): T {
-  return this.query(Request.Builder().url(url).build())
+suspend inline fun <reified T> OkHttpClient.query(url: String, tokenSet: Token = DefaultToken): T {
+  return this.query(request(url, tokenSet))
 }
 
 suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
@@ -30,21 +32,21 @@ suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
   return moshi.adapter(T::class.java).fromJson(stringResult)!!
 }
 
-suspend inline fun <reified T> OkHttpClient.queryPages(url: String, paginator: T.() -> Pagination): List<T> {
-  var page = query<T>(url)
+suspend inline fun <reified T> OkHttpClient.queryPages(url: String, paginator: T.() -> Pagination, tokenSet: Token = DefaultToken): List<T> {
+  var page = query<T>(url, tokenSet)
   val resultList = mutableListOf(page)
 
   var pages = paginator(page)
 
   while (pages !== End) {
     if (pages is Next) {
-      page = query(pages.url)
+      page = query(pages.url, tokenSet)
       resultList.add(page)
       pages = paginator(page)
     } else if (pages is Rest) {
       val deferList = pages.urls.map {
         async(CommonPool) {
-          query<T>(it)
+          query<T>(it, tokenSet)
         }
       }
       deferList.forEach { resultList.add(it.await()) }
@@ -61,8 +63,8 @@ suspend inline fun <reified V> OkHttpClient.queryMap(request: Request): Map<Stri
   return moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
 
-suspend inline fun <reified V> OkHttpClient.queryMap(url: String): Map<String, V> =
-  this.queryMap(Request.Builder().url(url).build())
+suspend inline fun <reified V> OkHttpClient.queryMap(url: String, tokenSet: Token = DefaultToken): Map<String, V> =
+  this.queryMap(request(url, tokenSet))
 
 suspend inline fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
   val stringResult = this.queryForString(request)
@@ -78,8 +80,8 @@ data class Next(val url: String) : Pagination()
 
 data class Rest(val urls: List<String>) : Pagination()
 
-suspend inline fun <reified V> OkHttpClient.queryList(url: String): List<V> =
-  this.queryList(Request.Builder().url(url).build())
+suspend inline fun <reified V> OkHttpClient.queryList(url: String, tokenSet: Token = DefaultToken): List<V> =
+  this.queryList(request(url, tokenSet))
 
 suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
   val stringResult = this.queryForString(request)
@@ -87,11 +89,11 @@ suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): 
   return moshi.mapAdapter<V>().fromJson(stringResult)
 }
 
-suspend inline fun <reified V> OkHttpClient.queryOptionalMap(url: String): Map<String, V>? =
-  this.queryOptionalMap(Request.Builder().url(url).build())
+suspend inline fun <reified V> OkHttpClient.queryOptionalMap(url: String, tokenSet: Token = DefaultToken): Map<String, V>? =
+  this.queryOptionalMap(request(url, tokenSet))
 
-suspend inline fun <reified T> OkHttpClient.queryMapValue(url: String, vararg keys: String): T? =
-  this.queryMapValue<T>(Request.Builder().url(url).build(), *keys)
+suspend inline fun <reified T> OkHttpClient.queryMapValue(url: String, tokenSet: Token = DefaultToken, vararg keys: String): T? =
+  this.queryMapValue<T>(request(url, tokenSet), *keys)
 
 suspend inline fun <reified T> OkHttpClient.queryMapValue(request: Request, vararg keys: String): T? {
   val queryMap = this.queryMap<Any>(request)
@@ -101,12 +103,13 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(request: Request, vara
   return result as T
 }
 
+// TODO
 fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
 suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
 
-suspend fun OkHttpClient.queryForString(url: String): String =
-  this.queryForString(Request.Builder().url(url).build())
+suspend fun OkHttpClient.queryForString(url: String, tokenSet: Token = DefaultToken): String =
+  this.queryForString(request(url, tokenSet))
 
 suspend fun OkHttpClient.execute(request: Request): Response {
   val call = this.newCall(request)
@@ -130,7 +133,7 @@ suspend fun OkHttpClient.execute(request: Request): Response {
 
 fun OkHttpClient.warmup(vararg urls: String) {
   urls.forEach {
-    val request = Request.Builder().url(it).build()
+    val request = request(it, DefaultToken)
     val call = this.newCall(request)
     call.enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
@@ -144,3 +147,9 @@ fun OkHttpClient.warmup(vararg urls: String) {
     })
   }
 }
+
+fun request(url: String, tokenSet: Token = DefaultToken) = requestBuilder(url, tokenSet).build()!!
+fun request(url: HttpUrl, tokenSet: Token = DefaultToken) = requestBuilder(url, tokenSet).build()!!
+
+fun requestBuilder(url: String, tokenSet: Token = DefaultToken) = Request.Builder().url(url).tag(tokenSet)
+fun requestBuilder(url: HttpUrl, tokenSet: Token = DefaultToken) = Request.Builder().url(url).tag(tokenSet)

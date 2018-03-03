@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.output.OutputHandler
 import kotlinx.coroutines.experimental.CancellationException
@@ -12,15 +13,15 @@ import java.util.concurrent.TimeUnit
 
 class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
 
-  suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-                                  client: OkHttpClient) {
+  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>,
+                                  client: OkHttpClient, tokenSet: Token) {
     val discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url)
 
     val registry = DiscoveryRegistry.instance(client)
 
     val docs = discoveryPaths.map { p ->
       async(CommonPool) {
-        withTimeout(5, TimeUnit.SECONDS) { registry.load(p) }
+        withTimeout(5, TimeUnit.SECONDS) { registry.load(p, tokenSet) }
       }
     }.mapNotNull {
       try {
@@ -46,7 +47,7 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
         best
       } else {
         // multiple services sharing baseurl - return first
-        outputHandler.info("Multiple services for path " + url)
+        outputHandler.info("Multiple services for path $url")
         null
       }
     }

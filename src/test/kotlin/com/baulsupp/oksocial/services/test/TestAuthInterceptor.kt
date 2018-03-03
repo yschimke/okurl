@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.test
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -15,14 +16,14 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response = chain.proceed(chain.request())
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Oauth2Token =
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Oauth2Token =
       if (authArguments.isEmpty()) {
         Oauth2Token("testToken")
       } else {
         Oauth2Token(authArguments[0])
       }
 
-  suspend override fun validate(client: OkHttpClient, credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(client: OkHttpClient, credentials: Oauth2Token): ValidatedCredentials =
       ValidatedCredentials("aaa", null)
 
   override fun serviceDefinition(): ServiceDefinition<Oauth2Token> =
@@ -31,8 +32,8 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun hosts(): Set<String> = setOf("test.com", "api1.test.com")
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = object : ApiDocPresenter {
-    suspend override fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient) {
-      outputHandler.info("Test: " + url)
+    override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
+      outputHandler.info("Test: $url")
     }
   }
 }

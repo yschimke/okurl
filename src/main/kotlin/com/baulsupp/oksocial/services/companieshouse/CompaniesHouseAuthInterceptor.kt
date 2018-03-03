@@ -23,11 +23,8 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): String {
-    val apiKey = Secrets.prompt("Companies House API Key", "companieshouse.apiKey", "", false)
-
-    return apiKey
-  }
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): String =
+    Secrets.prompt("Companies House API Key", "companieshouse.apiKey", "", false)
 
   override fun serviceDefinition(): ServiceDefinition<String> =
     object : AbstractServiceDefinition<String>("api.companieshouse.gov.uk", "Companies House", "companieshouse",
@@ -37,7 +34,7 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
       override fun formatCredentialsString(credentials: String): String = credentials
     }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: String): ValidatedCredentials =
     ValidatedCredentials(credentials, null)
 

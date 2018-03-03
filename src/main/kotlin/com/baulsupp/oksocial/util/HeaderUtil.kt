@@ -18,7 +18,7 @@ object HeaderUtil {
         // TODO: consider better strategy than simple trim
         val name = parts[0].trim { it <= ' ' }
         val value = stringValue(parts[1].trim { it <= ' ' })
-        headerMap.put(name, value)
+        headerMap[name] = value
       }
     }
 

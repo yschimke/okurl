@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.i9n
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.output.TestOutputHandler
@@ -22,7 +23,7 @@ class TwilioTest {
 
   @Test
   fun completeEndpointWithReplacements() {
-    credentialsStore.set(service, null, BasicCredentials("ABC", "PW"))
+    credentialsStore.set(service, DefaultToken.name, BasicCredentials("ABC", "PW"))
 
     main.arguments = mutableListOf("https://api.twilio.com/")
     main.urlComplete = true

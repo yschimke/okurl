@@ -26,7 +26,7 @@ class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
     val uri = URI.create(uriString)
 
     return handlers.mapNotNull { it.buildSender(uri) }.firstOrNull()
-      ?: throw UsageException("unknown zipkin sender: " + uriString)
+      ?: throw UsageException("unknown zipkin sender: $uriString")
   }
 
   companion object {

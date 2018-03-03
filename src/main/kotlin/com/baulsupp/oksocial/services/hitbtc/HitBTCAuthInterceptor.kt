@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.hitbtc
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -35,7 +37,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("BitHTC API Key", "bithtc.apiKey", "", false)
     val password = Secrets.prompt("BitHTC Secret Key", "bithtc.secretKey", "", true)
@@ -43,25 +45,25 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return BasicCredentials(user, password)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
-    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance").let { "✓" }
+    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance", TokenValue(credentials)).let { "✓" }
     return ValidatedCredentials(account)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withVariable("currency", {
-      client.queryList<Currency>("https://api.hitbtc.com/api/2/public/currency").map { it.id }
+      client.queryList<Currency>("https://api.hitbtc.com/api/2/public/currency", tokenSet).map { it.id }
     })
     completer.withVariable("symbol", {
-      client.queryList<Symbol>("https://api.hitbtc.com/api/2/public/symbol").map { it.id }
+      client.queryList<Symbol>("https://api.hitbtc.com/api/2/public/symbol", tokenSet).map { it.id }
     })
 
     return completer

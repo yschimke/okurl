@@ -1,9 +1,11 @@
 package com.baulsupp.oksocial.services.squareup
 
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2TokenResponse
 import com.baulsupp.oksocial.kotlin.query
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.JsonUtil
 import okhttp3.MediaType
@@ -32,7 +34,7 @@ object SquareUpAuthFlow {
         "code" to code, "redirect_uri" to s.redirectUri)
 
       val reqBody = RequestBody.create(MediaType.parse("application/json"), JsonUtil.toJson(map))
-      val request = Request.Builder().url(tokenUrl).post(reqBody).build()
+      val request = requestBuilder(tokenUrl, NoToken).post(reqBody).build()
 
       val response = client.query<Oauth2TokenResponse>(request)
 

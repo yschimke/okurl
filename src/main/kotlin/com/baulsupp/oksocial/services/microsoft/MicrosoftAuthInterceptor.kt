@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.services.microsoft
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
@@ -30,12 +31,12 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
 
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
@@ -48,7 +49,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return credentials.isRenewable()
   }
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder().add("grant_type", "refresh_token")
       .add("redirect_uri", "http://localhost:3000/callback")
@@ -62,7 +63,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .post(body)
       .build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,
@@ -70,9 +71,9 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", "displayName"))
+    ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me", TokenValue(credentials), "displayName"))
 
   override fun hosts(): Set<String> = setOf("graph.microsoft.com")
 }

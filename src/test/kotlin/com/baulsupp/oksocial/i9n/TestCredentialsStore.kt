@@ -7,17 +7,17 @@ import com.baulsupp.oksocial.credentials.ServiceDefinition
 class TestCredentialsStore : CredentialsStore {
   var tokens: MutableMap<String, String> = linkedMapOf()
 
-  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String?): T? {
+  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     return tokens[serviceDefinition.apiHost()]
         ?.let { serviceDefinition.parseCredentialsString(it) }
   }
 
   override fun <T> set(
-          serviceDefinition: ServiceDefinition<T>, tokenSet: String?, credentials: T) {
-    tokens.put(serviceDefinition.apiHost(), serviceDefinition.formatCredentialsString(credentials))
+          serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {
+    tokens[serviceDefinition.apiHost()] = serviceDefinition.formatCredentialsString(credentials)
   }
 
-  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String?) {
+  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
     tokens.remove(serviceDefinition.apiHost())
   }
 }

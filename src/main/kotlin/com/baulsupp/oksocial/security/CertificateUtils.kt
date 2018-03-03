@@ -32,7 +32,7 @@ object CertificateUtils {
     for (i in serverCerts.indices) {
       FileInputStream(serverCerts[i]).use { `is` ->
         val caCert = cf.generateCertificate(`is`) as X509Certificate
-        ks.setCertificateEntry("cacrt." + i, caCert)
+        ks.setCertificateEntry("cacrt.$i", caCert)
       }
     }
     return ks

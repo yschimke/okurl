@@ -1,11 +1,12 @@
 package com.baulsupp.oksocial.services.stackexchange
 
-import com.baulsupp.oksocial.authenticator.AuthUtil.makeSimpleRequest
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
+import com.baulsupp.oksocial.kotlin.queryForString
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import java.net.URLEncoder
 
@@ -14,7 +15,6 @@ object StackExchangeAuthFlow {
                     clientId: String, clientSecret: String, clientKey: String,
                     scopes: Iterable<String>): StackExchangeToken {
     SimpleWebServer.forCode().use { s ->
-
       val serverUri = s.redirectUri
 
       val loginUrl = "https://stackexchange.com/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
@@ -28,9 +28,9 @@ object StackExchangeAuthFlow {
 
       val body = FormBody.Builder().add("client_id", clientId).add("redirect_uri", serverUri)
         .add("client_secret", clientSecret).add("code", code).build()
-      val request = Request.Builder().url(tokenUrl).method("POST", body).build()
+      val request = requestBuilder(tokenUrl, NoToken).method("POST", body).build()
 
-      val longTokenBody = makeSimpleRequest(client, request)
+      val longTokenBody = client.queryForString(request)
 
       return StackExchangeToken(parseExchangeRequest(longTokenBody), clientKey)
     }

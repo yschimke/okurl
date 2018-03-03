@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.transferwise
 
+import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter
@@ -22,7 +23,7 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource("transferwise")!!
 
     val testUrls = urlList.getUrls("")

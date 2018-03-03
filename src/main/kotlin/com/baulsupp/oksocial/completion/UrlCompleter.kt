@@ -1,46 +1,44 @@
 package com.baulsupp.oksocial.completion
 
-import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CancellationException
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.withTimeout
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class UrlCompleter(val services: List<AuthInterceptor<*>>, val client: OkHttpClient,
-                   val credentialsStore: CredentialsStore,
-                   val completionVariableCache: CompletionVariableCache, val tokenSet: String?) : ArgumentCompleter {
-  suspend override fun urlList(prefix: String): UrlList {
+class UrlCompleter(val main: Main) : ArgumentCompleter {
+  override suspend fun urlList(prefix: String, tokenSet: Token): UrlList {
     val fullUrl = parseUrl(prefix)
 
     return if (fullUrl != null) {
-      pathCompletion(fullUrl, prefix)
+      pathCompletion(fullUrl, prefix, tokenSet)
     } else {
-      hostCompletion(prefix)
+      hostCompletion(prefix, tokenSet)
     }
   }
 
-  private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String): UrlList {
-    return (services
+  private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String, tokenSet: Token): UrlList {
+    return (main.authenticatingInterceptor.services
       .firstOrNull { it.supportsUrl(fullUrl) }
-      ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache, tokenSet)
-      ?.siteUrls(fullUrl)
+      ?.apiCompleter(prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet)
+      ?.siteUrls(fullUrl, tokenSet)
       ?: UrlList(UrlList.Match.EXACT, listOf()))
   }
 
-  private suspend fun UrlCompleter.hostCompletion(prefix: String): UrlList {
-    val futures = services.map {
+  private suspend fun UrlCompleter.hostCompletion(prefix: String, tokenSet: Token): UrlList {
+    val futures = main.authenticatingInterceptor.services.map {
       async(CommonPool) {
         withTimeout(2, TimeUnit.SECONDS) {
-          it.apiCompleter("", client, credentialsStore, completionVariableCache, tokenSet).prefixUrls()
+          it.apiCompleter("", client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
         }
       }
     }

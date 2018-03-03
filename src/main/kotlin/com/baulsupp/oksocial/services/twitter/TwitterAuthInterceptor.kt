@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.twitter
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.kotlin.queryMapValue
@@ -27,7 +28,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): TwitterCredentials {
 
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
@@ -52,9 +53,9 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     return WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: TwitterCredentials): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json", TokenValue(credentials), "name"))
 
   override fun hosts(): Set<String> = TwitterUtil.TWITTER_API_HOSTS
 }

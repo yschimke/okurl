@@ -1,18 +1,22 @@
 package com.baulsupp.oksocial.completion
 
-import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.authenticator.AuthenticatingInterceptor
 import com.baulsupp.oksocial.services.test.TestAuthInterceptor
 import kotlinx.coroutines.experimental.runBlocking
-import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class UrlCompleterTest {
-  private val services = listOf<AuthInterceptor<*>>(TestAuthInterceptor())
+  private val main = Main()
 
-  private val completer = UrlCompleter(services, OkHttpClient(), CredentialsStore.NONE,
-          CompletionVariableCache.NONE, null)
+  init {
+    main.authenticatingInterceptor = AuthenticatingInterceptor(main, listOf(TestAuthInterceptor()))
+    main.initialise()
+  }
+
+  private val completer = UrlCompleter(main)
 
   @Test
   fun returnsAllUrls() {
@@ -22,7 +26,7 @@ class UrlCompleterTest {
                       listOf("https://test.com", "https://test.com/",
                               "https://api1.test.com",
                               "https://api1.test.com/")),
-              completer.urlList(""))
+              completer.urlList("", DefaultToken))
     }
   }
 
@@ -31,9 +35,9 @@ class UrlCompleterTest {
     runBlocking {
       assertEquals(
               listOf("https://api1.test.com", "https://api1.test.com/"),
-              completer.urlList("https://api1").getUrls("https://api1"))
+              completer.urlList("https://api1", DefaultToken).getUrls("https://api1"))
       assertEquals(listOf(),
-              completer.urlList("https://api2").getUrls("https://api2"))
+              completer.urlList("https://api2", DefaultToken).getUrls("https://api2"))
     }
   }
 
@@ -42,7 +46,7 @@ class UrlCompleterTest {
     runBlocking {
       assertEquals(listOf("https://api1.test.com/users.json",
               "https://api1.test.com/usersList.json"),
-              completer.urlList("https://api1.test.com/u").getUrls("https://api1.test.com/u"))
+              completer.urlList("https://api1.test.com/u", DefaultToken).getUrls("https://api1.test.com/u"))
     }
   }
 }

@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.services.gdax
 
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 
-class GdaxAuthServiceDefinition() : AbstractServiceDefinition<GdaxCredentials>("api.gdax.com", "GDAX API", "gdax",
+class GdaxAuthServiceDefinition : AbstractServiceDefinition<GdaxCredentials>("api.gdax.com", "GDAX API", "gdax",
   "https://docs.gdax.com/", "https://www.gdax.com/settings/api") {
 
   override fun parseCredentialsString(s: String): GdaxCredentials {

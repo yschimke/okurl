@@ -10,7 +10,7 @@ class OkShell(val commandLine: CommandLineClient) {
   }
 
   fun show(url: String) {
-    val request = Request.Builder().url(url).build()
+    val request = request(url)
 
     val call = client.newCall(request)
 
@@ -20,7 +20,7 @@ class OkShell(val commandLine: CommandLineClient) {
   }
 
   fun credentials(name: String): Any? {
-    val interceptor = commandLine.serviceInterceptor.getByName(name)
+    val interceptor = commandLine.authenticatingInterceptor.getByName(name)
 
     if (interceptor != null) {
       return commandLine.credentialsStore.get(interceptor.serviceDefinition(), commandLine.tokenSet)
@@ -29,7 +29,7 @@ class OkShell(val commandLine: CommandLineClient) {
     return null
   }
 
-  suspend fun location(): Location? = commandLine.locationSource!!.read()
+  suspend fun location(): Location? = commandLine.locationSource.read()
 
   companion object {
     var instance: OkShell? = null

@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.github
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -25,12 +26,12 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "token " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "token $token").build()
 
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Github Client Id", "github.clientId", "", false)
@@ -41,9 +42,9 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return GithubAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user", TokenValue(credentials), "name"))
 
   override fun hosts(): Set<String> = setOf("api.github.com", "uploads.github.com")
 }

@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.quip
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -29,12 +31,12 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
 
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     outputHandler.openLink("https://quip.com/dev/token")
@@ -47,14 +49,14 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "folderId", {
       credentialsStore.get(serviceDefinition(), tokenSet)?.let {
-        currentUser(client).let {
+        currentUser(client, tokenSet).let {
           listOfNotNull(it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
             it.archive_folder_id) + it.shared_folder_ids.orEmpty()
         }
@@ -64,12 +66,12 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(currentUser(client).name)
+    ValidatedCredentials(currentUser(client, TokenValue(credentials)).name)
 
-  private suspend fun currentUser(client: OkHttpClient) =
-    client.query<User>("https://platform.quip.com/1/users/current")
+  private suspend fun currentUser(client: OkHttpClient, tokenSet: Token) =
+    client.query<User>("https://platform.quip.com/1/users/current", tokenSet)
 
   override fun hosts(): Set<String> = setOf("platform.quip.com")
 }

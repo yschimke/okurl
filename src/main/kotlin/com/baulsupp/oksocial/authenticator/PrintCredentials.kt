@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.authenticator
 
+import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
@@ -25,7 +26,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   val outputHandler: OutputHandler<Response> = commandLineClient.outputHandler
 
-  val serviceInterceptor: ServiceInterceptor = commandLineClient.serviceInterceptor
+  val authenticatingInterceptor: AuthenticatingInterceptor = commandLineClient.authenticatingInterceptor
 
   val credentialsStore: CredentialsStore = commandLineClient.credentialsStore
 
@@ -48,7 +49,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
     val sd = key.auth.serviceDefinition()
-    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", key.tokenSet.orEmpty(), validated?.username
+    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", key.tokenSet, validated?.username
       ?: "-", validated?.clientName ?: "-"))
   }
 
@@ -56,23 +57,23 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     val sd = key.auth.serviceDefinition()
 
     when (e) {
-      is CancellationException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), "timeout"))
-      is TimeoutException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), "timeout"))
-      is ClientException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), key.auth.errorMessage(e)))
-      is IOException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), e.toString()))
-      else -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet.orEmpty(), e.toString()))
+      is CancellationException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, "timeout"))
+      is TimeoutException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, "timeout"))
+      is ClientException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, key.auth.errorMessage(e)))
+      is IOException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, e.toString()))
+      else -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, e.toString()))
     }
   }
 
   suspend fun showCredentials(arguments: List<String>) {
-    var services: Iterable<AuthInterceptor<*>> = serviceInterceptor.services()
-    var names = listOf<String?>(null)
+    var services: Iterable<AuthInterceptor<*>> = authenticatingInterceptor.services
+    var names = listOf(DefaultToken.name)
 
     val full = !arguments.isEmpty()
 
     if (!arguments.isEmpty()) {
-      services = arguments.mapNotNull { serviceInterceptor.findAuthInterceptor(it) }
-      names = listOf<String?>(null) + commandLineClient.credentialsStore.names().toList()
+      services = arguments.mapNotNull { authenticatingInterceptor.findAuthInterceptor(it) }
+      names = commandLineClient.credentialsStore.names().toList()
     }
 
     val futures = validate(services, names)
@@ -85,7 +86,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     }
   }
 
-  data class Key(val auth: AuthInterceptor<*>, val tokenSet: String?)
+  data class Key(val auth: AuthInterceptor<*>, val tokenSet: String)
 
   private fun printCredentials(key: Key) {
     val sd: ServiceDefinition<*> = key.auth.serviceDefinition()
@@ -95,7 +96,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   fun validate(
-    services: Iterable<AuthInterceptor<*>>, names: List<String?>): Map<Key, Deferred<ValidatedCredentials>> {
+    services: Iterable<AuthInterceptor<*>>, names: List<String>): Map<Key, Deferred<ValidatedCredentials>> {
     val pairs = names.flatMap { name ->
       services.mapNotNull { sv ->
         val credentials = try {

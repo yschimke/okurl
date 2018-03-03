@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.services.imgur
 
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
@@ -25,12 +26,12 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
 
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Imgur Client Id", "imgur.clientId", "", false)
@@ -39,15 +40,15 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ImgurAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me", "data", "url"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me", TokenValue(credentials), "data", "url"))
 
   override fun canRenew(result: Response): Boolean = result.code() == 403
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("refresh_token", credentials.refreshToken!!)
       .add("client_id", credentials.clientId!!)
       .add("client_secret", credentials.clientSecret!!)
@@ -57,7 +58,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .method("POST", body)
       .build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     // TODO check if refresh token in response?
     return Oauth2Token(responseMap["access_token"] as String,

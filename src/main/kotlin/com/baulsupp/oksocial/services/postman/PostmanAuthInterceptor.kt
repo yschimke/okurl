@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.postman
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -35,8 +37,8 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-    authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+                                 authArguments: List<String>): Oauth2Token {
     outputHandler.openLink("https://app.getpostman.com/dashboard/integrations/pm_pro_api/list")
 
     val token = System.console().readPasswordString("Enter Token: ")
@@ -44,16 +46,16 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(token)
   }
 
-  suspend override fun validate(client: OkHttpClient,
-    credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me").user.id)
+  override suspend fun validate(client: OkHttpClient,
+                                credentials: Oauth2Token): ValidatedCredentials =
+    ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me", TokenValue(credentials)).user.id)
 
   override fun hosts(): Set<String> = setOf("api.getpostman.com")
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
@@ -61,7 +63,8 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completer.withCachedVariable(name(), "collection_uid", {
       credentialsStore.get(serviceDefinition(), tokenSet)?.let {
         client.query<CollectionsResult>(
-          "https://api.getpostman.com/collections").collections.map { it.id }
+          "https://api.getpostman.com/collections",
+          tokenSet).collections.map { it.id }
       }
     })
 

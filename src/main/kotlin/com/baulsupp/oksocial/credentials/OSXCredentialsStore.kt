@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.credentials
 
+import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.process.exec
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
@@ -7,17 +8,17 @@ import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class OSXCredentialsStore() : CredentialsStore {
+class OSXCredentialsStore : CredentialsStore {
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
-  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String?): T? {
+  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
 
     return pw.map { serviceDefinition.parseCredentialsString(it) }.orElse(null)
   }
 
   override fun <T> set(
-    serviceDefinition: ServiceDefinition<T>, tokenSet: String?, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {
     val credentialsString = serviceDefinition.formatCredentialsString(credentials)
 
     remove(serviceDefinition, tokenSet)
@@ -30,7 +31,7 @@ class OSXCredentialsStore() : CredentialsStore {
     }
   }
 
-  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String?) {
+  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
     try {
       keychain.deleteGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
     } catch (e: OSXKeychainException) {
@@ -38,7 +39,7 @@ class OSXCredentialsStore() : CredentialsStore {
     }
   }
 
-  suspend override fun names(): Set<String> {
+  override suspend fun names(): Set<String> {
     val output = exec("security", "dump-keychain").output.string(StandardCharsets.UTF_8)
 
     val names = output.lines().filter { it.matches(".*\"acct\".*\"oauth\\..*\".*".toRegex()) }.map { it.replace(".*oauth\\.(\\w+).*".toRegex(), "$1") }
@@ -46,7 +47,7 @@ class OSXCredentialsStore() : CredentialsStore {
     return names.toSortedSet()
   }
 
-  private fun tokenKey(tokenSet: String?): String = "oauth${tokenSet?.let { "." + it } ?: ""}"
+  private fun tokenKey(tokenSet: String): String = "oauth.$tokenSet"
 
   companion object {
     private val logger = Logger.getLogger(OSXCredentialsStore::class.java.name)

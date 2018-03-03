@@ -14,7 +14,7 @@ function _oksocial_is_cache_valid ()
 
   _ok_social_debug "checking $cache_file '$cur'"
   if [ -f "$cache_file" ]; then
-    regex=$(head -n 1 $cache_file)
+    regex=$(head -n 1 ${cache_file})
     _ok_social_debug "regex $regex"
 
     if [[ "$cur" =~ ^$regex$ ]]; then
@@ -43,15 +43,15 @@ function _oksocial_complete ()
   tokenset=
   for i in "${COMP_WORDS[@]}"; do
     #_ok_social_debug i $i
-    idx=$(expr $idx + 1)
+    idx=$(expr ${idx} + 1)
     if [ "$i" = "-s" ]; then
       tokenset=${COMP_WORDS[$idx]}
     fi
   done
 
-  _ok_social_debug tokenset $tokenset
+  _ok_social_debug tokenset ${tokenset}
 
-  case $prev in
+  case ${prev} in
         -d | --data | -H | --header | --user-agent | --connect-timeout | --read-timeout \
         | --referer | --cache | --token | --resolve | --certificatePin | --keystore \
         | --socks | --proxy | --cert | --clientauth | --dnsServers | --user \
@@ -102,7 +102,7 @@ function _oksocial_complete ()
             ;;
   esac
 
-  if [[ $cur == -* ]]; then
+  if [[ ${cur} == -* ]]; then
       _oksocial_options=${_oksocial_options:=$(_parse_help oksocial --help)}
       COMPREPLY=( $( compgen -W "$_oksocial_options" -- "$cur" ) )
       return;
@@ -110,21 +110,21 @@ function _oksocial_complete ()
 
   _get_comp_words_by_ref -n : cur
 
-  cache_file=$TMPDIR$(basename $job)${tokenset:+-$tokenset}-complete.cache
+  cache_file=$TMPDIR$(basename ${job})${tokenset:+-$tokenset}-complete.cache
 
-  if _oksocial_is_cache_valid $cache_file $cur; then
-    _ok_social_debug compute $job ${tokenset:+-s $tokenset} --urlCompletion "$cur"
+  if _oksocial_is_cache_valid ${cache_file} ${cur}; then
+    _ok_social_debug compute ${job} ${tokenset:+-s $tokenset} --urlCompletion "$cur"
 
-    paths=$(COMPLETION_FILE=$cache_file $job ${tokenset:+-s $tokenset} --urlCompletion "$cur")
+    paths=$(COMPLETION_FILE=${cache_file} ${job} ${tokenset:+-s $tokenset} --urlCompletion "$cur")
 
-    _ok_social_debug result $(wc -l $cache_file)
+    _ok_social_debug result $(wc -l ${cache_file})
   else
     _ok_social_debug cached
 
     if [ -f "$cache_file" ]; then
-      paths=$(tail -n +2 $cache_file)
+      paths=$(tail -n +2 ${cache_file})
     else
-      _ok_social_debug missing cache file $cache_file
+      _ok_social_debug missing cache file ${cache_file}
       paths=
     fi
   fi

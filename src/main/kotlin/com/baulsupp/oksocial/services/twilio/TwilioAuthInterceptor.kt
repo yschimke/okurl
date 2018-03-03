@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.services.twilio
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -33,7 +35,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
@@ -41,9 +43,9 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return BasicCredentials(user, password)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json")
+    val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json", TokenValue(credentials))
     val username = (map["accounts"] as List<Map<String, Any>>)[0]["friendly_name"] as String
     return ValidatedCredentials(username)
   }
@@ -51,7 +53,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

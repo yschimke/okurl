@@ -1,13 +1,14 @@
 package com.baulsupp.oksocial.services.transferwise
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 
 object TransferwiseAuthFlow {
@@ -25,12 +26,12 @@ object TransferwiseAuthFlow {
       val body = FormBody.Builder().add("client_id", clientId).add("redirect_uri", serverUri)
         .add("grant_type", "authorization_code").add("code", code).build()
       val basic = Credentials.basic(clientId, clientSecret)
-      val request = Request.Builder().url("https://$host/oauth/token")
+      val request = requestBuilder("https://$host/oauth/token", NoToken)
         .post(body)
         .header("Authorization", basic)
         .build()
 
-      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = client.queryMap<Any>(request)
 
       return Oauth2Token(responseMap["access_token"] as String,
         responseMap["refresh_token"] as String, clientId, clientSecret)

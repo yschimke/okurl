@@ -1,8 +1,10 @@
 package com.baulsupp.oksocial.services.box
 
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -23,7 +25,7 @@ object BoxAuthFlow {
       val code = s.waitForCodeAsync()
 
       val body = FormBody.Builder().add("grant_type", "authorization_code").add("code", code).add("client_id", clientId).add("client_secret", clientSecret).build()
-      val request = Request.Builder().url("https://api.box.com/oauth2/token")
+      val request = requestBuilder("https://api.box.com/oauth2/token", NoToken)
         .post(body)
         .build()
 

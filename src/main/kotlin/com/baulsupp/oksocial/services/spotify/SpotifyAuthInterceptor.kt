@@ -1,7 +1,8 @@
 package com.baulsupp.oksocial.services.spotify
 
+import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
@@ -11,6 +12,7 @@ import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.moshi
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
@@ -36,12 +38,12 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
 
     return chain.proceed(request)
   }
 
-  suspend override fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
+  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {
 
     val clientId = Secrets.prompt("Spotify Client Id", "spotify.clientId", "", false)
@@ -69,13 +71,13 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun apiCompleter(prefix: String, client: OkHttpClient,
                             credentialsStore: CredentialsStore,
                             completionVariableCache: CompletionVariableCache,
-                            tokenSet: String?): ApiCompleter {
+                            tokenSet: Token): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
-  suspend override fun validate(client: OkHttpClient,
+  override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", "display_name"))
+    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", TokenValue(credentials), "display_name"))
   }
 
   override fun hosts(): Set<String> = setOf("api.spotify.com")
@@ -96,7 +98,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return super.errorMessage(ce)
   }
 
-  suspend override fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://accounts.spotify.com/api/token"
 
     val body = FormBody.Builder()
@@ -110,7 +112,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .method("POST", body)
       .build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     return Oauth2Token(responseMap["access_token"] as String,
       responseMap["refresh_token"] as String?, credentials.clientId,

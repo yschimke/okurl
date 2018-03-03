@@ -1,9 +1,12 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.query
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.services.surveymonkey.model.TokenResponse
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -28,11 +31,10 @@ object SurveyMonkeyAuthFlow {
         .add("grant_type", "authorization_code")
         .build()
 
-      val request = Request.Builder().url("https://api.surveymonkey.net/oauth/token")
+      val request = requestBuilder("https://api.surveymonkey.net/oauth/token", NoToken)
         .post(body)
         .build()
 
-      data class TokenResponse(val access_token: String)
 
       val response = client.query<TokenResponse>(request)
 

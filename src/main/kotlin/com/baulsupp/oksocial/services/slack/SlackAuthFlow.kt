@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.services.slack
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -34,7 +34,7 @@ object SlackAuthFlow {
 
       val request = Request.Builder().url(url).build()
 
-      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = client.queryMap<Any>(request)
 
       // TODO bot and user flow
       // {ok=true, access_token=xxx, scope=a,b,c, user_id=xxx, team_name=xxxx, team_id=xxx, bot={bot_user_id=xxxx, bot_access_token=xxx}}

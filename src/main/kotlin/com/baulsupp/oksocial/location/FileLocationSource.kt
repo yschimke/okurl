@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import java.io.File
 
 class FileLocationSource(private val file: File) : LocationSource {
-  suspend override fun read(): Location? {
+  override suspend fun read(): Location? {
     if (file.isFile) {
       val mapper = ObjectMapper()
       mapper.registerModule(KotlinModule())
@@ -26,8 +26,8 @@ class FileLocationSource(private val file: File) : LocationSource {
     mapper.registerModule(KotlinModule())
 
     val map = linkedMapOf<String, Double>()
-    map.put("latitude", location.latitude)
-    map.put("longitude", location.longitude)
+    map["latitude"] = location.latitude
+    map["longitude"] = location.longitude
 
     mapper.writeValue(file, map)
   }

@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.authenticator.AuthUtil.makeJsonMapRequest
-import com.baulsupp.oksocial.authenticator.AuthUtil.uriGetRequest
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -26,13 +26,13 @@ object FacebookAuthFlow {
 
       val tokenUrl = "https://graph.facebook.com/v2.10/oauth/access_token?client_id=$clientId&redirect_uri=$serverUri&client_secret=$clientSecret&code=$code"
 
-      val map = makeJsonMapRequest(client, uriGetRequest(tokenUrl))
+      val map = client.queryMap<Any>(tokenUrl, NoToken)
 
       val shortToken = map["access_token"] as String
 
       val exchangeUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=$clientId&client_secret=$clientSecret&fb_exchange_token=$shortToken"
 
-      val longTokenBody = makeJsonMapRequest(client, uriGetRequest(exchangeUrl))
+      val longTokenBody = client.queryMap<Any>(exchangeUrl, NoToken)
 
       return Oauth2Token(longTokenBody["access_token"] as String, "", clientId, clientSecret)
     }

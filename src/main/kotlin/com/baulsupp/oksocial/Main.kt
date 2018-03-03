@@ -128,7 +128,7 @@ class Main : CommandLineClient() {
 
   suspend fun showApiDocs() {
     getFullCompletionUrl()?.let { u ->
-      ServiceApiDocPresenter(serviceInterceptor).explainApi(u, outputHandler, client!!)
+      ServiceApiDocPresenter(authenticatingInterceptor).explainApi(u, outputHandler, client, token())
     }
   }
 
@@ -146,6 +146,8 @@ class Main : CommandLineClient() {
       requestBuilder.header("Referer", referer!!)
     }
     requestBuilder.header("User-Agent", userAgent)
+
+    requestBuilder.tag(this.token())
 
     return requestBuilder.build()
   }
@@ -167,7 +169,7 @@ class Main : CommandLineClient() {
     val command = getShellCommand()
 
     if (command is OkApiCommand) {
-      val requests = command.buildRequests(client!!, arguments)
+      val requests = command.buildRequests(client, arguments)
 
       if (requests.isNotEmpty()) {
         val newUrl = requests[0].url()
@@ -242,11 +244,11 @@ class Main : CommandLineClient() {
 
   fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
     if (logger.isLoggable(Level.FINE)) {
-      logger.fine("OkHttp Platform: " + Platform.get().javaClass.getSimpleName())
-      logger.fine("TLS Version: " + response.handshake().tlsVersion())
-      logger.fine("Protocol: " + response.protocol())
-      logger.fine("Cipher: " + response.handshake().cipherSuite())
-      logger.fine("Peer Principal: " + response.handshake().peerPrincipal())
+      logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
+      logger.fine("TLS Version: ${response.handshake().tlsVersion()}")
+      logger.fine("Protocol: ${response.protocol()}")
+      logger.fine("Cipher: ${response.handshake().cipherSuite()}")
+      logger.fine("Peer Principal: ${response.handshake().peerPrincipal()}")
     }
 
     if (showHeaders) {
@@ -255,7 +257,7 @@ class Main : CommandLineClient() {
       var i = 0
       val size = headers.size()
       while (i < size) {
-        outputHandler.info(headers.name(i) + ": " + headers.value(i))
+        outputHandler.info("${headers.name(i)}: ${headers.value(i)}")
         i++
       }
       outputHandler.info("")
@@ -296,7 +298,7 @@ class Main : CommandLineClient() {
   }
 
   private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
-    logger.log(Level.FINE, "Request " + request)
+    logger.log(Level.FINE, "Request $request")
 
     return try {
       SuccessfulResponse(client.newCall(request).await())
@@ -324,13 +326,13 @@ class Main : CommandLineClient() {
     var auth: AuthInterceptor<*>? = null
 
     if (authenticator != null) {
-      auth = serviceInterceptor.getByName(authenticator)
+      auth = authenticatingInterceptor.getByName(authenticator)
     }
 
     if (auth == null && !arguments.isEmpty()) {
       val name = arguments.removeAt(0)
 
-      auth = serviceInterceptor.findAuthInterceptor(name)
+      auth = authenticatingInterceptor.findAuthInterceptor(name)
     }
     return auth
   }
@@ -365,12 +367,10 @@ class Main : CommandLineClient() {
     }
   }
 
-  private fun predictContentType(content: ByteArray): String {
-    if (content.size > 0 && content[0] == '{'.toByte()) {
-      return "application/json"
-    } else {
-      return "application/x-www-form-urlencoded"
-    }
+  private fun predictContentType(content: ByteArray): String = if (content.isNotEmpty() && content[0] == '{'.toByte()) {
+    "application/json"
+  } else {
+    "application/x-www-form-urlencoded"
   }
 
   companion object {
