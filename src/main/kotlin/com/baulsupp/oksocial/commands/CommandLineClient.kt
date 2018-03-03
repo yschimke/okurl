@@ -170,7 +170,7 @@ open class CommandLineClient : HelpOption() {
   var osProxy: Boolean = false
 
   @Option(name = ["-s", "--set"], description = "Token Set e.g. work")
-  var tokenSet: String = DefaultToken.name
+  var tokenSet: String? = null
 
   @Option(name = ["--ssldebug"], description = "SSL Debug")
   var sslDebug: Boolean = false
@@ -528,7 +528,7 @@ open class CommandLineClient : HelpOption() {
   }
 
   fun token(): Token {
-    return TokenSet(tokenSet)
+    return tokenSet?.let { TokenSet(it) } ?: DefaultToken
   }
 
   companion object {

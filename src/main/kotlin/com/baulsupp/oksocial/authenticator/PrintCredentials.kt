@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
@@ -67,13 +66,12 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   suspend fun showCredentials(arguments: List<String>) {
     var services: Iterable<AuthInterceptor<*>> = authenticatingInterceptor.services
-    var names = listOf(DefaultToken.name)
+    val names = commandLineClient.tokenSet?.let { listOf(it) } ?: commandLineClient.credentialsStore.names().toList()
 
     val full = !arguments.isEmpty()
 
     if (!arguments.isEmpty()) {
       services = arguments.mapNotNull { authenticatingInterceptor.findAuthInterceptor(it) }
-      names = commandLineClient.credentialsStore.names().toList()
     }
 
     val futures = validate(services, names)
@@ -97,23 +95,24 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   fun validate(
     services: Iterable<AuthInterceptor<*>>, names: List<String>): Map<Key, Deferred<ValidatedCredentials>> {
-    val pairs = names.flatMap { name ->
-      services.mapNotNull { sv ->
-        val credentials = try {
-          credentialsStore.get(sv.serviceDefinition(), name)
-        } catch (e: Exception) {
-          logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
-          null
-        }
-
-        credentials?.let {
-          val x = async(CommonPool) {
-            v(sv, credentials)
+    val pairs =
+      services.flatMap { sv ->
+        names.mapNotNull { name ->
+          val credentials = try {
+            credentialsStore.get(sv.serviceDefinition(), name)
+          } catch (e: Exception) {
+            logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
+            null
           }
-          Pair(Key(sv, name), x)
+
+          credentials?.let {
+            val x = async(CommonPool) {
+              v(sv, credentials)
+            }
+            Pair(Key(sv, name), x)
+          }
         }
       }
-    }
     return pairs.toMap()
   }
 

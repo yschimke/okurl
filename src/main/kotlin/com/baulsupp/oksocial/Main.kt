@@ -309,15 +309,15 @@ class Main : CommandLineClient() {
   }
 
   suspend fun authorize() {
-    authorisation.authorize(findAuthInterceptor(), token, arguments, tokenSet)
+    authorisation.authorize(findAuthInterceptor(), token, arguments, tokenSet ?: DefaultToken.name)
   }
 
   suspend fun renew() {
-    authorisation.renew(findAuthInterceptor(), tokenSet)
+    authorisation.renew(findAuthInterceptor(), tokenSet ?: DefaultToken.name)
   }
 
   suspend fun remove() {
-    authorisation.remove(findAuthInterceptor(), tokenSet)
+    authorisation.remove(findAuthInterceptor(), tokenSet ?: DefaultToken.name)
   }
 
   private fun findAuthInterceptor(): AuthInterceptor<*>? {
