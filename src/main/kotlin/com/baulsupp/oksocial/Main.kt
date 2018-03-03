@@ -28,6 +28,8 @@ import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
 import io.airlift.airline.Command
 import io.airlift.airline.Option
+import io.airlift.airline.ParseOptionConversionException
+import io.airlift.airline.ParseOptionMissingValueException
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -89,7 +91,7 @@ class Main : CommandLineClient() {
   @Option(name = ["--apidoc"], description = "API Documentation")
   var apiDoc: Boolean = false
 
-  var commandName = System.getProperty("command.name", "oksocial")!!
+  var commandName = Main.command
 
   var completionFile: File? = System.getenv("COMPLETION_FILE")?.let { File(it) }
 
@@ -376,12 +378,21 @@ class Main : CommandLineClient() {
 
   companion object {
     const val NAME = "oksocial"
+    val command = System.getProperty("command.name", "oksocial")!!
 
     @JvmStatic
     fun main(vararg args: String) {
       Security.insertProviderAt(OpenSSLProvider(), 1)
-      val result = CommandLineClient.fromArgs<Main>(*args).run()
-      System.exit(result)
+      try {
+        val result = CommandLineClient.fromArgs<Main>(*args).run()
+        System.exit(result)
+      } catch (e: ParseOptionMissingValueException) {
+        System.err.println("$command: ${e.message}")
+        System.exit(-1)
+      } catch (e: ParseOptionConversionException) {
+        System.err.println("$command: ${e.message}")
+        System.exit(-1)
+      }
     }
   }
 }
