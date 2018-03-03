@@ -1,5 +1,6 @@
-package com.baulsupp.oksocial
+package com.baulsupp.oksocial.commands
 
+import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.network.DnsMode
 import com.baulsupp.oksocial.network.IPvMode
 import okhttp3.Protocol

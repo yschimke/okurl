@@ -10,6 +10,7 @@ import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.OkApiCommand
 import com.baulsupp.oksocial.commands.OksocialCommand
 import com.baulsupp.oksocial.commands.ShellCommand
+import com.baulsupp.oksocial.commands.listOptions
 import com.baulsupp.oksocial.completion.CompletionCommand
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.DirCompletionVariableCache
