@@ -55,8 +55,8 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun keyList(encodedPath: HttpUrl.Builder, tokenSet: Token): List<String> {
-    val request = encodedPath.addQueryParameter("shallow", "true").build().request()
-    return client.queryOptionalMap<Any>(request, tokenSet)?.keys?.toList().orEmpty()
+    val request = request(encodedPath.addQueryParameter("shallow", "true").build(), tokenSet)
+    return client.queryOptionalMap<Any>(request)?.keys?.toList().orEmpty()
   }
 
   suspend fun children(url: HttpUrl, tokenSet: Token): List<String> {
@@ -68,9 +68,9 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
       val encodedPath = url.newBuilder().encodedPath("$path.json")
       val children = keyList(encodedPath, tokenSet)
 
-      val prefixPath = if (path.endsWith("/")) path else path + "/"
+      val prefixPath = if (path.endsWith("/")) path else "$path/"
 
-      children.toList().flatMap { listOf(prefixPath + it + "/", prefixPath + it + ".json") }
+      children.toList().flatMap { listOf("$prefixPath$it/", "$prefixPath$it.json") }
     }
   }
 

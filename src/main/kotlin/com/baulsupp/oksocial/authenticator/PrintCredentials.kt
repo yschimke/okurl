@@ -26,7 +26,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   val outputHandler: OutputHandler<Response> = commandLineClient.outputHandler
 
-  val serviceInterceptor: ServiceInterceptor = commandLineClient.serviceInterceptor
+  val authenticatingInterceptor: AuthenticatingInterceptor = commandLineClient.authenticatingInterceptor
 
   val credentialsStore: CredentialsStore = commandLineClient.credentialsStore
 
@@ -66,13 +66,13 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   suspend fun showCredentials(arguments: List<String>) {
-    var services: Iterable<AuthInterceptor<*>> = serviceInterceptor.services()
+    var services: Iterable<AuthInterceptor<*>> = authenticatingInterceptor.services
     var names = listOf(DefaultToken.name)
 
     val full = !arguments.isEmpty()
 
     if (!arguments.isEmpty()) {
-      services = arguments.mapNotNull { serviceInterceptor.findAuthInterceptor(it) }
+      services = arguments.mapNotNull { authenticatingInterceptor.findAuthInterceptor(it) }
       names = commandLineClient.credentialsStore.names().toList()
     }
 

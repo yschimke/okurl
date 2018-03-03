@@ -14,7 +14,7 @@ class TestCredentialsStore : CredentialsStore {
 
   override fun <T> set(
           serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {
-    tokens.put(serviceDefinition.apiHost(), serviceDefinition.formatCredentialsString(credentials))
+    tokens[serviceDefinition.apiHost()] = serviceDefinition.formatCredentialsString(credentials)
   }
 
   override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {

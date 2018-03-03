@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.lyft
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
 import okhttp3.Credentials
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -18,7 +18,7 @@ object LyftClientAuthFlow {
       .header("Authorization", basic)
       .build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     // TODO refreshable without refresh token
     return Oauth2Token(responseMap["access_token"] as String)

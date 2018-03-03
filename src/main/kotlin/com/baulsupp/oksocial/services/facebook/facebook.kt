@@ -6,7 +6,6 @@ import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryForString
 import com.baulsupp.oksocial.services.facebook.model.PageableResult
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
@@ -14,8 +13,8 @@ suspend inline fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQue
   path: String, tokenSet: Token): T {
   val fields = fbFieldNames(I::class)
 
-  val stringResult = this.queryForString(Request.Builder().url(
-    "https://graph.facebook.com/v2.11$path?fields=" + fields.joinToString(",")).build(), tokenSet)
+  val stringResult = this.queryForString(
+    "https://graph.facebook.com/v2.11$path?fields=${fields.joinToString(",")}", tokenSet)
   return moshi.adapter<T>(T::class.java).fromJson(stringResult)!!
 }
 

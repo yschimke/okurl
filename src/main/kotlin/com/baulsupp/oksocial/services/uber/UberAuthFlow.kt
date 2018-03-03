@@ -1,12 +1,13 @@
 package com.baulsupp.oksocial.services.uber
 
-import com.baulsupp.oksocial.authenticator.AuthUtil
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 
 object UberAuthFlow {
@@ -26,9 +27,9 @@ object UberAuthFlow {
         .add("code", code)
         .add("grant_type", "authorization_code")
         .build()
-      val request = Request.Builder().url(tokenUrl).method("POST", body).build()
+      val request = requestBuilder(tokenUrl, NoToken).method("POST", body).build()
 
-      val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+      val responseMap = client.queryMap<Any>(request)
 
       return Oauth2Token(responseMap["access_token"] as String,
         responseMap["refresh_token"] as String, clientId, clientSecret)

@@ -16,7 +16,7 @@ data class Request(val method: String, val url: Any) {
     return if (url is String) {
       url
     } else if (url is Map<*, *>) {
-      url.get("raw") as? String
+      url["raw"] as? String
     } else {
       null
     }

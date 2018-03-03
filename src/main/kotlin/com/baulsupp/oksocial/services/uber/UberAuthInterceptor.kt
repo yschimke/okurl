@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.uber
 
+import com.baulsupp.oksocial.NoToken
 import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.AuthUtil
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
@@ -13,12 +13,12 @@ import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 
 class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
@@ -35,7 +35,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "Bearer " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
 
     return chain.proceed(request)
   }
@@ -75,9 +75,9 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .add("grant_type", "refresh_token")
       .build()
 
-    val request = Request.Builder().url(tokenUrl).method("POST", body).build()
+    val request = requestBuilder(tokenUrl, NoToken).method("POST", body).build()
 
-    val responseMap = AuthUtil.makeJsonMapRequest(client, request)
+    val responseMap = client.queryMap<Any>(request)
 
     return Oauth2Token(responseMap["access_token"] as String,
       responseMap["refresh_token"] as String, credentials.clientId,

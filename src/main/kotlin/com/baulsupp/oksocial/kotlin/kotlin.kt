@@ -23,11 +23,11 @@ inline fun <reified V> Moshi.listAdapter() =
   this.adapter<Any>(Types.newParameterizedType(List::class.java, V::class.java)) as JsonAdapter<List<V>>
 
 suspend inline fun <reified T> OkHttpClient.query(url: String, tokenSet: Token = DefaultToken): T {
-  return this.query(request(url, tokenSet), tokenSet)
+  return this.query(request(url, tokenSet))
 }
 
-suspend inline fun <reified T> OkHttpClient.query(request: Request, tokenSet: Token = DefaultToken): T {
-  val stringResult = this.queryForString(request, tokenSet)
+suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
+  val stringResult = this.queryForString(request)
 
   return moshi.adapter(T::class.java).fromJson(stringResult)!!
 }
@@ -57,17 +57,17 @@ suspend inline fun <reified T> OkHttpClient.queryPages(url: String, paginator: T
   return resultList
 }
 
-suspend inline fun <reified V> OkHttpClient.queryMap(request: Request, tokenSet: Token = DefaultToken): Map<String, V> {
-  val stringResult = this.queryForString(request, tokenSet)
+suspend inline fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {
+  val stringResult = this.queryForString(request)
 
   return moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
 
 suspend inline fun <reified V> OkHttpClient.queryMap(url: String, tokenSet: Token = DefaultToken): Map<String, V> =
-  this.queryMap(request(url, tokenSet), tokenSet)
+  this.queryMap(request(url, tokenSet))
 
-suspend inline fun <reified V> OkHttpClient.queryList(request: Request, tokenSet: Token = DefaultToken): List<V> {
-  val stringResult = this.queryForString(request, tokenSet)
+suspend inline fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
+  val stringResult = this.queryForString(request)
 
   return moshi.listAdapter<V>().fromJson(stringResult)!!
 }
@@ -81,34 +81,35 @@ data class Next(val url: String) : Pagination()
 data class Rest(val urls: List<String>) : Pagination()
 
 suspend inline fun <reified V> OkHttpClient.queryList(url: String, tokenSet: Token = DefaultToken): List<V> =
-  this.queryList(request(url, tokenSet), tokenSet)
+  this.queryList(request(url, tokenSet))
 
-suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request, tokenSet: Token = DefaultToken): Map<String, V>? {
-  val stringResult = this.queryForString(request, tokenSet)
+suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
+  val stringResult = this.queryForString(request)
 
   return moshi.mapAdapter<V>().fromJson(stringResult)
 }
 
 suspend inline fun <reified V> OkHttpClient.queryOptionalMap(url: String, tokenSet: Token = DefaultToken): Map<String, V>? =
-  this.queryOptionalMap(request(url, tokenSet), tokenSet)
+  this.queryOptionalMap(request(url, tokenSet))
 
 suspend inline fun <reified T> OkHttpClient.queryMapValue(url: String, tokenSet: Token = DefaultToken, vararg keys: String): T? =
-  this.queryMapValue<T>(request(url, tokenSet), tokenSet, *keys)
+  this.queryMapValue<T>(request(url, tokenSet), *keys)
 
-suspend inline fun <reified T> OkHttpClient.queryMapValue(request: Request, tokenSet: Token = DefaultToken, vararg keys: String): T? {
-  val queryMap = this.queryMap<Any>(request, tokenSet)
+suspend inline fun <reified T> OkHttpClient.queryMapValue(request: Request, vararg keys: String): T? {
+  val queryMap = this.queryMap<Any>(request)
 
   val result = keys.fold(queryMap as Any, { map, key -> (map as Map<String, Any>)[key]!! })
 
   return result as T
 }
 
+// TODO
 fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
-suspend fun OkHttpClient.queryForString(request: Request, tokenSet: Token = DefaultToken): String = execute(request).body()!!.string()
+suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
 
 suspend fun OkHttpClient.queryForString(url: String, tokenSet: Token = DefaultToken): String =
-  this.queryForString(request(url, tokenSet), tokenSet)
+  this.queryForString(request(url, tokenSet))
 
 suspend fun OkHttpClient.execute(request: Request): Response {
   val call = this.newCall(request)
@@ -147,4 +148,8 @@ fun OkHttpClient.warmup(vararg urls: String) {
   }
 }
 
-fun request(url: String, tokenSet: Token = DefaultToken) = Request.Builder().url(url).tag(tokenSet).build()!!
+fun request(url: String, tokenSet: Token = DefaultToken) = requestBuilder(url, tokenSet).build()!!
+fun request(url: HttpUrl, tokenSet: Token = DefaultToken) = requestBuilder(url, tokenSet).build()!!
+
+fun requestBuilder(url: String, tokenSet: Token = DefaultToken) = Request.Builder().url(url).tag(tokenSet)
+fun requestBuilder(url: HttpUrl, tokenSet: Token = DefaultToken) = Request.Builder().url(url).tag(tokenSet)

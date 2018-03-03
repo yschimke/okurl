@@ -10,7 +10,7 @@ object FileUtil {
     val file = File(normalize(name))
 
     if (!file.isFile) {
-      throw UsageException("file not found: " + file)
+      throw UsageException("file not found: $file")
     }
     return file
   }

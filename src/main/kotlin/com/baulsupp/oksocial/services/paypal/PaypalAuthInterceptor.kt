@@ -29,7 +29,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    val builder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
+    val builder = request.newBuilder().addHeader("Authorization", "Bearer $token")
 
     request = builder.build()
 

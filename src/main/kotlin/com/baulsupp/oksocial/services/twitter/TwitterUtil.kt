@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.services.twitter
 
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import okhttp3.Request
 
 object TwitterUtil {
@@ -14,7 +15,7 @@ object TwitterUtil {
 
   val TWITTER_HOSTS = TWITTER_API_HOSTS + TWITTER_WEB_HOSTS
 
-  fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
-    return requestBuilder.url("https://api.twitter.com" + s).build()
+  fun apiRequest(s: String): Request {
+    return requestBuilder("https://api.twitter.com$s").build()
   }
 }

@@ -10,6 +10,6 @@ object GoogleUtil {
   )
 
   fun fullScope(suffix: String): String {
-    return if (suffix.contains("/")) suffix else "https://www.googleapis.com/auth/" + suffix
+    return if (suffix.contains("/")) suffix else "https://www.googleapis.com/auth/$suffix"
   }
 }

@@ -19,7 +19,7 @@ class TwitterCachingInterceptor : Interceptor {
         }
 
         return originalResponse.newBuilder()
-          .header("Cache-Control", "max-age=" + cacheSeconds)
+          .header("Cache-Control", "max-age=$cacheSeconds")
           .removeHeader("expires")
           .removeHeader("pragma")
           .build()

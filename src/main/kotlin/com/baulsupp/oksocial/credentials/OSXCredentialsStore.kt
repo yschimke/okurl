@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.credentials
 
+import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.process.exec
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
@@ -46,7 +47,7 @@ class OSXCredentialsStore : CredentialsStore {
     return names.toSortedSet()
   }
 
-  private fun tokenKey(tokenSet: String): String = "oauth${tokenSet?.let { "." + it } ?: ""}"
+  private fun tokenKey(tokenSet: String): String = "oauth.$tokenSet"
 
   companion object {
     private val logger = Logger.getLogger(OSXCredentialsStore::class.java.name)

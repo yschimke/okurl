@@ -6,7 +6,7 @@ import okhttp3.Protocol
 
 suspend fun Main.listOptions(option: String): Collection<String> {
   return when (option) {
-    "service" -> serviceInterceptor.names()
+    "service" -> authenticatingInterceptor.names()
     "alias" -> commandRegistry.names()
     "tokenset" -> credentialsStore.names()
     "ipmode" -> IPvMode.values().map { it.code }

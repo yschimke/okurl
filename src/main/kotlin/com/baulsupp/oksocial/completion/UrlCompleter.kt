@@ -1,24 +1,21 @@
 package com.baulsupp.oksocial.completion
 
+import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CancellationException
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.withTimeout
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class UrlCompleter(val services: List<AuthInterceptor<*>>, val client: OkHttpClient,
-                   val credentialsStore: CredentialsStore,
-                   val completionVariableCache: CompletionVariableCache) : ArgumentCompleter {
+class UrlCompleter(val main: Main) : ArgumentCompleter {
   override suspend fun urlList(prefix: String, tokenSet: Token): UrlList {
     val fullUrl = parseUrl(prefix)
 
@@ -30,18 +27,18 @@ class UrlCompleter(val services: List<AuthInterceptor<*>>, val client: OkHttpCli
   }
 
   private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String, tokenSet: Token): UrlList {
-    return (services
+    return (main.authenticatingInterceptor.services
       .firstOrNull { it.supportsUrl(fullUrl) }
-      ?.apiCompleter(prefix, client, credentialsStore, completionVariableCache, tokenSet)
+      ?.apiCompleter(prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet)
       ?.siteUrls(fullUrl, tokenSet)
       ?: UrlList(UrlList.Match.EXACT, listOf()))
   }
 
   private suspend fun UrlCompleter.hostCompletion(prefix: String, tokenSet: Token): UrlList {
-    val futures = services.map {
+    val futures = main.authenticatingInterceptor.services.map {
       async(CommonPool) {
         withTimeout(2, TimeUnit.SECONDS) {
-          it.apiCompleter("", client, credentialsStore, completionVariableCache, tokenSet).prefixUrls()
+          it.apiCompleter("", client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
         }
       }
     }

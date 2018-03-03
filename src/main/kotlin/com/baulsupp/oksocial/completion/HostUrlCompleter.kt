@@ -17,7 +17,7 @@ open class HostUrlCompleter(private val hosts: Iterable<String>) : ApiCompleter 
         if (siteOnly) {
           listOf("https://$it/")
         } else {
-          listOf("https://" + it, "https://$it/")
+          listOf("https://$it", "https://$it/")
         }
       }
     }

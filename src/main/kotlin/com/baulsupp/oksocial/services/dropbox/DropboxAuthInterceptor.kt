@@ -6,13 +6,13 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.queryMapValue
+import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 
@@ -30,7 +30,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    val builder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
+    val builder = request.newBuilder().addHeader("Authorization", "Bearer $token")
 
     if (request.method() == "GET") {
       builder.method("POST", RequestBody.create(MediaType.parse("application/json"), "{}"))
@@ -52,8 +52,8 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
-    val request = Request.Builder().url("https://api.dropboxapi.com/2/users/get_current_account").post(body).build()
-    return ValidatedCredentials(client.queryMapValue<String>(request, TokenValue(credentials), "email"))
+    val request = requestBuilder("https://api.dropboxapi.com/2/users/get_current_account", TokenValue(credentials)).post(body).build()
+    return ValidatedCredentials(client.queryMapValue<String>(request, "email"))
   }
 
   override fun hosts(): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")

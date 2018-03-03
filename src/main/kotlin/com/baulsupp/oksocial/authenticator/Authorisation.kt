@@ -1,20 +1,17 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.commands.CommandLineClient
+import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
-import okhttp3.OkHttpClient
-import okhttp3.Response
 
-class Authorisation(val interceptor: ServiceInterceptor, val credentialsStore: CredentialsStore,
-                    val client: OkHttpClient, val outputHandler: OutputHandler<Response>, val defaulttokenSet: String) {
+class Authorisation(val main: CommandLineClient) {
 
   suspend fun authorize(auth: AuthInterceptor<*>?, token: String?,
                         authArguments: List<String>, tokenSet: String) {
     if (auth == null) {
       throw UsageException(
-        "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
     }
 
     if (token != null) {
@@ -26,15 +23,15 @@ class Authorisation(val interceptor: ServiceInterceptor, val credentialsStore: C
 
   private fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String, tokenSet: String) {
     val credentials = auth.serviceDefinition().parseCredentialsString(token)
-    credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
+    main.credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
   }
 
   suspend fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>, tokenSet: String) {
-    auth.serviceDefinition().accountsLink()?.let { outputHandler.info("Accounts: " + it) }
+    auth.serviceDefinition().accountsLink()?.let { main.outputHandler.info("Accounts: $it") }
 
-    val credentials = auth.authorize(client, outputHandler, authArguments)
+    val credentials = auth.authorize(client, main.outputHandler, authArguments)
 
-    credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
+    main.credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
 
     Secrets.instance.saveIfNeeded()
 
@@ -44,12 +41,12 @@ class Authorisation(val interceptor: ServiceInterceptor, val credentialsStore: C
   suspend fun <T> renew(auth: AuthInterceptor<T>?, tokenSet: String) {
     if (auth == null) {
       throw UsageException(
-        "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
     }
 
     val serviceDefinition = auth.serviceDefinition()
 
-    val credentials = credentialsStore.get(serviceDefinition, tokenSet)
+    val credentials = main.credentialsStore.get(serviceDefinition, tokenSet)
       ?: throw UsageException("no existing credentials")
 
     if (!auth.canRenew(credentials)) {
@@ -58,15 +55,15 @@ class Authorisation(val interceptor: ServiceInterceptor, val credentialsStore: C
 
     val newCredentials = auth.renew(client, credentials) ?: throw UsageException("failed to renew")
 
-    credentialsStore.set(serviceDefinition, tokenSet, newCredentials)
+    main.credentialsStore.set(serviceDefinition, tokenSet, newCredentials)
   }
 
   fun remove(auth: AuthInterceptor<*>?, tokenSet: String) {
     if (auth == null) {
       throw UsageException(
-        "unable to find authenticator. Specify name from " + interceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
     }
 
-    credentialsStore.remove(auth.serviceDefinition(), tokenSet)
+    main.credentialsStore.remove(auth.serviceDefinition(), tokenSet)
   }
 }

@@ -20,10 +20,10 @@ git push origin "$TAG_VERSION"
 
 RELEASE_BODY=$(cat <<EOF
 {
-  "tag_name": "$TAG_VERSION",
-  "target_commitish": "$BRANCH",
-  "name": "$TAG_VERSION",
-  "body": "Release $TAG_VERSION",
+  "tag_name": "${TAG_VERSION}",
+  "target_commitish": "${BRANCH}",
+  "name": "${TAG_VERSION}",
+  "body": "Release ${TAG_VERSION}",
   "draft": false,
   "prerelease": false
 }

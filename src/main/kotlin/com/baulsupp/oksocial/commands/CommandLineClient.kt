@@ -10,8 +10,8 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.Token
 import com.baulsupp.oksocial.TokenSet
 import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
+import com.baulsupp.oksocial.authenticator.AuthenticatingInterceptor
 import com.baulsupp.oksocial.authenticator.Authorisation
-import com.baulsupp.oksocial.authenticator.ServiceInterceptor
 import com.baulsupp.oksocial.brotli.BrotliInterceptor
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
@@ -190,7 +190,7 @@ open class CommandLineClient : HelpOption() {
   @Arguments(title = "arguments", description = "Remote resource URLs")
   var arguments: MutableList<String> = ArrayList()
 
-  lateinit var serviceInterceptor: ServiceInterceptor
+  lateinit var authenticatingInterceptor: AuthenticatingInterceptor
 
   lateinit var authorisation: Authorisation
 
@@ -211,7 +211,7 @@ open class CommandLineClient : HelpOption() {
     dns = when {
       dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers!!)
       dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
-        fromHosts({ client!! }, ipMode, "216.58.216.142", "216.239.34.10",
+        fromHosts({ client }, ipMode, "216.58.216.142", "216.239.34.10",
           "2607:f8b0:400a:809::200e"))
       else -> {
         if (dnsServers != null) {
@@ -344,6 +344,13 @@ open class CommandLineClient : HelpOption() {
     System.setProperty("apple.awt.UIElement", "true")
     LoggingUtil.configureLogging(debug, showHttp2Frames, sslDebug)
 
+    closeables.add(Closeable {
+      if (this::client.isInitialized) {
+        client.dispatcher().executorService().shutdown()
+        client.connectionPool().evictAll()
+      }
+    })
+
     if (!this::outputHandler.isInitialized) {
       outputHandler = buildHandler()
     }
@@ -356,51 +363,15 @@ open class CommandLineClient : HelpOption() {
       credentialsStore = CredentialFactory.createCredentialsStore()
     }
 
-    closeables.add(Closeable {
-      if (client != null) {
-        client!!.dispatcher().executorService().shutdown()
-        client!!.connectionPool().evictAll()
-      }
-    })
+    if (!this::authenticatingInterceptor.isInitialized) {
+      authenticatingInterceptor = AuthenticatingInterceptor(this)
+    }
+
+    if (!this::authorisation.isInitialized) {
+      authorisation = Authorisation(this)
+    }
 
     val clientBuilder = createClientBuilder()
-
-    if (user != null) {
-      val userParts = user!!.split(":".toRegex(), 2).toTypedArray()
-      if (userParts.size < 2) {
-        throw UsageException("--user should have user:password")
-      }
-      val credential = Credentials.basic(userParts[0], userParts[1])
-
-      clientBuilder.authenticator({ _, response ->
-        logger.fine("Challenges: " + response.challenges())
-
-        // authenticate once
-        if (response.request().header("Authorization") != null) {
-          null
-        } else {
-          response.request().newBuilder()
-            .header("Authorization", credential)
-            .build()
-        }
-      })
-    }
-
-    val dispatcher = Dispatcher()
-    dispatcher.maxRequests = maxRequests
-    dispatcher.maxRequestsPerHost = maxRequests
-    clientBuilder.dispatcher(dispatcher)
-
-    val authClient = clientBuilder.build()
-    serviceInterceptor = ServiceInterceptor(authClient, credentialsStore)
-
-    authorisation = Authorisation(serviceInterceptor!!, credentialsStore, authClient, outputHandler, tokenSet)
-
-    clientBuilder.networkInterceptors().add(serviceInterceptor)
-
-    if (zipkin || zipkinTrace) {
-      applyZipkin(clientBuilder)
-    }
 
     client = clientBuilder.build()
   }
@@ -427,10 +398,6 @@ open class CommandLineClient : HelpOption() {
     builder.addNetworkInterceptor(TwitterCachingInterceptor())
     builder.addNetworkInterceptor(BrotliInterceptor)
 
-    if (curl) {
-      builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
-    }
-
     if (debug) {
       val loggingInterceptor = HttpLoggingInterceptor(logger::info)
       loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
@@ -448,13 +415,51 @@ open class CommandLineClient : HelpOption() {
     }
 
     protocols?.let {
-      val protocolList = it.split(",").map { Protocol.get(it) }.let {
-        if (it.contains(Protocol.HTTP_1_1)) it else it + Protocol.HTTP_1_1
+      builder.protocols(protocolList(it))
+    }
+
+    // TODO rethink this auth
+    if (user != null) {
+      val userParts = user!!.split(":".toRegex(), 2).toTypedArray()
+      if (userParts.size < 2) {
+        throw UsageException("--user should have user:password")
       }
-      builder.protocols(protocolList)
+      val credential = Credentials.basic(userParts[0], userParts[1])
+
+      builder.authenticator({ _, response ->
+        logger.fine("Challenges: " + response.challenges())
+
+        // authenticate once
+        if (response.request().header("Authorization") != null) {
+          null
+        } else {
+          response.request().newBuilder()
+            .header("Authorization", credential)
+            .build()
+        }
+      })
+    }
+
+    val dispatcher = Dispatcher()
+    dispatcher.maxRequests = maxRequests
+    dispatcher.maxRequestsPerHost = maxRequests
+    builder.dispatcher(dispatcher)
+
+    if (zipkin || zipkinTrace) {
+      applyZipkin(builder)
+    }
+
+    builder.networkInterceptors().add(authenticatingInterceptor)
+
+    if (curl) {
+      builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
     }
 
     return builder
+  }
+
+  private fun protocolList(it: String): List<Protocol> = it.split(",").map { Protocol.get(it) }.let {
+    if (it.contains(Protocol.HTTP_1_1)) it else it + Protocol.HTTP_1_1
   }
 
   private fun applyZipkin(clientBuilder: OkHttpClient.Builder) {

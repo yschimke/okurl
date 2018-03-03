@@ -26,7 +26,7 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "token " + token).build()
+    request = request.newBuilder().addHeader("Authorization", "token $token").build()
 
     return chain.proceed(request)
   }

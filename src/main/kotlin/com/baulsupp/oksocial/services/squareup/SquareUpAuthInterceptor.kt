@@ -33,7 +33,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val token = credentials.accessToken
 
-    val reqBuilder = request.newBuilder().addHeader("Authorization", "Bearer " + token)
+    val reqBuilder = request.newBuilder().addHeader("Authorization", "Bearer $token")
     if (request.header("Accept") == null) {
       reqBuilder.addHeader("Accept", "application/json")
     }

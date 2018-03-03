@@ -20,7 +20,7 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
   override suspend fun read(): Location? {
     if (PlatformUtil.isOSX) {
       if (!File(LOCATION_APP).exists()) {
-        throw UsageException("Missing " + LOCATION_APP)
+        throw UsageException("Missing $LOCATION_APP")
       }
 
       return try {

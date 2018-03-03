@@ -33,10 +33,10 @@ class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
       try {
         it.await()
       } catch (e: ClientException) {
-        logger.log(Level.FINE, "failed getting siteUrls for " + url, e)
+        logger.log(Level.FINE, "failed getting siteUrls for $url", e)
         null
       } catch (e: CancellationException) {
-        logger.log(Level.FINE, "timeout for " + url, e)
+        logger.log(Level.FINE, "timeout for $url", e)
         null
       }
     }.flatten()

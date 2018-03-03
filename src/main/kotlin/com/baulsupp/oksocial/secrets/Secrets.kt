@@ -82,7 +82,7 @@ class Secrets(private val secrets: MutableMap<String, String>, private val file:
           System.console().readString(prompt)
         }
       } else {
-        System.err.println("using default value for " + key)
+        System.err.println("using default value for $key")
       }
 
       if (value.isEmpty()) {

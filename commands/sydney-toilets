@@ -3,7 +3,7 @@
 import com.baulsupp.oksocial.services.datasettes.model.*
 import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.location.*
-import kotlinx.coroutines.experimental.runBlocking 
+import kotlinx.coroutines.experimental.runBlocking
 
 fun queryPostcode(postcode: String) = runBlocking {
   client.query<DatasetteResultSet>("https://australian-dunnies.now.sh/dunnies-92a33eb/dunnies.json?Postcode=$postcode")
@@ -19,7 +19,7 @@ fun staticMap(start: Location, toilets: List<Location>): String {
   return "https://api.mapbox.com/v4/mapbox.dark/${markers.joinToString(",")}/auto/800x800.png";
 }
 
-val loc = location()
+val loc = runBlocking { location() }
 
 val toilets = queryPostcode("2037")
 

@@ -91,11 +91,11 @@ class DiscoveryApiDocPresenterTest {
       p!!.explainApi(requested, outputHandler, client, DefaultToken)
     }
 
-    val contains = outputHandler.stdout.contains(field + ": " + expected)
+    val contains = outputHandler.stdout.contains("$field: $expected")
 
     if (!contains) {
       val found = outputHandler.stdout.firstOrNull { s ->
-        s.startsWith(field + ": ")
+        s.startsWith("$field: ")
       }
 
       fail("expected '$expected' found " + (found?.substring(field.length + 2) ?: "nothing"))

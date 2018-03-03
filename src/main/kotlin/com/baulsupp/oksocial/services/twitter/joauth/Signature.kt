@@ -75,7 +75,7 @@ class Signature(private val clock: Clock = Clock.systemDefaultZone(),
       request.method(), request.url().encodedPath(), javaParams, oAuth1Params
     )
 
-    log.log(Level.FINE, "normalised " + normalized)
+    log.log(Level.FINE, "normalised $normalized")
     log.log(Level.FINE, "secret " + credentials.secret)
     log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret)
 

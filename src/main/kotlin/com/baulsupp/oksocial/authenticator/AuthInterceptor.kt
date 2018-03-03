@@ -58,8 +58,8 @@ abstract class AuthInterceptor<T> {
 
         outputHandler.info("service: " + sd.shortName())
         outputHandler.info("name: " + sd.serviceName())
-        sd.apiDocs()?.let { outputHandler.info("docs: " + it) }
-        sd.accountsLink()?.let { outputHandler.info("apps: " + it) }
+        sd.apiDocs()?.let { outputHandler.info("docs: $it") }
+        sd.accountsLink()?.let { outputHandler.info("apps: $it") }
       }
     }
   }

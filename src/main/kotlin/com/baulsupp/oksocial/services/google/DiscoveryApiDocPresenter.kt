@@ -47,7 +47,7 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
         best
       } else {
         // multiple services sharing baseurl - return first
-        outputHandler.info("Multiple services for path " + url)
+        outputHandler.info("Multiple services for path $url")
         null
       }
     }

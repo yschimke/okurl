@@ -21,8 +21,7 @@ class CompletionCommand(val main: Main) {
       return urls.getUrls(prefix).joinToString("\n")
     }
 
-    val completer = UrlCompleter(main.serviceInterceptor.services(), main.client, main.credentialsStore,
-      main.completionVariableCache)
+    val completer = UrlCompleter(main)
 
     val fullCompletionUrl = main.getFullCompletionUrl()
 

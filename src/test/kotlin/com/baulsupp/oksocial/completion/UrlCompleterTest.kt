@@ -1,19 +1,22 @@
 package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.DefaultToken
-import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.authenticator.AuthenticatingInterceptor
 import com.baulsupp.oksocial.services.test.TestAuthInterceptor
 import kotlinx.coroutines.experimental.runBlocking
-import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class UrlCompleterTest {
-  private val services = listOf<AuthInterceptor<*>>(TestAuthInterceptor())
+  private val main = Main()
 
-  private val completer = UrlCompleter(services, OkHttpClient(), CredentialsStore.NONE,
-          CompletionVariableCache.NONE)
+  init {
+    main.authenticatingInterceptor = AuthenticatingInterceptor(main, listOf(TestAuthInterceptor()))
+    main.initialise()
+  }
+
+  private val completer = UrlCompleter(main)
 
   @Test
   fun returnsAllUrls() {

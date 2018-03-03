@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.commands
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.kotlin.KotlinAppScriptFactory
+import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.output.util.UsageException
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -47,7 +48,7 @@ class OkApiCommand : ShellCommand, MainAware {
 
   fun credentials(name: String): Any? {
     if (!this::main.isInitialized) {
-      val interceptor = main.serviceInterceptor.getByName(name)
+      val interceptor = main.authenticatingInterceptor.getByName(name)
 
       if (interceptor != null) {
         return main.credentialsStore.get(interceptor.serviceDefinition(), main.tokenSet)
@@ -76,7 +77,7 @@ class OkApiCommand : ShellCommand, MainAware {
   private fun toRequest(o: Any?): Request {
     return when (o) {
       is Request -> o
-      is String -> Request.Builder().url(o).build()
+      is String -> request(o)
       null -> throw NullPointerException()
       else -> throw IllegalStateException("unable to use result " + o + " " + o.javaClass)
     }
