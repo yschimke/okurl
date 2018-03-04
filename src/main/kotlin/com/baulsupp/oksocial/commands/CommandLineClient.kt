@@ -148,7 +148,7 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: java.util.List<File>? = null
 
-  @Option(name = ["--connectionSpec"], description = "Connection Spec (MODERN_TLS, COMPATIBLE_TLS)")
+  @Option(name = ["--connectionSpec"], description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
   var connectionSpec: ConnectionSpecOption = ConnectionSpecOption.MODERN_TLS
 
   @Option(name = ["--cipherSuite"], description = "Cipher Suites")
@@ -264,6 +264,8 @@ open class CommandLineClient : HelpOption() {
       }
 
       builder.connectionSpecs(listOf(specBuilder.build(), ConnectionSpec.CLEARTEXT))
+    } else {
+      builder.connectionSpecs(listOf(connectionSpec.spec, ConnectionSpec.CLEARTEXT))
     }
 
     val keyManagers = mutableListOf<KeyManager>()

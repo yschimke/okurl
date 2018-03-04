@@ -88,6 +88,21 @@ function _oksocial_complete ()
             COMPREPLY=( $( compgen -W "${_oksocial_tokenset}" -- "$cur" ) )
             return
             ;;
+        --connectionSpec)
+            _oksocial_spec=${_oksocial_spec=$(oksocial --complete connectionSpec)}
+            COMPREPLY=( $( compgen -W "${_oksocial_spec}" -- "$cur" ) )
+            return
+            ;;
+        --cipherSuite)
+            _oksocial_cipher=${_oksocial_cipher=$(oksocial --complete cipherSuite)}
+            COMPREPLY=( $( compgen -W "${_oksocial_cipher}" -- "$cur" ) )
+            return
+            ;;
+        --tlsVersions)
+            _oksocial_tlsversion=${_oksocial_tlsversion=$(oksocial --complete tlsVersions)}
+            COMPREPLY=( $( compgen -W "${_oksocial_tlsversion}" -- "$cur" ) )
+            return
+            ;;
         --networkInterface)
             _available_interfaces -a
             return
