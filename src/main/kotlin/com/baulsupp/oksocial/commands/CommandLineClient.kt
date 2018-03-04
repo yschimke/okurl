@@ -149,7 +149,7 @@ open class CommandLineClient : HelpOption() {
   var serverCerts: java.util.List<File>? = null
 
   @Option(name = ["--connectionSpec"], description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
-  var connectionSpec: ConnectionSpecOption = ConnectionSpecOption.MODERN_TLS
+  var connectionSpec: ConnectionSpecOption? = null
 
   @Option(name = ["--cipherSuite"], description = "Cipher Suites")
   var cipherSuites: java.util.List<CipherSuiteOption>? = null
@@ -253,7 +253,7 @@ open class CommandLineClient : HelpOption() {
     }
 
     if (cipherSuites != null || tlsVersions != null) {
-      val specBuilder = ConnectionSpec.Builder(connectionSpec.spec)
+      val specBuilder = ConnectionSpec.Builder(connectionSpec?.spec ?: ConnectionSpec.MODERN_TLS)
 
       if (cipherSuites != null) {
         specBuilder.cipherSuites(*(cipherSuites!!.map { it.suite }.toTypedArray()))
@@ -264,8 +264,8 @@ open class CommandLineClient : HelpOption() {
       }
 
       builder.connectionSpecs(listOf(specBuilder.build(), ConnectionSpec.CLEARTEXT))
-    } else {
-      builder.connectionSpecs(listOf(connectionSpec.spec, ConnectionSpec.CLEARTEXT))
+    } else if (connectionSpec != null) {
+      builder.connectionSpecs(listOf(connectionSpec!!.spec, ConnectionSpec.CLEARTEXT))
     }
 
     val keyManagers = mutableListOf<KeyManager>()
