@@ -103,6 +103,11 @@ function _oksocial_complete ()
             COMPREPLY=( $( compgen -W "${_oksocial_tlsversion}" -- "$cur" ) )
             return
             ;;
+        --complete)
+            _oksocial_complete=${_oksocial_complete=$(oksocial --complete complete)}
+            COMPREPLY=( $( compgen -W "${_oksocial_complete}" -- "$cur" ) )
+            return
+            ;;
         --networkInterface)
             _available_interfaces -a
             return
