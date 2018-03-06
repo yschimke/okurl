@@ -13,21 +13,21 @@ function _oksocial_is_cache_valid ()
   cur=$2
 
   _ok_social_debug "checking $cache_file '$cur'"
-  if [ -f "$cache_file" ]; then
+  if [[ -f "$cache_file" ]]; then
     regex=$(head -n 1 ${cache_file})
     _ok_social_debug "regex $regex"
 
-    if [[ "$cur" =~ ^$regex$ ]]; then
+    if [[ ! -z "$regex" && "$cur" =~ ^$regex$ ]]; then
       _ok_social_debug "match"
-      return 1
+      return 0
     else
       _ok_social_debug "no match"
-      return 0
+      return 1
     fi
   else
     _ok_social_debug "no regex"
 
-    return 0
+    return 1
   fi
 }
 
@@ -44,12 +44,10 @@ function _oksocial_complete ()
   for i in "${COMP_WORDS[@]}"; do
     #_ok_social_debug i $i
     idx=$(expr ${idx} + 1)
-    if [ "$i" = "-s" ]; then
+    if [[ "$i" = "-s" ]]; then
       tokenset=${COMP_WORDS[$idx]}
     fi
   done
-
-  _ok_social_debug tokenset ${tokenset}
 
   case ${prev} in
         -d | --data | -H | --header | --user-agent | --connect-timeout | --read-timeout \
@@ -133,19 +131,18 @@ function _oksocial_complete ()
   cache_file=$TMPDIR$(basename ${job})${tokenset:+-$tokenset}-complete.cache
 
   if _oksocial_is_cache_valid ${cache_file} ${cur}; then
+    _ok_social_debug cached
+
+    paths=$(tail -n +2 ${cache_file})
+  else
     _ok_social_debug compute ${job} ${tokenset:+-s $tokenset} --urlCompletion "$cur"
 
     paths=$(COMPLETION_FILE=${cache_file} ${job} ${tokenset:+-s $tokenset} --urlCompletion "$cur")
 
-    _ok_social_debug result $(wc -l ${cache_file})
-  else
-    _ok_social_debug cached
-
-    if [ -f "$cache_file" ]; then
-      paths=$(tail -n +2 ${cache_file})
+    if [[ -f "$cache_file" ]]; then
+      _ok_social_debug result $(wc -l ${cache_file})
     else
-      _ok_social_debug missing cache file ${cache_file}
-      paths=
+      _ok_social_debug missing ${cache_file}
     fi
   fi
 
