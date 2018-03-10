@@ -22,7 +22,7 @@ import okhttp3.Response
 class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
-      "https://fb.quip.com/dev/automation/documentation",
+      "https://quip.com/dev/automation/documentation",
       "https://quip.com/dev/token")
   }
 
