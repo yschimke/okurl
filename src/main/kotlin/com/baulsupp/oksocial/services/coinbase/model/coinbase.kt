@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.services.coinbase.model
 
 data class Paging(val ending_before: String?, val starting_after: String?, val limit: Int, val order: String, val previous_uri: String?, val next_uri: String?)
 
-open class PageableResult<T>(open val data: List<T>, open val pagination: Paging)
+open class PageableResult<out T>(open val data: List<T>, open val pagination: Paging)
 
 data class Currency(val code: String, val name: String, val color: String, val exponent: Int, val type: String)
 

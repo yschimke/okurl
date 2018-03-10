@@ -10,7 +10,7 @@ data class Paging(val cursors: Cursors)
 
 data class Cursors(val before: String, val after: String)
 
-open class PageableResult<T>(open val data: List<T>, open val paging: Paging) : Result()
+open class PageableResult<out T>(open val data: List<T>, open val paging: Paging) : Result()
 
 open class IdResult(open val id: String) : Result()
 

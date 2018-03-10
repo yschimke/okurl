@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.services.surveymonkey.model.TokenResponse
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 
 object SurveyMonkeyAuthFlow {
@@ -34,7 +33,6 @@ object SurveyMonkeyAuthFlow {
       val request = requestBuilder("https://api.surveymonkey.net/oauth/token", NoToken)
         .post(body)
         .build()
-
 
       val response = client.query<TokenResponse>(request)
 

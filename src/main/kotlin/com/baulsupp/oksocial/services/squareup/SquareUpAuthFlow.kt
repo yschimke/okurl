@@ -10,7 +10,6 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.util.JsonUtil
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.net.URLEncoder.encode

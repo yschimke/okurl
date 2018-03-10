@@ -11,8 +11,8 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.process.exec
 import com.baulsupp.oksocial.output.util.UsageException
-import com.baulsupp.oksocial.process.exec
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 import com.baulsupp.oksocial.services.travisci.model.RepositoryList
 import com.baulsupp.oksocial.services.travisci.model.User
@@ -23,8 +23,9 @@ import okhttp3.ResponseBody
 
 class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   override fun serviceDefinition(): AbstractServiceDefinition<TravisToken> {
-    return object : AbstractServiceDefinition<TravisToken>("api.travis-ci.org", "Travis CI API", "travisci",
-      "https://docs.travis-ci.com/api/", null) {
+    return object :
+      AbstractServiceDefinition<TravisToken>("api.travis-ci.org", "Travis CI API", "travisci",
+        "https://docs.travis-ci.com/api/", null) {
       override fun parseCredentialsString(s: String): TravisToken {
         return TravisToken(s)
       }
@@ -59,7 +60,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): TravisToken {
+    authArguments: List<String>): TravisToken {
     if (!isTravisInstalled()) {
       throw UsageException("Requires travis command line installed")
     }
@@ -83,15 +84,15 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   }
 
   override suspend fun validate(client: OkHttpClient,
-                                credentials: TravisToken): ValidatedCredentials {
+    credentials: TravisToken): ValidatedCredentials {
     val user = client.query<User>("https://api.travis-ci.org/user", TokenValue(credentials))
     return ValidatedCredentials(user.name)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
@@ -100,7 +101,8 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
       listOf(client.query<User>("https://api.travis-ci.org/user", tokenSet).id)
     })
     completer.withVariable("repository.id", {
-      client.query<RepositoryList>("https://api.travis-ci.org/repos", tokenSet).repositories.map { it.slug.replace("/", "%2F") }
+      client.query<RepositoryList>("https://api.travis-ci.org/repos",
+        tokenSet).repositories.map { it.slug.replace("/", "%2F") }
     })
 
     return completer

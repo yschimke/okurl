@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.location
 
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.process.exec
 import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
-import com.baulsupp.oksocial.process.exec
 import okhttp3.Response
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -36,12 +36,14 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
           return null
         }
 
-        val parts = line.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val parts = line.trim { it <= ' ' }.split(
+          ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         Location(parts[0].toDouble(), parts[1].toDouble())
       } catch (e: TimeoutException) {
         logger.log(Level.FINE, "failed to get location", e)
-        outputHandler.showError("Timeout fetching location, consider populating ~/.oksocial-location.json")
+        outputHandler.showError(
+          "Timeout fetching location, consider populating ~/.oksocial-location.json")
         return null
       } catch (e: Exception) {
         logger.log(Level.WARNING, "failed to get location", e)

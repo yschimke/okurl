@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.credentials
 
-import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
-import com.baulsupp.oksocial.process.exec
+import com.baulsupp.oksocial.output.process.exec
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
 import java.nio.charset.StandardCharsets
@@ -24,7 +23,8 @@ class OSXCredentialsStore : CredentialsStore {
     remove(serviceDefinition, tokenSet)
 
     try {
-      keychain.addGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet), credentialsString)
+      keychain.addGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet),
+        credentialsString)
     } catch (e: OSXKeychainException) {
       logger.log(Level.WARNING, "Failed to write to keychain", e)
       throw RuntimeException(e)
@@ -42,7 +42,9 @@ class OSXCredentialsStore : CredentialsStore {
   override suspend fun names(): Set<String> {
     val output = exec("security", "dump-keychain").output.string(StandardCharsets.UTF_8)
 
-    val names = output.lines().filter { it.matches(".*\"acct\".*\"oauth\\..*\".*".toRegex()) }.map { it.replace(".*oauth\\.(\\w+).*".toRegex(), "$1") }
+    val names = output.lines().filter {
+      it.matches(".*\"acct\".*\"oauth\\..*\".*".toRegex())
+    }.map { it.replace(".*oauth\\.(\\w+).*".toRegex(), "$1") }
 
     return names.toSortedSet()
   }
