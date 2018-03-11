@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.services.uber
 
-import com.baulsupp.oksocial.NoToken
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.NoToken
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -58,7 +58,8 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.uber.com/v1/me", TokenValue(credentials))
+    val map = client.queryMap<Any>("https://api.uber.com/v1/me",
+      TokenValue(credentials))
     return ValidatedCredentials("${map["first_name"]} ${map["last_name"]}")
   }
 

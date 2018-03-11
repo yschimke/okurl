@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.circleci
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -50,7 +50,8 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me", TokenValue(credentials)).name)
+    ValidatedCredentials(client.query<User>("https://circleci.com/api/v1.1/me",
+      TokenValue(credentials)).name)
 
   override fun hosts(): Set<String> = setOf("circleci.com")
 

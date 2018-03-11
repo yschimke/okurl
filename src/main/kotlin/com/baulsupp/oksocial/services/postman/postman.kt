@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.postman
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.services.postman.model.CollectionResult

@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.coinbin
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials

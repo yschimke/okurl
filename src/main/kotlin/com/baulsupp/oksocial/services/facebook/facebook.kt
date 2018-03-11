@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryForString

@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.foursquare
 
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -47,7 +47,8 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.foursquare.com/v2/users/self?v=20160603", TokenValue(credentials))
+    val map = client.queryMap<Any>("https://api.foursquare.com/v2/users/self?v=20160603",
+      TokenValue(credentials))
     val userMap = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
     return ValidatedCredentials("${userMap["firstName"]} ${userMap["lastName"]}")
   }

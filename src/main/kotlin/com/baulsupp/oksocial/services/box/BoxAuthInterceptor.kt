@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.box
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -49,7 +49,8 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.box.com/2.0/users/me", TokenValue(credentials), "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.box.com/2.0/users/me",
+      TokenValue(credentials), "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = false
 

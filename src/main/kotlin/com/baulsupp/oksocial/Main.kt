@@ -15,6 +15,7 @@ import com.baulsupp.oksocial.completion.CompletionCommand
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
 import com.baulsupp.oksocial.kotlin.await
 import com.baulsupp.oksocial.okhttp.FailedResponse
@@ -391,6 +392,12 @@ class Main : CommandLineClient() {
         System.exit(-1)
       } catch (e: ParseOptionConversionException) {
         System.err.println("$command: ${e.message}")
+        System.exit(-1)
+      } catch (e: UsageException) {
+        System.err.println("${com.baulsupp.oksocial.Main.command}: ${e.message}")
+        System.exit(-1)
+      } catch (e: Throwable) {
+        e.printStackTrace()
         System.exit(-1)
       }
     }

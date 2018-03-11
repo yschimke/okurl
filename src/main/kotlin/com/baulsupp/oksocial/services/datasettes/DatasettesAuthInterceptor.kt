@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.datasettes
 
-import com.baulsupp.oksocial.NoToken
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.NoToken
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.CompletionOnlyAuthInterceptor
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -108,7 +108,8 @@ suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
 
 suspend fun fetchDatasetteTableMetadata(host: String, path: String,
                                         client: OkHttpClient) =
-  client.query<DatasetteTables>("https://$host/$path.json", NoToken)
+  client.query<DatasetteTables>("https://$host/$path.json",
+    NoToken)
 
 fun knownHosts(): Set<String> =
   DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.readText()?.split('\n')?.toSet() ?: setOf()

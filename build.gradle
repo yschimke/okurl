@@ -127,6 +127,7 @@ dependencies {
     implementation 'com.github.markusbernhardt:proxy-vole:1.0.4'
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'org.fusesource.jansi:jansi:1.17'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
@@ -150,8 +151,9 @@ distributions {
             from("${rootProject.projectDir}/certificates") {
                 into "certificates"
             }
-            from("${rootProject.projectDir}/commands") {
+            from("${rootProject.projectDir}/src/test/kotlin/commands") {
                 fileMode 0755
+                exclude "local"
                 into "bin"
             }
             from("${rootProject.projectDir}/bash") {

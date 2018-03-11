@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.twitter
 
-import com.baulsupp.oksocial.NoToken
+import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.kotlin.queryForString
 import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
@@ -17,7 +17,8 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
   suspend fun generateRequestToken(unauthed: TwitterCredentials,
                                    callback: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_callback", callback).build()
-    var request = requestBuilder("https://api.twitter.com/oauth/request_token", NoToken)
+    var request = requestBuilder("https://api.twitter.com/oauth/request_token",
+      NoToken)
       .post(body)
       .build()
 
@@ -36,7 +37,8 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
   suspend fun generateAccessToken(requestCredentials: TwitterCredentials,
                                   verifier: String): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_verifier", verifier).build()
-    var request = requestBuilder("https://api.twitter.com/oauth/access_token", NoToken)
+    var request = requestBuilder("https://api.twitter.com/oauth/access_token",
+      NoToken)
       .post(body)
       .build()
 

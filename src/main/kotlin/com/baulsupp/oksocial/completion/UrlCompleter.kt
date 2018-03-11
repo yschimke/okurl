@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.completion
 
 import com.baulsupp.oksocial.Main
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CancellationException

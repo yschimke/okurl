@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.squareup
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -44,7 +44,8 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me", TokenValue(credentials)).name)
+    ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me",
+      TokenValue(credentials)).name)
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.spotify
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -77,7 +77,8 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me", TokenValue(credentials), "display_name"))
+    return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me",
+      TokenValue(credentials), "display_name"))
   }
 
   override fun hosts(): Set<String> = setOf("api.spotify.com")

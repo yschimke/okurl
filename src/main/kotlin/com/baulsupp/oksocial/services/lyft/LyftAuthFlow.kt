@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.lyft
 
-import com.baulsupp.oksocial.NoToken
+import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.queryMap
@@ -28,7 +28,8 @@ object LyftAuthFlow {
       val body = RequestBody.create(MediaType.parse("application/json"),
         "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
       val basic = Credentials.basic(clientId, clientSecret)
-      val request = requestBuilder("https://api.lyft.com/oauth/token", NoToken)
+      val request = requestBuilder("https://api.lyft.com/oauth/token",
+        NoToken)
         .post(body)
         .header("Authorization", basic)
         .build()

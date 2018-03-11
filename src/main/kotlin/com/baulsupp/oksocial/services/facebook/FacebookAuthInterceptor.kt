@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -69,8 +69,10 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
-    val userName = client.fbQuery<UserOrPage>("/me", TokenValue(credentials)).name
-    val appName = client.fbQuery<App>("/app", TokenValue(credentials)).name
+    val userName = client.fbQuery<UserOrPage>("/me",
+      TokenValue(credentials)).name
+    val appName = client.fbQuery<App>("/app",
+      TokenValue(credentials)).name
 
     return ValidatedCredentials(userName, appName)
   }

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.coinbase
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -89,7 +89,8 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .add("grant_type", "refresh_token")
       .build()
 
-    val request = requestBuilder("https://api.coinbase.com/oauth/token", TokenValue(credentials))
+    val request = requestBuilder("https://api.coinbase.com/oauth/token",
+      TokenValue(credentials))
       .post(body)
       .build()
 
@@ -122,7 +123,8 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user", TokenValue(credentials), "data", "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user",
+      TokenValue(credentials), "data", "name"))
 
   override fun hosts(): Set<String> = setOf("api.coinbase.com")
 }

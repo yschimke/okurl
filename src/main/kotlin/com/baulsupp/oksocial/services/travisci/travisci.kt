@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.travisci
 
-import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.kotlin.Rest
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.queryPages

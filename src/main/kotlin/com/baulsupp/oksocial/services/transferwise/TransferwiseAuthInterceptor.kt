@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.transferwise
 
-import com.baulsupp.oksocial.NoToken
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.NoToken
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -47,7 +47,8 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me", TokenValue(credentials), "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me",
+      TokenValue(credentials), "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.isRenewable()
@@ -60,7 +61,8 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .add("refresh_token", credentials.refreshToken!!)
       .build()
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
-    val request = requestBuilder("https://" + host() + "/oauth/token", NoToken)
+    val request = requestBuilder("https://" + host() + "/oauth/token",
+      NoToken)
       .post(body)
       .header("Authorization", basic)
       .build()

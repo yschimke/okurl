@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.i9n
 
-import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
@@ -26,7 +26,7 @@ class GithubTest {
     credentialsStore.set(service, DefaultToken.name, Oauth2Token("ABC"))
 
     main.commandName = "okapi"
-    main.arguments = mutableListOf("commands/githubapi", "/")
+    main.arguments = mutableListOf("src/test/kotlin/commands/githubapi", "/")
     main.urlComplete = true
 
     main.run()

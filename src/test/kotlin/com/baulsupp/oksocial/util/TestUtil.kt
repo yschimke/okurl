@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.util
 
-import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
@@ -41,7 +41,8 @@ object TestUtil {
       serviceDefinition: ServiceDefinition<out Any>) {
     initialise()
 
-    val token = credentialsStore.get(serviceDefinition, DefaultToken)
+    val token = credentialsStore.get(serviceDefinition,
+      DefaultToken)
 
     Assumptions.assumeTrue(token != null)
   }

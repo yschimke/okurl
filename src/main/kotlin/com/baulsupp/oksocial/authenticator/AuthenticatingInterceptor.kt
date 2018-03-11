@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.NoToken
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.NoToken
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.kotlin.client
 import kotlinx.coroutines.experimental.runBlocking
@@ -22,7 +22,8 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
     // TODO log bad tags?
-    val tokenSet = chain.request().tag() as? Token ?: NoToken
+    val tokenSet = chain.request().tag() as? Token
+      ?: NoToken
 
     val credentials = when (tokenSet) {
     // TODO make this safe

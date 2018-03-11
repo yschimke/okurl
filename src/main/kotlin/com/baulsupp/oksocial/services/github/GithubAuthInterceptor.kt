@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.github
 
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -44,7 +44,8 @@ class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user", TokenValue(credentials), "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.github.com/user",
+      TokenValue(credentials), "name"))
 
   override fun hosts(): Set<String> = setOf("api.github.com", "uploads.github.com")
 }

@@ -2,15 +2,17 @@
 
 import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.location.Location
+import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.services.mapbox.model.MapboxDrivingResults
 import com.baulsupp.oksocial.services.mapbox.model.MapboxPlacesResult
 import com.baulsupp.oksocial.services.uber.model.UberPriceEstimates
 import com.baulsupp.oksocial.services.uber.model.UberTimeEstimates
+import com.baulsupp.oksocial.util.ClientException
 import java.net.URLEncoder
 import kotlin.system.exitProcess
 
 fun staticMap(start: Location, dest: Location? = null, route: String? = null): String {
-  var markers = mutableListOf<String>();
+  val markers = mutableListOf<String>();
   markers.add("pin-m-marker+CCC(" + start.longitude + "," + start.latitude + ")");
 
   if (dest != null) {
@@ -47,9 +49,13 @@ fun uberResults(vararg args: String) {
 
   val dest = firstDestination.center
 
-  val route = query<MapboxDrivingResults>("https://api.mapbox.com/directions/v5/mapbox/driving/${loc.longitude},${loc.latitude};${dest.longitude},${dest.latitude}?overview=full&geometries=polyline")
+  val route = try {
+    query<MapboxDrivingResults>("https://api.mapbox.com/directions/v5/mapbox/driving/${loc.longitude},${loc.latitude};${dest.longitude},${dest.latitude}?overview=full&geometries=polyline")
+  } catch (e: ClientException) {
+    null
+  }
 
-  show(staticMap(loc, dest, route.routes.firstOrNull()?.geometry))
+  show(staticMap(loc, dest, route?.routes?.firstOrNull()?.geometry))
 
   val prices = query<UberPriceEstimates>("https://api.uber.com/v1.2/estimates/price?start_latitude=${loc.latitude}&start_longitude=${loc.longitude}&end_latitude=${dest.latitude}&end_longitude=${dest.longitude}")
   val times = query<UberTimeEstimates>("https://api.uber.com/v1.2/estimates/time?start_latitude=${loc.latitude}&start_longitude=${loc.longitude}&end_latitude=${dest.latitude}&end_longitude=${dest.longitude}")
@@ -61,5 +67,8 @@ fun uberResults(vararg args: String) {
     println(price.localizedDisplayName.padEnd(15) + "\t" + timeEstimate.padEnd(15) + "\t" + price.estimate);
   }
 }
+
+if (arguments.isEmpty())
+  throw UsageException("usage: uberprices Destination")
 
 uberResults(*arguments.toTypedArray())

@@ -41,7 +41,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     ValidatedCredentials("✓", null)
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token(
-    "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2l0eGRkc245MDAzODJ5cDF2Z3l2czJjaSJ9.9XMBjr0vkbh2WD74DQcd3w")
+    "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2plbW82ZDRmMHFjYTJxczMwbjZyb283biJ9.kR_CuRmA-qdRAU0rAlzN_Q")
 
   override fun hosts(): Set<String> = setOf((
     "api.mapbox.com")

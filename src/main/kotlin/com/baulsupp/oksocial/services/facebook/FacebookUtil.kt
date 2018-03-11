@@ -1,8 +1,10 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.kotlin.edit
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.request
+import com.baulsupp.oksocial.kotlin.tokenSet
 import com.baulsupp.oksocial.services.facebook.model.Metadata
 import com.baulsupp.oksocial.services.facebook.model.MetadataResult
 import com.baulsupp.oksocial.util.ClientException
@@ -15,13 +17,13 @@ object FacebookUtil {
 
   val API_HOSTS = setOf("graph.facebook.com", "www.facebook.com")
 
-  fun apiRequest(s: String, requestBuilder: Request.Builder): Request {
-    return requestBuilder.url("https://graph.facebook.com$s").build()
-  }
-
-  suspend fun getMetadata(client: OkHttpClient, url: HttpUrl, tokenSet: Token): Metadata? {
-    val newUrl = url.newBuilder().addQueryParameter("metadata", "1").build()
-    val request = request(newUrl, tokenSet)
+  suspend fun getMetadata(client: OkHttpClient, requestUrl: HttpUrl, tokenSet: Token): Metadata? {
+    val request = request {
+      url(requestUrl.edit {
+        addQueryParameter("metadata", "1")
+      })
+      tokenSet(tokenSet)
+    }
 
     return try {
       val response = client.query<MetadataResult>(request)

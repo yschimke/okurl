@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.completion
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.queryMap
 import okhttp3.OkHttpClient
 

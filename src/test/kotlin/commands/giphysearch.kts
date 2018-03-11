@@ -6,9 +6,7 @@ import com.baulsupp.oksocial.services.giphy.model.*
 var results = query<SearchResults>("https://api.giphy.com/v1/gifs/search?q=" + arguments.joinToString("+"))
 
 results.data.map { image ->
-  if (image.url != null) {
-    println(image.url)
+  println(image.url)
 
-    image.images["fixed_height_small"]?.url?.let { show(it) }
-  }
+  image.images["fixed_height_small"]?.url?.let { show(it) }
 }

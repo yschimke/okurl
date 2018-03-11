@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial
+package com.baulsupp.oksocial.credentials
 
 sealed class Token {
   open fun name(): String? = null

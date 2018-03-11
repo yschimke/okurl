@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.stackexchange
 
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.kotlin.queryMap
@@ -42,7 +42,8 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: StackExchangeToken): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.stackexchange.com/2.2/me?site=drupal", TokenValue(credentials))
+    val map = client.queryMap<Any>("https://api.stackexchange.com/2.2/me?site=drupal",
+      TokenValue(credentials))
     return ValidatedCredentials(extract(map))
   }
 

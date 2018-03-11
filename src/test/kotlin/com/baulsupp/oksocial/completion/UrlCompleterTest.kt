@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.completion
 
-import com.baulsupp.oksocial.DefaultToken
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.AuthenticatingInterceptor
 import com.baulsupp.oksocial.services.test.TestAuthInterceptor
@@ -46,7 +46,8 @@ class UrlCompleterTest {
     runBlocking {
       assertEquals(listOf("https://api1.test.com/users.json",
               "https://api1.test.com/usersList.json"),
-              completer.urlList("https://api1.test.com/u", DefaultToken).getUrls("https://api1.test.com/u"))
+              completer.urlList("https://api1.test.com/u",
+                DefaultToken).getUrls("https://api1.test.com/u"))
     }
   }
 }

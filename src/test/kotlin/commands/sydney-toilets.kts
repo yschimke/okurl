@@ -8,13 +8,13 @@ fun queryPostcode(postcode: String) =
   query<DatasetteResultSet>("https://australian-dunnies.now.sh/dunnies-92a33eb/dunnies.json?Postcode=$postcode")
 
 fun staticMap(start: Location, toilets: List<Location>): String {
-  var markers = mutableListOf<String>();
+  val markers = mutableListOf<String>()
 
   toilets.forEach {
-  	markers.add("pin-s-hospital(" + it.longitude + "," + it.latitude + ")");
+  	markers.add("pin-s-hospital(" + it.longitude + "," + it.latitude + ")")
   }
 
-  return "https://api.mapbox.com/v4/mapbox.dark/${markers.joinToString(",")}/auto/800x800.png";
+  return "https://api.mapbox.com/v4/mapbox.dark/${markers.joinToString(",")}/auto/800x800.png"
 }
 
 val loc = location()

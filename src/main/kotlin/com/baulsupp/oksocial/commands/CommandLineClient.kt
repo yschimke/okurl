@@ -5,16 +5,16 @@ import brave.http.HttpTracing
 import brave.internal.Platform
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
-import com.baulsupp.oksocial.DefaultToken
 import com.baulsupp.oksocial.Main
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenSet
 import com.baulsupp.oksocial.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.oksocial.authenticator.AuthenticatingInterceptor
 import com.baulsupp.oksocial.authenticator.Authorisation
 import com.baulsupp.oksocial.brotli.BrotliInterceptor
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.DefaultToken
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenSet
 import com.baulsupp.oksocial.location.BestLocation
 import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
@@ -65,6 +65,10 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.io.IOUtils
+import org.fusesource.jansi.Ansi.Color.GREEN
+import org.fusesource.jansi.Ansi.Color.RED
+import org.fusesource.jansi.Ansi.ansi
+import org.fusesource.jansi.AnsiConsole
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.io.Closeable
@@ -85,10 +89,12 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
 
-  @Option(name = ["--connect-timeout"], description = "Maximum time allowed for connection (seconds). (0 = disabled)")
+  @Option(name = ["--connect-timeout"],
+    description = "Maximum time allowed for connection (seconds). (0 = disabled)")
   var connectTimeout: Int = 5
 
-  @Option(name = ["--read-timeout"], description = "Maximum time allowed for reading data (seconds). (0 = disabled)")
+  @Option(name = ["--read-timeout"],
+    description = "Maximum time allowed for reading data (seconds). (0 = disabled)")
   var readTimeout: Int = 20
 
   @Option(name = ["--ping-interval"], description = "Interval between pings. (0 = disabled)")
@@ -121,10 +127,12 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--zipkinTrace"], description = "Activate Detailed Zipkin Tracing")
   var zipkinTrace = false
 
-  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)", allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
+  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
+    allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(name = ["--dns"], description = "DNS (netty, java, dnsgoogle)", allowedValues = ["java", "netty", "dnsgoogle"])
+  @Option(name = ["--dns"], description = "DNS (netty, java, dnsgoogle)",
+    allowedValues = ["java", "netty", "dnsgoogle"])
   var dnsMode = DnsMode.JAVA
 
   @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
@@ -148,7 +156,8 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: java.util.List<File>? = null
 
-  @Option(name = ["--connectionSpec"], description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
+  @Option(name = ["--connectionSpec"],
+    description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
   var connectionSpec: ConnectionSpecOption? = null
 
   @Option(name = ["--cipherSuite"], description = "Cipher Suites")
@@ -209,7 +218,8 @@ open class CommandLineClient : HelpOption() {
   fun buildDns(): Dns {
     var dns: Dns
     dns = when {
-      dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers!!)
+      dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(),
+        this.dnsServers!!)
       dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
         fromHosts({ client }, ipMode, "216.58.216.142", "216.239.34.10",
           "2607:f8b0:400a:809::200e"))
@@ -298,7 +308,9 @@ open class CommandLineClient : HelpOption() {
       trustManager = CertificateUtils.combineTrustManagers(trustManagers)
     }
 
-    builder.sslSocketFactory(KeystoreUtils.createSslSocketFactory(KeystoreUtils.keyManagerArray(keyManagers), trustManager),
+    builder.sslSocketFactory(
+      KeystoreUtils.createSslSocketFactory(KeystoreUtils.keyManagerArray(keyManagers),
+        trustManager),
       trustManager)
 
     if (certificatePins != null) {
@@ -460,7 +472,9 @@ open class CommandLineClient : HelpOption() {
     return builder
   }
 
-  private fun protocolList(it: String): List<Protocol> = it.split(",").map { Protocol.get(it) }.let {
+  private fun protocolList(it: String): List<Protocol> = it.split(",").map {
+    Protocol.get(it)
+  }.let {
     if (it.contains(Protocol.HTTP_1_1)) it else it + Protocol.HTTP_1_1
   }
 
@@ -495,7 +509,9 @@ open class CommandLineClient : HelpOption() {
       })
     }
 
-    clientBuilder.eventListenerFactory { call -> ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace) }
+    clientBuilder.eventListenerFactory { call ->
+      ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace)
+    }
 
     clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
 
@@ -530,7 +546,9 @@ open class CommandLineClient : HelpOption() {
   }
 
   fun token(): Token {
-    return tokenSet?.let { TokenSet(it) } ?: DefaultToken
+    return tokenSet?.let {
+      TokenSet(it)
+    } ?: DefaultToken
   }
 
   companion object {

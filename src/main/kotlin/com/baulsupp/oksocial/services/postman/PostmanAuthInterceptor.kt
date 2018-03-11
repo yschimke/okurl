@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.postman
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -48,7 +48,8 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me", TokenValue(credentials)).user.id)
+    ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me",
+      TokenValue(credentials)).user.id)
 
   override fun hosts(): Set<String> = setOf("api.getpostman.com")
 

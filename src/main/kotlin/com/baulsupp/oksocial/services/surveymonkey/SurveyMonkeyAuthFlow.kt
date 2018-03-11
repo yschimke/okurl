@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.surveymonkey
 
-import com.baulsupp.oksocial.NoToken
+import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.kotlin.query
@@ -30,7 +30,8 @@ object SurveyMonkeyAuthFlow {
         .add("grant_type", "authorization_code")
         .build()
 
-      val request = requestBuilder("https://api.surveymonkey.net/oauth/token", NoToken)
+      val request = requestBuilder("https://api.surveymonkey.net/oauth/token",
+        NoToken)
         .post(body)
         .build()
 

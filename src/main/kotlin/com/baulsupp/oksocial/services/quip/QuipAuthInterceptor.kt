@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.quip
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -68,7 +68,8 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(currentUser(client, TokenValue(credentials)).name)
+    ValidatedCredentials(currentUser(client,
+      TokenValue(credentials)).name)
 
   private suspend fun currentUser(client: OkHttpClient, tokenSet: Token) =
     client.query<User>("https://platform.quip.com/1/users/current", tokenSet)

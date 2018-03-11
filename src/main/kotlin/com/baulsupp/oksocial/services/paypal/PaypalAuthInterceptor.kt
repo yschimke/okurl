@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.paypal
 
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -38,7 +38,8 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.paypal.com/v1/oauth2/token/userinfo?schema=openid", TokenValue(credentials), "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://api.paypal.com/v1/oauth2/token/userinfo?schema=openid",
+      TokenValue(credentials), "name"))
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
                                  authArguments: List<String>): Oauth2Token {

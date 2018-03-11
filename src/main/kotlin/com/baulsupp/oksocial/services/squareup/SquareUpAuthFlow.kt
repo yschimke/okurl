@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.squareup
 
-import com.baulsupp.oksocial.NoToken
+import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2TokenResponse

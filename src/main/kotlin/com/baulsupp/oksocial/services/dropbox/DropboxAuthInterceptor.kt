@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.dropbox
 
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
@@ -52,7 +52,8 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
-    val request = requestBuilder("https://api.dropboxapi.com/2/users/get_current_account", TokenValue(credentials)).post(body).build()
+    val request = requestBuilder("https://api.dropboxapi.com/2/users/get_current_account",
+      TokenValue(credentials)).post(body).build()
     return ValidatedCredentials(client.queryMapValue<String>(request, "email"))
   }
 

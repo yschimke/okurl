@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.transferwise
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter

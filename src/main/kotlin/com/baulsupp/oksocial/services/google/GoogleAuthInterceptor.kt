@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.google
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -79,7 +79,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo", TokenValue(credentials), "name"))
+    ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo",
+      TokenValue(credentials), "name"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 

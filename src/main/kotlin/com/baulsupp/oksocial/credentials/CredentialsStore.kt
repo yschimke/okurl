@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.credentials
 
-import com.baulsupp.oksocial.DefaultToken
-import com.baulsupp.oksocial.Token
 import org.jetbrains.kotlin.utils.keysToMapExceptNulls
 
 interface CredentialsStore {

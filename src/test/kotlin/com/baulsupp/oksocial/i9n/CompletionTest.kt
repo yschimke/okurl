@@ -83,7 +83,7 @@ class CompletionTest {
   @Test
   fun completeEndpointsForTwitter() {
     main.commandName = "okapi"
-    main.arguments = mutableListOf("commands/twitterapi", "/")
+    main.arguments = mutableListOf("src/test/kotlin/commands/twitterapi", "/")
 
     main.run()
 

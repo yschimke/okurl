@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.hitbtc
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -47,7 +47,8 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: BasicCredentials): ValidatedCredentials {
-    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance", TokenValue(credentials)).let { "✓" }
+    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance",
+      TokenValue(credentials)).let { "✓" }
     return ValidatedCredentials(account)
   }
 

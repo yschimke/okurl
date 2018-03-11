@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.google.firebase
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.HostUrlCompleter
@@ -55,7 +55,7 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun keyList(encodedPath: HttpUrl.Builder, tokenSet: Token): List<String> {
-    val request = request(encodedPath.addQueryParameter("shallow", "true").build(), tokenSet)
+    val request = request(tokenSet = tokenSet) { encodedPath.addQueryParameter("shallow", "true").build() }
     return client.queryOptionalMap<Any>(request)?.keys?.toList().orEmpty()
   }
 

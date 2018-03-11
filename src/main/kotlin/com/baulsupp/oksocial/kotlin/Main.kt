@@ -1,9 +1,16 @@
 package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.commands.CommandLineClient
+import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.util.ClientException
 import io.airlift.airline.Command
+import io.airlift.airline.ParseOptionConversionException
+import io.airlift.airline.ParseOptionMissingValueException
+import org.conscrypt.OpenSSLProvider
 import java.io.File
+import java.security.Security
 import javax.script.ScriptException
+import kotlin.reflect.KClass
 
 @Command(name = Main.NAME, description = "Kotlin scripting for APIs")
 class Main : CommandLineClient() {
@@ -29,7 +36,20 @@ class Main : CommandLineClient() {
       return 0
     } catch (se: ScriptException) {
       val cause = se.cause
+
+      val message = se.message
+      checkKnownException(UsageException::class, message)
+      checkKnownException(ClientException::class, message)
+
       throw cause ?: se
+    }
+  }
+
+  private fun checkKnownException(exceptionClass: KClass<*>, message: String?) {
+    val badprefix = "${exceptionClass.qualifiedName}: "
+    if (message != null && message.startsWith(badprefix)) {
+      // TODO better handling
+      throw UsageException(message.lines().first().substring(badprefix.length))
     }
   }
 
@@ -38,8 +58,24 @@ class Main : CommandLineClient() {
 
     @JvmStatic
     fun main(vararg args: String) {
-      val result = CommandLineClient.fromArgs<Main>(*args).run()
-      System.exit(result)
+      Security.insertProviderAt(OpenSSLProvider(), 1)
+
+      try {
+        val result = CommandLineClient.fromArgs<Main>(*args).run()
+        System.exit(result)
+      } catch (e: ParseOptionMissingValueException) {
+        System.err.println("${com.baulsupp.oksocial.Main.command}: ${e.message}")
+        System.exit(-1)
+      } catch (e: ParseOptionConversionException) {
+        System.err.println("${com.baulsupp.oksocial.Main.command}: ${e.message}")
+        System.exit(-1)
+      } catch (e: UsageException) {
+        System.err.println("${com.baulsupp.oksocial.Main.command}: ${e.message}")
+        System.exit(-1)
+      } catch (e: Throwable) {
+        e.printStackTrace()
+        System.exit(-1)
+      }
     }
   }
 }

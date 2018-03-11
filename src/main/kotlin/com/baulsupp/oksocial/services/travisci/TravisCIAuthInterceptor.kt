@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.travisci
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -85,7 +85,8 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
 
   override suspend fun validate(client: OkHttpClient,
     credentials: TravisToken): ValidatedCredentials {
-    val user = client.query<User>("https://api.travis-ci.org/user", TokenValue(credentials))
+    val user = client.query<User>("https://api.travis-ci.org/user",
+      TokenValue(credentials))
     return ValidatedCredentials(user.name)
   }
 

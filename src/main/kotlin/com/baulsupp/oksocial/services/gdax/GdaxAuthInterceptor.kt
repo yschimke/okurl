@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.gdax
 
-import com.baulsupp.oksocial.Token
-import com.baulsupp.oksocial.TokenValue
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -58,7 +58,8 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
 
   override suspend fun validate(client: OkHttpClient,
                                 credentials: GdaxCredentials): ValidatedCredentials {
-    val accounts = client.queryList<Account>("https://api.gdax.com/accounts", TokenValue(credentials))
+    val accounts = client.queryList<Account>("https://api.gdax.com/accounts",
+      TokenValue(credentials))
     return ValidatedCredentials(accounts.map { it.id }.first())
   }
 

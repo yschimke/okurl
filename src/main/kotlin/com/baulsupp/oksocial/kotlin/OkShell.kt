@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.kotlin
 
-import com.baulsupp.oksocial.DefaultToken
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.DefaultToken
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.output.ConsoleHandler
@@ -35,8 +35,8 @@ val okshell: OkShell by lazy { OkShell.instance ?: OkShell.create() }
 
 val client: OkHttpClient by lazy { okshell.commandLine.client }
 
-inline fun <reified T> query(url: String, tokenSet: Token = DefaultToken): T {
-  return query(request(url, tokenSet))
+inline fun <reified T> query(url: String, tokenSet: Token = DefaultToken, noinline init: Request.Builder.() -> Unit = {}): T {
+  return query(request(url, tokenSet, init))
 }
 
 inline fun <reified T> query(request: Request): T {

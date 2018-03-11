@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.google
 
-import com.baulsupp.oksocial.Token
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.output.OutputHandler
 import kotlinx.coroutines.experimental.CancellationException
