@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.kotlin
 
+import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.Token
-import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.services.mapbox.model.MapboxLatLongAdapter
@@ -14,6 +14,7 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.text.SimpleDateFormat
@@ -35,7 +36,8 @@ val okshell: OkShell by lazy { OkShell.instance ?: OkShell.create() }
 
 val client: OkHttpClient by lazy { okshell.commandLine.client }
 
-inline fun <reified T> query(url: String, tokenSet: Token = DefaultToken, noinline init: Request.Builder.() -> Unit = {}): T {
+inline fun <reified T> query(url: String, tokenSet: Token = DefaultToken,
+  noinline init: Request.Builder.() -> Unit = {}): T {
   return query(request(url, tokenSet, init))
 }
 
@@ -58,16 +60,19 @@ fun warmup(vararg urls: String) {
 fun location(): Location? = runBlocking { okshell.commandLine.locationSource.read() }
 
 fun show(url: String) {
-  val request = request(url)
+  runBlocking {
+    val response = client.execute(request(url))
 
-  val call = client.newCall(request)
+    okshell.commandLine.outputHandler.showOutput(response)
+  }
+}
 
-  val response = call.execute()
-
+fun showOutput(response: Response) {
   okshell.commandLine.outputHandler.showOutput(response)
 }
 
-fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = client.newWebSocket(Request.Builder().url(url).build(), listener)
+fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = client.newWebSocket(
+  Request.Builder().url(url).build(), listener)
 
 var dateOnlyformat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
@@ -76,6 +81,7 @@ fun epochSecondsToDate(seconds: Long) = dateOnlyformat.format(Date(seconds * 100
 val terminalWidth: Int by lazy { runBlocking { (okshell.commandLine.outputHandler as ConsoleHandler).terminalWidth() } }
 
 fun jsonPostRequest(url: String, body: String): Request =
-  requestBuilder(url, DefaultToken).post(RequestBody.create(MediaType.parse("application/json"), body)).build()
+  requestBuilder(url, DefaultToken).post(
+    RequestBody.create(MediaType.parse("application/json"), body)).build()
 
 var arguments: List<String> = listOf()
