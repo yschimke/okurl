@@ -7,7 +7,7 @@ import com.baulsupp.oksocial.location.*
 fun queryPostcode(postcode: String) =
   query<DatasetteResultSet>("https://australian-dunnies.now.sh/dunnies-92a33eb/dunnies.json?Postcode=$postcode")
 
-fun staticMap(start: Location, toilets: List<Location>): String {
+fun staticMap(toilets: List<Location>): String {
   val markers = mutableListOf<String>()
 
   toilets.forEach {
@@ -21,5 +21,5 @@ val loc = location()
 
 val toilets = queryPostcode("2037")
 
-val map = staticMap(loc!!, toilets.rows.map { Location(it[44] as Double, it[45] as Double) })
+val map = staticMap(toilets.rows.map { Location(it[44] as Double, it[45] as Double) })
 show(map)
