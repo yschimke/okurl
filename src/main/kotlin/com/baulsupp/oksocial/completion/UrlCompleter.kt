@@ -22,7 +22,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     return if (fullUrl != null) {
       pathCompletion(fullUrl, prefix, tokenSet)
     } else {
-      hostCompletion(prefix, tokenSet)
+      hostCompletion(tokenSet)
     }
   }
 
@@ -34,7 +34,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       ?: UrlList(UrlList.Match.EXACT, listOf()))
   }
 
-  private suspend fun UrlCompleter.hostCompletion(prefix: String, tokenSet: Token): UrlList {
+  private suspend fun UrlCompleter.hostCompletion(tokenSet: Token): UrlList {
     val futures = main.authenticatingInterceptor.services.map {
       async(CommonPool) {
         withTimeout(2, TimeUnit.SECONDS) {
