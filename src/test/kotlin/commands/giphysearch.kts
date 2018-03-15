@@ -1,11 +1,6 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.arguments
-import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.kotlin.execute
-import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.request
-import com.baulsupp.oksocial.kotlin.showOutput
+import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.services.giphy.model.SearchResults
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
