@@ -12,8 +12,6 @@ else
   MAIN_JAR=out/production/classes:out/production/resources
 fi
 
-JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
-
 JAVA_CMD="$JAVA_HOME/bin/java"
 
 $JAVA_HOME/bin/java -Dio.netty.processId=$$ $VMOPTS -classpath $MAIN_JAR:build/install/oksocial/lib/\* -Dcommand.name="$CMD" com.baulsupp.oksocial.Main "$@"
