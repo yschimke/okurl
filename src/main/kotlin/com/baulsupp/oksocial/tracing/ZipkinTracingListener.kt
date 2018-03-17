@@ -212,6 +212,7 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
     responseSpan = tracer.newChild(callSpan.context()).start()
       .name("response")
       .tag("responseHeaderLength", "" + response!!.headers().byteCount())
+      .tag(TraceKeys.HTTP_STATUS_CODE, response.code().toString())
   }
 
   override fun responseBodyEnd(call: Call, bytesRead: Long) {
