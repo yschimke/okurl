@@ -31,7 +31,7 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
       }
 
       if (result.Status != 0) {
-        throw UnknownHostException("Statuss from dns.google.com: " + result.Status)
+        throw UnknownHostException("Status from dns.google.com: " + result.Status)
       }
 
       result.Answer.filter { it.type == 1 || it.type == 28 }.map { InetAddress.getByName(it.data) }

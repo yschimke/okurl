@@ -215,7 +215,7 @@ open class CommandLineClient : HelpOption() {
     var dns: Dns
     dns = when {
       dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(),
-        this.dnsServers!!)
+        this.dnsServers ?: "8.8.8.8")
       dnsMode === DnsMode.GOOGLE -> DnsSelector(ipMode,
         GoogleDns.build({ client }, ipMode))
       else -> {
