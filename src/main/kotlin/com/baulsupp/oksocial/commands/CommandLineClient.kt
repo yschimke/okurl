@@ -20,10 +20,10 @@ import com.baulsupp.oksocial.location.LocationSource
 import com.baulsupp.oksocial.network.DnsMode
 import com.baulsupp.oksocial.network.DnsOverride
 import com.baulsupp.oksocial.network.DnsSelector
+import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
-import com.baulsupp.oksocial.network.fromHosts
 import com.baulsupp.oksocial.okhttp.CipherSuiteOption
 import com.baulsupp.oksocial.okhttp.ConnectionSpecOption
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
@@ -65,10 +65,6 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.io.IOUtils
-import org.fusesource.jansi.Ansi.Color.GREEN
-import org.fusesource.jansi.Ansi.Color.RED
-import org.fusesource.jansi.Ansi.ansi
-import org.fusesource.jansi.AnsiConsole
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.io.Closeable
@@ -131,8 +127,8 @@ open class CommandLineClient : HelpOption() {
     allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(name = ["--dns"], description = "DNS (netty, java, dnsgoogle)",
-    allowedValues = ["java", "netty", "dnsgoogle"])
+  @Option(name = ["--dns"], description = "DNS (netty, java, doh)",
+    allowedValues = ["java", "netty", "doh"])
   var dnsMode = DnsMode.JAVA
 
   @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
@@ -219,10 +215,9 @@ open class CommandLineClient : HelpOption() {
     var dns: Dns
     dns = when {
       dnsMode === DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(),
-        this.dnsServers!!)
-      dnsMode === DnsMode.DNSGOOGLE -> DnsSelector(ipMode,
-        fromHosts({ client }, ipMode, "216.58.216.142", "216.239.34.10",
-          "2607:f8b0:400a:809::200e"))
+        this.dnsServers ?: "8.8.8.8")
+      dnsMode === DnsMode.GOOGLE -> DnsSelector(ipMode,
+        GoogleDns.build({ client }, ipMode))
       else -> {
         if (dnsServers != null) {
           throw UsageException("unable to set dns servers with java DNS")
