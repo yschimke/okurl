@@ -1,39 +1,40 @@
 package com.baulsupp.oksocial.network
 
-import com.baulsupp.oksocial.kotlin.queryMap
-
+import com.baulsupp.oksocial.kotlin.query
+import com.baulsupp.oksocial.kotlin.request
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Dns
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.IOException
 import java.net.InetAddress
 import java.net.UnknownHostException
 
-fun fromHosts(clientSupplier: () -> OkHttpClient, mode: IPvMode,
-              vararg ips: String): GoogleDns {
-  val hosts = ips.map { InetAddress.getByName(it) }
-
-  return GoogleDns(hosts, mode, clientSupplier)
-}
-
 class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMode,
                 private val client: () -> OkHttpClient) : Dns {
+  data class Answer(val name: String, val type: Int, val TTL: Int, val data: String)
+  data class Response(val Status: Int, val Answer: List<Answer>)
 
-  // TODO implement DnsMode internally
   override fun lookup(host: String): List<InetAddress> {
     if (host == "dns.google.com") {
       return dnsHosts
     }
 
     return try {
-      // TODO map punycode here?
-      val url = HttpUrl.parse("https://dns.google.com/resolve?name=" + host + "&type=" + type(mode))
-      val request = Request.Builder().url(url!!).header("Accept", "application/dns+json").build()
-      val result = runBlocking { client().queryMap<Any>(request) }
+      val result = runBlocking {
+        client().query<Response>(
+          request {
+            url(base.newBuilder().addQueryParameter("name", host).addQueryParameter("type", type(mode)).build())
+            header("Accept", "application/dns+json")
+          }
+        )
+      }
 
-      responseToList(result)
+      if (result.Status != 0) {
+        throw UnknownHostException("Statuss from dns.google.com: " + result.Status)
+      }
+
+      result.Answer.filter { it.type == 1 || it.type == 28 }.map { InetAddress.getByName(it.data) }
     } catch (e: IOException) {
       val unknownHostException = UnknownHostException("failed to lookup $host via dns.google.com")
       unknownHostException.initCause(e)
@@ -41,24 +42,19 @@ class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMo
     }
   }
 
-  private fun type(mode: IPvMode): String {
-    // TODO support IPv6 preferred etc, e.g. two queries
-    return when (mode) {
+  // TODO support IPv6 preferred etc, e.g. two queries
+  private fun type(mode: IPvMode) =
+    when (mode) {
       IPvMode.IPV6_ONLY -> "AAAA"
       else -> "A"
     }
-  }
 
-  private fun responseToList(result: Map<String, Any>): List<InetAddress> {
-    if (result["Status"] != 0) {
-      // TODO response codes
-      throw UnknownHostException("Status from dns.google.com: " + result["Status"])
+  companion object {
+    val base = HttpUrl.parse("https://dns.google.com/resolve")!!
+
+    fun build(clientSupplier: () -> OkHttpClient, mode: IPvMode): GoogleDns {
+      val hosts = listOf("216.58.216.142", "216.239.34.10", "2607:f8b0:400a:809::200e").map { InetAddress.getByName(it) }
+      return GoogleDns(hosts, mode, clientSupplier)
     }
-
-    val answer = result["Answer"] as List<Map<String, Any>>
-
-    return answer
-      .filter { a -> a["type"] == 1 || a["type"] == 28 }
-      .map { a -> InetAddress.getByName(a["data"] as String) }
   }
 }
