@@ -8,13 +8,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.FormBody
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.Ansi.Color.GREEN
 import org.fusesource.jansi.Ansi.Color.MAGENTA
@@ -169,6 +163,8 @@ fun String.color(color: Ansi.Color): String = when {
   else -> this
 }
 
+val JSON = MediaType.parse("application/json")!!
+
 fun form(init: FormBody.Builder.() -> Unit = {}): FormBody = FormBody.Builder().apply(init).build()
 
 fun request(url: String? = null, tokenSet: Token = DefaultToken,
@@ -179,6 +175,12 @@ fun requestBuilder(url: String? = null,
   tokenSet)
 
 fun Request.Builder.tokenSet(tokenSet: Token) = tag(tokenSet)
+
+fun Request.Builder.postJsonBody(body: Any) {
+  val content = moshi.adapter(body.javaClass).toJson(body)!!
+  println(content)
+  post(RequestBody.create(JSON, content))
+}
 
 fun Request.edit(init: Request.Builder.() -> Unit = {}) = newBuilder().apply(init).build()
 fun HttpUrl.edit(init: HttpUrl.Builder.() -> Unit = {}) = newBuilder().apply(init).build()
