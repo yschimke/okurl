@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.Ignore
 import org.junit.jupiter.api.Test
@@ -30,7 +31,9 @@ class TwilioTest {
     main.arguments = mutableListOf("https://api.twilio.com/")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(output.stdout[0].contains("/Accounts/ABC/Calls.json"))

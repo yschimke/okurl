@@ -228,7 +228,7 @@ class Main : CommandLineClient() {
     return 0
   }
 
-  fun processResponses(outputHandler: OutputHandler<Response>,
+  suspend fun processResponses(outputHandler: OutputHandler<Response>,
                        responses: List<PotentialResponse>): Boolean {
     var failed = false
     for (response in responses) {
@@ -246,7 +246,7 @@ class Main : CommandLineClient() {
     return failed
   }
 
-  fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
+  suspend fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
       logger.fine("TLS Version: ${response.handshake().tlsVersion()}")
@@ -382,7 +382,7 @@ class Main : CommandLineClient() {
     val command = System.getProperty("command.name", "oksocial")!!
 
     @JvmStatic
-    fun main(vararg args: String) {
+    fun main(vararg args: String) = runBlocking {
       Security.insertProviderAt(OpenSSLProvider(), 1)
       try {
         val result = CommandLineClient.fromArgs<Main>(*args).run()

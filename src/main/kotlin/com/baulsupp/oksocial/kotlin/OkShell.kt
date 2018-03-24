@@ -67,7 +67,7 @@ fun show(url: String) {
   }
 }
 
-fun showOutput(response: Response) {
+suspend fun showOutput(response: Response) {
   okshell.commandLine.outputHandler.showOutput(response)
 }
 

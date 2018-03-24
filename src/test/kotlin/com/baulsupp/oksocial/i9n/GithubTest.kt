@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -29,7 +30,9 @@ class GithubTest {
     main.arguments = mutableListOf("src/test/kotlin/commands/githubapi", "/")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(output.stdout[0].contains("/user"))
@@ -42,7 +45,9 @@ class GithubTest {
     main.arguments = mutableListOf("https://api.github.com/")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(output.stdout[0].contains("https://api.github.com/user"))

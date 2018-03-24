@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.location
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.process.exec
+import com.baulsupp.oksocial.output.process.stdErrLogging
 import com.baulsupp.oksocial.output.util.PlatformUtil
 import com.baulsupp.oksocial.output.util.UsageException
 import okhttp3.Response
@@ -27,9 +28,11 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
         val process = exec(listOf(LOCATION_APP, "-format",
           "%latitude,%longitude", "-once", "yes")) {
           timeout(5, TimeUnit.SECONDS)
+          readOutput(true)
+          redirectError(stdErrLogging)
         }
 
-        val line = process.outputString()
+        val line = process.outputString
 
         if (!process.success) {
           logger.log(Level.INFO, "failed to get location $line")

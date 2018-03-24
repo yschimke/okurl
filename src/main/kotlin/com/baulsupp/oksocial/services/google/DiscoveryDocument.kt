@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.services.google
 
-import com.baulsupp.oksocial.output.util.JsonUtil
-
 /**
  * https://developers.google.com/discovery/v1/using
  */

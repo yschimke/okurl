@@ -54,7 +54,7 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
       tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
   }
 
-  protected fun showUserLogin(newCredentials: TwitterCredentials) {
+  protected suspend fun showUserLogin(newCredentials: TwitterCredentials) {
     outputHandler.openLink(
       "https://api.twitter.com/oauth/authenticate?oauth_token=${newCredentials.token}")
   }

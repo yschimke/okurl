@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.ws
 
 import com.baulsupp.oksocial.output.OutputHandler
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -27,7 +28,9 @@ class WebSocketPrinter(private val outputHandler: OutputHandler<Response>) : Web
   }
 
   override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-    outputHandler.showError("websocket failure", t)
-    latch.countDown()
+    runBlocking {
+      outputHandler.showError("websocket failure", t)
+      latch.countDown()
+    }
   }
 }

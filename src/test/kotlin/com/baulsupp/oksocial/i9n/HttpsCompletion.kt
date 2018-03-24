@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -22,7 +23,9 @@ class HttpsCompletion {
     main.arguments = mutableListOf("https://")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))

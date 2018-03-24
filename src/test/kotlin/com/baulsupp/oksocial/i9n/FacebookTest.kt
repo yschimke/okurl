@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
 import com.baulsupp.oksocial.services.facebook.FacebookUtil
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,7 +36,9 @@ class FacebookTest {
     main.arguments = mutableListOf("https://graph.facebook.com/${FacebookUtil.VERSION}/app/groups")
     main.apiDoc = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     val es = listOf("service: facebook", "name: Facebook API",
         "docs: https://developers.facebook.com/docs/graph-api",

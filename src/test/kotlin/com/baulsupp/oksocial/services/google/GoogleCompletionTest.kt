@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.i9n.TestCredentialsStore
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -26,7 +27,9 @@ class GoogleCompletionTest {
     main.arguments = mutableListOf("https://people.googleapis.com/")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(output.stdout[0].contains("https://people.googleapis.com/"))
@@ -39,7 +42,9 @@ class GoogleCompletionTest {
     main.arguments = mutableListOf("https://people.googleapis.com/v1/people:batch")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(output.stdout[0].contains("https://people.googleapis.com/v1/people:batchGet"))
@@ -52,7 +57,9 @@ class GoogleCompletionTest {
     main.arguments = mutableListOf("https://www.googleapis.com/gmail/v1/")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(
@@ -67,7 +74,9 @@ class GoogleCompletionTest {
     main.arguments = mutableListOf("https://www.googleapis.com/gmail/v1/")
     main.urlComplete = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertTrue(

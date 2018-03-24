@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,7 +32,9 @@ class CompletionTest {
   fun completeEmpty() {
     main.arguments = mutableListOf("")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(1, output.stdout.size)
     assertTrue(output.stdout[0].contains("https://api1.test.com/"))
@@ -44,7 +47,9 @@ class CompletionTest {
   fun completeSingleEndpoint() {
     main.arguments = mutableListOf("https://api1.test.co")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(listOf(
       "https://api1.test.com\nhttps://api1.test.com/"),
@@ -59,7 +64,9 @@ class CompletionTest {
     main.commandName = "okapi"
     main.arguments = mutableListOf("src/test/resources/commands/testcommand", "")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(listOf("/account.json\n/users.json\n/usersList.json"), output.stdout)
 
@@ -72,7 +79,9 @@ class CompletionTest {
     main.commandName = "okapi"
     main.arguments = mutableListOf("src/test/resources/commands/testcommand", "/users")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(listOf("/users.json\n/usersList.json"), output.stdout)
 
@@ -85,7 +94,9 @@ class CompletionTest {
     main.commandName = "okapi"
     main.arguments = mutableListOf("src/test/kotlin/commands/twitterapi", "/")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(1, output.stdout.size)
     assertTrue(output.stdout[0].contains("\n/1.1/geo/places.json\n"))
@@ -99,7 +110,9 @@ class CompletionTest {
   fun completeEndpointsForTwitterApi() {
     main.arguments = mutableListOf("https://api.twitter.com/")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(1, output.stdout.size)
     assertTrue(output.stdout[0].contains("\nhttps://api.twitter.com/1.1/geo/places.json\n"))

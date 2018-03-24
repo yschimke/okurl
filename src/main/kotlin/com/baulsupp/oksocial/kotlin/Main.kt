@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.util.ClientException
 import io.airlift.airline.Command
 import io.airlift.airline.ParseOptionConversionException
 import io.airlift.airline.ParseOptionMissingValueException
+import kotlinx.coroutines.experimental.runBlocking
 import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.security.Security
@@ -57,7 +58,7 @@ class Main : CommandLineClient() {
     const val NAME = "okscript"
 
     @JvmStatic
-    fun main(vararg args: String) {
+    fun main(vararg args: String) = runBlocking {
       Security.insertProviderAt(OpenSSLProvider(), 1)
 
       try {

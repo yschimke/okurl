@@ -3,6 +3,7 @@ package com.baulsupp.oksocial.i9n
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.security.CertificatePin
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -36,7 +37,9 @@ class WebServerTest {
 
     main.arguments = mutableListOf(server.url("/").toString())
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(0, output.responses.size)
     assertEquals(1, output.failures.size)
@@ -51,7 +54,9 @@ class WebServerTest {
     main.arguments = mutableListOf(server.url("/").toString())
     main.allowInsecure = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(1, output.responses.size)
     assertEquals(200, output.responses[0].code())
@@ -65,7 +70,9 @@ class WebServerTest {
 
     main.arguments = mutableListOf(server.url("/").toString())
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(1, output.responses.size)
     assertEquals(200, output.responses[0].code())
@@ -81,7 +88,9 @@ class WebServerTest {
         "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")) as java.util.List<CertificatePin>
     main.allowInsecure = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(0, output.responses.size)
     assertEquals(1, output.failures.size)

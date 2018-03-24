@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -30,7 +31,9 @@ class SurveyMonkeyTest {
     completionCache["surveymonkey", "survey"] = listOf("AA", "BB")
     credentialsStore.set(SurveyMonkeyAuthInterceptor().serviceDefinition(), DefaultToken.name, Oauth2Token(""))
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertEquals(1, output.stdout.size)

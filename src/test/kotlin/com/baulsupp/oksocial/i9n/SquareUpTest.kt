@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.squareup.SquareUpAuthInterceptor
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -30,7 +31,9 @@ class SquareUpTest {
     completionCache["squareup", "location"] = listOf("AA", "bb")
     credentialsStore.set(SquareUpAuthInterceptor().serviceDefinition(), DefaultToken.name, Oauth2Token("test"))
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(mutableListOf(), output.failures)
     assertEquals(1, output.stdout.size)

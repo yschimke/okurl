@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.services.google
 
-import com.baulsupp.oksocial.output.util.JsonUtil
-
 /*
  * API URL -> Discovery URL
  */

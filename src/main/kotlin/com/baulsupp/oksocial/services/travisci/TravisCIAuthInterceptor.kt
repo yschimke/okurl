@@ -12,6 +12,7 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.process.exec
+import com.baulsupp.oksocial.output.process.stdErrLogging
 import com.baulsupp.oksocial.output.util.UsageException
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 import com.baulsupp.oksocial.services.travisci.model.RepositoryList
@@ -74,13 +75,16 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   private suspend fun isTravisInstalled(): Boolean = exec("which", "travis").success
 
   private suspend fun travisToken(pro: Boolean): String {
-    val result = exec("travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org")
+    val result = exec(listOf("travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org")) {
+      readOutput(true)
+      redirectError(stdErrLogging)
+    }
 
     if (!result.success) {
       throw UsageException("Use 'travis login --org' or 'travis login --pro'")
     }
 
-    return result.outputString().trim()
+    return result.outputString.trim()
   }
 
   override suspend fun validate(client: OkHttpClient,

@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
@@ -37,7 +38,9 @@ class LoggingTest {
     main.arguments = mutableListOf(server.url("/").toString())
     main.debug = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
   }
 
   @Test
@@ -46,7 +49,9 @@ class LoggingTest {
 
     main.version = true
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     assertEquals(0, output.failures.size)
   }

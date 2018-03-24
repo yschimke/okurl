@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.okhttp
 
+import com.baulsupp.oksocial.kotlin.JSON
 import com.baulsupp.oksocial.output.ResponseExtractor
-import com.baulsupp.oksocial.output.util.JsonUtil
 import okhttp3.Response
 import okio.BufferedSource
 
@@ -12,8 +12,8 @@ class OkHttpResponseExtractor : ResponseExtractor<Response> {
     val mediaType = response.body()?.contentType()
 
     return when {
-      host == "graph.facebook.com" && mediaType?.subtype() == "javascript" -> JsonUtil.JSON
-      host == "dns.google.com" && mediaType?.subtype() == "x-javascript" -> JsonUtil.JSON
+      host == "graph.facebook.com" && mediaType?.subtype() == "javascript" -> JSON.toString()
+      host == "dns.google.com" && mediaType?.subtype() == "x-javascript" -> JSON.toString()
       else -> mediaType?.toString()
     }
   }

@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -23,7 +24,9 @@ class TwitterTest {
     main.token = "PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET"
     main.arguments = mutableListOf("twitter")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     if (!output.failures.isEmpty()) {
       throw output.failures[0]
@@ -39,7 +42,9 @@ class TwitterTest {
     main.arguments = mutableListOf("twitter", "--twurlrc",
         "src/test/resources/single_twurlrc.yaml")
 
-    main.run()
+    runBlocking {
+      main.run()
+    }
 
     if (!output.failures.isEmpty()) {
       throw output.failures[0]

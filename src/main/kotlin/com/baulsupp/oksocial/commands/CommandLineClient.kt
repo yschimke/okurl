@@ -55,6 +55,7 @@ import io.airlift.airline.Option
 import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
+import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Cache
 import okhttp3.ConnectionSpec
 import okhttp3.Credentials
@@ -317,7 +318,7 @@ open class CommandLineClient : HelpOption() {
     return this.javaClass.`package`.implementationVersion ?: "dev"
   }
 
-  fun run(): Int {
+  suspend fun run(): Int {
     if (showHelpIfRequested()) {
       return 0
     }
@@ -499,7 +500,9 @@ open class CommandLineClient : HelpOption() {
         val link = config.openFunction().invoke(tc)
 
         if (link != null) {
-          openLink(link)
+          runBlocking {
+            openLink(link)
+          }
         }
       })
     }
@@ -521,7 +524,7 @@ open class CommandLineClient : HelpOption() {
     })
   }
 
-  fun openLink(link: String) {
+  suspend fun openLink(link: String) {
     try {
       outputHandler.openLink(link)
     } catch (e: IOException) {
