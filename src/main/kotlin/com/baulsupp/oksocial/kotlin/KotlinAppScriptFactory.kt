@@ -46,39 +46,38 @@ class BridgeLoggerFactory : Logger.Factory {
 class BridgeLogger(name: String) : Logger() {
   val logger = java.util.logging.Logger.getLogger(name)!!
 
-  override fun warn(p0: String?, p1: Throwable?) {
-//    logger.log(WARNING, p0, p1)
+  override fun warn(msg: String?, e: Throwable?) {
+    logger.log(java.util.logging.Level.FINE, msg, e)
   }
 
-  override fun setLevel(p0: Level?) {
+  override fun setLevel(level: Level?) {
   }
 
-  override fun info(p0: String?) {
-//    logger.log(INFO, p0)
+  override fun info(msg: String?) {
+    logger.log(java.util.logging.Level.FINE, msg)
   }
 
-  override fun info(p0: String?, p1: Throwable?) {
-//    logger.log(INFO, p0, p1)
+  override fun info(msg: String?, e: Throwable?) {
+    logger.log(java.util.logging.Level.FINE, msg, e)
   }
 
-  override fun error(p0: String?, p1: Throwable?, vararg p2: String?) {
-//    logger.log(SEVERE, p0?.format(p2), p1)
+  override fun error(msg: String?, e: Throwable?, vararg p2: String?) {
+    logger.log(java.util.logging.Level.FINE, msg, e)
   }
 
   override fun isDebugEnabled(): Boolean {
-    return false
-//    return logger.isLoggable(FINER)
+    return logger.isLoggable(java.util.logging.Level.FINE)
   }
 
-  override fun debug(p0: String?) {
-//    logger.finer(p0)
+  override fun debug(msg: String?) {
+    logger.log(java.util.logging.Level.FINE, msg)
   }
 
-  override fun debug(p0: Throwable?) {
-//    logger.log(FINER, "", p0)
+  override fun debug(e: Throwable?) {
+    logger.log(java.util.logging.Level.FINE, "", e)
   }
 
-  override fun debug(p0: String?, p1: Throwable?) {
-//    logger.log(FINER, p0, p1)
+  override fun debug(msg: String?, e: Throwable?) {
+    logger.log(java.util.logging.Level.FINE, msg, e)
   }
 }

@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.services.paypal
 
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.Token
 import okhttp3.OkHttpClient
 
 class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {

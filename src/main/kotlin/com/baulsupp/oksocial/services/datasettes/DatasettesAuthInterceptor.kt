@@ -1,20 +1,19 @@
 package com.baulsupp.oksocial.services.datasettes
 
-import com.baulsupp.oksocial.credentials.NoToken
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.CompletionOnlyAuthInterceptor
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.NoToken
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex
 import com.baulsupp.oksocial.services.datasettes.model.DatasetteTables
-
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient

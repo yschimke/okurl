@@ -10,7 +10,6 @@ import com.baulsupp.oksocial.services.facebook.model.MetadataResult
 import com.baulsupp.oksocial.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.Request
 
 object FacebookUtil {
   const val VERSION = "v2.11"

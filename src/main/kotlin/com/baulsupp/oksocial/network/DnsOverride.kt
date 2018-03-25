@@ -1,7 +1,6 @@
 package com.baulsupp.oksocial.network
 
-import com.baulsupp.oksocial.output.util.UsageException
-
+import com.baulsupp.oksocial.output.UsageException
 import okhttp3.Dns
 import java.net.InetAddress
 import java.util.logging.Logger

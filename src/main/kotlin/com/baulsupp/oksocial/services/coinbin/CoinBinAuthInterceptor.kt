@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.services.coinbin
 
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -11,9 +10,10 @@ import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.ServiceDefinition
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

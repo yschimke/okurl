@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient

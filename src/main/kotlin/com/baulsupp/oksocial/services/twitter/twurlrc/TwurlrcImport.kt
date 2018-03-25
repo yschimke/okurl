@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.services.twitter.twurlrc
 
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.services.twitter.TwitterCredentials
 import java.io.File
 

@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.services.twitter
 
-import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.twitter.joauth.Signature
 import com.baulsupp.oksocial.services.twitter.twurlrc.TwurlrcImport

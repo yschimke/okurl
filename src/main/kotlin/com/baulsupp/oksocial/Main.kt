@@ -24,7 +24,7 @@ import com.baulsupp.oksocial.okhttp.PotentialResponse
 import com.baulsupp.oksocial.okhttp.SuccessfulResponse
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
 import io.airlift.airline.Command
@@ -229,7 +229,7 @@ class Main : CommandLineClient() {
   }
 
   suspend fun processResponses(outputHandler: OutputHandler<Response>,
-                       responses: List<PotentialResponse>): Boolean {
+                               responses: List<PotentialResponse>): Boolean {
     var failed = false
     for (response in responses) {
       when (response) {

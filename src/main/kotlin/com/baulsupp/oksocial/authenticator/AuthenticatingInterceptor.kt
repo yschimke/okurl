@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.authenticator
 
+import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.credentials.TokenValue
-import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.kotlin.client
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl

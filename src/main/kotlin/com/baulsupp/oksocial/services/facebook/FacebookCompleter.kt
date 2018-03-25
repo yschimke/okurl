@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
 import com.baulsupp.oksocial.services.facebook.model.Account
 import com.baulsupp.oksocial.services.facebook.model.AccountList

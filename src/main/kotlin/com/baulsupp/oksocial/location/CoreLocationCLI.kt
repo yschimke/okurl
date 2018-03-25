@@ -1,16 +1,20 @@
 package com.baulsupp.oksocial.location
 
+import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
+import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.oksocial.output.isOSX
 import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.process.stdErrLogging
-import com.baulsupp.oksocial.output.util.PlatformUtil
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.stdErrLogging
 import okhttp3.Response
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
+
+const val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
 
 /**
  * https://github.com/fulldecent/corelocationcli
@@ -19,7 +23,7 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
   private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
   override suspend fun read(): Location? {
-    if (PlatformUtil.isOSX) {
+    if (isOSX) {
       if (!File(LOCATION_APP).exists()) {
         throw UsageException("Missing $LOCATION_APP")
       }
@@ -39,6 +43,9 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
           return null
         }
 
+        println("'$line'")
+        println("'${line.trim()}'")
+
         val parts = line.trim { it <= ' ' }.split(
           ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
@@ -56,8 +63,8 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
       return null
     }
   }
+}
 
-  companion object {
-    const val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
-  }
+fun main(args: Array<String>) {
+  CoreLocationCLI(ConsoleHandler.instance(OkHttpResponseExtractor()))
 }

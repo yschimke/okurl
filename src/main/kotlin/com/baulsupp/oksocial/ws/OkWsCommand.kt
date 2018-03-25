@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.commands.MainAware
 import com.baulsupp.oksocial.commands.ShellCommand
 import com.baulsupp.oksocial.kotlin.request
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.Scanner

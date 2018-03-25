@@ -1,10 +1,10 @@
 package com.baulsupp.oksocial.credentials
 
-import com.baulsupp.oksocial.output.util.PlatformUtil
+import com.baulsupp.oksocial.output.isOSX
 
 object CredentialFactory {
   fun createCredentialsStore(): CredentialsStore {
-    return if (PlatformUtil.isOSX) {
+    return if (isOSX) {
       OSXCredentialsStore()
     } else {
       PreferencesCredentialsStore()

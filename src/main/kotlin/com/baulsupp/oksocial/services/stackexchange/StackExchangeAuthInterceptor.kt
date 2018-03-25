@@ -1,8 +1,8 @@
 package com.baulsupp.oksocial.services.stackexchange
 
-import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets

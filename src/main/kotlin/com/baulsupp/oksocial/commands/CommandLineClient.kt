@@ -31,7 +31,7 @@ import com.baulsupp.oksocial.okhttp.TlsVersionOption
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.security.CertificatePin
 import com.baulsupp.oksocial.security.CertificateUtils
 import com.baulsupp.oksocial.security.ConsoleCallbackHandler

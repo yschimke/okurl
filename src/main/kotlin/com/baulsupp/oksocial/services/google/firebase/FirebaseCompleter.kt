@@ -1,10 +1,10 @@
 package com.baulsupp.oksocial.services.google.firebase
 
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.queryOptionalMap
 import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.util.FileUtil

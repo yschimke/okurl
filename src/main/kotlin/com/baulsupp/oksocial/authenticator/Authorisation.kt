@@ -2,7 +2,7 @@ package com.baulsupp.oksocial.authenticator
 
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.secrets.Secrets
 
 class Authorisation(val main: CommandLineClient) {

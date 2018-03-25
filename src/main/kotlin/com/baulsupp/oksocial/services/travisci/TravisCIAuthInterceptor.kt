@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.services.travisci
 
-import com.baulsupp.oksocial.credentials.Token
-import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.completion.ApiCompleter
@@ -9,11 +7,13 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.process.stdErrLogging
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.stdErrLogging
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 import com.baulsupp.oksocial.services.travisci.model.RepositoryList
 import com.baulsupp.oksocial.services.travisci.model.User
@@ -61,7 +61,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-    authArguments: List<String>): TravisToken {
+                                 authArguments: List<String>): TravisToken {
     if (!isTravisInstalled()) {
       throw UsageException("Requires travis command line installed")
     }
@@ -88,16 +88,16 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   }
 
   override suspend fun validate(client: OkHttpClient,
-    credentials: TravisToken): ValidatedCredentials {
+                                credentials: TravisToken): ValidatedCredentials {
     val user = client.query<User>("https://api.travis-ci.org/user",
       TokenValue(credentials))
     return ValidatedCredentials(user.name)
   }
 
   override fun apiCompleter(prefix: String, client: OkHttpClient,
-    credentialsStore: CredentialsStore,
-    completionVariableCache: CompletionVariableCache,
-    tokenSet: Token): ApiCompleter {
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

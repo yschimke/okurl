@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.apidocs
 
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.authenticator.AuthenticatingInterceptor
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import okhttp3.Response

@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.credentials
 
 import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.process.stdErrLogging
+import com.baulsupp.oksocial.output.stdErrLogging
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
 import java.util.logging.Level

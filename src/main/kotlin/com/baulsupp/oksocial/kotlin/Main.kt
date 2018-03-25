@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.kotlin
 
 import com.baulsupp.oksocial.commands.CommandLineClient
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.util.ClientException
 import io.airlift.airline.Command
 import io.airlift.airline.ParseOptionConversionException

@@ -1,7 +1,5 @@
 package com.baulsupp.oksocial.services.facebook
 
-import com.baulsupp.oksocial.credentials.Token
-import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.apidocs.ApiDocPresenter
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
@@ -10,6 +8,8 @@ import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.Token
+import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.facebook.FacebookUtil.ALL_PERMISSIONS

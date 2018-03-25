@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.services.google
 
-import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionMappings
 import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.util.ClientException
 import kotlinx.coroutines.experimental.CancellationException
 import kotlinx.coroutines.experimental.CommonPool

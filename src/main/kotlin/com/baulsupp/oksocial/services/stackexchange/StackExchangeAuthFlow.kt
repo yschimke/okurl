@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.stackexchange
 
-import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
+import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.kotlin.queryForString
 import com.baulsupp.oksocial.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler

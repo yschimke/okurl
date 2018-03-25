@@ -1,6 +1,6 @@
 package com.baulsupp.oksocial.security
 
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import okhttp3.CertificatePinner
 
 class CertificatePin(patternAndPin: String) {
