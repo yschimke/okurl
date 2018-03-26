@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.services.twitter
 
-import com.baulsupp.oksocial.kotlin.readPasswordString
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.readPasswordString
 import okhttp3.OkHttpClient
 import okhttp3.Response
 

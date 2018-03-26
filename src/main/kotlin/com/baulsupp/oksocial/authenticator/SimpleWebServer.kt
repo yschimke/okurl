@@ -21,15 +21,14 @@ class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
   private var server: HttpServer = HttpServer.create(InetSocketAddress("localhost", port), 1)
   var f: CompletableFuture<String> = CompletableFuture()
 
+  val redirectUri = "http://localhost:$port/callback"
+
   init {
     server.createContext("/", this)
     server.start()
 
     logger.log(Level.FINE, "listening at $redirectUri")
   }
-
-  val redirectUri: String
-    get() = "http://localhost:$port/callback"
 
   override fun handle(exchange: HttpExchange) {
     val url = HttpUrl.parse("http://localhost:$port${exchange.requestURI}")!!

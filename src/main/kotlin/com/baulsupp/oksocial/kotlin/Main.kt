@@ -30,7 +30,7 @@ class Main : CommandLineClient() {
     }
 
     val script = runArguments[0]
-    com.baulsupp.oksocial.kotlin.arguments = runArguments.drop(1)
+    com.baulsupp.oksocial.kotlin.args = runArguments.drop(1)
 
     try {
       engine.eval(File(script).readText())

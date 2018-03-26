@@ -1,18 +1,12 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.arguments
-import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.kotlin.execute
-import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.request
-import com.baulsupp.oksocial.kotlin.show
-import com.baulsupp.oksocial.kotlin.showOutput
+import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.services.twitter.model.SearchResults
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.net.URLEncoder
 
-var argumentString = arguments.joinToString("+") { URLEncoder.encode(it, "UTF-8") };
+var argumentString = args.joinToString("+") { URLEncoder.encode(it, "UTF-8") };
 
 runBlocking {
   val results = client.query<SearchResults>(

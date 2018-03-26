@@ -84,4 +84,4 @@ fun jsonPostRequest(url: String, body: String): Request =
   requestBuilder(url, DefaultToken).post(
     RequestBody.create(MediaType.parse("application/json"), body)).build()
 
-var arguments: List<String> = listOf()
+var args: List<String> = listOf()

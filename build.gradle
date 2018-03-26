@@ -101,7 +101,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
 
-    implementation('com.baulsupp:oksocial-output:1.7.0')
+    implementation 'com.baulsupp:oksocial-output:1.8.0'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'org.conscrypt:conscrypt-openjdk-uber:1.0.1'
@@ -131,6 +131,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'org.fusesource.jansi:jansi:1.17'
+    implementation 'com.github.holgerbrandl:kscript-annotations:1.2'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'

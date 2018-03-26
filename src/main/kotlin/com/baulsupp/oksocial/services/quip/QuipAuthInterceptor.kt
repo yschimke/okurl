@@ -12,8 +12,8 @@ import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.readPasswordString
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.readPasswordString
 import com.baulsupp.oksocial.services.quip.model.User
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

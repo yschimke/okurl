@@ -2,7 +2,7 @@
 
 import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.location.Location
-import com.baulsupp.oksocial.output.util.UsageException
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.services.mapbox.model.MapboxDrivingResults
 import com.baulsupp.oksocial.services.mapbox.model.MapboxPlacesResult
 import com.baulsupp.oksocial.services.uber.model.UberPriceEstimates
@@ -68,7 +68,9 @@ fun uberResults(vararg args: String) {
   }
 }
 
-if (arguments.isEmpty())
+if (args.isEmpty())
   throw UsageException("usage: uberprices Destination")
 
-uberResults(*arguments.toTypedArray())
+val b = args.toList()
+
+uberResults(*b.toTypedArray())

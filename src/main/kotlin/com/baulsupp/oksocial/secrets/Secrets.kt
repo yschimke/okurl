@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.secrets
 
-import com.baulsupp.oksocial.kotlin.readPasswordString
-import com.baulsupp.oksocial.kotlin.readString
+import com.baulsupp.oksocial.output.readPasswordString
+import com.baulsupp.oksocial.output.readString
 import com.baulsupp.oksocial.util.FileUtil
 import java.io.IOException
 import java.nio.file.Files

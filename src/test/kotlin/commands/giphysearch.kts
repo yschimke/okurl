@@ -9,7 +9,7 @@ val size = "preview_gif"
 
 runBlocking {
   val urls = client.query<SearchResults>(
-    "https://api.giphy.com/v1/gifs/search?q=" + arguments.joinToString(
+    "https://api.giphy.com/v1/gifs/search?q=" + args.joinToString(
       "+")).data.mapNotNull { it.images[size]?.url }
 
   val fetches = urls.map {

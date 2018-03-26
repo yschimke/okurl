@@ -1,13 +1,10 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.kotlin.okshell
-import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.newWebSocket
-import com.baulsupp.oksocial.ws.WebSocketPrinter
-import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.experimental.runBlocking
+import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.services.slack.model.RtmConnect
+import com.baulsupp.oksocial.ws.WebSocketPrinter
+import kotlinx.coroutines.experimental.runBlocking
+import java.util.concurrent.TimeUnit
 
 val wsClient = client.newBuilder().readTimeout(0, TimeUnit.MINUTES).build();
 
