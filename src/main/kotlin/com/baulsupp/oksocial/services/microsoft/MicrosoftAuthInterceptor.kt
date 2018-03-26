@@ -5,15 +5,17 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.credentials.TokenValue
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryMap
-import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.microsoft.model.User
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.util.Arrays
 
 /**
  * https://graph.microsoft.io/en-us/docs/authorization/app_authorization
@@ -42,7 +44,11 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
     val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
 
-    return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret)
+    val scopes = Secrets.promptArray("Scopes", "microsoft.scopes", Arrays.asList(
+      "User.Read", "Contacts.Read", "Calendars.Read", "Mail.Read", "email", "offline_access", "openid", "profile"
+    ))
+
+    return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
@@ -56,10 +62,9 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .add("client_id", credentials.clientId!!)
       .add("client_secret", credentials.clientSecret!!)
       .add("refresh_token", credentials.refreshToken!!)
-      .add("resource", "https://graph.microsoft.com/")
       .build()
 
-    val request = Request.Builder().url("https://login.microsoftonline.com/common/oauth2/token")
+    val request = Request.Builder().url("https://login.microsoftonline.com/common/oauth2/v2.0/token")
       .post(body)
       .build()
 
@@ -71,10 +76,8 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://graph.microsoft.com/v1.0/me",
-      TokenValue(credentials), "displayName"))
+  override suspend fun validate(client: OkHttpClient, credentials: Oauth2Token): ValidatedCredentials =
+    ValidatedCredentials(client.query<User>("https://graph.microsoft.com/v1.0/me", TokenValue(credentials)).displayName)
 
   override fun hosts(): Set<String> = setOf("graph.microsoft.com")
 }

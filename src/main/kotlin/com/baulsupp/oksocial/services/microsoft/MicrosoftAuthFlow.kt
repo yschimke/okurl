@@ -12,23 +12,22 @@ import okhttp3.Response
 
 object MicrosoftAuthFlow {
   suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String): Oauth2Token {
+                    clientSecret: String, scopes: List<String>): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
-      val loginUrl = "https://login.microsoftonline.com/common/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
+      val loginUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString("+")}"
 
       outputHandler.openLink(loginUrl)
 
       val code = s.waitForCode()
 
-      val url = HttpUrl.parse("https://login.microsoftonline.com/common/oauth2/token")
+      val url = HttpUrl.parse("https://login.microsoftonline.com/common/oauth2/v2.0/token")
 
       val body = FormBody.Builder().add("grant_type", "authorization_code")
         .add("redirect_uri", s.redirectUri)
         .add("client_id", clientId)
         .add("client_secret", clientSecret)
         .add("code", code)
-        .add("resource", "https://graph.microsoft.com/")
         .build()
 
       val request = Request.Builder().url(url!!).post(body).build()
