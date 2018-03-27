@@ -9,8 +9,8 @@ class DirCompletionVariableCache(val dir: File = File(System.getProperty("java.i
   override fun get(service: String, key: String): List<String>? {
     val f = File(dir, "$service-$key.txt")
 
-    // cache for 5 minutes
-    if (f.isFile && f.lastModified() > System.currentTimeMillis() - 300000) {
+    // cache for 1 minutes
+    if (f.isFile && f.lastModified() > System.currentTimeMillis() - 60000) {
       try {
         return f.readLines().filterNot { it.isBlank() }
       } catch (e: IOException) {

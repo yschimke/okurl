@@ -2,8 +2,9 @@ package com.baulsupp.oksocial.services.microsoft
 
 import com.baulsupp.oksocial.authenticator.SimpleWebServer
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
-import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.services.microsoft.model.Token
 import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -32,10 +33,9 @@ object MicrosoftAuthFlow {
 
       val request = Request.Builder().url(url!!).post(body).build()
 
-      val responseMap = client.queryMap<Any>(request)
+      val responseMap = client.query<Token>(request)
 
-      return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, clientId, clientSecret)
+      return Oauth2Token(responseMap.access_token, responseMap.refresh_token, clientId, clientSecret)
     }
   }
 }

@@ -4,11 +4,17 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.completion.ApiCompleter
+import com.baulsupp.oksocial.completion.BaseUrlCompleter
+import com.baulsupp.oksocial.completion.CompletionVariableCache
+import com.baulsupp.oksocial.completion.UrlList
+import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.microsoft.model.DriveRootList
+import com.baulsupp.oksocial.services.microsoft.model.Token
 import com.baulsupp.oksocial.services.microsoft.model.User
 import okhttp3.FormBody
 import okhttp3.Interceptor
@@ -45,7 +51,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
 
     val scopes = Secrets.promptArray("Scopes", "microsoft.scopes", Arrays.asList(
-      "User.Read", "Contacts.Read", "Calendars.Read", "Mail.Read", "email", "offline_access", "openid", "profile"
+      "User.Read", "Contacts.Read", "Calendars.Read", "Mail.Read", "email", "offline_access", "openid", "profile", "Files.ReadWrite"
     ))
 
     return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
@@ -68,12 +74,26 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .post(body)
       .build()
 
-    val responseMap = client.queryMap<Any>(request)
+    val responseMap = client.query<Token>(request)
 
-    // TODO check if refresh token in response?
-    return Oauth2Token(responseMap["access_token"] as String,
-      credentials.refreshToken, credentials.clientId,
-      credentials.clientSecret)
+    return Oauth2Token(responseMap.access_token, responseMap.refresh_token, credentials.clientId, credentials.clientSecret)
+  }
+
+  override fun apiCompleter(prefix: String, client: OkHttpClient,
+                            credentialsStore: CredentialsStore,
+                            completionVariableCache: CompletionVariableCache,
+                            tokenSet: com.baulsupp.oksocial.credentials.Token): ApiCompleter {
+    val urlList = UrlList.fromResource(name())
+
+    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+
+    completer.withCachedVariable(name(), "itemId", {
+      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+        client.query<DriveRootList>("https://graph.microsoft.com/v1.0/me/drive/root/children", tokenSet).value.map { it.id }
+      }
+    })
+
+    return completer
   }
 
   override suspend fun validate(client: OkHttpClient, credentials: Oauth2Token): ValidatedCredentials =
