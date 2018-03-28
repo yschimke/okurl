@@ -20,6 +20,7 @@ com.baulsupp.oksocial.services.linkedin.LinkedinAuthInterceptor
 com.baulsupp.oksocial.services.lyft.LyftAuthInterceptor
 com.baulsupp.oksocial.services.mapbox.MapboxAuthInterceptor
 com.baulsupp.oksocial.services.microsoft.MicrosoftAuthInterceptor
+com.baulsupp.oksocial.services.oxforddictionaries.OxfordDictionariesInterceptor
 com.baulsupp.oksocial.services.paypal.PaypalAuthInterceptor
 com.baulsupp.oksocial.services.paypal.PaypalSandboxAuthInterceptor
 com.baulsupp.oksocial.services.postman.PostmanAuthInterceptor
