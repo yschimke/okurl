@@ -163,6 +163,9 @@ distributions {
             from("${rootProject.projectDir}/bash") {
                 into "bash"
             }
+            from("${rootProject.projectDir}/zsh") {
+                into "zsh"
+            }
             from("${rootProject.projectDir}/src/main/resources") {
                 into "scripts"
                 include "oksocial.js"
