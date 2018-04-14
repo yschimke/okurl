@@ -13,7 +13,10 @@ class TestCredentialsStore : CredentialsStore {
   }
 
   override fun <T> set(
-          serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>,
+    tokenSet: String,
+    credentials: T
+  ) {
     tokens[serviceDefinition.apiHost()] = serviceDefinition.formatCredentialsString(credentials)
   }
 

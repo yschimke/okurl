@@ -8,8 +8,11 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties
 
-class Secrets(private val secrets: MutableMap<String, String>, private val file: Path?,
-              private val defaults: (String) -> String?) {
+class Secrets(
+  private val secrets: MutableMap<String, String>,
+  private val file: Path?,
+  private val defaults: (String) -> String?
+) {
   private var changed = false
 
   operator fun get(key: String): String? {

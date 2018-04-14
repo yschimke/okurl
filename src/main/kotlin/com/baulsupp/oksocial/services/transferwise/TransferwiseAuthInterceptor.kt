@@ -34,8 +34,11 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
     val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "",
@@ -44,8 +47,10 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return TransferwiseAuthFlow.login(client, outputHandler, host(), clientId, clientSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me",
       TokenValue(credentials), "name"))
 

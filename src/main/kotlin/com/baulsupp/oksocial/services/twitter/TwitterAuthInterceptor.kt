@@ -28,8 +28,11 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): TwitterCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): TwitterCredentials {
 
     if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
       return TwurlrcImport.authorize(authArguments)
@@ -53,8 +56,10 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     return WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: TwitterCredentials): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: TwitterCredentials
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json",
       TokenValue(credentials), "name"))
 

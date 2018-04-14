@@ -10,8 +10,11 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.UnknownHostException
 
-class GoogleDns(private val dnsHosts: List<InetAddress>, private val mode: IPvMode,
-                private val client: () -> OkHttpClient) : Dns {
+class GoogleDns(
+  private val dnsHosts: List<InetAddress>,
+  private val mode: IPvMode,
+  private val client: () -> OkHttpClient
+) : Dns {
   data class Answer(val name: String, val type: Int, val TTL: Int, val data: String)
   data class Response(val Status: Int, val Answer: List<Answer>)
 

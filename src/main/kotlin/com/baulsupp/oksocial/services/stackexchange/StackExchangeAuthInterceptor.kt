@@ -3,13 +3,13 @@ package com.baulsupp.oksocial.services.stackexchange
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.credentials.TokenValue
-import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.stackexchange.model.MeResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.util.Arrays
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   override fun serviceDefinition(): StackExchangeServiceDefinition {
@@ -30,37 +30,26 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
     return chain.proceed(request)
   }
 
-  private fun extract(map: Map<String, Any>): String {
-    val items = map["items"] as List<Map<String, Any>>
-
-    return if (items.isNotEmpty()) {
-      "" + items[0]["display_name"]
-    } else {
-      "Unknown"
-    }
+  override suspend fun validate(client: OkHttpClient, credentials: StackExchangeToken): ValidatedCredentials {
+    return client.query<MeResponse>("https://api.stackexchange.com/2.2/me?site=stackoverflow", TokenValue(credentials)).let { ValidatedCredentials(it.items.firstOrNull()?.display_name) }
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: StackExchangeToken): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.stackexchange.com/2.2/me?site=drupal",
-      TokenValue(credentials))
-    return ValidatedCredentials(extract(map))
-  }
-
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): StackExchangeToken {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): StackExchangeToken {
 
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
     val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret",
       "", true)
     val clientKey = Secrets.prompt("StackExchange Key", "stackexchange.key", "", false)
-    val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", Arrays.asList("read_inbox",
+    val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", listOf("read_inbox",
       "no_expiry",
       "write_access",
       "private_info"))
 
-    return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey,
-      scopes)
+    return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey, scopes)
   }
 
   override fun hosts(): Set<String> = setOf("api.stackexchange.com")

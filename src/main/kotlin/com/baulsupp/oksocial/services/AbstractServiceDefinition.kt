@@ -2,8 +2,13 @@ package com.baulsupp.oksocial.services
 
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 
-abstract class AbstractServiceDefinition<T>(private val apiHost: String, private val serviceName: String, private val shortName: String,
-                                            private val apiDocs: String?, private val accountsLink: String?) : ServiceDefinition<T> {
+abstract class AbstractServiceDefinition<T>(
+  private val apiHost: String,
+  private val serviceName: String,
+  private val shortName: String,
+  private val apiDocs: String?,
+  private val accountsLink: String?
+) : ServiceDefinition<T> {
 
   override fun shortName() = shortName
 

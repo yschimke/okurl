@@ -18,8 +18,13 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.function.Consumer
 
-class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, private val tracing: HttpTracing,
-                            private val opener: Consumer<TraceContext>, private val detailed: Boolean) : EventListener() {
+class ZipkinTracingListener(
+  private val call: Call,
+  private val tracer: Tracer,
+  private val tracing: HttpTracing,
+  private val opener: Consumer<TraceContext>,
+  private val detailed: Boolean
+) : EventListener() {
 
   private lateinit var callSpan: Span
   private var connectSpan: Span? = null
@@ -94,8 +99,12 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
     connectSpan!!.tag("proxy", proxy!!.toString())
   }
 
-  override fun connectEnd(call: Call, inetSocketAddress: InetSocketAddress?, proxy: Proxy?,
-                          protocol: Protocol?) {
+  override fun connectEnd(
+    call: Call,
+    inetSocketAddress: InetSocketAddress?,
+    proxy: Proxy?,
+    protocol: Protocol?
+  ) {
     if (callSpan.isNoop || !detailed) {
       return
     }
@@ -105,8 +114,13 @@ class ZipkinTracingListener(private val call: Call, private val tracer: Tracer, 
     connectSpan!!.finish()
   }
 
-  override fun connectFailed(call: Call, inetSocketAddress: InetSocketAddress?, proxy: Proxy?,
-                             protocol: Protocol?, ioe: IOException?) {
+  override fun connectFailed(
+    call: Call,
+    inetSocketAddress: InetSocketAddress?,
+    proxy: Proxy?,
+    protocol: Protocol?,
+    ioe: IOException?
+  ) {
     if (callSpan.isNoop || !detailed) {
       return
     }

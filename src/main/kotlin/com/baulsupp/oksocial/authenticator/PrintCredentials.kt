@@ -94,7 +94,9 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   fun validate(
-    services: Iterable<AuthInterceptor<*>>, names: List<String>): Map<Key, Deferred<ValidatedCredentials>> {
+    services: Iterable<AuthInterceptor<*>>,
+    names: List<String>
+  ): Map<Key, Deferred<ValidatedCredentials>> {
     val pairs =
       services.flatMap { sv ->
         names.mapNotNull { name ->

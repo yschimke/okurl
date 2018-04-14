@@ -27,10 +27,13 @@ import java.nio.charset.StandardCharsets
 class DatasettesAuthInterceptor :
   CompletionOnlyAuthInterceptor("datasettes.com", "Datasettes", "datasettes",
     "https://github.com/simonw/datasette") {
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter =
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter =
     DatasettesCompleter(client)
 
   override fun hosts(): Set<String> = knownHosts()
@@ -62,8 +65,11 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/$it" })
   }
 
-  private fun tablesInDatabase(datasetteTables: DatasetteTables, host: String?,
-                               path: MutableList<String>): UrlList {
+  private fun tablesInDatabase(
+    datasetteTables: DatasetteTables,
+    host: String?,
+    path: MutableList<String>
+  ): UrlList {
     val tableLike = datasetteTables.views + datasetteTables.tables.map { it.name }
     val encoded = tableLike.map { URLEncoder.encode(it, StandardCharsets.UTF_8.name()) }
     val paths = encoded.map { "$it.json" } + ".json"
@@ -75,8 +81,12 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
 }
 
 class DatasettesPresenter : ApiDocPresenter {
-  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-                                  client: OkHttpClient, tokenSet: Token) {
+  override suspend fun explainApi(
+    url: String,
+    outputHandler: OutputHandler<Response>,
+    client: OkHttpClient,
+    tokenSet: Token
+  ) {
     val urlI = HttpUrl.parse(url) ?: throw UsageException("Unable to parse Url '$url'")
 
     val datasettes = runBlocking { fetchDatasetteMetadata(urlI.host(), client) }
@@ -105,8 +115,11 @@ class DatasettesPresenter : ApiDocPresenter {
 suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
   client.queryMap<DatasetteIndex>("https://$host/.json", NoToken).values.toList()
 
-suspend fun fetchDatasetteTableMetadata(host: String, path: String,
-                                        client: OkHttpClient) =
+suspend fun fetchDatasetteTableMetadata(
+  host: String,
+  path: String,
+  client: OkHttpClient
+) =
   client.query<DatasetteTables>("https://$host/$path.json",
     NoToken)
 

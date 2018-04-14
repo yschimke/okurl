@@ -60,8 +60,11 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return TravisToken.external()
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): TravisToken {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): TravisToken {
     if (!isTravisInstalled()) {
       throw UsageException("Requires travis command line installed")
     }
@@ -87,17 +90,22 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return result.outputString.trim()
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: TravisToken): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: TravisToken
+  ): ValidatedCredentials {
     val user = client.query<User>("https://api.travis-ci.org/user",
       TokenValue(credentials))
     return ValidatedCredentials(user.name)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

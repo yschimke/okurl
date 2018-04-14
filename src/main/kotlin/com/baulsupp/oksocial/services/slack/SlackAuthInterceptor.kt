@@ -11,7 +11,6 @@ import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.util.Arrays
 
 /**
  * https://api.slack.com/docs/oauth
@@ -36,12 +35,15 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Slack Client Id", "slack.clientId", "", false)
     val clientSecret = Secrets.prompt("Slack Client Secret", "slack.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "slack.scopes", Arrays.asList(
+    val scopes = Secrets.promptArray("Scopes", "slack.scopes", listOf(
       "bot",
       "channels:history",
       "channels:read",
@@ -82,8 +84,10 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return SlackAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test",
       TokenValue(credentials), "user"))
 

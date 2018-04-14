@@ -38,7 +38,8 @@ object TestUtil {
 
   @Synchronized
   fun assumeHasToken(
-      serviceDefinition: ServiceDefinition<out Any>) {
+    serviceDefinition: ServiceDefinition<out Any>
+  ) {
     initialise()
 
     val token = credentialsStore.get(serviceDefinition,

@@ -15,7 +15,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.util.Arrays
 
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -33,27 +32,32 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Fitbit Client Id", "fitbit.clientId", "", false)
     val clientSecret = Secrets.prompt("Fitbit Client Secret", "fitbit.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "fitbit.scopes",
-      Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",
+      listOf("activity", "heartrate", "location", "nutrition", "profile",
         "settings", "sleep", "social", "weight"))
 
     return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.fitbit.com/1/user/-/profile.json",
       TokenValue(credentials), "user", "fullName"))
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
-    return credentials.refreshToken != null
-      && credentials.clientId != null
-      && credentials.clientSecret != null
+    return credentials.refreshToken != null &&
+      credentials.clientId != null &&
+      credentials.clientSecret != null
   }
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {

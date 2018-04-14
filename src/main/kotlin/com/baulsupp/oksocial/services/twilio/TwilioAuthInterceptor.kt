@@ -35,26 +35,34 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): BasicCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): BasicCredentials {
     val user = Secrets.prompt("Twilio Account SID", "twilio.accountSid", "", false)
     val password = Secrets.prompt("Twilio Auth Token", "twilio.authToken", "", true)
 
     return BasicCredentials(user, password)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: BasicCredentials): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: BasicCredentials
+  ): ValidatedCredentials {
     val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json",
       TokenValue(credentials))
     val username = (map["accounts"] as List<Map<String, Any>>)[0]["friendly_name"] as String
     return ValidatedCredentials(username)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

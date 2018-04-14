@@ -11,11 +11,15 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-abstract class TwitterAuthFlow(protected val client: OkHttpClient,
-                               protected val outputHandler: OutputHandler<Response>) {
+abstract class TwitterAuthFlow(
+  protected val client: OkHttpClient,
+  protected val outputHandler: OutputHandler<Response>
+) {
 
-  suspend fun generateRequestToken(unauthed: TwitterCredentials,
-                                   callback: String): TwitterCredentials {
+  suspend fun generateRequestToken(
+    unauthed: TwitterCredentials,
+    callback: String
+  ): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_callback", callback).build()
     var request = requestBuilder("https://api.twitter.com/oauth/request_token",
       NoToken)
@@ -34,8 +38,10 @@ abstract class TwitterAuthFlow(protected val client: OkHttpClient,
       tokenMap["oauth_token"], tokenMap["oauth_token_secret"])
   }
 
-  suspend fun generateAccessToken(requestCredentials: TwitterCredentials,
-                                  verifier: String): TwitterCredentials {
+  suspend fun generateAccessToken(
+    requestCredentials: TwitterCredentials,
+    verifier: String
+  ): TwitterCredentials {
     val body = FormBody.Builder().add("oauth_verifier", verifier).build()
     var request = requestBuilder("https://api.twitter.com/oauth/access_token",
       NoToken)

@@ -36,8 +36,11 @@ val okshell: OkShell by lazy { OkShell.instance ?: OkShell.create() }
 
 val client: OkHttpClient by lazy { okshell.commandLine.client }
 
-inline fun <reified T> query(url: String, tokenSet: Token = DefaultToken,
-                             noinline init: Request.Builder.() -> Unit = {}): T {
+inline fun <reified T> query(
+  url: String,
+  tokenSet: Token = DefaultToken,
+  noinline init: Request.Builder.() -> Unit = {}
+): T {
   return query(request(url, tokenSet, init))
 }
 

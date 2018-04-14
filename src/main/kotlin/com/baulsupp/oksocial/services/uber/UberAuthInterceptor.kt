@@ -40,8 +40,11 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
     val clientSecret = Secrets.prompt("Uber Client Secret", "uber.clientSecret", "", true)
@@ -49,15 +52,20 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return UberAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials {
     val map = client.queryMap<Any>("https://api.uber.com/v1/me",
       TokenValue(credentials))
     return ValidatedCredentials("${map["first_name"]} ${map["last_name"]}")

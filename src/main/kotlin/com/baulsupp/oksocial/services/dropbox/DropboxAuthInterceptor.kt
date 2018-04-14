@@ -41,16 +41,21 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
     val clientId = Secrets.prompt("Dropbox Client Id", "dropbox.clientId", "", false)
     val clientSecret = Secrets.prompt("Dropbox Client Secret", "dropbox.clientSecret", "", true)
 
     return DropboxAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials {
     val body = FormBody.create(MediaType.parse("application/json"), "null")
     val request = requestBuilder("https://api.dropboxapi.com/2/users/get_current_account",
       TokenValue(credentials)).post(body).build()

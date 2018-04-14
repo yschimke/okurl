@@ -5,7 +5,6 @@ import java.io.FileInputStream
 import java.security.KeyStore
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import java.util.Arrays
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
@@ -58,10 +57,6 @@ object CertificateUtils {
       installDir = "."
     }
 
-    val files = File(installDir, "certificates").listFiles { f -> f.name.endsWith(".crt") }
-
-    return if (files != null) {
-      Arrays.asList(*files)
-    } else null
+    return File(installDir, "certificates").listFiles { f -> f.name.endsWith(".crt") }?.toList()
   }
 }
