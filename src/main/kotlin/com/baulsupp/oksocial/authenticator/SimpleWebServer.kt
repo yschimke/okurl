@@ -14,8 +14,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class SimpleWebServer(private val codeReader: (HttpUrl) -> String?,
-                      private val port: Int = 3000) : Closeable, HttpHandler {
+class SimpleWebServer(
+  private val codeReader: (HttpUrl) -> String?,
+  private val port: Int = 3000
+) : Closeable, HttpHandler {
   private val logger = Logger.getLogger(SimpleWebServer::class.java.name)
 
   private var server: HttpServer = HttpServer.create(InetSocketAddress("localhost", port), 1)

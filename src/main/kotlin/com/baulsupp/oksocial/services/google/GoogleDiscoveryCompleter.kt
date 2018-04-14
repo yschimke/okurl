@@ -12,8 +12,10 @@ import okhttp3.HttpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
-                               private val discoveryDocPaths: List<String>) : ApiCompleter {
+class GoogleDiscoveryCompleter(
+  private val discoveryRegistry: DiscoveryRegistry,
+  private val discoveryDocPaths: List<String>
+) : ApiCompleter {
   private val mappings = CompletionMappings()
 
   init {
@@ -47,8 +49,10 @@ class GoogleDiscoveryCompleter(private val discoveryRegistry: DiscoveryRegistry,
   companion object {
     private val logger = Logger.getLogger(GoogleDiscoveryCompleter::class.java.name)
 
-    fun forApis(discoveryRegistry: DiscoveryRegistry,
-                discoveryDocPaths: List<String>): GoogleDiscoveryCompleter {
+    fun forApis(
+      discoveryRegistry: DiscoveryRegistry,
+      discoveryDocPaths: List<String>
+    ): GoogleDiscoveryCompleter {
       return GoogleDiscoveryCompleter(discoveryRegistry, discoveryDocPaths)
     }
   }

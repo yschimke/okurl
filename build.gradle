@@ -1,22 +1,22 @@
 buildscript {
-    ext.kotlin_version = '1.2.31'
-    repositories {
-        maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.shyiko:ktlint:0.20.0"
-    }
+  ext.kotlin_version = '1.2.31'
+  repositories {
+    maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath "com.github.shyiko:ktlint:0.20.0"
+  }
 }
 
 plugins {
-    id "com.gradle.build-scan" version "1.12.1"
-    id 'com.github.ben-manes.versions' version '0.17.0'
-    id 'net.nemerosa.versioning' version '2.6.1'
-    id 'io.codearte.nexus-staging' version '0.11.0'
-    id "org.jlleitschuh.gradle.ktlint" version "3.2.0"
+  id "com.gradle.build-scan" version "1.12.1"
+  id 'com.github.ben-manes.versions' version '0.17.0'
+  id 'net.nemerosa.versioning' version '2.6.1'
+  id 'io.codearte.nexus-staging' version '0.11.0'
+  id "org.jlleitschuh.gradle.ktlint" version "3.2.0"
 }
 
 buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'yes' }
@@ -31,7 +31,7 @@ apply plugin: 'signing'
 group = 'com.baulsupp'
 
 versioning {
-    releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
+  releaseMode = project.hasProperty('releaseMode') ? project.property('releaseMode') : 'snapshot'
 }
 
 version = versioning.info.display
@@ -41,276 +41,276 @@ description = """OkHttp Social Authentication"""
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 
 jar {
-    manifest {
-        attributes("Implementation-Title": "OkSocial", "Implementation-Version": version)
-    }
+  manifest {
+    attributes("Implementation-Title": "OkSocial", "Implementation-Version": version)
+  }
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.2"
-    kotlinOptions.languageVersion = "1.2"
+  kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.apiVersion = "1.2"
+  kotlinOptions.languageVersion = "1.2"
 }
 
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.2"
-    kotlinOptions.languageVersion = "1.2"
+  kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.apiVersion = "1.2"
+  kotlinOptions.languageVersion = "1.2"
 }
 
 distTar {
-    compression = Compression.GZIP
+  compression = Compression.GZIP
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+  classifier = 'javadoc'
+  from javadoc
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+  classifier = 'sources'
+  from sourceSets.main.allSource
 }
 
 artifacts {
-    archives javadocJar, sourcesJar, jar
+  archives javadocJar, sourcesJar, jar
 }
 
 repositories {
-    mavenLocal()
-    maven { url 'http://repo.spring.io/milestone' }
-    maven { url 'https://oss.jfrog.org/libs-snapshot' }
-    maven { url 'https://dl.bintray.com/reactivesocket/RSocket' }
-    maven { url "https://jitpack.io" }
-    maven { url "https://oss.sonatype.org/content/repositories/releases" }
-    maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
-    mavenCentral()
-    jcenter()
+  mavenLocal()
+  maven { url 'http://repo.spring.io/milestone' }
+  maven { url 'https://oss.jfrog.org/libs-snapshot' }
+  maven { url 'https://dl.bintray.com/reactivesocket/RSocket' }
+  maven { url "https://jitpack.io" }
+  maven { url "https://oss.sonatype.org/content/repositories/releases" }
+  maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
+  mavenCentral()
+  jcenter()
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation("org.jetbrains.kotlin:kotlin-script-util:$kotlin_version") {
-        exclude(module: 'kotlin-compiler')
-    }
-    implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+  implementation("org.jetbrains.kotlin:kotlin-script-util:$kotlin_version") {
+    exclude(module: 'kotlin-compiler')
+  }
+  implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
 
-    implementation 'com.baulsupp:oksocial-output:1.8.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
-    implementation 'org.conscrypt:conscrypt-openjdk-uber:1.0.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.4'
-    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.4"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.4"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4"
-    implementation 'com.github.mrmike:ok2curl:0.4.5'
-    implementation 'javax.activation:activation:1.1.1'
-    implementation 'org.slf4j:slf4j-jdk14:1.8.0-beta2'
-    implementation 'org.zeroturnaround:zt-exec:1.10'
-    implementation 'com.jakewharton.byteunits:byteunits:0.9.1'
-    implementation 'io.netty:netty-resolver-dns:4.1.22.Final'
-    implementation 'io.airlift:airline:0.8'
-    implementation 'pt.davidafsilva.apple:jkeychain:1.0.0'
-    implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.5.0'
-    implementation 'io.zipkin.brave:brave-okhttp:4.13.4'
-    implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:4.18.2'
-    implementation 'io.zipkin.brave:brave:4.18.2'
-    implementation 'com.squareup.moshi:moshi:1.5.0'
-    implementation 'com.squareup.moshi:moshi-kotlin:1.5.0'
-    implementation 'com.squareup.moshi:moshi-adapters:1.5.0'
-    implementation 'org.brotli:dec:0.1.2'
-    implementation 'com.github.markusbernhardt:proxy-vole:1.0.4'
-    implementation 'commons-io:commons-io:2.6'
-    implementation 'org.apache.commons:commons-lang3:3.7'
-    implementation 'org.fusesource.jansi:jansi:1.17'
-    implementation 'com.github.holgerbrandl:kscript-annotations:1.2'
+  implementation 'com.baulsupp:oksocial-output:1.8.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+  implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+  implementation 'org.conscrypt:conscrypt-openjdk-uber:1.0.1'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+  implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
+  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.4'
+  implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.4"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.4"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4"
+  implementation 'com.github.mrmike:ok2curl:0.4.5'
+  implementation 'javax.activation:activation:1.1.1'
+  implementation 'org.slf4j:slf4j-jdk14:1.8.0-beta2'
+  implementation 'org.zeroturnaround:zt-exec:1.10'
+  implementation 'com.jakewharton.byteunits:byteunits:0.9.1'
+  implementation 'io.netty:netty-resolver-dns:4.1.22.Final'
+  implementation 'io.airlift:airline:0.8'
+  implementation 'pt.davidafsilva.apple:jkeychain:1.0.0'
+  implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.5.0'
+  implementation 'io.zipkin.brave:brave-okhttp:4.13.4'
+  implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:4.18.2'
+  implementation 'io.zipkin.brave:brave:4.18.2'
+  implementation 'com.squareup.moshi:moshi:1.5.0'
+  implementation 'com.squareup.moshi:moshi-kotlin:1.5.0'
+  implementation 'com.squareup.moshi:moshi-adapters:1.5.0'
+  implementation 'org.brotli:dec:0.1.2'
+  implementation 'com.github.markusbernhardt:proxy-vole:1.0.4'
+  implementation 'commons-io:commons-io:2.6'
+  implementation 'org.apache.commons:commons-lang3:3.7'
+  implementation 'org.fusesource.jansi:jansi:1.17'
+  implementation 'com.github.holgerbrandl:kscript-annotations:1.2'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+  testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+  testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-    testImplementation 'com.squareup.okhttp3:okhttp-testing-support:3.10.0'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:3.10.0'
+  testImplementation 'com.squareup.okhttp3:okhttp-testing-support:3.10.0'
+  testImplementation 'com.squareup.okhttp3:mockwebserver:3.10.0'
 }
 
 distributions {
-    main {
-        contents {
-            from("${rootProject.projectDir}") {
-                include "README.md", "LICENSE"
-            }
-            from("${rootProject.projectDir}/src/main/scripts") {
-                fileMode 0755
-                into "bin"
-            }
-            from("${rootProject.projectDir}/certificates") {
-                into "certificates"
-            }
-            from("${rootProject.projectDir}/src/test/kotlin/commands") {
-                fileMode 0755
-                exclude "local"
-                into "bin"
-            }
-            from("${rootProject.projectDir}/bash") {
-                into "bash"
-            }
-            from("${rootProject.projectDir}/zsh") {
-                into "zsh"
-            }
-            from("${rootProject.projectDir}/src/main/resources") {
-                into "scripts"
-                include "oksocial.js"
-            }
-            into('lib') {
-                from jar
-            }
-            into('lib') {
-                from configurations.runtimeClasspath
-            }
-        }
+  main {
+    contents {
+      from("${rootProject.projectDir}") {
+        include "README.md", "LICENSE"
+      }
+      from("${rootProject.projectDir}/src/main/scripts") {
+        fileMode 0755
+        into "bin"
+      }
+      from("${rootProject.projectDir}/certificates") {
+        into "certificates"
+      }
+      from("${rootProject.projectDir}/src/test/kotlin/commands") {
+        fileMode 0755
+        exclude "local"
+        into "bin"
+      }
+      from("${rootProject.projectDir}/bash") {
+        into "bash"
+      }
+      from("${rootProject.projectDir}/zsh") {
+        into "zsh"
+      }
+      from("${rootProject.projectDir}/src/main/resources") {
+        into "scripts"
+        include "oksocial.js"
+      }
+      into('lib') {
+        from jar
+      }
+      into('lib') {
+        from configurations.runtimeClasspath
+      }
     }
+  }
 }
 
 compileTestJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    options.compilerArgs += '-parameters'
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  options.compilerArgs += '-parameters'
 }
 
 //packaging tests
 task packageTests(type: Jar) {
-    from sourceSets.test.output
-    classifier = 'tests'
+  from sourceSets.test.output
+  classifier = 'tests'
 }
 
 artifacts.archives packageTests
 
 kotlin {
-    experimental {
-        coroutines "enable"
-    }
+  experimental {
+    coroutines "enable"
+  }
 }
 
 task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
+  from sourceSets.main.allJava
 }
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
 
-            artifact sourceJar {
-                classifier "sources"
-            }
-        }
+      artifact sourceJar {
+        classifier "sources"
+      }
     }
+  }
 }
 
 if (project.hasProperty('ossrhUser')) {
-    signing {
-        sign configurations.archives
-    }
+  signing {
+    sign configurations.archives
+  }
 
-    nexusStaging {
-        username = ossrhUser
-        password = ossrhPassword
-    }
+  nexusStaging {
+    username = ossrhUser
+    password = ossrhPassword
+  }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUser, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUser, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name project.name
-                    group 'com.baulsupp'
-                    description "Command Line Output Library"
-                    url "https://github.com/yschimke/oksocial"
-
-                    scm {
-                        connection 'scm:git:https://github.com/yschimke/oksocial.git'
-                        developerConnection 'scm:git:git@github.com:yschimke/oksocial.git'
-                        url 'https://github.com/yschimke/oksocial.git'
-                    }
-
-                    licenses {
-                        license {
-                            name 'Apache License'
-                            url 'http://opensource.org/licenses/apache-2.0'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = 'yschimke'
-                            name = 'Yuri Schimke'
-                            email = 'yuri@schimke.ee'
-                        }
-                    }
-
-                    packaging 'jar'
-                }
-            }
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          authentication(userName: ossrhUser, password: ossrhPassword)
         }
+
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: ossrhUser, password: ossrhPassword)
+        }
+
+        pom.project {
+          name project.name
+          group 'com.baulsupp'
+          description "Command Line Output Library"
+          url "https://github.com/yschimke/oksocial"
+
+          scm {
+            connection 'scm:git:https://github.com/yschimke/oksocial.git'
+            developerConnection 'scm:git:git@github.com:yschimke/oksocial.git'
+            url 'https://github.com/yschimke/oksocial.git'
+          }
+
+          licenses {
+            license {
+              name 'Apache License'
+              url 'http://opensource.org/licenses/apache-2.0'
+              distribution 'repo'
+            }
+          }
+
+          developers {
+            developer {
+              id = 'yschimke'
+              name = 'Yuri Schimke'
+              email = 'yuri@schimke.ee'
+            }
+          }
+
+          packaging 'jar'
+        }
+      }
     }
+  }
 }
 
 dependencyUpdates.resolutionStrategy = {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean rejected = (selection.candidate.group == "io.netty" && selection.candidate.version ==~ /5\..*/) || (selection.candidate.group == "org.jetbrains.kotlin" && selection.candidate.version ==~ /.*dev.*/)
-            if (rejected) {
-                selection.reject('Release candidate')
-            }
-        }
+  componentSelection { rules ->
+    rules.all { ComponentSelection selection ->
+      boolean rejected = (selection.candidate.group == "io.netty" && selection.candidate.version ==~ /5\..*/) || (selection.candidate.group == "org.jetbrains.kotlin" && selection.candidate.version ==~ /.*dev.*/)
+      if (rejected) {
+        selection.reject('Release candidate')
+      }
     }
+  }
 }
 
 task resolveDependencies {
-    setDescription "Resolves all projects dependencies from the repository."
-    setGroup "Build Server"
+  setDescription "Resolves all projects dependencies from the repository."
+  setGroup "Build Server"
 
-    doLast {
-        rootProject.allprojects { project ->
-            project.buildscript.configurations.forEach { configuration ->
-                if (configuration.canBeResolved) {
-                    configuration.resolve()
-                }
-            }
-
-            project.configurations.forEach { configuration ->
-                if (configuration.canBeResolved) {
-                    configuration.resolve()
-                }
-            }
+  doLast {
+    rootProject.allprojects { project ->
+      project.buildscript.configurations.forEach { configuration ->
+        if (configuration.canBeResolved) {
+          configuration.resolve()
         }
+      }
+
+      project.configurations.forEach { configuration ->
+        if (configuration.canBeResolved) {
+          configuration.resolve()
+        }
+      }
     }
+  }
 }
 
 test {
-    useJUnitPlatform {
-        excludeTags 'slow'
-        includeEngines 'junit-jupiter', 'junit-vintage'
-    }
+  useJUnitPlatform {
+    excludeTags 'slow'
+    includeEngines 'junit-jupiter', 'junit-vintage'
+  }
 
-    failFast = true
+  failFast = true
 }

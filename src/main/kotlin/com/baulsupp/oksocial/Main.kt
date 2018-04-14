@@ -228,8 +228,10 @@ class Main : CommandLineClient() {
     return 0
   }
 
-  suspend fun processResponses(outputHandler: OutputHandler<Response>,
-                               responses: List<PotentialResponse>): Boolean {
+  suspend fun processResponses(
+    outputHandler: OutputHandler<Response>,
+    responses: List<PotentialResponse>
+  ): Boolean {
     var failed = false
     for (response in responses) {
       when (response) {

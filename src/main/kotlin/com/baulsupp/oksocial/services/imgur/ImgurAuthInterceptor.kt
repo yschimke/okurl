@@ -31,8 +31,11 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Imgur Client Id", "imgur.clientId", "", false)
     val clientSecret = Secrets.prompt("Imgur Client Secret", "imgur.clientSecret", "", true)
@@ -40,8 +43,10 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ImgurAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.imgur.com/3/account/me",
       TokenValue(credentials), "data", "url"))
 

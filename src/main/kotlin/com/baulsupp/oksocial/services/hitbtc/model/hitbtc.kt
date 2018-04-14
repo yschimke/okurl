@@ -9,12 +9,14 @@ data class Currency(
   val payinConfirmations: Int,
   val payoutEnabled: Boolean,
   val payoutIsPaymentId: Boolean,
-  val transferEnabled: Boolean)
+  val transferEnabled: Boolean
+)
 
 data class Balance(
   val currency: String,
   val available: String,
-  val reserved: String)
+  val reserved: String
+)
 
 data class Ticker(
   val symbol: String,
@@ -26,27 +28,32 @@ data class Ticker(
   val open: String,
   val volume: String,
   val volumeQuoute: String,
-  val timestamp: String)
+  val timestamp: String
+)
 
 data class PublicTrade(
   val id: Int,
   val price: String,
   val quantity: String,
   val side: String,
-  val timestamp: String)
+  val timestamp: String
+)
 
 data class Depth(
   val price: String,
-  val size: String)
+  val size: String
+)
 
 data class Orderbook(
   val ask: List<Depth>,
   val bid: List<Depth>,
-  val timestamp: String)
+  val timestamp: String
+)
 
 data class TradingFee(
   val takeLiquidityRate: String,
-  val provideLiquidityRate: String)
+  val provideLiquidityRate: String
+)
 
 data class Symbol(
   val id: String,
@@ -56,7 +63,8 @@ data class Symbol(
   val tickSize: String,
   val takeLiquidityRate: String,
   val provideLiquidityRate: String,
-  val feeCurrency: String)
+  val feeCurrency: String
+)
 
 data class Order(
   val id: Int,
@@ -73,7 +81,8 @@ data class Order(
   val updatedAt: String,
   val stopPrice: String,
   val expireTime: String,
-  val tradesReport: Map<String, Any>)
+  val tradesReport: Map<String, Any>
+)
 
 data class Trade(
   val id: Int,
@@ -84,7 +93,8 @@ data class Trade(
   val quantity: String,
   val fee: String,
   val price: String,
-  val timestamp: String)
+  val timestamp: String
+)
 
 data class Transaction(
   val id: String,
@@ -99,14 +109,17 @@ data class Transaction(
   val status: String,
   val type: String,
   val createdAt: String,
-  val updatedAt: String)
+  val updatedAt: String
+)
 
 data class Address(
   val address: String,
-  val paymentId: String)
+  val paymentId: String
+)
 
 data class WithdrawConfirm(
-  val result: Boolean)
+  val result: Boolean
+)
 
 data class Candle(
   val timestamp: String,
@@ -115,4 +128,5 @@ data class Candle(
   val min: String,
   val max: String,
   val volume: String,
-  val volumeQuote: String)
+  val volumeQuote: String
+)

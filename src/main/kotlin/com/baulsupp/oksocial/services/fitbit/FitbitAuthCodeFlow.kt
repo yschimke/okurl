@@ -12,8 +12,13 @@ import okhttp3.Response
 import java.net.URLEncoder
 
 object FitbitAuthCodeFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+  suspend fun login(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    clientId: String,
+    clientSecret: String,
+    scopes: Iterable<String>
+  ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")

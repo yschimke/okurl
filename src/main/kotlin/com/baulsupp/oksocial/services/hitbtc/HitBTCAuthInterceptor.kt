@@ -37,25 +37,33 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): BasicCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): BasicCredentials {
     val user = Secrets.prompt("BitHTC API Key", "bithtc.apiKey", "", false)
     val password = Secrets.prompt("BitHTC Secret Key", "bithtc.secretKey", "", true)
 
     return BasicCredentials(user, password)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: BasicCredentials): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: BasicCredentials
+  ): ValidatedCredentials {
     val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance",
       TokenValue(credentials)).let { "✓" }
     return ValidatedCredentials(account)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

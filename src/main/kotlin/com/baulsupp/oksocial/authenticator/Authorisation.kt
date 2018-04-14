@@ -7,8 +7,12 @@ import com.baulsupp.oksocial.secrets.Secrets
 
 class Authorisation(val main: CommandLineClient) {
 
-  suspend fun authorize(auth: AuthInterceptor<*>?, token: String?,
-                        authArguments: List<String>, tokenSet: String) {
+  suspend fun authorize(
+    auth: AuthInterceptor<*>?,
+    token: String?,
+    authArguments: List<String>,
+    tokenSet: String
+  ) {
     if (auth == null) {
       throw UsageException(
         "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))

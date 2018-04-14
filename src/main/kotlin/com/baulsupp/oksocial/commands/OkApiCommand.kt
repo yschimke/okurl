@@ -22,8 +22,10 @@ class OkApiCommand : ShellCommand, MainAware {
     this.main = main
   }
 
-  override fun buildRequests(client: OkHttpClient,
-                             arguments: List<String>): List<Request> {
+  override fun buildRequests(
+    client: OkHttpClient,
+    arguments: List<String>
+  ): List<Request> {
     val args = arguments.toMutableList()
 
     val script = FileSystems.getDefault().getPath(args.removeAt(0))

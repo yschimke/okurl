@@ -28,11 +28,11 @@ class SignatureTest {
     val header = s.generateAuthorization(request, credentials)
 
     assertEquals(
-        "OAuth oauth_consumer_key=\"xxxxxxxxxxxxxxxxxxxxxxxxx\", "
-            + "oauth_nonce=\"91460432867000\", "
-            + "oauth_signature=\"cL%2Fk1hU9rUo7%2FTIF%2BAwL5bbWhOE%3D\", "
-            + "oauth_signature_method=\"HMAC-SHA1\", "
-            + "oauth_timestamp=\"1460432867\", oauth_version=\"1.0\"",
+        "OAuth oauth_consumer_key=\"xxxxxxxxxxxxxxxxxxxxxxxxx\", " +
+            "oauth_nonce=\"91460432867000\", " +
+            "oauth_signature=\"cL%2Fk1hU9rUo7%2FTIF%2BAwL5bbWhOE%3D\", " +
+            "oauth_signature_method=\"HMAC-SHA1\", " +
+            "oauth_timestamp=\"1460432867\", oauth_version=\"1.0\"",
         header)
   }
 }

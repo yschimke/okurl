@@ -52,8 +52,11 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
     val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
@@ -67,8 +70,10 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials {
     val userName = client.fbQuery<UserOrPage>("/me",
       TokenValue(credentials)).name
     val appName = client.fbQuery<App>("/app",
@@ -87,10 +92,13 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   fun isGraphApi(url: HttpUrl) =
     url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter =
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter =
     FacebookCompleter(client, hosts())
 
   override fun apiDocPresenter(url: String): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition())
