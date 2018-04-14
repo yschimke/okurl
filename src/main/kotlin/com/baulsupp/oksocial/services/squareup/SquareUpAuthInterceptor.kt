@@ -19,7 +19,6 @@ import com.baulsupp.oksocial.services.squareup.model.User
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.util.Arrays
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -53,7 +52,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
     val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
       true)
-    val scopes = Secrets.promptArray("Scopes", "squareup.scopes", Arrays.asList(
+    val scopes = Secrets.promptArray("Scopes", "squareup.scopes", listOf(
       "MERCHANT_PROFILE_READ",
       "PAYMENTS_READ",
       "SETTLEMENTS_READ",

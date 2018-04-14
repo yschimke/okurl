@@ -13,11 +13,9 @@ import okhttp3.Dns
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.UnknownHostException
-import java.util.Arrays
 import java.util.concurrent.ExecutionException
 import java.util.logging.Level
 import java.util.logging.Logger
-import java.util.stream.Collectors.joining
 
 class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressTypes?,
                dnsServers: List<InetSocketAddress>) : Dns {
@@ -62,16 +60,13 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
     return try {
       val addresses = f.get()
 
-      logger.fine("Dns ($hostname): " + addresses.stream()
-        .map<String>({ it.toString() })
-        .collect(joining(", ")))
+      logger.fine("Dns ($hostname): " + addresses.joinToString(", "))
 
       addresses
     } catch (e: InterruptedException) {
       throw UnknownHostException(e.toString())
     } catch (e: ExecutionException) {
-      throw UnknownHostException(e.cause!!.message).initCause(
-        e.cause) as UnknownHostException
+      throw UnknownHostException(e.cause!!.message).initCause(e.cause) as UnknownHostException
     }
   }
 
@@ -89,13 +84,11 @@ class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressT
         return DefaultDnsServerAddressStreamProvider.defaultAddressList()
       }
 
-      return if (dnsServers == "google") {
-        Arrays.asList(InetSocketAddress("8.8.8.8", 53),
-          InetSocketAddress("8.8.4.4", 53))
-      } else dnsServers.split(
-        ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().map { s ->
-        InetSocketAddress(s, 53)
-      }.toList()
+      return when (dnsServers) {
+        "google" -> listOf(InetSocketAddress("8.8.8.8", 53), InetSocketAddress("8.8.4.4", 53))
+        "cloudflare" -> listOf(InetSocketAddress("1.1.1.1", 53), InetSocketAddress("1.0.0.1", 53))
+        else -> dnsServers.split(",").map { s -> InetSocketAddress(s, 53) }
+      }
     }
 
     private fun getInternetProtocolFamilies(ipMode: IPvMode): ResolvedAddressTypes? {

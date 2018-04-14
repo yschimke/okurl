@@ -22,7 +22,6 @@ import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.util.Arrays
 
 class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -43,7 +42,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val clientId = Secrets.prompt("Coinbase Client Id", "coinbase.clientId", "", false)
     val clientSecret = Secrets.prompt("Coinbase Client Secret", "coinbase.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "coinbase.scopes", Arrays.asList(
+    val scopes = Secrets.promptArray("Scopes", "coinbase.scopes", listOf(
       "wallet:accounts:read",
       "wallet:addresses:read",
       "wallet:buys:read",

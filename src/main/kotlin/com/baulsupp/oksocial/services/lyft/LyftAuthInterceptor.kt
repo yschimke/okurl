@@ -46,7 +46,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return if (authArguments == listOf("--client")) {
       LyftClientAuthFlow.login(client, clientId, clientSecret)
     } else {
-      val scopes = Secrets.promptArray("Scopes", "lyft.scopes", Arrays.asList("public",
+      val scopes = Secrets.promptArray("Scopes", "lyft.scopes", listOf("public",
         "rides.read",
         "offline",
         "rides.request",

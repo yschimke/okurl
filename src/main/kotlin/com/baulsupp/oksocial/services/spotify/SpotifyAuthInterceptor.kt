@@ -50,7 +50,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientSecret = Secrets.prompt("Spotify Client Secret", "spotify.clientSecret", "", true)
 
     val scopes = Secrets.promptArray("Scopes", "spotify.scopes",
-      Arrays.asList("playlist-read-private",
+      listOf("playlist-read-private",
         "playlist-read-collaborative",
         "playlist-modify-public",
         "playlist-modify-private",

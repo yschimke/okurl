@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.security
 
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import java.util.Arrays.asList
 import javax.net.ssl.X509TrustManager
 
 class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X509TrustManager {
@@ -39,7 +38,7 @@ class MergedX509TrustManager(private val managers: List<X509TrustManager>) : X50
     val certificates = mutableListOf<X509Certificate>()
 
     for (tm in managers) {
-      certificates.addAll(asList(*tm.acceptedIssuers))
+      certificates.addAll(tm.acceptedIssuers.toList())
     }
 
     return certificates.toTypedArray()

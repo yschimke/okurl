@@ -15,7 +15,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.util.Arrays
 
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -39,7 +38,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Fitbit Client Id", "fitbit.clientId", "", false)
     val clientSecret = Secrets.prompt("Fitbit Client Secret", "fitbit.clientSecret", "", true)
     val scopes = Secrets.promptArray("Scopes", "fitbit.scopes",
-      Arrays.asList("activity", "heartrate", "location", "nutrition", "profile",
+      listOf("activity", "heartrate", "location", "nutrition", "profile",
         "settings", "sleep", "social", "weight"))
 
     return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)

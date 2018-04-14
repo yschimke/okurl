@@ -21,7 +21,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.util.Arrays
 
 /**
  * https://graph.microsoft.io/en-us/docs/authorization/app_authorization
@@ -50,7 +49,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
     val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
 
-    val scopes = Secrets.promptArray("Scopes", "microsoft.scopes", Arrays.asList(
+    val scopes = Secrets.promptArray("Scopes", "microsoft.scopes", listOf(
       "User.Read", "Contacts.Read", "Calendars.Read", "Mail.Read", "email", "offline_access", "openid", "profile", "Files.ReadWrite"
     ))
 
