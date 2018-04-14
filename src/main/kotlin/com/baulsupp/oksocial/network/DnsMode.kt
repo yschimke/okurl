@@ -5,7 +5,8 @@ import com.baulsupp.oksocial.output.UsageException
 enum class DnsMode {
   JAVA,
   NETTY,
-  GOOGLE;
+  GOOGLE,
+  DNSOVERHTTPS;
 
   companion object {
     @JvmStatic

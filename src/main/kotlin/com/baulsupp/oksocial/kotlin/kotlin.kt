@@ -135,8 +135,7 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 // TODO
 fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
-suspend fun OkHttpClient.queryForString(request: Request): String = execute(
-  request).body()!!.string()
+suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
 
 suspend fun OkHttpClient.queryForString(url: String, tokenSet: Token = DefaultToken): String =
   this.queryForString(request(url, tokenSet))
