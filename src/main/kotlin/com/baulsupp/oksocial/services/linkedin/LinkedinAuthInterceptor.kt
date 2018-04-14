@@ -33,8 +33,11 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(requestBuilder.build())
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Linkedin Client Id", "linkedin.clientId", "", false)
     val clientSecret = Secrets.prompt("Linkedin Client Secret", "linkedin.clientSecret", "", true)
@@ -44,8 +47,10 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return LinkedinAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials {
     return ValidatedCredentials(client.queryMapValue<String>("https://api.linkedin.com/v1/people/~:(formatted-name)",
       TokenValue(credentials), "formattedName"))
   }

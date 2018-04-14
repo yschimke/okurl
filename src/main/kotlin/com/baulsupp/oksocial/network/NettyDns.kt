@@ -17,8 +17,11 @@ import java.util.concurrent.ExecutionException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class NettyDns(private val group: EventLoopGroup, addressTypes: ResolvedAddressTypes?,
-               dnsServers: List<InetSocketAddress>) : Dns {
+class NettyDns(
+  private val group: EventLoopGroup,
+  addressTypes: ResolvedAddressTypes?,
+  dnsServers: List<InetSocketAddress>
+) : Dns {
 
   private val r: DnsNameResolver
   private val dnsServers: Iterable<InetSocketAddress>?

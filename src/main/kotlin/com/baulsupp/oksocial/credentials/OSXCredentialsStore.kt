@@ -17,7 +17,10 @@ class OSXCredentialsStore : CredentialsStore {
   }
 
   override fun <T> set(
-    serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {
+    serviceDefinition: ServiceDefinition<T>,
+    tokenSet: String,
+    credentials: T
+  ) {
     val credentialsString = serviceDefinition.formatCredentialsString(credentials)
 
     remove(serviceDefinition, tokenSet)

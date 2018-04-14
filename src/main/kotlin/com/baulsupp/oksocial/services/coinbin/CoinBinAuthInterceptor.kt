@@ -42,16 +42,21 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
       "https://coinbin.org/", null)
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: BasicCredentials): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: BasicCredentials
+  ): ValidatedCredentials =
     ValidatedCredentials(credentials.user, null)
 
   override fun hosts(): Set<String> = setOf("coinbin.org")
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

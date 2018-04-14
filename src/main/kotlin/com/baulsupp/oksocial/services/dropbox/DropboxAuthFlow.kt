@@ -11,8 +11,12 @@ import okhttp3.Request
 import okhttp3.Response
 
 object DropboxAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String): Oauth2Token {
+  suspend fun login(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    clientId: String,
+    clientSecret: String
+  ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val loginUrl = "https://www.dropbox.com/1/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"

@@ -34,8 +34,10 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
       override fun formatCredentialsString(credentials: String): String = credentials
     }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: String): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: String
+  ): ValidatedCredentials =
     ValidatedCredentials(credentials, null)
 
   override fun hosts(): Set<String> = setOf("api.companieshouse.gov.uk", "account.companieshouse.gov.uk", "document-api.companieshouse.gov.uk")

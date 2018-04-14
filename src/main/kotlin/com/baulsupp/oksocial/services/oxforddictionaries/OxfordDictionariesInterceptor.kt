@@ -1,25 +1,15 @@
-package com.baulsupp.oksocial.services.oxforddictionaries;
+package com.baulsupp.oksocial.services.oxforddictionaries
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
-import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.credentials.ServiceDefinition
-import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.kotlin.edit
-import com.baulsupp.oksocial.kotlin.queryMap
-import com.baulsupp.oksocial.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
-import okhttp3.Credentials
 import okhttp3.Interceptor
-import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
-import java.util.Arrays
 
 /**
  * https://developer.lyft.com/docs/authentication
@@ -53,8 +43,11 @@ class OxfordDictionariesInterceptor : AuthInterceptor<ODToken>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): ODToken {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): ODToken {
     outputHandler.openLink("https://developer.oxforddictionaries.com/credentials")
 
     val appId = Secrets.prompt("OD App Id", "od.appId", "", false)
@@ -63,8 +56,10 @@ class OxfordDictionariesInterceptor : AuthInterceptor<ODToken>() {
     return ODToken(appId, appKey)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: ODToken): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: ODToken
+  ): ValidatedCredentials =
     ValidatedCredentials(null, null)
 
   override fun hosts(): Set<String> = setOf("od-api.oxforddictionaries.com")

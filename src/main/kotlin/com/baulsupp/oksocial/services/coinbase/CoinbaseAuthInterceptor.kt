@@ -37,8 +37,11 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Coinbase Client Id", "coinbase.clientId", "", false)
     val clientSecret = Secrets.prompt("Coinbase Client Secret", "coinbase.clientSecret", "", true)
@@ -101,10 +104,13 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
@@ -120,8 +126,10 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user",
       TokenValue(credentials), "data", "name"))
 

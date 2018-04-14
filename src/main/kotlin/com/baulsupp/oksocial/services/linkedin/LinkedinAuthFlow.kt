@@ -11,8 +11,13 @@ import okhttp3.Response
 import java.util.UUID
 
 object LinkedinAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+  suspend fun login(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    clientId: String,
+    clientSecret: String,
+    scopes: Iterable<String>
+  ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val uuid = UUID.randomUUID().toString()

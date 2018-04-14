@@ -24,8 +24,10 @@ object KeystoreUtils {
     return kms
   }
 
-  fun createSslSocketFactory(keyManagers: Array<KeyManager>?,
-                             trustManagers: X509TrustManager): SSLSocketFactory {
+  fun createSslSocketFactory(
+    keyManagers: Array<KeyManager>?,
+    trustManagers: X509TrustManager
+  ): SSLSocketFactory {
     val context = Platform.get().sslContext
 
     context.init(keyManagers, arrayOf<TrustManager>(trustManagers), null)

@@ -12,8 +12,13 @@ import okhttp3.Response
 import java.net.URLEncoder
 
 object BoxAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String, scopes: List<String>): Oauth2Token {
+  suspend fun login(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    clientId: String,
+    clientSecret: String,
+    scopes: List<String>
+  ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 

@@ -12,8 +12,10 @@ import java.time.Clock
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class Signature(private val clock: Clock = Clock.systemDefaultZone(),
-                private val random: () -> Long = { SecureRandom().nextLong() }) {
+class Signature(
+  private val clock: Clock = Clock.systemDefaultZone(),
+  private val random: () -> Long = { SecureRandom().nextLong() }
+) {
 
   private fun quoted(str: String): String {
     return "\"" + str + "\""

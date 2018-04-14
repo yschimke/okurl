@@ -24,7 +24,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.util.Arrays
 
 class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun serviceDefinition(): Oauth2ServiceDefinition {
@@ -43,8 +42,11 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Spotify Client Id", "spotify.clientId", "", false)
     val clientSecret = Secrets.prompt("Spotify Client Secret", "spotify.clientSecret", "", true)
@@ -68,15 +70,20 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return SpotifyAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials {
     return ValidatedCredentials(client.queryMapValue<String>("https://api.spotify.com/v1/me",
       TokenValue(credentials), "display_name"))
   }

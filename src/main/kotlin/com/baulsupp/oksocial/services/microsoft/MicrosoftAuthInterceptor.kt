@@ -43,8 +43,11 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Microsoft Client Id", "microsoft.clientId", "", false)
     val clientSecret = Secrets.prompt("Microsoft Client Secret", "microsoft.clientSecret", "", true)
@@ -78,10 +81,13 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(responseMap.access_token, responseMap.refresh_token, credentials.clientId, credentials.clientSecret)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: com.baulsupp.oksocial.credentials.Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: com.baulsupp.oksocial.credentials.Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

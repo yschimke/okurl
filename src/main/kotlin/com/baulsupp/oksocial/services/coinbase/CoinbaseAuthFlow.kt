@@ -10,8 +10,13 @@ import okhttp3.Request
 import okhttp3.Response
 
 object CoinbaseAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String, scopes: Iterable<String>): Oauth2Token {
+  suspend fun login(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    clientId: String,
+    clientSecret: String,
+    scopes: Iterable<String>
+  ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val loginUrl = "https://www.coinbase.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString(",")}&account=all"
 

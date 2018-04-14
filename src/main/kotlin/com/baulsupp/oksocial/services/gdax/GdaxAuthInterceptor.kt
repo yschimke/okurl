@@ -47,8 +47,11 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): GdaxCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): GdaxCredentials {
     val apiKey = Secrets.prompt("GDAX API Key", "gdax.apiKey", "", false)
     val apiSecret = Secrets.prompt("GDAX API Secret", "gdax.apiSecret", "", true)
     val apiPassphrase = Secrets.prompt("GDAX Passphrase", "gdax.passphrase", "", true)
@@ -56,17 +59,22 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     return GdaxCredentials(apiKey, apiSecret, apiPassphrase)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: GdaxCredentials): ValidatedCredentials {
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: GdaxCredentials
+  ): ValidatedCredentials {
     val accounts = client.queryList<Account>("https://api.gdax.com/accounts",
       TokenValue(credentials))
     return ValidatedCredentials(accounts.map { it.id }.first())
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient,
-                            credentialsStore: CredentialsStore,
-                            completionVariableCache: CompletionVariableCache,
-                            tokenSet: Token): ApiCompleter {
+  override fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)

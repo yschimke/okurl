@@ -31,8 +31,11 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
     val clientSecret = Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true)
@@ -43,8 +46,10 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.instagram.com/v1/users/self",
       TokenValue(credentials), "data", "full_name"))
 

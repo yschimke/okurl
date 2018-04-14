@@ -41,8 +41,11 @@ suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
   return moshi.adapter(T::class.java).fromJson(stringResult)!!
 }
 
-suspend inline fun <reified T> OkHttpClient.queryPages(url: String, paginator: T.() -> Pagination,
-                                                       tokenSet: Token = DefaultToken): List<T> {
+suspend inline fun <reified T> OkHttpClient.queryPages(
+  url: String,
+  paginator: T.() -> Pagination,
+  tokenSet: Token = DefaultToken
+): List<T> {
   var page = query<T>(url, tokenSet)
   val resultList = mutableListOf(page)
 
@@ -73,8 +76,10 @@ suspend inline fun <reified V> OkHttpClient.queryMap(request: Request): Map<Stri
   return moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
 
-suspend inline fun <reified V> OkHttpClient.queryMap(url: String,
-                                                     tokenSet: Token = DefaultToken): Map<String, V> =
+suspend inline fun <reified V> OkHttpClient.queryMap(
+  url: String,
+  tokenSet: Token = DefaultToken
+): Map<String, V> =
   this.queryMap(request(url, tokenSet))
 
 suspend inline fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
@@ -91,8 +96,10 @@ data class Next(val url: String) : Pagination()
 
 data class Rest(val urls: List<String>) : Pagination()
 
-suspend inline fun <reified V> OkHttpClient.queryList(url: String,
-                                                      tokenSet: Token = DefaultToken): List<V> =
+suspend inline fun <reified V> OkHttpClient.queryList(
+  url: String,
+  tokenSet: Token = DefaultToken
+): List<V> =
   this.queryList(request(url, tokenSet))
 
 suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
@@ -101,16 +108,23 @@ suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): 
   return moshi.mapAdapter<V>().fromJson(stringResult)
 }
 
-suspend inline fun <reified V> OkHttpClient.queryOptionalMap(url: String,
-                                                             tokenSet: Token = DefaultToken): Map<String, V>? =
+suspend inline fun <reified V> OkHttpClient.queryOptionalMap(
+  url: String,
+  tokenSet: Token = DefaultToken
+): Map<String, V>? =
   this.queryOptionalMap(request(url, tokenSet))
 
-suspend inline fun <reified T> OkHttpClient.queryMapValue(url: String,
-                                                          tokenSet: Token = DefaultToken, vararg keys: String): T? =
+suspend inline fun <reified T> OkHttpClient.queryMapValue(
+  url: String,
+  tokenSet: Token = DefaultToken,
+  vararg keys: String
+): T? =
   this.queryMapValue<T>(request(url, tokenSet), *keys)
 
-suspend inline fun <reified T> OkHttpClient.queryMapValue(request: Request,
-                                                          vararg keys: String): T? {
+suspend inline fun <reified T> OkHttpClient.queryMapValue(
+  request: Request,
+  vararg keys: String
+): T? {
   val queryMap = this.queryMap<Any>(request)
 
   val result = keys.fold(queryMap as Any, { map, key -> (map as Map<String, Any>)[key]!! })
@@ -175,11 +189,16 @@ val JSON = MediaType.parse("application/json")!!
 
 fun form(init: FormBody.Builder.() -> Unit = {}): FormBody = FormBody.Builder().apply(init).build()
 
-fun request(url: String? = null, tokenSet: Token = DefaultToken,
-            init: Request.Builder.() -> Unit = {}) = requestBuilder(url, tokenSet).apply(init).build()!!
+fun request(
+  url: String? = null,
+  tokenSet: Token = DefaultToken,
+  init: Request.Builder.() -> Unit = {}
+) = requestBuilder(url, tokenSet).apply(init).build()!!
 
-fun requestBuilder(url: String? = null,
-                   tokenSet: Token = DefaultToken) = Request.Builder().apply { if (url != null) url(url) }.tag(
+fun requestBuilder(
+  url: String? = null,
+  tokenSet: Token = DefaultToken
+) = Request.Builder().apply { if (url != null) url(url) }.tag(
   tokenSet)
 
 fun Request.Builder.tokenSet(tokenSet: Token) = tag(tokenSet)
@@ -195,6 +214,6 @@ fun HttpUrl.edit(init: HttpUrl.Builder.() -> Unit = {}) = newBuilder().apply(ini
 
 fun isInteractive(): Boolean {
   // TODO detect Intellij
-  return true;
+  return true
 //  return System.console() != null
 }

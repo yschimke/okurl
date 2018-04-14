@@ -13,8 +13,12 @@ import java.util.concurrent.TimeUnit
 
 class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
 
-  override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>,
-                                  client: OkHttpClient, tokenSet: Token) {
+  override suspend fun explainApi(
+    url: String,
+    outputHandler: OutputHandler<Response>,
+    client: OkHttpClient,
+    tokenSet: Token
+  ) {
     val discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url)
 
     val registry = DiscoveryRegistry.instance(client)

@@ -36,13 +36,18 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  override suspend fun validate(client: OkHttpClient,
-                                credentials: Oauth2Token): ValidatedCredentials =
+  override suspend fun validate(
+    client: OkHttpClient,
+    credentials: Oauth2Token
+  ): ValidatedCredentials =
     ValidatedCredentials(client.queryMapValue<String>("https://api.paypal.com/v1/oauth2/token/userinfo?schema=openid",
       TokenValue(credentials), "name"))
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>,
-                                 authArguments: List<String>): Oauth2Token {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): Oauth2Token {
 
     val clientId = Secrets.prompt("Paypal Client Id", "paypal.clientId", "", false)
     val clientSecret = Secrets.prompt("Paypal Client Secret", "paypal.clientSecret", "", true)

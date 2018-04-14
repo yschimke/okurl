@@ -10,8 +10,12 @@ import okhttp3.Response
 import java.net.URLEncoder
 
 object FourSquareAuthFlow {
-  suspend fun login(client: OkHttpClient, outputHandler: OutputHandler<Response>, clientId: String,
-                    clientSecret: String): Oauth2Token {
+  suspend fun login(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    clientId: String,
+    clientSecret: String
+  ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
       val serverUri = s.redirectUri

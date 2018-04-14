@@ -10,7 +10,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 suspend inline fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQueryList(
-  path: String, tokenSet: Token): T {
+  path: String,
+  tokenSet: Token
+): T {
   val fields = fbFieldNames(I::class)
 
   val stringResult = this.queryForString(

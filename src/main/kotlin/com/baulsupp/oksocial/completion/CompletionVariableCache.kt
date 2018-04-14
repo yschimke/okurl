@@ -5,8 +5,11 @@ interface CompletionVariableCache {
 
   operator fun set(service: String, key: String, values: List<String>)
 
-  suspend fun compute(service: String, key: String,
-                      s: suspend () -> List<String>?): List<String> {
+  suspend fun compute(
+    service: String,
+    key: String,
+    s: suspend () -> List<String>?
+  ): List<String> {
     val values = get(service, key)
 
     return if (values != null) {
