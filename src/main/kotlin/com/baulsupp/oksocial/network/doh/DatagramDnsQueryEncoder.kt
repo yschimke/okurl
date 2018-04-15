@@ -27,7 +27,6 @@ import okio.ByteString
 
 object DatagramDnsQueryEncoder {
   fun encode(envelope: DatagramDnsQuery): String {
-    val recipient = envelope.recipient()
     val query = envelope.content()
     val buf = Unpooled.buffer(1024)
 

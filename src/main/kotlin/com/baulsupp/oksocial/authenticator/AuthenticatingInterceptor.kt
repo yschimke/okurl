@@ -22,11 +22,9 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
     // TODO log bad tags?
-    val tokenSet = chain.request().tag() as? Token
-      ?: NoToken
+    val tokenSet = chain.request().tag() as? Token ?: NoToken
 
     val credentials = when (tokenSet) {
-    // TODO make this safe
       is TokenValue -> tokenSet.token as T
       is NoToken -> null
       else -> main.credentialsStore.get(interceptor.serviceDefinition(), tokenSet) ?: interceptor.defaultCredentials()

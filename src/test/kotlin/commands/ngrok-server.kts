@@ -24,16 +24,16 @@ import java.nio.charset.StandardCharsets
 val server = HttpServer.create(InetSocketAddress("localhost", 0), 10)
 
 val outputHandler = ConsoleHandler.instance(object : ResponseExtractor<HttpExchange> {
-  override fun filename(exchange: HttpExchange): String? {
+  override fun filename(response: HttpExchange): String? {
     return null
   }
 
-  override fun mimeType(exchange: HttpExchange): String? {
-    return exchange.requestHeaders["media-type"]?.firstOrNull() ?: "application/json"
+  override fun mimeType(response: HttpExchange): String? {
+    return response.requestHeaders["media-type"]?.firstOrNull() ?: "application/json"
   }
 
-  override fun source(exchange: HttpExchange): BufferedSource {
-    return Okio.buffer(Okio.source(exchange.requestBody))
+  override fun source(response: HttpExchange): BufferedSource {
+    return Okio.buffer(Okio.source(response.requestBody))
   }
 })
 
@@ -58,7 +58,7 @@ data class TunnelsResponse(val tunnels: List<Tunnels>, val uri: String)
 
 runBlocking {
   if (isInstalled("ngrok")) {
-    val job = launch {
+    launch {
       exec(listOf("ngrok", "http", "-bind-tls=true", "--log=stdout", server.address.port.toString())) {
         redirectOutput(System.out)
       }

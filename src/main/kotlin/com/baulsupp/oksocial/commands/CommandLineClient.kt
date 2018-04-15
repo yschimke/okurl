@@ -24,7 +24,6 @@ import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
-import com.baulsupp.oksocial.network.doh.CloudflareDnsOverHttps
 import com.baulsupp.oksocial.network.doh.GoogleDnsOverHttps
 import com.baulsupp.oksocial.network.doh.OkHttpDnsOverHttps
 import com.baulsupp.oksocial.okhttp.CipherSuiteOption
@@ -51,6 +50,7 @@ import com.baulsupp.oksocial.util.ClientException
 import com.baulsupp.oksocial.util.InetAddressParam
 import com.baulsupp.oksocial.util.LoggingUtil
 import com.github.markusbernhardt.proxy.ProxySearch
+import com.google.common.io.Closeables
 import com.moczul.ok2curl.CurlInterceptor
 import io.airlift.airline.Arguments
 import io.airlift.airline.HelpOption
@@ -68,7 +68,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
-import org.apache.commons.io.IOUtils
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.io.Closeable
@@ -535,13 +534,13 @@ open class CommandLineClient : HelpOption() {
 
   fun closeClients() {
     for (c in closeables) {
-      IOUtils.closeQuietly(c)
+      Closeables.close(c, true)
     }
   }
 
   open fun buildHandler(): OutputHandler<Response> = when {
     rawOutput -> DownloadHandler(OkHttpResponseExtractor(), File("-"))
-    else -> ConsoleHandler.instance(OkHttpResponseExtractor()) as OutputHandler<Response>
+    else -> ConsoleHandler.instance(OkHttpResponseExtractor())
   }
 
   fun token(): Token {
