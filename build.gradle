@@ -1,5 +1,6 @@
 buildscript {
-  ext.kotlin_version = '1.2.31'
+  ext.kotlin_version = '1.2.40-eap-62'
+  ext.jackson_version = '2.9.5'
   repositories {
     maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
     mavenCentral()
@@ -7,12 +8,12 @@ buildscript {
   }
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "com.github.shyiko:ktlint:0.20.0"
+    classpath "com.github.shyiko:ktlint:0.21.0"
   }
 }
 
 plugins {
-  id "com.gradle.build-scan" version "1.12.1"
+  id "com.gradle.build-scan" version "1.13.1"
   id 'com.github.ben-manes.versions' version '0.17.0'
   id 'net.nemerosa.versioning' version '2.6.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
@@ -104,25 +105,25 @@ dependencies {
   implementation 'com.baulsupp:oksocial-output:1.8.0'
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
-  implementation 'org.conscrypt:conscrypt-openjdk-uber:1.0.1'
-  implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
-  implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
-  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.4'
-  implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.4"
-  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.4"
-  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4"
+  implementation 'org.conscrypt:conscrypt-openjdk-uber:1.1.0'
+  implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+  implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+  implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
+  implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version"
+  implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
   implementation 'com.github.mrmike:ok2curl:0.4.5'
   implementation 'javax.activation:activation:1.1.1'
   implementation 'org.slf4j:slf4j-jdk14:1.8.0-beta2'
   implementation 'org.zeroturnaround:zt-exec:1.10'
   implementation 'com.jakewharton.byteunits:byteunits:0.9.1'
-  implementation 'io.netty:netty-resolver-dns:4.1.22.Final'
+  implementation 'io.netty:netty-resolver-dns:4.1.23.Final'
   implementation 'io.airlift:airline:0.8'
   implementation 'pt.davidafsilva.apple:jkeychain:1.0.0'
   implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.5.0'
   implementation 'io.zipkin.brave:brave-okhttp:4.13.4'
-  implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:4.18.2'
-  implementation 'io.zipkin.brave:brave:4.18.2'
+  implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:4.19.1'
+  implementation 'io.zipkin.brave:brave:4.19.1'
   implementation 'com.squareup.moshi:moshi:1.5.0'
   implementation 'com.squareup.moshi:moshi-kotlin:1.5.0'
   implementation 'com.squareup.moshi:moshi-adapters:1.5.0'
@@ -133,8 +134,8 @@ dependencies {
   implementation 'org.fusesource.jansi:jansi:1.17'
   implementation 'com.github.holgerbrandl:kscript-annotations:1.2'
 
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.1'
   testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
