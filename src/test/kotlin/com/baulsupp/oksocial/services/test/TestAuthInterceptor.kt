@@ -31,7 +31,7 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> = setOf("test.com", "api1.test.com")
 
-  override fun apiDocPresenter(url: String): ApiDocPresenter = object : ApiDocPresenter {
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = object : ApiDocPresenter {
     override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
       outputHandler.info("Test: $url")
     }

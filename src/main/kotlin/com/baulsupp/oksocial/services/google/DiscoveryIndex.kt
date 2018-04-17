@@ -1,10 +1,12 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.kotlin.moshi
+import com.baulsupp.oksocial.services.google.model.DiscoveryIndexMap
+
 /*
  * API URL -> Discovery URL
  */
-class
-DiscoveryIndex(private val map: Map<String, List<String>>) {
+class DiscoveryIndex(private val map: Map<String, List<String>>) {
 
   /*
    * Exact search
@@ -22,12 +24,12 @@ DiscoveryIndex(private val map: Map<String, List<String>>) {
     indexKey.startsWith(prefix) || prefix.startsWith(indexKey)
 
   companion object {
-    fun loadStatic(): DiscoveryIndex =
-      DiscoveryIndex::class.java.getResource("index.json")!!.let { DiscoveryIndex.parse(it.readText()) }
+    val instance by lazy {
+      DiscoveryIndex::class.java.getResource("index.json")!!.let { parse(it.readText()) }
+    }
 
     fun parse(definition: String): DiscoveryIndex {
-      val m = JsonUtil.map(definition)
-      return DiscoveryIndex(m as Map<String, List<String>>)
+      return DiscoveryIndex(moshi.adapter(DiscoveryIndexMap::class.java).fromJson(definition)!!.index)
     }
   }
 }

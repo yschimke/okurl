@@ -38,7 +38,7 @@ class DatasettesAuthInterceptor :
 
   override fun hosts(): Set<String> = knownHosts()
 
-  override fun apiDocPresenter(url: String): ApiDocPresenter = DatasettesPresenter()
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = DatasettesPresenter()
 }
 
 class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {

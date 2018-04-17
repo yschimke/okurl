@@ -75,7 +75,11 @@ object DatagramDnsResponseDecoder {
   }
 
   fun decodeRecords(
-    response: DnsResponse, section: DnsSection, buf: ByteBuf, count: Int) {
+    response: DnsResponse,
+    section: DnsSection,
+    buf: ByteBuf,
+    count: Int
+  ) {
     for (i in count downTo 1) {
       val r = DefaultDnsRecordDecoder.DEFAULT.decodeRecord<DnsRecord>(buf)
         ?: // Truncated response

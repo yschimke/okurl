@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
-class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : ApiDocPresenter {
+class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresenter {
 
   override suspend fun explainApi(
     url: String,
@@ -19,9 +19,7 @@ class DiscoveryApiDocPresenter(private val discoveryIndex: DiscoveryIndex) : Api
     client: OkHttpClient,
     tokenSet: Token
   ) {
-    val discoveryPaths = discoveryIndex.getDiscoveryUrlForPrefix(url)
-
-    val registry = DiscoveryRegistry.instance(client)
+    val discoveryPaths = DiscoveryIndex.instance.getDiscoveryUrlForPrefix(url)
 
     val docs = discoveryPaths.map { p ->
       async(CommonPool) {

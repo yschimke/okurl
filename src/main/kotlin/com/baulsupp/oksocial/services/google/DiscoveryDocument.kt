@@ -4,17 +4,11 @@ package com.baulsupp.oksocial.services.google
  * https://developers.google.com/discovery/v1/using
  */
 class DiscoveryDocument(private val map: Map<String, Any>) {
+  val baseUrl = "" + map["rootUrl"] + map["servicePath"]
 
-  val baseUrl: String
-    get() = "" + map["rootUrl"] + map["servicePath"]
+  val endpoints = expandEndpoints(map)
 
-  val urls: List<String>
-    get() = endpoints
-      .map { e -> e.url() }
-      .distinct()
-
-  val endpoints: List<DiscoveryEndpoint>
-    get() = expandEndpoints(map)
+  val urls = endpoints.map { e -> e.url() }.distinct()
 
   private fun expandEndpoints(map: Map<String, Any>): List<DiscoveryEndpoint> {
     val resources = getResources(map)
@@ -55,7 +49,6 @@ class DiscoveryDocument(private val map: Map<String, Any>) {
   }
 
   companion object {
-
     fun parse(definition: String): DiscoveryDocument {
       return DiscoveryDocument(JsonUtil.map(definition))
     }

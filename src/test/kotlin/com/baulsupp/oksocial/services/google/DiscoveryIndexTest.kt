@@ -9,7 +9,7 @@ class DiscoveryIndexTest {
   @Test
 
   fun loadStatic() {
-    val r = DiscoveryIndex.loadStatic()
+    val r = DiscoveryIndex.instance
 
     assertEquals(
         listOf("https://www.googleapis.com/discovery/v1/apis/urlshortener/v1/rest"),
@@ -19,7 +19,7 @@ class DiscoveryIndexTest {
   @Test
 
   fun getsUniqueResult() {
-    val r = DiscoveryIndex.loadStatic()
+    val r = DiscoveryIndex.instance
 
     val results = r.getDiscoveryUrlForPrefix("https://people.googleapis.com/xxx")
 
@@ -30,7 +30,7 @@ class DiscoveryIndexTest {
   @Test
 
   fun mergesAllResultsForLongPrefix() {
-    val r = DiscoveryIndex.loadStatic()
+    val r = DiscoveryIndex.instance
 
     val results = r.getDiscoveryUrlForPrefix("https://www.googleapis.com/p")
 
@@ -43,7 +43,7 @@ class DiscoveryIndexTest {
   @Test
 
   fun mergesAllResults() {
-    val r = DiscoveryIndex.loadStatic()
+    val r = DiscoveryIndex.instance
 
     val results = r.getDiscoveryUrlForPrefix("https://www.googleapis.co")
 

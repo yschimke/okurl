@@ -60,7 +60,7 @@ class OkHttpDnsOverHttps(val requestBuilder: DnsOverHttpsRequestBuilder, val ipM
 
   fun dnsQuery(host: String): DatagramDnsQuery {
     val query = DatagramDnsQuery(localhost8080, localhost8080, 0)
-    query.setRecursionDesired(true)
+    query.isRecursionDesired = true
     dnsRecords(ipMode).forEachIndexed { i, record ->
       query.addRecord(DnsSection.QUESTION, i, DefaultDnsQuestion(host, record))
     }

@@ -5,9 +5,10 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.credentials.TokenValue
-import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.foursquare.model.SelfResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -52,10 +53,10 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.foursquare.com/v2/users/self?v=20160603",
+    val map = client.query<SelfResponse>("https://api.foursquare.com/v2/users/self?v=20160603",
       TokenValue(credentials))
-    val userMap = (map["response"] as Map<String, Any>)["user"] as Map<String, Any>
-    return ValidatedCredentials("${userMap["firstName"]} ${userMap["lastName"]}")
+    val user = map.response.user
+    return ValidatedCredentials("${user.firstName} ${user.lastName}")
   }
 
   override fun hosts(): Set<String> = setOf("api.foursquare.com")

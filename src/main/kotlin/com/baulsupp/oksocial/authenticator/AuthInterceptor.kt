@@ -51,7 +51,7 @@ abstract class AuthInterceptor<T> {
 
   open fun defaultCredentials(): T? = null
 
-  open fun apiDocPresenter(url: String): ApiDocPresenter {
+  open fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter {
     return object : ApiDocPresenter {
       override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
         val sd = serviceDefinition()

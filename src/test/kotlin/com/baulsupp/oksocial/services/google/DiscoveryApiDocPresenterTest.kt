@@ -19,8 +19,7 @@ class DiscoveryApiDocPresenterTest {
 
   @BeforeEach
   fun loadPresenter() {
-    val discoveryIndex = DiscoveryIndex.loadStatic()
-    p = DiscoveryApiDocPresenter(discoveryIndex)
+    p = DiscoveryApiDocPresenter(DiscoveryRegistry(client))
   }
 
   @Test
@@ -33,8 +32,8 @@ class DiscoveryApiDocPresenterTest {
     }
 
     val es = listOf("name: People API",
-        "docs: https://developers.google.com/people/",
-        "url: https://people.googleapis.com/v1/{+resourceName}"
+      "docs: https://developers.google.com/people/",
+      "url: https://people.googleapis.com/v1/{+resourceName}"
     )
 
     // unsafe tests
@@ -52,37 +51,37 @@ class DiscoveryApiDocPresenterTest {
   @Test
   fun testExplainsExpandedUrl() {
     assertMatch("https://people.googleapis.com/v1/people/me",
-        "https://people.googleapis.com/v1/{+resourceName}", "url")
+      "https://people.googleapis.com/v1/{+resourceName}", "url")
   }
 
   @Test
   fun testExplainsExpandedUrl2() {
     assertMatch("https://people.googleapis.com/v1/people:batchGet?resourceNames=me",
-        "https://people.googleapis.com/v1/people:batchGet", "url")
+      "https://people.googleapis.com/v1/people:batchGet", "url")
   }
 
   @Test
   fun testExplainsExpandedUrl3() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
-        "https://www.googleapis.com/tasks/v1/users/@me/lists", "url")
+      "https://www.googleapis.com/tasks/v1/users/@me/lists", "url")
   }
 
   @Test
   fun testExplainsExpandedUrl4() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists/x",
-        "https://www.googleapis.com/tasks/v1/users/@me/lists/{tasklist}", "url")
+      "https://www.googleapis.com/tasks/v1/users/@me/lists/{tasklist}", "url")
   }
 
   @Test
   fun testExplainsExpandedWWWBeforeSiteUrls() {
     assertMatch("https://www.googleapis.com/tasks/v1/",
-        "https://developers.google.com/google-apps/tasks/firstapp", "docs")
+      "https://developers.google.com/google-apps/tasks/firstapp", "docs")
   }
 
   @Test
   fun testExplainsExpandedWWWAfterSiteUrls() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
-        "https://developers.google.com/google-apps/tasks/firstapp", "docs")
+      "https://developers.google.com/google-apps/tasks/firstapp", "docs")
   }
 
   private fun assertMatch(requested: String, expected: String, field: String) {

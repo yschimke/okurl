@@ -35,8 +35,6 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     googleDiscoveryHosts()
   }
 
-  private val discoveryIndex by lazy { DiscoveryIndex.loadStatic() }
-
   override fun serviceDefinition(): Oauth2ServiceDefinition {
     return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
       "https://developers.google.com/",
@@ -128,10 +126,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   private fun isFirebaseHost(host: String) = host.endsWith(".firebaseio.com")
 
   fun discoveryCompletion(prefix: String, client: OkHttpClient): GoogleDiscoveryCompleter {
-    val discoveryPaths = DiscoveryIndex.loadStatic().getDiscoveryUrlForPrefix(prefix)
+    val discoveryPaths = DiscoveryIndex.instance.getDiscoveryUrlForPrefix(prefix)
 
-    return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry.instance(client),
-      discoveryPaths)
+    return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry(client), discoveryPaths)
   }
 
   fun googleDiscoveryHosts(): Set<String> {
@@ -149,8 +146,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 
-  override fun apiDocPresenter(url: String): ApiDocPresenter = DiscoveryApiDocPresenter(
-    discoveryIndex)
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = DiscoveryApiDocPresenter(DiscoveryRegistry(client))
 
   override fun errorMessage(ce: ClientException): String {
     if (ce.code == 401) {
