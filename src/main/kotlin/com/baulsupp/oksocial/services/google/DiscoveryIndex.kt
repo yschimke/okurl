@@ -11,7 +11,7 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
   /*
    * Exact search
    */
-  fun getDiscoveryUrlForApi(api: String): List<String> = map[api] ?: listOf()
+  fun getDiscoveryUrlForApi(api: String): List<String> = map[api].orEmpty()
 
   /*
    * Prefix search (returns longest)

@@ -1,13 +1,15 @@
 package com.baulsupp.oksocial.services.google
 
-class DiscoveryParameter(private val name: String, private val map: Map<String, Any>) {
+import com.baulsupp.oksocial.services.google.model.Parameter
+
+class DiscoveryParameter(private val name: String, private val parameter: Parameter) {
   fun name(): String = name
 
-  fun type(): String? = map["type"] as String?
+  fun type(): String? = parameter.type
 
-  fun description(): String? = map["description"] as String?
+  fun description(): String? = parameter.description
 
-  fun location(): String? = map["location"] as String?
+  fun location(): String? = parameter.location
 
-  fun pattern(): String? = map["pattern"] as String?
+  fun pattern(): String? = parameter.pattern
 }

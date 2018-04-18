@@ -1,36 +1,21 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.services.google.model.Method
 import java.util.regex.Pattern
 
-class DiscoveryEndpoint(private val baseUrl: String, private val map: Map<String, Any>) {
+class DiscoveryEndpoint(private val baseUrl: String, private val method: Method) {
 
-  fun id(): String {
-    return getRequired("id") as String
-  }
+  fun id(): String = method.id
 
-  fun url(): String {
-    return baseUrl + path()
-  }
+  fun url(): String = baseUrl + path()
 
-  private fun path(): String {
-    return getRequired("path") as String
-  }
+  private fun path(): String = method.path
 
-  private fun getRequired(name: String): Any {
-    return map[name] ?: throw NullPointerException("path not found")
-  }
+  fun description(): String = method.description ?: ""
 
-  fun description(): String {
-    return getRequired("description") as String
-  }
+  fun scopeNames(): List<String> = method.scopes ?: listOf()
 
-  fun scopeNames(): List<String> = map["scopes"] as List<String>
-
-  fun parameters(): List<DiscoveryParameter> {
-    val o = map["parameters"] as Map<String, Map<String, Any>>?
-
-    return o?.entries?.map { p -> DiscoveryParameter(p.key, p.value) }.orEmpty()
-  }
+  fun parameters(): List<DiscoveryParameter> = method.parameters?.map { (k, v) -> DiscoveryParameter(k, v) } ?: listOf()
 
   fun matches(requestUrl: String): Boolean {
     if (!requestUrl.startsWith(baseUrl)) {
@@ -67,7 +52,5 @@ class DiscoveryEndpoint(private val baseUrl: String, private val map: Map<String
     return Pattern.compile(pathPattern + if (hasQueryParams) "(\\?.*)?" else "")
   }
 
-  fun httpMethod(): String {
-    return map.getOrDefault("httpMethod", "GET") as String
-  }
+  fun httpMethod(): String = method.httpMethod ?: "GET"
 }

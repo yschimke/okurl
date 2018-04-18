@@ -1,56 +1,43 @@
 package com.baulsupp.oksocial.services.google
 
+import com.baulsupp.oksocial.kotlin.moshi
+import com.baulsupp.oksocial.services.google.model.DiscoveryDoc
+import com.baulsupp.oksocial.services.google.model.Resource
+
 /**
  * https://developers.google.com/discovery/v1/using
  */
-class DiscoveryDocument(private val map: Map<String, Any>) {
-  val baseUrl = "" + map["rootUrl"] + map["servicePath"]
+class DiscoveryDocument(map: DiscoveryDoc) {
+  val baseUrl = "" + map.rootUrl + map.servicePath
 
-  val endpoints = expandEndpoints(map)
+  val endpoints = expandEndpoints(map.resources)
 
   val urls = endpoints.map { e -> e.url() }.distinct()
 
-  private fun expandEndpoints(map: Map<String, Any>): List<DiscoveryEndpoint> {
-    val resources = getResources(map)
+  private fun expandEndpoints(resources: Map<String, Resource>?): List<DiscoveryEndpoint> {
+    if (resources == null) {
+      return listOf()
+    }
 
     return resources.values.flatMap { r ->
-      getMethods(r).values.map { m ->
+      r.methods.orEmpty().values.map { m ->
         DiscoveryEndpoint(baseUrl, m)
-      } + expandEndpoints(r)
+      } + expandEndpoints(r.resources)
     }
   }
 
-  private fun getResources(map: Map<String, Any>): Map<String, Map<String, Any>> {
-    return if (!map.containsKey("resources")) {
-      emptyMap()
-    } else map["resources"] as Map<String, Map<String, Any>>
-  }
+  val apiName = map.title
 
-  private fun getMethods(resource: Map<String, Any>): Map<String, Map<String, Any>> {
-    return if (!resource.containsKey("methods")) {
-      emptyMap()
-    } else resource["methods"] as Map<String, Map<String, Any>>
-  }
+  val docLink = map.documentationLink
 
-  val apiName: String
-    get() = map["title"] as String
+  fun findEndpoint(url: String) = endpoints.filter { e ->
+    matches(url, e)
+  }.sortedBy { it.httpMethod() != "GET" }.firstOrNull()
 
-  val docLink: String
-    get() = map["documentationLink"] as String
-
-  fun findEndpoint(url: String): DiscoveryEndpoint? {
-    return endpoints.filter { e ->
-      matches(url, e)
-    }.sortedBy { it.httpMethod() != "GET" }.firstOrNull()
-  }
-
-  private fun matches(url: String, e: DiscoveryEndpoint): Boolean {
-    return e.url() == url || e.matches(url)
-  }
+  private fun matches(url: String, e: DiscoveryEndpoint) = e.url() == url || e.matches(url)
 
   companion object {
-    fun parse(definition: String): DiscoveryDocument {
-      return DiscoveryDocument(JsonUtil.map(definition))
-    }
+    fun parse(definition: String): DiscoveryDocument =
+      DiscoveryDocument(moshi.adapter(DiscoveryDoc::class.java).fromJson(definition)!!)
   }
 }

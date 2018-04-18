@@ -11,6 +11,10 @@ import okhttp3.Response
 import java.util.UUID
 
 object GoogleAuthFlow {
+  fun fullScope(suffix: String): String {
+    return if (suffix.contains("/")) suffix else "https://www.googleapis.com/auth/$suffix"
+  }
+
   suspend fun login(
     client: OkHttpClient,
     outputHandler: OutputHandler<Response>,
@@ -20,7 +24,7 @@ object GoogleAuthFlow {
   ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
-      val scopesString = scopes.joinToString("+", transform = { GoogleUtil.fullScope(it) })
+      val scopesString = scopes.joinToString("+", transform = { fullScope(it) })
 
       val redirectUri = s.redirectUri
       val uuid = UUID.randomUUID().toString()

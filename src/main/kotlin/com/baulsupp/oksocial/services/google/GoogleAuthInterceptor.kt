@@ -62,7 +62,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun supportsUrl(url: HttpUrl): Boolean {
     val host = url.host()
 
-    return GoogleUtil.API_HOSTS.contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
+    return setOf((
+      "api.google.com")
+    ).contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
 
   override suspend fun authorize(
@@ -73,7 +75,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
     val clientSecret = Secrets.prompt("Google Client Secret", "google.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "google.scopes", GoogleUtil.SCOPES)
+    val scopes = Secrets.promptArray("Scopes", "google.scopes", listOf("plus.login", "plus.profile.emails.read"))
 
     return GoogleAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
