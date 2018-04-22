@@ -102,7 +102,7 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
 
-  implementation 'com.baulsupp:oksocial-output:1.8.0'
+  implementation 'com.baulsupp:oksocial-output:4.9.0'
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
   implementation 'org.conscrypt:conscrypt-openjdk-uber:1.1.0'
