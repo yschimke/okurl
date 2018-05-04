@@ -46,9 +46,11 @@ class LoggingUtil {
           }
           activeLogger.addHandler(handler)
           getLogger("io.netty.resolver.dns.DnsServerAddresses").level = Level.SEVERE
+          getLogger("com.launchdarkly.eventsource").level = Level.SEVERE
         }
       } else {
         getLogger("io.netty.resolver.dns.DnsServerAddresses").level = Level.SEVERE
+        getLogger("com.launchdarkly.eventsource").level = Level.SEVERE
       }
     }
 
