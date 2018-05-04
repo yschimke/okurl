@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient
 object FacebookUtil {
   const val VERSION = "v2.11"
 
-  val API_HOSTS = setOf("graph.facebook.com", "www.facebook.com")
+  val API_HOSTS = setOf("graph.facebook.com", "www.facebook.com", "streaming-graph.facebook.com")
 
   suspend fun getMetadata(client: OkHttpClient, requestUrl: HttpUrl, tokenSet: Token): Metadata? {
     val request = request {
