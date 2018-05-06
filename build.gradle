@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlin_version = '1.2.40'
+  ext.kotlin_version = '1.2.41'
   ext.jackson_version = '2.9.5'
   repositories {
     maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
@@ -8,7 +8,7 @@ buildscript {
   }
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "com.github.shyiko:ktlint:0.21.0"
+    classpath "com.github.shyiko:ktlint:0.23.1"
   }
 }
 
@@ -17,7 +17,8 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.17.0'
   id 'net.nemerosa.versioning' version '2.6.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
-  id "org.jlleitschuh.gradle.ktlint" version "3.2.0"
+  id "org.jlleitschuh.gradle.ktlint" version "3.3.0"
+  id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'yes' }
@@ -105,7 +106,7 @@ dependencies {
   implementation 'com.baulsupp:oksocial-output:4.9.0'
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
-  implementation 'org.conscrypt:conscrypt-openjdk-uber:1.1.0'
+  implementation 'org.conscrypt:conscrypt-openjdk-uber:1.1.1'
   implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
   implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
   implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
@@ -117,13 +118,13 @@ dependencies {
   implementation 'org.slf4j:slf4j-jdk14:1.8.0-beta2'
   implementation 'org.zeroturnaround:zt-exec:1.10'
   implementation 'com.jakewharton.byteunits:byteunits:0.9.1'
-  implementation 'io.netty:netty-resolver-dns:4.1.23.Final'
+  implementation 'io.netty:netty-resolver-dns:4.1.24.Final'
   implementation 'io.airlift:airline:0.8'
   implementation 'pt.davidafsilva.apple:jkeychain:1.0.0'
-  implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.5.0'
+  implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.6.0'
   implementation 'io.zipkin.brave:brave-okhttp:4.13.4'
-  implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:4.19.1'
-  implementation 'io.zipkin.brave:brave:4.19.1'
+  implementation 'io.zipkin.brave:brave-instrumentation-okhttp3:4.19.2'
+  implementation 'io.zipkin.brave:brave:4.19.2'
   implementation 'com.squareup.moshi:moshi:1.5.0'
   implementation 'com.squareup.moshi:moshi-kotlin:1.5.0'
   implementation 'com.squareup.moshi:moshi-adapters:1.5.0'
@@ -131,12 +132,12 @@ dependencies {
   implementation 'com.github.markusbernhardt:proxy-vole:1.0.4'
   implementation 'commons-io:commons-io:2.6'
   implementation 'org.apache.commons:commons-lang3:3.7'
-  implementation 'org.fusesource.jansi:jansi:1.17'
+  implementation 'org.fusesource.jansi:jansi:1.17.1'
   implementation 'com.github.holgerbrandl:kscript-annotations:1.2'
   implementation 'com.launchdarkly:okhttp-eventsource:1.8.0'
 
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.1'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.1'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
   testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
@@ -315,4 +316,8 @@ test {
   }
 
   failFast = true
+}
+
+shadowJar {
+  mergeServiceFiles()
 }
