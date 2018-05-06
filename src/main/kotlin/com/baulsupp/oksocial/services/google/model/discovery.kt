@@ -11,7 +11,7 @@ data class ItemsItem(
   val kind: String,
   val name: String,
   val description: String,
-  val documentationLink: String,
+  val documentationLink: String?,
   val id: String,
   val title: String,
   val icons: Any,
