@@ -47,7 +47,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 @Command(name = NAME, description = "A curl for social apis.")
-class Main : CommandLineClient() {
+open class Main : CommandLineClient() {
   private val logger = Logger.getLogger(Main::class.java.name)
 
   @Option(name = ["-X", "--request"], description = "Specify request command to use")
@@ -384,7 +384,7 @@ class Main : CommandLineClient() {
     val command = System.getProperty("command.name", "oksocial")!!
 
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    open fun main(vararg args: String) = runBlocking {
       Security.insertProviderAt(OpenSSLProvider(), 1)
       try {
         val result = CommandLineClient.fromArgs<Main>(*args).run()

@@ -549,6 +549,12 @@ open class CommandLineClient : HelpOption() {
     } ?: DefaultToken
   }
 
+  fun runBlocking(): Int {
+    return kotlinx.coroutines.experimental.runBlocking {
+      run()
+    }
+  }
+
   companion object {
     inline fun <reified T> fromArgs(vararg args: String): T {
       return SingleCommand.singleCommand(T::class.java).parse(*args)
