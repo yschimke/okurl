@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
       async {
         try {
           val discoveryDoc = client.query<DiscoveryDoc>(request(item.discoveryRestUrl))
-          Pair(discoveryDoc.rootUrl, item.discoveryRestUrl)
+          Pair(discoveryDoc.baseUrl, item.discoveryRestUrl)
         } catch (e: Exception) {
           System.err.println(e.toString())
           null
@@ -33,9 +33,9 @@ fun main(args: Array<String>) {
       }
     }.mapNotNull { it.await() }
 
-    val result = DiscoveryIndexMap(jobs.groupBy({ (rootUrl, restUrl) ->
+    val result = DiscoveryIndexMap(jobs.groupBy({ (rootUrl, _) ->
       rootUrl
-    }, { (rootUrl, restUrl) ->
+    }, { (_, restUrl) ->
       restUrl
     }))
 

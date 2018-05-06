@@ -26,7 +26,8 @@ data class DiscoveryDoc(
   val servicePath: String,
   val resources: Map<String, Resource>?,
   val title: String,
-  val documentationLink: String?
+  val documentationLink: String?,
+  val baseUrl: String
 )
 
 data class Resource(
