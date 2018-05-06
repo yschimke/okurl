@@ -23,7 +23,7 @@ class DiscoveryIndexTest {
 
     val results = r.getDiscoveryUrlForPrefix("https://people.googleapis.com/xxx")
 
-    assertEquals(listOf("https://www.googleapis.com/discovery/v1/apis/people/v1/rest"),
+    assertEquals(listOf("https://people.googleapis.com/\$discovery/rest?version=v1"),
         results)
   }
 
