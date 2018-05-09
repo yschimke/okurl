@@ -24,8 +24,7 @@ import com.baulsupp.oksocial.network.GoogleDns
 import com.baulsupp.oksocial.network.IPvMode
 import com.baulsupp.oksocial.network.InterfaceSocketFactory
 import com.baulsupp.oksocial.network.NettyDns
-import com.baulsupp.oksocial.network.doh.GoogleDnsOverHttps
-import com.baulsupp.oksocial.network.doh.OkHttpDnsOverHttps
+import com.baulsupp.oksocial.network.dnsoverhttps.DohProviders
 import com.baulsupp.oksocial.okhttp.CipherSuiteOption
 import com.baulsupp.oksocial.okhttp.ConnectionSpecOption
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
@@ -218,7 +217,7 @@ open class CommandLineClient : HelpOption() {
     val dns = when (dnsMode) {
       DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers ?: "8.8.8.8")
       DnsMode.GOOGLE -> DnsSelector(ipMode, GoogleDns.build({ client }, ipMode))
-      DnsMode.DNSOVERHTTPS -> OkHttpDnsOverHttps(GoogleDnsOverHttps, ipMode, { client })
+      DnsMode.DNSOVERHTTPS -> DnsSelector(ipMode, DohProviders.buildGoogle({ client }))
       DnsMode.JAVA -> {
         if (dnsServers != null) {
           throw UsageException("unable to set dns servers with java DNS")
