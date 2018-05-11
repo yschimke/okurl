@@ -1,7 +1,7 @@
 package com.baulsupp.oksocial.network.dnsoverhttps;
 
 import okio.ByteString;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
