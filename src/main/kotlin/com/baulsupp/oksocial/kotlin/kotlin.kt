@@ -204,7 +204,6 @@ fun Request.Builder.tokenSet(tokenSet: Token) = tag(tokenSet)
 
 fun Request.Builder.postJsonBody(body: Any) {
   val content = moshi.adapter(body.javaClass).toJson(body)!!
-  println(content)
   post(RequestBody.create(JSON, content))
 }
 

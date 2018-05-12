@@ -5,6 +5,7 @@ import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.output.ConsoleHandler
+import com.baulsupp.oksocial.output.SimpleResponseExtractor
 import com.baulsupp.oksocial.services.mapbox.model.MapboxLatLongAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
@@ -88,3 +89,5 @@ fun jsonPostRequest(url: String, body: String): Request =
     RequestBody.create(MediaType.parse("application/json"), body)).build()
 
 var args: List<String> = listOf()
+
+val simpleOutput = ConsoleHandler(SimpleResponseExtractor)

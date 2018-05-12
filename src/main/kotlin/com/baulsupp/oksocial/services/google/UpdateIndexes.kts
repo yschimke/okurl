@@ -6,6 +6,7 @@ import com.baulsupp.oksocial.kotlin.okshell
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.kotlin.showOutput
+import com.baulsupp.oksocial.kotlin.simpleOutput
 import com.baulsupp.oksocial.services.google.model.DiscoveryApis
 import com.baulsupp.oksocial.services.google.model.DiscoveryDoc
 import com.baulsupp.oksocial.services.google.model.DiscoveryIndexMap
@@ -28,7 +29,7 @@ runBlocking {
         val discoveryDoc = client.query<DiscoveryDoc>(request(item.discoveryRestUrl))
         Pair(discoveryDoc.baseUrl, item.discoveryRestUrl)
       } catch (e: ClientException) {
-        okshell.commandLine.outputHandler.showError("Failed to get discovery doc: ${item.discoveryRestUrl}", e)
+        simpleOutput.showError("Failed to get discovery doc: ${item.discoveryRestUrl}", e)
         null
       }
     }
