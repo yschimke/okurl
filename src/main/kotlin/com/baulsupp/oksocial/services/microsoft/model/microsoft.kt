@@ -24,8 +24,8 @@ data class CreatedBy(val application: Application, val user: User)
 data class FileSystemInfo(val lastModifiedDateTime: String, val createdDateTime: String)
 data class Folder(val view: View, val childCount: Int)
 data class SpecialFolder(val name: String)
-data class Application(val displayName: String , val id: String)
-data class View(val sortOrder: String , val viewType: String , val sortBy: String)
+data class Application(val displayName: String, val id: String)
+data class View(val sortOrder: String, val viewType: String, val sortBy: String)
 data class DriveItem(
   val lastModifiedDateTime: String,
   val lastModifiedBy: LastModifiedBy?,

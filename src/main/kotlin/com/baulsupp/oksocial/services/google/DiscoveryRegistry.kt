@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.google
 
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.services.google.model.DiscoveryDoc
 import com.baulsupp.oksocial.util.FileUtil

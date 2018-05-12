@@ -71,8 +71,12 @@ object DohProviders {
       false, "GET", DNS_MESSAGE)
   }
 
-  fun providers(client: () -> OkHttpClient, http2Only: Boolean,
-                workingOnly: Boolean, getOnly: Boolean): List<DnsOverHttps> {
+  fun providers(
+    client: () -> OkHttpClient,
+    http2Only: Boolean,
+    workingOnly: Boolean,
+    getOnly: Boolean
+  ): List<DnsOverHttps> {
 
     val result = ArrayList<DnsOverHttps>()
 

@@ -18,8 +18,14 @@ import java.net.UnknownHostException
  *
  * Implementation of https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-07
  */
-class DnsOverHttps(client: () -> OkHttpClient, val url: HttpUrl,
-                   bootstrapDns: Dns?, private val includeIPv6: Boolean, method: String, private val contentType: MediaType) : Dns {
+class DnsOverHttps(
+  client: () -> OkHttpClient,
+  val url: HttpUrl,
+  bootstrapDns: Dns?,
+  private val includeIPv6: Boolean,
+  method: String,
+  private val contentType: MediaType
+) : Dns {
   private val client by lazy {
     if (bootstrapDns != null) client.invoke().newBuilder().dns(bootstrapDns).build() else client.invoke()
   }
@@ -72,7 +78,6 @@ class DnsOverHttps(client: () -> OkHttpClient, val url: HttpUrl,
       unknownHostException.initCause(e)
       throw unknownHostException
     }
-
   }
 
   private fun buildRequest(query: ByteString): Request {
