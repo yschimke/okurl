@@ -38,9 +38,9 @@ data class VoiceSelectionParams(val languageCode: String,
 
 data class AudioConfig(val audioEncoding: AudioEncoding,
                        val speakingRate: Double? = 1.0,
-                       val pitch: Double? = 0.0, val
-                       volumeGainDb: Double? = 0.0, val
-                       sampleRateHertz: Double? = null)
+                       val pitch: Double? = 0.0,
+                       val volumeGainDb: Double? = 0.0,
+                       val sampleRateHertz: Double? = null)
 
 data class TextToSpeechRequest(val input: SynthesisInput,
                                val voice: VoiceSelectionParams,
