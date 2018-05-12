@@ -8,6 +8,7 @@ import io.airlift.airline.ParseOptionConversionException
 import io.airlift.airline.ParseOptionMissingValueException
 import kotlinx.coroutines.experimental.runBlocking
 import org.conscrypt.OpenSSLProvider
+import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.io.File
 import java.security.Security
 import javax.script.ScriptException
@@ -22,7 +23,7 @@ class Main : CommandLineClient() {
   }
 
   override fun runCommand(runArguments: List<String>): Int {
-    val engine = KotlinAppScriptFactory().scriptEngine
+    val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
 
     if (runArguments.isEmpty()) {
       System.err.println("usage: okscript file.kts arguments")

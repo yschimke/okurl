@@ -1,11 +1,11 @@
 package com.baulsupp.oksocial.commands
 
 import com.baulsupp.oksocial.Main
-import com.baulsupp.oksocial.kotlin.KotlinAppScriptFactory
 import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.output.UsageException
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.nio.file.FileSystems
 import javax.script.ScriptEngine
 import javax.script.ScriptException
@@ -30,7 +30,7 @@ class OkApiCommand : ShellCommand, MainAware {
 
     val script = FileSystems.getDefault().getPath(args.removeAt(0))
 
-    val engine = KotlinAppScriptFactory().scriptEngine
+    val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
 
     val lines = script.toFile().readText()
 
