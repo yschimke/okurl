@@ -21,11 +21,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup",
-      "https://docs.connect.squareup.com/api/connect/v2/",
-      "https://connect.squareup.com/apps")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup",
+    "https://docs.connect.squareup.com/api/connect/v2/",
+    "https://connect.squareup.com/apps")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -79,7 +77,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "location", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<LocationList>(
           "https://connect.squareup.com/v2/locations",
           tokenSet).locations.map { it.id }

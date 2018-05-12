@@ -7,9 +7,9 @@ import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.SimpleResponseExtractor
 import com.baulsupp.oksocial.services.mapbox.model.MapboxLatLongAdapter
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.Rfc3339DateJsonAdapter
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import com.squareup.moshi.kotlin.KotlinJsonAdapterFactory
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.MediaType
 import okhttp3.OkHttpClient

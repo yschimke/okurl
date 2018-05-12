@@ -20,7 +20,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 abstract class AuthInterceptor<T> {
-  open fun name(): String = serviceDefinition().shortName()
+  open fun name(): String = serviceDefinition.shortName()
 
   open fun supportsUrl(url: HttpUrl): Boolean = try {
     hosts().contains(url.host())
@@ -33,7 +33,7 @@ abstract class AuthInterceptor<T> {
 
   abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
 
-  abstract fun serviceDefinition(): ServiceDefinition<T>
+  abstract val serviceDefinition: ServiceDefinition<T>
 
   open suspend fun validate(client: OkHttpClient, credentials: T): ValidatedCredentials = ValidatedCredentials()
 
@@ -54,7 +54,7 @@ abstract class AuthInterceptor<T> {
   open fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter {
     return object : ApiDocPresenter {
       override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
-        val sd = serviceDefinition()
+        val sd = serviceDefinition
 
         outputHandler.info("service: " + sd.shortName())
         outputHandler.info("name: " + sd.serviceName())

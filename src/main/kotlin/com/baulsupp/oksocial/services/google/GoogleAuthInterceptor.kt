@@ -35,11 +35,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     googleDiscoveryHosts()
   }
 
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
-      "https://developers.google.com/",
-      "https://console.developers.google.com/apis/credentials")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
+    "https://developers.google.com/",
+    "https://console.developers.google.com/apis/credentials")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

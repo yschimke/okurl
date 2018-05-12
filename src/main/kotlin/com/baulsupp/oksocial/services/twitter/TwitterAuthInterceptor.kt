@@ -15,9 +15,7 @@ import okhttp3.Response
 
 class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
 
-  override fun serviceDefinition(): TwitterServiceDefinition {
-    return TwitterServiceDefinition()
-  }
+  override val serviceDefinition = TwitterServiceDefinition()
 
   override fun intercept(chain: Interceptor.Chain, credentials: TwitterCredentials): Response {
     var request = chain.request()

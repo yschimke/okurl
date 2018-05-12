@@ -22,11 +22,9 @@ import okhttp3.Response
 import okio.ByteString
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
-      "https://developers.facebook.com/docs/graph-api",
-      "https://developers.facebook.com/apps/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
+    "https://developers.facebook.com/docs/graph-api",
+    "https://developers.facebook.com/apps/")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -104,5 +102,5 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter =
     FacebookCompleter(client, hosts())
 
-  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition())
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition)
 }

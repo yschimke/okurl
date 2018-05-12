@@ -16,10 +16,8 @@ import okhttp3.Response
  * https://developer.github.com/docs/authentication
  */
 class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.github.com", "Github API", "github",
-      "https://developer.github.com/v3/", "https://github.com/settings/developers")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.github.com", "Github API", "github",
+    "https://developer.github.com/v3/", "https://github.com/settings/developers")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

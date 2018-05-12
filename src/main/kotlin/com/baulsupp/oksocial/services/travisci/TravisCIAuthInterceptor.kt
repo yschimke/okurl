@@ -23,17 +23,15 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 
 class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
-  override fun serviceDefinition(): AbstractServiceDefinition<TravisToken> {
-    return object :
-      AbstractServiceDefinition<TravisToken>("api.travis-ci.org", "Travis CI API", "travisci",
-        "https://docs.travis-ci.com/api/", null) {
-      override fun parseCredentialsString(s: String): TravisToken {
-        return TravisToken(s)
-      }
+  override val serviceDefinition = object :
+    AbstractServiceDefinition<TravisToken>("api.travis-ci.org", "Travis CI API", "travisci",
+      "https://docs.travis-ci.com/api/", null) {
+    override fun parseCredentialsString(s: String): TravisToken {
+      return TravisToken(s)
+    }
 
-      override fun formatCredentialsString(credentials: TravisToken): String {
-        return credentials.token!!
-      }
+    override fun formatCredentialsString(credentials: TravisToken): String {
+      return credentials.token!!
     }
   }
 

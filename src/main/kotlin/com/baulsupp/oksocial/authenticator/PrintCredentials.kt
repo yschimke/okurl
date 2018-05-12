@@ -47,13 +47,13 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
-    val sd = key.auth.serviceDefinition()
+    val sd = key.auth.serviceDefinition
     outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", key.tokenSet, validated?.username
       ?: "-", validated?.clientName ?: "-"))
   }
 
   private fun printFailed(key: Key, e: Throwable) {
-    val sd = key.auth.serviceDefinition()
+    val sd = key.auth.serviceDefinition
 
     when (e) {
       is CancellationException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, "timeout"))
@@ -87,7 +87,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   data class Key(val auth: AuthInterceptor<*>, val tokenSet: String)
 
   private fun printCredentials(key: Key) {
-    val sd: ServiceDefinition<*> = key.auth.serviceDefinition()
+    val sd: ServiceDefinition<*> = key.auth.serviceDefinition
     val credentialsString = credentialsStore.get(sd, key.tokenSet)?.let({ s(sd, it) })
       ?: "-"
     outputHandler.info(credentialsString)
@@ -101,7 +101,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
       services.flatMap { sv ->
         names.mapNotNull { name ->
           val credentials = try {
-            credentialsStore.get(sv.serviceDefinition(), name)
+            credentialsStore.get(sv.serviceDefinition, name)
           } catch (e: Exception) {
             logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
             null
@@ -118,10 +118,9 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     return pairs.toMap()
   }
 
-  // TODO fix up hackery
-  suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any?) =
-    sv.validate(commandLineClient.client, credentials as T)
+  suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any) =
+    sv.validate(commandLineClient.client, sv.serviceDefinition.castToken(credentials))
 
-  fun <T> s(sd: ServiceDefinition<T>, credentials: Any?) =
-    sd.formatCredentialsString(credentials as T)
+  fun <T> s(sd: ServiceDefinition<T>, credentials: Any) =
+    sd.formatCredentialsString(sd.castToken(credentials))
 }

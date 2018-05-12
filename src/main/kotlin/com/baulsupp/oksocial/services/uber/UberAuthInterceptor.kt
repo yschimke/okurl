@@ -22,11 +22,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition(host(), "Uber API", "uber",
+  override val serviceDefinition =
+    Oauth2ServiceDefinition(host(), "Uber API", "uber",
       "https://developer.uber.com/docs/riders/references/api",
       "https://developer.uber.com/dashboard/")
-  }
 
   private fun host(): String = "api.uber.com"
 

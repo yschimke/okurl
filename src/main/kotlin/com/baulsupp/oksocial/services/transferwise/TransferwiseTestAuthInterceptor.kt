@@ -14,11 +14,9 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
     return "test-restgw.transferwise.com"
   }
 
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition(host(), "Transferwise Test API", "transferwise-test",
-      "https://api-docs.transferwise.com/",
-      "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition(host(), "Transferwise Test API", "transferwise-test",
+    "https://api-docs.transferwise.com/",
+    "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
 
   override fun apiCompleter(
     prefix: String,

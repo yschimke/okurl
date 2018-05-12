@@ -23,11 +23,10 @@ import okhttp3.Response
  * https://developer.surveymonkey.com/docs/authentication
  */
 class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
-      "https://developer.surveymonkey.com/api/v3/#scopes",
-      "https://developer.surveymonkey.com/apps/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
+    "https://developer.surveymonkey.com/api/v3/#scopes",
+    "https://developer.surveymonkey.com/apps/")
+
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val newRequest = chain.request().newBuilder().addHeader("Authorization",
@@ -81,7 +80,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "survey", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys", tokenSet).data.map { m -> m.id }
       }
     })

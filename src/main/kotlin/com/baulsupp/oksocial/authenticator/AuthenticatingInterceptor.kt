@@ -25,9 +25,9 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
     val tokenSet = chain.request().tag() as? Token ?: NoToken
 
     val credentials = when (tokenSet) {
-      is TokenValue -> tokenSet.token as T
+      is TokenValue -> interceptor.serviceDefinition.castToken(tokenSet.token)
       is NoToken -> null
-      else -> main.credentialsStore.get(interceptor.serviceDefinition(), tokenSet) ?: interceptor.defaultCredentials()
+      else -> main.credentialsStore.get(interceptor.serviceDefinition, tokenSet) ?: interceptor.defaultCredentials()
     }
 
     if (credentials != null) {
@@ -40,7 +40,7 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
             val newCredentials = interceptor.renew(client, credentials)
 
             if (newCredentials != null) {
-              main.credentialsStore.set(interceptor.serviceDefinition(), tokenSetName, newCredentials)
+              main.credentialsStore.set(interceptor.serviceDefinition, tokenSetName, newCredentials)
             }
           }
         }

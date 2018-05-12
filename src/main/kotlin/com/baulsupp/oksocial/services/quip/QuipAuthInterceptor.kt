@@ -20,11 +20,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
-      "https://quip.com/dev/automation/documentation",
-      "https://quip.com/dev/token")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("platform.quip.com", "Quip API", "quip",
+    "https://quip.com/dev/automation/documentation",
+    "https://quip.com/dev/token")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -61,7 +59,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "folderId", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         currentUser(client, tokenSet).let {
           listOfNotNull(it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
             it.archive_folder_id) + it.shared_folder_ids.orEmpty()

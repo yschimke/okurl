@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.companieshouse
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
@@ -26,13 +25,12 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): String =
     Secrets.prompt("Companies House API Key", "companieshouse.apiKey", "", false)
 
-  override fun serviceDefinition(): ServiceDefinition<String> =
-    object : AbstractServiceDefinition<String>("api.companieshouse.gov.uk", "Companies House", "companieshouse",
-      "https://developer.companieshouse.gov.uk/api/docs/", "https://developer.companieshouse.gov.uk/developer/applications") {
-      override fun parseCredentialsString(s: String): String = s
+  override val serviceDefinition = object : AbstractServiceDefinition<String>("api.companieshouse.gov.uk", "Companies House", "companieshouse",
+    "https://developer.companieshouse.gov.uk/api/docs/", "https://developer.companieshouse.gov.uk/developer/applications") {
+    override fun parseCredentialsString(s: String): String = s
 
-      override fun formatCredentialsString(credentials: String): String = credentials
-    }
+    override fun formatCredentialsString(credentials: String): String = credentials
+  }
 
   override suspend fun validate(
     client: OkHttpClient,

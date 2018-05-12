@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
 import okhttp3.Interceptor
@@ -18,16 +17,14 @@ abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, privat
   override suspend fun validate(client: OkHttpClient, credentials: Nothing): ValidatedCredentials =
     ValidatedCredentials(null, null)
 
-  override fun serviceDefinition(): ServiceDefinition<Nothing> {
-    return object : AbstractServiceDefinition<Nothing>(apiHost, serviceName, shortName,
-      apiDocs, null) {
-      override fun parseCredentialsString(s: String): Nothing {
-        throw NotImplementedError()
-      }
+  override val serviceDefinition = object : AbstractServiceDefinition<Nothing>(apiHost, serviceName, shortName,
+    apiDocs, null) {
+    override fun parseCredentialsString(s: String): Nothing {
+      throw NotImplementedError()
+    }
 
-      override fun formatCredentialsString(credentials: Nothing): String {
-        throw NotImplementedError()
-      }
+    override fun formatCredentialsString(credentials: Nothing): String {
+      throw NotImplementedError()
     }
   }
 }

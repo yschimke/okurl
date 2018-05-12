@@ -23,7 +23,7 @@ import okio.ByteString.encodeString
 import java.nio.charset.StandardCharsets.UTF_8
 
 class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
-  override fun serviceDefinition() = GdaxAuthServiceDefinition()
+  override val serviceDefinition = GdaxAuthServiceDefinition()
 
   override fun intercept(chain: Interceptor.Chain, credentials: GdaxCredentials): Response {
     var request = chain.request()
@@ -79,7 +79,7 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+    credentialsStore.get(serviceDefinition, tokenSet)?.let {
       completer.withVariable("account-id", {
         client.queryList<Account>("https://api.gdax.com/accounts", tokenSet).map { it.id }
       })

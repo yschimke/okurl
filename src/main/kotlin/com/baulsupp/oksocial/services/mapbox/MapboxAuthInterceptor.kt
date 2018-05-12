@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition =
+  override val serviceDefinition =
     Oauth2ServiceDefinition("api.mapbox.com", "Mapbox API", "mapbox",
       "https://www.mapbox.com/api-documentation/",
       "https://www.mapbox.com/studio/account/tokens/")

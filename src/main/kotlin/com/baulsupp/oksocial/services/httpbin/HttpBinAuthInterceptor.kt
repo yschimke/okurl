@@ -4,7 +4,6 @@ import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.BasicCredentials
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.authenticator.basic.BasicAuthServiceDefinition
-import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import okhttp3.Credentials
@@ -38,7 +37,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return BasicCredentials(user, password)
   }
 
-  override fun serviceDefinition(): ServiceDefinition<BasicCredentials> =
+  override val serviceDefinition =
     BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
       "https://httpbin.org/", null)
 

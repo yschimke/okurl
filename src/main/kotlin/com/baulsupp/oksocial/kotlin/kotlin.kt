@@ -207,6 +207,10 @@ fun Request.Builder.postJsonBody(body: Any) {
   post(RequestBody.create(JSON, content))
 }
 
+fun <T> List<T>.toJavaList(): java.util.List<T> {
+  return this as java.util.List<T>
+}
+
 fun Request.edit(init: Request.Builder.() -> Unit = {}) = newBuilder().apply(init).build()
 fun HttpUrl.edit(init: HttpUrl.Builder.() -> Unit = {}) = newBuilder().apply(init).build()
 

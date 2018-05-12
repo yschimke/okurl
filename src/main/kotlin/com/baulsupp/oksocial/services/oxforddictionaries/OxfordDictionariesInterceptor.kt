@@ -2,7 +2,6 @@ package com.baulsupp.oksocial.services.oxforddictionaries
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.kotlin.edit
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
@@ -11,21 +10,16 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-/**
- * https://developer.lyft.com/docs/authentication
- */
 class OxfordDictionariesInterceptor : AuthInterceptor<ODToken>() {
-  override fun serviceDefinition(): ServiceDefinition<ODToken> {
-    return object : AbstractServiceDefinition<ODToken>("od-api.oxforddictionaries.com", "Oxford Dictionaries API", "oxforddictionaries",
-      "https://developer.oxforddictionaries.com/documentation", "https://developer.oxforddictionaries.com/admin/applications") {
-      override fun parseCredentialsString(s: String): ODToken {
-        val (id, key) = s.split(":", limit = 2)
-        return ODToken(id, key)
-      }
+  override val serviceDefinition = object : AbstractServiceDefinition<ODToken>("od-api.oxforddictionaries.com", "Oxford Dictionaries API", "oxforddictionaries",
+    "https://developer.oxforddictionaries.com/documentation", "https://developer.oxforddictionaries.com/admin/applications") {
+    override fun parseCredentialsString(s: String): ODToken {
+      val (id, key) = s.split(":", limit = 2)
+      return ODToken(id, key)
+    }
 
-      override fun formatCredentialsString(credentials: ODToken): String {
-        return credentials.appId + ":" + credentials.appKey
-      }
+    override fun formatCredentialsString(credentials: ODToken): String {
+      return credentials.appId + ":" + credentials.appKey
     }
   }
 

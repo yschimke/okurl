@@ -27,11 +27,9 @@ import okhttp3.Response
  * http://graph.microsoft.io/en-us/docs/authorization/permission_scopes
  */
 class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
-      "https://graph.microsoft.io/en-us/docs/get-started/rest",
-      "https://apps.dev.microsoft.com/#/appList")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("graph.microsoft.com", "Microsoft API", "microsoft",
+    "https://graph.microsoft.io/en-us/docs/get-started/rest",
+    "https://apps.dev.microsoft.com/#/appList")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -93,7 +91,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "itemId", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<DriveRootList>("https://graph.microsoft.com/v1.0/me/drive/root/children", tokenSet).value.map { it.id }
       }
     })

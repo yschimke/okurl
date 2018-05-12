@@ -9,7 +9,6 @@ import com.baulsupp.oksocial.completion.BaseUrlCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.credentials.ServiceDefinition
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
@@ -38,7 +37,7 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     throw UsageException("authorization not required")
   }
 
-  override fun serviceDefinition(): ServiceDefinition<BasicCredentials> =
+  override val serviceDefinition =
     BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
       "https://coinbin.org/", null)
 

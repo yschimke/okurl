@@ -21,7 +21,7 @@ class FacebookTest {
     main.credentialsStore = TestCredentialsStore()
   }
 
-  private val sd = FacebookAuthInterceptor().serviceDefinition()
+  private val sd = FacebookAuthInterceptor().serviceDefinition
   private var p: FacebookApiDocPresenter? = null
 
   @BeforeEach

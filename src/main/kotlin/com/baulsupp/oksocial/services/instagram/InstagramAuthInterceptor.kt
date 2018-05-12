@@ -13,11 +13,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
-      "https://www.instagram.com/developer/endpoints/",
-      "https://www.instagram.com/developer/clients/manage/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
+    "https://www.instagram.com/developer/endpoints/",
+    "https://www.instagram.com/developer/clients/manage/")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

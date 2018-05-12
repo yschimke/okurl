@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.kotlin.toJavaList
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.security.CertificatePin
 import kotlinx.coroutines.experimental.runBlocking
@@ -85,7 +86,7 @@ class WebServerTest {
 
     main.arguments = mutableListOf(server.url("/").toString())
     main.certificatePins = listOf(CertificatePin(server.hostName + ":" +
-        "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")) as java.util.List<CertificatePin>
+        "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")).toJavaList()
     main.allowInsecure = true
 
     runBlocking {

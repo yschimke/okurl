@@ -12,9 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
-  override fun serviceDefinition(): StackExchangeServiceDefinition {
-    return StackExchangeServiceDefinition()
-  }
+  override val serviceDefinition = StackExchangeServiceDefinition()
 
   override fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
     var request = chain.request()

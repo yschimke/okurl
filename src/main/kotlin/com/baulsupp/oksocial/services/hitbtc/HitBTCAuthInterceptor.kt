@@ -22,10 +22,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
-  override fun serviceDefinition(): BasicAuthServiceDefinition {
-    return BasicAuthServiceDefinition("api.hitbtc.com", "HitBTC API", "hitbtc",
+  override val serviceDefinition = BasicAuthServiceDefinition("api.hitbtc.com", "HitBTC API", "hitbtc",
       "https://api.hitbtc.com/", "https://hitbtc.com/settings/api-keys")
-  }
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()

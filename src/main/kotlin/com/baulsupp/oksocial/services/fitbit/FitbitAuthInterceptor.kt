@@ -17,10 +17,8 @@ import okhttp3.Request
 import okhttp3.Response
 
 class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.fitbit.com", "Fitbit API", "fitbit",
-      "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.fitbit.com", "Fitbit API", "fitbit",
+    "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

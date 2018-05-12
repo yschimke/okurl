@@ -21,10 +21,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.box.com", "Box API", "box",
-      "https://developer.box.com/reference", "https://app.box.com/developers/console/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.box.com", "Box API", "box",
+    "https://developer.box.com/reference", "https://app.box.com/developers/console/")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -71,7 +69,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "file_id", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<FolderItems>(
           "https://api.box.com/2.0/folders/0/items",
           tokenSet).entries.filter { it.type == "file" }.map { it.id }
@@ -79,7 +77,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     })
 
     completer.withCachedVariable(name(), "folder_id", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         listOf("0") + client.query<FolderItems>(
           "https://api.box.com/2.0/folders/0/items",
           tokenSet).entries.filter { it.type == "folder" }.map { it.id }

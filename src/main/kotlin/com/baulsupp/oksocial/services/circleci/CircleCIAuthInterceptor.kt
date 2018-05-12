@@ -23,10 +23,8 @@ import okhttp3.Response
  * https://developer.lyft.com/docs/authentication
  */
 class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("circleci.com", "CircleCI API", "circleci",
-      "https://circleci.com/docs/api/v1-reference/", "https://circleci.com/account/api")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("circleci.com", "CircleCI API", "circleci",
+    "https://circleci.com/docs/api/v1-reference/", "https://circleci.com/account/api")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

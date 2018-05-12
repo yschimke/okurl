@@ -26,11 +26,9 @@ import okhttp3.Request
 import okhttp3.Response
 
 class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.spotify.com", "Spotify API", "spotify",
-      "https://developer.spotify.com/web-api/endpoint-reference/",
-      "https://developer.spotify.com/my-applications/")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.spotify.com", "Spotify API", "spotify",
+    "https://developer.spotify.com/web-api/endpoint-reference/",
+    "https://developer.spotify.com/my-applications/")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

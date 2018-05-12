@@ -21,11 +21,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.getpostman.com", "Postman API", "postman",
+  override val serviceDefinition = Oauth2ServiceDefinition("api.getpostman.com", "Postman API", "postman",
       "https://docs.api.getpostman.com/",
       "https://app.getpostman.com/dashboard/integrations")
-  }
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -70,7 +68,7 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "collection_uid", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<CollectionsResult>(
           "https://api.getpostman.com/collections",
           tokenSet).collections.map { it.id }

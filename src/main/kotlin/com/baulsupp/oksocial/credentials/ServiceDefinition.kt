@@ -14,4 +14,8 @@ interface ServiceDefinition<T> {
   fun apiDocs(): String? = null
 
   fun accountsLink(): String? = null
+
+  fun castToken(token: Any): T {
+    return token as T
+  }
 }

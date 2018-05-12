@@ -11,19 +11,19 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.credentials.TokenValue
-import com.baulsupp.oksocial.kotlin.queryMap
+import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
+import com.baulsupp.oksocial.services.twilio.model.Accounts
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
-  override fun serviceDefinition(): BasicAuthServiceDefinition {
-    return BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
+  override val serviceDefinition: BasicAuthServiceDefinition =
+    BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
       "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
-  }
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
@@ -50,10 +50,9 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     client: OkHttpClient,
     credentials: BasicCredentials
   ): ValidatedCredentials {
-    val map = client.queryMap<Any>("https://api.twilio.com/2010-04-01/Accounts.json",
+    val map = client.query<Accounts>("https://api.twilio.com/2010-04-01/Accounts.json",
       TokenValue(credentials))
-    val username = (map["accounts"] as List<Map<String, Any>>)[0]["friendly_name"] as String
-    return ValidatedCredentials(username)
+    return ValidatedCredentials(map.accounts.firstOrNull()?.friendlyName)
   }
 
   override fun apiCompleter(
@@ -68,7 +67,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withVariable("AccountSid", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let { listOf(it.user) }
+      credentialsStore.get(serviceDefinition, tokenSet)?.let { listOf(it.user) }
     })
 
     return completer

@@ -16,7 +16,7 @@ class TwilioTest {
   private val main = Main()
   private val output = TestOutputHandler<Response>()
   private val credentialsStore = TestCredentialsStore()
-  private val service = TwilioAuthInterceptor().serviceDefinition()
+  private val service = TwilioAuthInterceptor().serviceDefinition
 
   init {
     main.outputHandler = output

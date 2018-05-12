@@ -24,10 +24,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
-      "https://www.coinbase.com/settings/api")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
+    "https://www.coinbase.com/settings/api")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -116,7 +114,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     completer.withCachedVariable(name(), "account_id", {
-      credentialsStore.get(serviceDefinition(), tokenSet)?.let {
+      credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<AccountList>(
           "https://api.coinbase.com/v2/accounts",
           tokenSet).data.map { it.id }

@@ -26,16 +26,16 @@ class Authorisation(val main: CommandLineClient) {
   }
 
   private fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String, tokenSet: String) {
-    val credentials = auth.serviceDefinition().parseCredentialsString(token)
-    main.credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
+    val credentials = auth.serviceDefinition.parseCredentialsString(token)
+    main.credentialsStore.set(auth.serviceDefinition, tokenSet, credentials)
   }
 
   suspend fun <T> authRequest(auth: AuthInterceptor<T>, authArguments: List<String>, tokenSet: String) {
-    auth.serviceDefinition().accountsLink()?.let { main.outputHandler.info("Accounts: $it") }
+    auth.serviceDefinition.accountsLink()?.let { main.outputHandler.info("Accounts: $it") }
 
     val credentials = auth.authorize(client, main.outputHandler, authArguments)
 
-    main.credentialsStore.set(auth.serviceDefinition(), tokenSet, credentials)
+    main.credentialsStore.set(auth.serviceDefinition, tokenSet, credentials)
 
     Secrets.instance.saveIfNeeded()
 
@@ -48,7 +48,7 @@ class Authorisation(val main: CommandLineClient) {
         "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
     }
 
-    val serviceDefinition = auth.serviceDefinition()
+    val serviceDefinition = auth.serviceDefinition
 
     val credentials = main.credentialsStore.get(serviceDefinition, tokenSet)
       ?: throw UsageException("no existing credentials")
@@ -68,6 +68,6 @@ class Authorisation(val main: CommandLineClient) {
         "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
     }
 
-    main.credentialsStore.remove(auth.serviceDefinition(), tokenSet)
+    main.credentialsStore.remove(auth.serviceDefinition, tokenSet)
   }
 }

@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
-  override fun serviceDefinition(): BasicAuthServiceDefinition =
+  override val serviceDefinition =
     BasicAuthServiceDefinition("sheetsu.com", "Sheetsu API", "sheetsu", "https://docs.sheetsu.com/", "https://sheetsu.com/dashboard")
 
   override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {

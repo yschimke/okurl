@@ -16,7 +16,7 @@ class GithubTest {
   private val main = Main()
   private val output = TestOutputHandler<Response>()
   private val credentialsStore = TestCredentialsStore()
-  private val service = GithubAuthInterceptor().serviceDefinition()
+  private val service = GithubAuthInterceptor().serviceDefinition
 
   init {
     main.outputHandler = output
@@ -24,7 +24,6 @@ class GithubTest {
   }
 
   @Test
-  @Ignore
   fun completeEndpointShortCommand1() {
     credentialsStore.set(service, DefaultToken.name, Oauth2Token("ABC"))
 

@@ -16,10 +16,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override fun serviceDefinition(): Oauth2ServiceDefinition {
-    return Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
-      "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
-  }
+  override val serviceDefinition = Oauth2ServiceDefinition("api.foursquare.com", "FourSquare API", "4sq",
+    "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
