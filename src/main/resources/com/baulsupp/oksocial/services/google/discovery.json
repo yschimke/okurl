@@ -380,6 +380,22 @@
     "x32": "https://www.google.com/images/icons/product/android-32.png"
    },
    "documentationLink": "https://developers.google.com/android-publisher",
+   "preferred": false
+  },
+  {
+   "kind": "discovery#directoryItem",
+   "id": "androidpublisher:v3",
+   "name": "androidpublisher",
+   "version": "v3",
+   "title": "Google Play Developer API",
+   "description": "Lets Android application developers access their Google Play accounts.",
+   "discoveryRestUrl": "https://www.googleapis.com/discovery/v1/apis/androidpublisher/v3/rest",
+   "discoveryLink": "./apis/androidpublisher/v3/rest",
+   "icons": {
+    "x16": "https://www.google.com/images/icons/product/android-16.png",
+    "x32": "https://www.google.com/images/icons/product/android-32.png"
+   },
+   "documentationLink": "https://developers.google.com/android-publisher",
    "preferred": true
   },
   {
@@ -1690,6 +1706,21 @@
   },
   {
    "kind": "discovery#directoryItem",
+   "id": "jobs:v2",
+   "name": "jobs",
+   "version": "v2",
+   "title": "Cloud Job Discovery",
+   "description": "Cloud Job Discovery provides the capability to create, read, update, and delete job postings, as well as search jobs based on keywords and filters.",
+   "discoveryRestUrl": "https://jobs.googleapis.com/$discovery/rest?version=v2",
+   "icons": {
+    "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+    "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
+   },
+   "documentationLink": "https://cloud.google.com/job-discovery/docs",
+   "preferred": true
+  },
+  {
+   "kind": "discovery#directoryItem",
    "id": "kgsearch:v1",
    "name": "kgsearch",
    "version": "v1",
@@ -2011,6 +2042,21 @@
     "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
    },
    "documentationLink": "https://developers.google.com/people/",
+   "preferred": true
+  },
+  {
+   "kind": "discovery#directoryItem",
+   "id": "photoslibrary:v1",
+   "name": "photoslibrary",
+   "version": "v1",
+   "title": "Photos Library API",
+   "description": "Manage photos, videos, and albums in Google Photos",
+   "discoveryRestUrl": "https://photoslibrary.googleapis.com/$discovery/rest?version=v1",
+   "icons": {
+    "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+    "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
+   },
+   "documentationLink": "https://developers.google.com/photos/",
    "preferred": true
   },
   {
