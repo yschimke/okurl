@@ -415,7 +415,6 @@ open class CommandLineClient : HelpOption() {
 
     if (osProxy) {
       val proxySearch = ProxySearch.getDefaultProxySearch()
-      println(proxySearch.proxySelector)
       builder.proxySelector(proxySearch.proxySelector)
     } else if (socksProxy != null) {
       builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))

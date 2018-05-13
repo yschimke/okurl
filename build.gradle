@@ -133,7 +133,6 @@ dependencies {
   implementation 'commons-io:commons-io:2.6'
   implementation 'org.apache.commons:commons-lang3:3.7'
   implementation 'org.fusesource.jansi:jansi:1.17.1'
-  implementation 'com.github.holgerbrandl:kscript-annotations:1.2'
   implementation 'com.launchdarkly:okhttp-eventsource:1.8.0'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'

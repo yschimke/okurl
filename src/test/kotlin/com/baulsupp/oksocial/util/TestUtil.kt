@@ -1,10 +1,11 @@
 package com.baulsupp.oksocial.util
 
-import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.CredentialFactory
 import com.baulsupp.oksocial.credentials.CredentialsStore
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.ServiceDefinition
 import org.junit.jupiter.api.Assumptions
+import java.io.File
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -46,5 +47,20 @@ object TestUtil {
       DefaultToken)
 
     Assumptions.assumeTrue(token != null)
+  }
+
+  fun projectFile(s: String): File {
+
+    return File(projectRoot(), s)
+  }
+
+  val projectRoot = {
+    var root = File(TestUtil::class.java.getResource("/datasettes.txt").file)
+
+    while (!File(root, ".git").exists()) {
+      root = root.parentFile
+    }
+
+    root
   }
 }

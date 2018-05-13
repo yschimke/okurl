@@ -1,13 +1,13 @@
 package com.baulsupp.oksocial.i9n
 
-import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.authenticator.oauth2.Oauth2Token
+import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.github.GithubAuthInterceptor
+import com.baulsupp.oksocial.util.TestUtil.projectFile
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
-import org.junit.Ignore
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -28,7 +28,7 @@ class GithubTest {
     credentialsStore.set(service, DefaultToken.name, Oauth2Token("ABC"))
 
     main.commandName = "okapi"
-    main.arguments = mutableListOf("src/test/kotlin/commands/githubapi", "/")
+    main.arguments = mutableListOf(projectFile("src/test/kotlin/commands/githubapi").absolutePath, "/")
     main.urlComplete = true
     main.debug = true
 

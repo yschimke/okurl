@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.util.TestUtil.projectFile
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.BeforeEach
@@ -62,7 +63,7 @@ class CompletionTest {
   @Test
   fun completeEndpointShortCommand1() {
     main.commandName = "okapi"
-    main.arguments = mutableListOf("src/test/resources/commands/testcommand", "")
+    main.arguments = mutableListOf(projectFile("src/test/resources/commands/testcommand").absolutePath, "")
 
     runBlocking {
       main.run()
@@ -77,7 +78,7 @@ class CompletionTest {
   @Test
   fun completeEndpointShortCommand2() {
     main.commandName = "okapi"
-    main.arguments = mutableListOf("src/test/resources/commands/testcommand", "/users")
+    main.arguments = mutableListOf(projectFile("src/test/resources/commands/testcommand").absolutePath, "/users")
 
     runBlocking {
       main.run()
@@ -92,7 +93,7 @@ class CompletionTest {
   @Test
   fun completeEndpointsForTwitter() {
     main.commandName = "okapi"
-    main.arguments = mutableListOf("src/test/kotlin/commands/twitterapi", "/")
+    main.arguments = mutableListOf(projectFile("src/test/kotlin/commands/twitterapi").absolutePath, "/")
 
     runBlocking {
       main.run()

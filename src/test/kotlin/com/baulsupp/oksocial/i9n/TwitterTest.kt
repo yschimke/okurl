@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.util.TestUtil.projectFile
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
@@ -40,7 +41,7 @@ class TwitterTest {
   fun importFromTwurl() {
     main.authorize = true
     main.arguments = mutableListOf("twitter", "--twurlrc",
-        "src/test/resources/single_twurlrc.yaml")
+        projectFile("src/test/resources/single_twurlrc.yaml").absolutePath)
 
     runBlocking {
       main.run()
