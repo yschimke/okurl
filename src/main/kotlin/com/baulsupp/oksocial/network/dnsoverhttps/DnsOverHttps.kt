@@ -1,5 +1,6 @@
 package com.baulsupp.oksocial.network.dnsoverhttps
 
+import okhttp3.CacheControl
 import okhttp3.Dns
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -7,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.internal.platform.Platform
 import okio.ByteString
 import java.io.IOException
@@ -41,42 +43,53 @@ class DnsOverHttps(
   @Throws(UnknownHostException::class)
   override fun lookup(hostname: String): List<InetAddress> {
     try {
-      //System.out.println("Host: " + hostname);
-
       val query = DnsRecordCodec.encodeQuery(hostname, includeIPv6)
 
       val request = buildRequest(query)
-      val response = client.newCall(request).execute()
 
-      // TODO reenable (currently noisy with test servers)
-      if (response.cacheResponse() == null && response.protocol() != Protocol.HTTP_2) {
-        Platform.get().log(Platform.WARN, "Incorrect protocol: " + response.protocol(), null)
-      }
+      val response = executeRequest(request)
 
-      // TODO remove (temporary info only currently)
-      if (client.cache() != null && !isPost && response.cacheResponse() == null) {
-        Platform.get().log(Platform.INFO, "DNS missed cache: $hostname", null)
-      }
-
-      try {
-        if (!response.isSuccessful) {
-          throw IOException("response: " + response.code() + " " + response.message())
-        }
-
-        val responseBytes = response.body()!!.source().readByteString()
-
-        //System.out.println("Response: " + responseBytes.hex());
-
-        return DnsRecordCodec.decodeAnswers(hostname, responseBytes)
-      } finally {
-        response.close()
-      }
+      return readResponse(response, hostname)
     } catch (uhe: UnknownHostException) {
       throw uhe
     } catch (e: Exception) {
       val unknownHostException = UnknownHostException(hostname)
       unknownHostException.initCause(e)
       throw unknownHostException
+    }
+  }
+
+  @Throws(IOException::class)
+  private fun executeRequest(request: Request): Response {
+    // cached request
+    if (!isPost && client.cache() != null) {
+      val cacheRequest = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build()
+
+      val response = client.newCall(cacheRequest).execute()
+
+      if (response.isSuccessful) {
+        return response
+      }
+    }
+
+    return client.newCall(request).execute()
+  }
+
+  private fun readResponse(response: Response, hostname: String): List<InetAddress> {
+    if (response.cacheResponse() == null && response.protocol() != Protocol.HTTP_2) {
+      Platform.get().log(Platform.WARN, "Incorrect protocol: " + response.protocol(), null)
+    }
+
+    try {
+      if (!response.isSuccessful) {
+        throw IOException("response: " + response.code() + " " + response.message())
+      }
+
+      val responseBytes = response.body()!!.source().readByteString()
+
+      return DnsRecordCodec.decodeAnswers(hostname, responseBytes)
+    } finally {
+      response.close()
     }
   }
 
@@ -90,14 +103,10 @@ class DnsOverHttps(
     } else {
       val encoded = query.base64Url().replace("=", "")
 
-      //System.out.println("Query: " + encoded);
-
       val requestUrl = url.newBuilder().addQueryParameter("dns", encoded).build()
 
       builder = Request.Builder().url(requestUrl)
     }
-
-    //System.out.println("URL: " + requestUrl);
 
     builder.header("Accept", contentType.toString())
 
