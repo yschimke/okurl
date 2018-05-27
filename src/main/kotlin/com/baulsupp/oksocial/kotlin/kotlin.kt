@@ -22,6 +22,9 @@ import org.fusesource.jansi.Ansi.Color.GREEN
 import org.fusesource.jansi.Ansi.Color.MAGENTA
 import org.fusesource.jansi.Ansi.Color.RED
 import java.io.IOException
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 inline fun <reified V> Moshi.mapAdapter() =
   this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java,
@@ -204,6 +207,7 @@ fun Request.Builder.tokenSet(tokenSet: Token) = tag(tokenSet)
 
 fun Request.Builder.postJsonBody(body: Any) {
   val content = moshi.adapter(body.javaClass).toJson(body)!!
+
   post(RequestBody.create(JSON, content))
 }
 
@@ -218,4 +222,8 @@ fun isInteractive(): Boolean {
   // TODO detect Intellij
   return true
 //  return System.console() != null
+}
+
+fun LocalDateTime.toInstant(): Instant {
+  return this.toInstant(OffsetDateTime.now().offset)
 }

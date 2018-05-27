@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.location.Location
+import com.baulsupp.oksocial.moshi.Rfc3339InstantJsonAdapter
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.SimpleResponseExtractor
 import com.baulsupp.oksocial.services.mapbox.model.MapboxLatLongAdapter
@@ -19,6 +20,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 
@@ -55,6 +57,7 @@ val moshi = Moshi.Builder()
   .add(MapboxLatLongAdapter())
   .add(KotlinJsonAdapterFactory())
   .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+  .add(Instant::class.java, Rfc3339InstantJsonAdapter.nullSafe())
   .build()!!
 
 fun warmup(vararg urls: String) {

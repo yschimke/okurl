@@ -6,7 +6,7 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.net.URLEncoder
 
-var argumentString = args.joinToString("+") { URLEncoder.encode(it, "UTF-8") };
+var argumentString = args.joinToString("+") { URLEncoder.encode(it, "UTF-8") }
 
 runBlocking {
   val results = client.query<SearchResults>(
