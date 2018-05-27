@@ -13,7 +13,7 @@ buildscript {
 }
 
 plugins {
-  id "com.gradle.build-scan" version "1.13.2"
+  id "com.gradle.build-scan" version "1.13.4"
   id 'com.github.ben-manes.versions' version '0.17.0'
   id 'net.nemerosa.versioning' version '2.7-beta.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
@@ -114,10 +114,12 @@ dependencies {
   implementation "commons-io:commons-io:2.6"
   implementation "io.airlift:airline:0.8"
   implementation "io.netty:netty-resolver-dns:4.1.25.Final"
-  implementation "io.zipkin.brave:brave-instrumentation-okhttp3:4.19.2"
+  implementation "io.zipkin.brave:brave-instrumentation-okhttp3:5.0.0"
   implementation "io.zipkin.brave:brave-okhttp:4.13.4"
-  implementation "io.zipkin.brave:brave:4.19.2"
-  implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:2.6.0"
+  implementation "io.zipkin.brave:brave:5.0.0"
+  implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:2.6.1"
+  implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:2.6.1"
+  implementation "io.zipkin.java:zipkin:2.8.4"
   implementation "javax.activation:activation:1.1.1"
   implementation "org.apache.commons:commons-lang3:3.7"
   implementation "org.brotli:dec:0.1.2"
