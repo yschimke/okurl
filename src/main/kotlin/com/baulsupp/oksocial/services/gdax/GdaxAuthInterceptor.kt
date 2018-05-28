@@ -23,7 +23,7 @@ import okio.ByteString.encodeString
 import java.nio.charset.StandardCharsets.UTF_8
 
 class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
-  override val serviceDefinition = GdaxAuthServiceDefinition()
+  override val serviceDefinition = GdaxAuthServiceDefinition
 
   override fun intercept(chain: Interceptor.Chain, credentials: GdaxCredentials): Response {
     var request = chain.request()
