@@ -6,3 +6,10 @@ google-trends.datasettes.com
 polar-bears.now.sh
 australian-dunnies.now.sh
 australian-dogs.now.sh
+register-of-members-interests.datasettes.com
+wtr-api.herokuapp.com
+san-francisco.datasettes.com
+vice-police-shootings.now.sh
+baseballdb.lawlesst.net
+nyc-cultural-institutions.now.sh
+us-census-gazetteer-2017.now.sh

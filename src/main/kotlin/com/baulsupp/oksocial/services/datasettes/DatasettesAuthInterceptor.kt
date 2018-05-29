@@ -8,13 +8,10 @@ import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.CredentialsStore
 import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.credentials.Token
-import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.queryMap
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex
-import com.baulsupp.oksocial.services.datasettes.model.DatasetteTables
-import kotlinx.coroutines.experimental.runBlocking
+import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex2
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -53,24 +50,26 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
         databaseInPath(datasette, host)
       }
       path.size == 2 -> {
-        val datasetteTables = runBlocking { fetchDatasetteTableMetadata(host, path.first(), client) }
-        tablesInDatabase(datasetteTables, host, path)
+        val datasette = fetchDatasetteMetadata(host, client)
+        tablesInDatabase(datasette, host, path)
       }
       else -> UrlList(UrlList.Match.EXACT, listOf())
     }
   }
 
-  private fun databaseInPath(datasette: List<DatasetteIndex>, host: String?): UrlList {
-    val paths = datasette.flatMap { listOf(it.path + ".json", it.path + "/") } + ".json"
+  private fun databaseInPath(datasette: Map<String, DatasetteIndex2>, host: String): UrlList {
+    val paths = datasette.keys.flatMap { listOf("$it.json", "$it/") } + ".json"
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/$it" })
   }
 
   private fun tablesInDatabase(
-    datasetteTables: DatasetteTables,
+    datasettes: Map<String, DatasetteIndex2>,
     host: String?,
     path: MutableList<String>
   ): UrlList {
-    val tableLike = datasetteTables.views + datasetteTables.tables.map { it.name }
+    val db = path.first().replace("-[0-9a-z]+".toRegex(), "")
+    val datasette = datasettes.getValue(db)
+    val tableLike = datasette.views + datasette.tables.map { it.key }
     val encoded = tableLike.map { URLEncoder.encode(it, StandardCharsets.UTF_8.name()) }
     val paths = encoded.map { "$it.json" } + ".json"
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/${path.first()}/$it" })
@@ -89,39 +88,24 @@ class DatasettesPresenter : ApiDocPresenter {
   ) {
     val urlI = HttpUrl.parse(url) ?: throw UsageException("Unable to parse Url '$url'")
 
-    val datasettes = runBlocking { fetchDatasetteMetadata(urlI.host(), client) }
-
-    if (datasettes.size != 1) {
-      outputHandler.showError("expected 1 datasette: '${datasettes.joinToString { it.path }}'")
-    }
-
-    val datasette = datasettes.first()
+    val datasette = fetchDatasetteMetadata(urlI.host(), client)
 
     outputHandler.info("service: Datasette")
-    outputHandler.info("name: ${datasette.name}")
     outputHandler.info("docs: https://github.com/simonw/datasette")
-    outputHandler.info("database: https://${urlI.host()}/${datasette.path}")
-    outputHandler.info("")
+    outputHandler.info("database: https://${urlI.host()}/")
 
-    val datasetteTables = runBlocking {
-      fetchDatasetteTableMetadata(urlI.host(), datasette.path, client)
+    datasette.forEach { db, dbi ->
+      outputHandler.info("")
+      outputHandler.info("name: ${db}")
+      outputHandler.info("tables: " + dbi.tables.keys.joinToString())
+//    outputHandler.info("views: " + datasette.views.joinToString())
     }
-
-    outputHandler.info("tables: " + datasetteTables.tables.joinToString { it.name })
-    outputHandler.info("views: " + datasetteTables.views.joinToString())
   }
 }
 
-suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient) =
-  client.queryMap<DatasetteIndex>("https://$host/.json", NoToken).values.toList()
-
-suspend fun fetchDatasetteTableMetadata(
-  host: String,
-  path: String,
-  client: OkHttpClient
-) =
-  client.query<DatasetteTables>("https://$host/$path.json",
-    NoToken)
+suspend fun fetchDatasetteMetadata(host: String, client: OkHttpClient): Map<String, DatasetteIndex2> {
+  return client.queryMap<DatasetteIndex2>("https://$host/-/inspect.json", NoToken)
+}
 
 fun knownHosts(): Set<String> =
   DatasettesAuthInterceptor::class.java.getResource("/datasettes.txt")?.readText()?.split('\n')?.toSet() ?: setOf()
