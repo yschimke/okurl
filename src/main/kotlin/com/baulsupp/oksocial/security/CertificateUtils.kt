@@ -44,12 +44,14 @@ object CertificateUtils {
     }
     trustManagers.add(systemTrustManager())
 
+    if (trustManagers.size == 1) {
+      return trustManagers.first()
+    }
+
     return MergedX509TrustManager(trustManagers)
   }
 
-  fun systemTrustManager(): X509TrustManager {
-    return trustManagerForKeyStore(null)
-  }
+  fun systemTrustManager() = trustManagerForKeyStore(null)
 
   fun includedCertificates(): List<File>? {
     var installDir: String? = System.getenv("INSTALLDIR")

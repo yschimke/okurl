@@ -13,3 +13,4 @@ vice-police-shootings.now.sh
 baseballdb.lawlesst.net
 nyc-cultural-institutions.now.sh
 us-census-gazetteer-2017.now.sh
+datasette-registry.now.sh
