@@ -25,7 +25,7 @@ class FacebookApiDocPresenter(private val sd: ServiceDefinition<Oauth2Token>) : 
     val parsedUrl = HttpUrl.parse(url)
 
     if (parsedUrl != null) {
-      val md = FacebookUtil.getMetadata(client, parsedUrl, tokenSet)
+      val md = getMetadata(client, parsedUrl, tokenSet)
 
       if (md == null) {
         outputHandler.info("")

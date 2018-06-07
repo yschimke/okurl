@@ -3,7 +3,6 @@ package com.baulsupp.oksocial.services.facebook
 import com.baulsupp.oksocial.completion.HostUrlCompleter
 import com.baulsupp.oksocial.completion.UrlList
 import com.baulsupp.oksocial.credentials.Token
-import com.baulsupp.oksocial.services.facebook.FacebookUtil.VERSION
 import com.baulsupp.oksocial.services.facebook.model.Account
 import com.baulsupp.oksocial.services.facebook.model.AccountList
 import com.baulsupp.oksocial.services.facebook.model.UserOrPage
@@ -83,7 +82,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
       else -> {
         val prefix = "https://graph.facebook.com$path"
 
-        val metadata = FacebookUtil.getMetadata(client, HttpUrl.parse(prefix)!!, tokenSet)
+        val metadata = getMetadata(client, HttpUrl.parse(prefix)!!, tokenSet)
 
         return try {
           if (metadata == null) {

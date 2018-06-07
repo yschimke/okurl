@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.services.facebook.FacebookApiDocPresenter
 import com.baulsupp.oksocial.services.facebook.FacebookAuthInterceptor
-import com.baulsupp.oksocial.services.facebook.FacebookUtil
+import com.baulsupp.oksocial.services.facebook.VERSION
 import com.baulsupp.oksocial.util.TestUtil.assumeHasNetwork
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
@@ -33,7 +33,7 @@ class FacebookTest {
   fun testExplainsUrl() {
     assumeHasNetwork()
 
-    main.arguments = mutableListOf("https://graph.facebook.com/${FacebookUtil.VERSION}/app/groups")
+    main.arguments = mutableListOf("https://graph.facebook.com/$VERSION/app/groups")
     main.apiDoc = true
 
     runBlocking {

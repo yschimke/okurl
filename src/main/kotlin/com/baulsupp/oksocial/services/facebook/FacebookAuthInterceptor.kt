@@ -12,12 +12,13 @@ import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.credentials.TokenValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
-import com.baulsupp.oksocial.services.facebook.FacebookUtil.ALL_PERMISSIONS
+import com.baulsupp.oksocial.services.facebook.FacebookAuthFlow.ALL_PERMISSIONS
 import com.baulsupp.oksocial.services.facebook.model.App
 import com.baulsupp.oksocial.services.facebook.model.UserOrPage
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 import okio.ByteString
 
@@ -27,27 +28,29 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://developers.facebook.com/apps/")
 
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    var request = chain.request()
+    val request = chain.request()
 
-    if (supportsUrl(request.url())) {
-      val token = credentials.accessToken
-
-      val builder = request.url().newBuilder().addQueryParameter("access_token", token)
+    if (supportsUrl(request.url()) && !authenticated(request)) {
+      val builder = request.url().newBuilder().addQueryParameter("access_token", credentials.accessToken)
 
       if (credentials.clientSecret != null) {
         val appsecretTime = (System.currentTimeMillis() / 1000).toString()
-        val appsecretProof = ByteString.encodeUtf8("$token|$appsecretTime").hmacSha256(
+        val appsecretProof = ByteString.encodeUtf8("${credentials.accessToken}|$appsecretTime").hmacSha256(
           ByteString.encodeUtf8(credentials.clientSecret)).hex()
         builder.addQueryParameter("appsecret_proof", appsecretProof)
         builder.addQueryParameter("appsecret_time", appsecretTime)
       }
 
-      val newUrl = builder.build()
+      val signedRequest = request.newBuilder().url(builder.build()).build()
 
-      request = request.newBuilder().url(newUrl).build()
+      return chain.proceed(signedRequest)
     }
 
     return chain.proceed(request)
+  }
+
+  fun authenticated(request: Request): Boolean {
+    return request.url().queryParameter("access_token") != null
   }
 
   override suspend fun authorize(
@@ -56,16 +59,23 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     authArguments: List<String>
   ): Oauth2Token {
 
-    val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
-    val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
-    var scopes = Secrets.promptArray("Scopes", "facebook.scopes",
-      listOf("public_profile", "user_friends", "email"))
+    if (authArguments == listOf("--ci")) {
+      val clientId = Secrets.prompt("Workplace CI App Id", "workplace.ci.appId", "", false)
+      val clientSecret = Secrets.prompt("Workplace CI App Secret", "workplace.ci.appSecret", "", true)
+      val token = Secrets.prompt("Workplace CI Token", "workplace.ci.token", "", true)
 
-    if (scopes.contains("all")) {
-      scopes = ALL_PERMISSIONS
+      return Oauth2Token(token, "ci", clientId, clientSecret)
+    } else {
+      val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
+      val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
+      var scopes = Secrets.promptArray("Scopes", "facebook.scopes",
+        listOf("public_profile", "user_friends", "email"))
+
+      if (scopes.contains("all")) {
+        scopes = ALL_PERMISSIONS
+      }
+      return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
     }
-
-    return FacebookAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override suspend fun validate(
@@ -80,7 +90,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ValidatedCredentials(userName, appName)
   }
 
-  override fun hosts(): Set<String> = FacebookUtil.API_HOSTS
+  override fun hosts(): Set<String> = API_HOSTS
 
   override fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || isScimApi(url) || isStreamingGraphApi(url)
 
