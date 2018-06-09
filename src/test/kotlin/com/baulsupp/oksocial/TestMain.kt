@@ -3,7 +3,7 @@ package com.baulsupp.oksocial
 object TestMain {
   @JvmStatic
   fun main(args: Array<String>) {
-    runMain("--dns dnsoverhttps --ip ipv4only https://graph.facebook.com/robots.txt")
+    runMain("--dns dnsoverhttps --ip ipv4only https://httpbin.org/json")
   }
 
   private fun runMain(s: String) {
