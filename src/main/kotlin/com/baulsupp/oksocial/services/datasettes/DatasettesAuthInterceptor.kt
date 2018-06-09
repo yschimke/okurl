@@ -5,10 +5,7 @@ import com.baulsupp.oksocial.authenticator.CompletionOnlyAuthInterceptor
 import com.baulsupp.oksocial.completion.ApiCompleter
 import com.baulsupp.oksocial.completion.CompletionVariableCache
 import com.baulsupp.oksocial.credentials.CredentialsStore
-import com.baulsupp.oksocial.credentials.NoToken
 import com.baulsupp.oksocial.credentials.Token
-import com.baulsupp.oksocial.kotlin.queryMap
-import com.baulsupp.oksocial.services.datasettes.model.DatasetteIndex2
 import okhttp3.OkHttpClient
 
 /**

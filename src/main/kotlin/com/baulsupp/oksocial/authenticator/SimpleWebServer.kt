@@ -1,9 +1,9 @@
 package com.baulsupp.oksocial.authenticator
 
-import com.baulsupp.oksocial.kotlin.await
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
+import kotlinx.coroutines.experimental.future.await
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.HttpUrl
 import java.io.Closeable
@@ -76,7 +76,9 @@ class SimpleWebServer(
     server.stop(0)
   }
 
-  suspend fun waitForCodeAsync(): String = f.await()
+  suspend fun waitForCodeAsync(): String {
+    return f.await()
+  }
 
   fun waitForCode(): String = runBlocking { waitForCodeAsync() }
 

@@ -227,3 +227,17 @@ fun isInteractive(): Boolean {
 fun LocalDateTime.toInstant(): Instant {
   return this.toInstant(OffsetDateTime.now().offset)
 }
+
+suspend fun Call.await(): Response {
+  return kotlinx.coroutines.experimental.suspendCancellableCoroutine { c ->
+    enqueue(object : Callback {
+      override fun onFailure(call: Call, e: IOException) {
+        c.resumeWithException(e)
+      }
+
+      override fun onResponse(call: Call, response: Response) {
+        c.resume(response)
+      }
+    })
+  }
+}
