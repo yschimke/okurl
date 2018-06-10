@@ -1,5 +1,7 @@
 package com.baulsupp.oksocial.kotlin
 
+import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.Token
 import com.baulsupp.oksocial.util.ClientException
@@ -218,10 +220,17 @@ fun <T> List<T>.toJavaList(): java.util.List<T> {
 fun Request.edit(init: Request.Builder.() -> Unit = {}) = newBuilder().apply(init).build()
 fun HttpUrl.edit(init: HttpUrl.Builder.() -> Unit = {}) = newBuilder().apply(init).build()
 
+val isIntellij by lazy {
+  try {
+    CommandLineClient.javaClass.classLoader.loadClass("com.intellij.rt.execution.application.AppMainV2")
+    true
+  } catch (e: Exception) {
+    false
+  }
+}
+
 fun isInteractive(): Boolean {
-  // TODO detect Intellij
-  return true
-//  return System.console() != null
+  return System.console() != null || isIntellij
 }
 
 fun LocalDateTime.toInstant(): Instant {
