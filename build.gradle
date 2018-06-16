@@ -48,7 +48,7 @@ tasks.withType(JavaCompile) {
 
 jar {
   manifest {
-    attributes("Implementation-Title": "OkSocial", "Implementation-Version": version)
+    attributes("Implementation-Title": "OkSocial", "Implementation-Version": version, 'Main-Class': 'com.baulsupp.oksocial.JavaMain')
   }
 }
 
