@@ -2,24 +2,26 @@
 
 import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.location.Location
-import com.baulsupp.oksocial.services.datasettes.model.DatasetteResultSet
+import com.baulsupp.oksocial.services.mapbox.staticMap
 
-fun queryPostcode(postcode: String) =
-  query<DatasetteResultSet>("https://australian-dunnies.now.sh/dunnies-92a33eb/dunnies.json?Postcode=$postcode")
-
-fun staticMap(toilets: List<Location>): String {
-  val markers = mutableListOf<String>()
-
-  toilets.forEach {
-    markers.add("pin-s-hospital(" + it.longitude + "," + it.latitude + ")")
-  }
-
-  return "https://api.mapbox.com/v4/mapbox.dark/${markers.joinToString(",")}/auto/800x800.png"
+data class Toilet(
+  val AccessibleFemale: Int, val AccessibleMale: Int, val AccessibleNote: String?, val AccessibleParkingNote: String?,
+  val AccessibleUnisex: Int, val AccessNote: String?, val Address: String?, val AddressNote: String?,
+  val FacilityType: String?, val Female: Int, val IconURL: String?, val IsOpen: String, val KeyRequired: Int,
+  val Latitude: Double, val Longitude: Double, val Male: Int, val Name: String, val Notes: String?,
+  val OpeningHoursNote: String?, val OpeningHoursSchedule: String?, val Parking: Int, val ParkingAccessible: Int,
+  val ParkingNote: String?, val PaymentRequired: Int, val Postcode: Int, val Showers: Int, val State: String,
+  val Status: String, val ToiletType: String?, val Town: String, val Unisex: Int, val Url: String?
+) {
+  val location = Location(Latitude, Longitude)
 }
 
-val loc = location()
+data class ToiletResultSet(val rows: List<Toilet>)
 
-val toilets = queryPostcode("2037")
+val postcode = args[0]
 
-val map = staticMap(toilets.rows.map { Location(it[44] as Double, it[45] as Double) })
-show(map)
+val toilets = query<ToiletResultSet>("https://australian-dunnies.now.sh/australian-dunnies/dunnies.jsono?Postcode=$postcode").rows
+
+show(staticMap {
+  pinLocations(toilets.map { it.location }, "s-hospital")
+})

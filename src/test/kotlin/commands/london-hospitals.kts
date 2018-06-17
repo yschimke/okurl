@@ -2,24 +2,17 @@
 
 import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.location.Location
-import com.baulsupp.oksocial.services.datasettes.model.DatasetteResultSet
+import com.baulsupp.oksocial.services.mapbox.staticMap
 
-fun queryCity(city: String) = query<DatasetteResultSet>("https://nhs-england-hospitals.now.sh/hospitals-0cda400.json?sql=select+OrganisationName%2C+Latitude%2C+Longitude%2C+Phone+from+hospitals+where+City+%3D+%27${city}%27")
-
-fun staticMap(start: Location, hospitals: List<Location>): String {
-  val markers = mutableListOf<String>();
-  markers.add("pin-m-marker+CCC(" + start.longitude + "," + start.latitude + ")");
-
-  hospitals.forEach {
-    markers.add("pin-s-hospital(" + it.longitude + "," + it.latitude + ")");
-  }
-
-  return "https://api.mapbox.com/v4/mapbox.dark/${markers.joinToString(",")}/auto/800x800.png";
+data class Hospital(val OrganisationName: String, val Latitude: Double, val Longitude: Double, val Website: String?,
+                    val Phone: String?, val Email: String?) {
+  val location = Location(Latitude, Longitude)
 }
+data class HospitalResultSet(val rows: List<Hospital>)
 
-val loc = location()
+val hospitals = query<HospitalResultSet>("https://nhs-england-hospitals.now.sh/hospitals-0cda400/hospitals.jsono?City=${"London"}").rows
 
-val hospitals = queryCity("London")
-
-val map = staticMap(loc!!, hospitals.rows.take(50).map { Location(it[1] as Double, it[2] as Double) })
-show(map)
+show(staticMap {
+  pinLocation(location())
+  pinLocations(hospitals.take(50).map { it.location }, "s-hospital")
+})
