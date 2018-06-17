@@ -8,6 +8,8 @@ import kotlinx.coroutines.experimental.runBlocking
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
+// requires http://www.brewformulas.org/Travis
+
 runBlocking {
   val oneweekago = Instant.now().minus(7, ChronoUnit.DAYS)
   val builds = queryAllBuilds("square/okhttp", limit = 200)
