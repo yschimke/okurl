@@ -1,6 +1,5 @@
 package com.baulsupp.oksocial.kotlin
 
-import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.commands.CommandLineClient
 import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.Token
@@ -49,20 +48,21 @@ suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
 suspend inline fun <reified T> OkHttpClient.queryPages(
   url: String,
   paginator: T.() -> Pagination,
-  tokenSet: Token = DefaultToken
+  tokenSet: Token = DefaultToken,
+  pageLimit: Int = Int.MAX_VALUE
 ): List<T> {
   var page = query<T>(url, tokenSet)
   val resultList = mutableListOf(page)
 
   var pages = paginator(page)
 
-  while (pages !== End) {
+  while (pages !== End && resultList.size < pageLimit) {
     if (pages is Next) {
       page = query(pages.url, tokenSet)
       resultList.add(page)
       pages = paginator(page)
     } else if (pages is Rest) {
-      val deferList = pages.urls.map {
+      val deferList = pages.urls.take(pageLimit).map {
         async(CommonPool) {
           query<T>(it, tokenSet)
         }
@@ -222,7 +222,7 @@ fun HttpUrl.edit(init: HttpUrl.Builder.() -> Unit = {}) = newBuilder().apply(ini
 
 val isIntellij by lazy {
   try {
-    CommandLineClient.javaClass.classLoader.loadClass("com.intellij.rt.execution.application.AppMainV2")
+    CommandLineClient::class.java.classLoader.loadClass("com.intellij.rt.execution.application.AppMainV2")
     true
   } catch (e: Exception) {
     false
