@@ -115,7 +115,7 @@ data class Venue(
   val location: Location,
   val id: String,
   val categories: List<CategoriesItem>?,
-  val allowMenuUrlEdit: Boolean,
+  val allowMenuUrlEdit: Boolean?,
   val beenHere: BeenHere
 )
 

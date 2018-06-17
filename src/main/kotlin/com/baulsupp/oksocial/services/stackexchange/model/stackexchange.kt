@@ -26,7 +26,7 @@ data class User(
   val user_id: Int,
   val reputation_change_day: Int,
   val location: String,
-  val age: Int,
+  val age: Int?,
   val reputation_change_month: Int
 )
 

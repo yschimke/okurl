@@ -1,24 +1,24 @@
 package com.baulsupp.oksocial.services.twilio.model
 
-data class AccountsItem(val subresourceUris: Map<String, String>?,
-                        val friendlyName: String,
-                        val dateUpdated: String,
-                        val dateCreated: String,
-                        val ownerAccountSid: String,
-                        val authToken: String,
+data class AccountsItem(val subresource_uris: Map<String, String>,
+                        val friendly_name: String,
+                        val date_updated: String,
+                        val date_created: String,
+                        val owner_account_sid: String,
+                        val auth_token: String,
                         val type: String,
                         val uri: String,
                         val status: String,
                         val sid: String)
 
-data class Accounts(val firstPageUri: String? = null,
+data class Accounts(val first_page_uri: String? = null,
                     val start: Int,
                     val end: Int,
-                    val previousPageUri: String? = null,
-                    val nextPageUri: String? = null,
+                    val previous_page_uri: String? = null,
+                    val next_page_uri: String? = null,
                     val accounts: List<AccountsItem>,
                     val page: Int,
                     val uri: String,
-                    val pageSize: Int)
+                    val page_size: Int)
 
 

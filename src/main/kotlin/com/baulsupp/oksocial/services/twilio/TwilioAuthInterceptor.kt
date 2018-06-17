@@ -52,7 +52,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   ): ValidatedCredentials {
     val map = client.query<Accounts>("https://api.twilio.com/2010-04-01/Accounts.json",
       TokenValue(credentials))
-    return ValidatedCredentials(map.accounts.firstOrNull()?.friendlyName)
+    return ValidatedCredentials(map.accounts.firstOrNull()?.friendly_name)
   }
 
   override fun apiCompleter(
