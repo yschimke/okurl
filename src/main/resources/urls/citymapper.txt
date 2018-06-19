@@ -1,0 +1,3 @@
+https://developer.citymapper.com/api/1/traveltime/
+https://developer.citymapper.com/api/1/singlepointcoverage/
+https://developer.citymapper.com/api/1/coverage/?key={key}
