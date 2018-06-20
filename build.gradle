@@ -1,6 +1,7 @@
 buildscript {
   ext.kotlin_version = '1.2.60-dev-794'
   ext.jackson_version = '2.9.6'
+  ext.okhttp_version = '3.11.0-SNAPSHOT'
   repositories {
     maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
     mavenCentral()
@@ -96,6 +97,9 @@ repositories {
 
 dependencies {
   implementation "com.baulsupp:oksocial-output:4.11.0"
+  implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+  implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+  implementation "com.squareup.okhttp3.sample:unixdomainsockets:$okhttp_version"
   implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
   implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
   implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version"
@@ -141,8 +145,8 @@ dependencies {
   testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-  testImplementation 'com.squareup.okhttp3:okhttp-testing-support:3.10.0'
-  testImplementation 'com.squareup.okhttp3:mockwebserver:3.10.0'
+  testImplementation "com.squareup.okhttp3:okhttp-testing-support:$okhttp_version"
+  testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
 }
 
 distributions {

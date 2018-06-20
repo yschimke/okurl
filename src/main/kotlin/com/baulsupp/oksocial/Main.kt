@@ -59,7 +59,7 @@ class Main : CommandLineClient() {
   @Option(name = ["-H", "--header"], description = "Custom header to pass to server")
   var headers: java.util.List<String>? = null
 
-  @Option(name = ["--no-follow"], description = "Follow redirects")
+  @Option(name = ["--noFollow"], description = "Follow redirects")
   var dontFollowRedirects = false
 
   @Option(name = ["--referer"], description = "Referer URL")
@@ -80,7 +80,7 @@ class Main : CommandLineClient() {
   @Option(name = ["--token"], description = "Use existing Token for authorization")
   var token: String? = null
 
-  @Option(name = ["--show-credentials"], description = "Show Credentials")
+  @Option(name = ["--showCredentials"], description = "Show Credentials")
   var showCredentials = false
 
   @Option(name = ["--complete"], description = "Complete options")
