@@ -67,6 +67,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.unixdomainsockets.UnixDomainSocketFactory
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.io.Closeable
@@ -186,13 +187,16 @@ open class CommandLineClient : HelpOption() {
   var user: String? = null
 
   @Option(name = ["--maxrequests"], description = "Concurrency Level")
-  val maxRequests = 16
+  var maxRequests = 16
 
   @Option(name = ["--curl"], description = "Show curl commands")
   var curl = false
 
   @Option(name = ["-r", "--raw"], description = "Raw Output")
   var rawOutput = false
+
+  @Option(name = ["--unixSocket"], description = "Unix Socket")
+  var unixSocket: File? = null
 
   @Arguments(title = "arguments", description = "Remote resource URLs")
   var arguments: MutableList<String> = ArrayList()
@@ -395,6 +399,8 @@ open class CommandLineClient : HelpOption() {
 
     if (networkInterface != null) {
       builder.socketFactory(getSocketFactory())
+    } else if (unixSocket != null) {
+      builder.socketFactory(UnixDomainSocketFactory(unixSocket))
     }
 
     configureTls(builder)
