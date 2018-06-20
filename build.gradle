@@ -98,6 +98,7 @@ repositories {
 dependencies {
   implementation "com.baulsupp:oksocial-output:4.11.0"
   implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+  implementation "com.squareup.okhttp3:okhttp-sse:$okhttp_version"
   implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
   implementation "com.squareup.okhttp3.sample:unixdomainsockets:$okhttp_version"
   implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
@@ -106,10 +107,10 @@ dependencies {
   implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
   implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
   implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version"
+  implementation 'com.github.jnr:jnr-unixsocket:0.19'
   implementation "com.github.markusbernhardt:proxy-vole:1.0.4"
   implementation "com.github.mrmike:ok2curl:0.4.5"
   implementation "com.jakewharton.byteunits:byteunits:0.9.1"
-  implementation "com.launchdarkly:okhttp-eventsource:1.8.0"
   implementation "com.squareup.moshi:moshi-adapters:1.6.0"
   implementation "com.squareup.moshi:moshi-kotlin:1.6.0"
   implementation "com.squareup.moshi:moshi:1.6.0"
