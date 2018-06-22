@@ -123,8 +123,8 @@ class CompletionTest {
     assertTrue(cacheFileContent.contains("https://api.twitter.com/1.1/geo/places.json"))
   }
 
-  ////requires connection
-  //@Test public void completeEndpointsForFacebook() throws Throwable {
+  // //requires connection
+  // @Test public void completeEndpointsForFacebook() throws Throwable {
   //  main.credentialsStore = new OSXCredentialsStore();
   //  main.urlCompletion = "/me";
   //  main.commandName = "okapi";
@@ -140,10 +140,10 @@ class CompletionTest {
   //  assertEquals("/me", cacheFileContent.get(0));
   //  assertTrue(cacheFileContent.contains("/me"));
   //  assertTrue(cacheFileContent.contains("/me/videos"));
-  //}
+  // }
   //
-  ////requires connection
-  //@Test public void completeEndpointsForFacebookTopLevel() throws Throwable {
+  // //requires connection
+  // @Test public void completeEndpointsForFacebookTopLevel() throws Throwable {
   //  main.credentialsStore = new OSXCredentialsStore();
   //  main.urlCompletion = "/";
   //  main.commandName = "okapi";
@@ -162,7 +162,7 @@ class CompletionTest {
   //  assertEquals("/", cacheFileContent.get(0));
   //  assertTrue(cacheFileContent.contains("/v2.8"));
   //  assertTrue(cacheFileContent.contains("/me"));
-  //}
+  // }
 
   private fun readCompletionFile(): List<String> = main.completionFile!!.readLines()
 }

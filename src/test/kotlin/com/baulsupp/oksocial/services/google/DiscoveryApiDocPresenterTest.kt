@@ -38,13 +38,13 @@ class DiscoveryApiDocPresenterTest {
 
     // unsafe tests
     // "endpoint id: people.people.get",
-    //"scopes: https://www.googleapis.com/auth/contacts, https://www.googleapis.com/auth/contacts.readonly, https://www.googleapis.com/auth/plus.login, https://www.googleapis.com/auth/user.addresses.read, https://www.googleapis.com/auth/user.birthday.read, https://www.googleapis.com/auth/user.emails.read, https://www.googleapis.com/auth/user.phonenumbers.read, https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile"
+    // "scopes: https://www.googleapis.com/auth/contacts, https://www.googleapis.com/auth/contacts.readonly, https://www.googleapis.com/auth/plus.login, https://www.googleapis.com/auth/user.addresses.read, https://www.googleapis.com/auth/user.birthday.read, https://www.googleapis.com/auth/user.emails.read, https://www.googleapis.com/auth/user.phonenumbers.read, https://www.googleapis.com/auth/userinfo.email, https://www.googleapis.com/auth/userinfo.profile"
 
     for (l in es) {
       assertTrue(outputHandler.stdout.contains(l), l)
     }
 
-    //assertTrue(outputHandler.stdout.stream()
+    // assertTrue(outputHandler.stdout.stream()
     //    .anyMatch(c -> c.startsWith("Provides information about a person")));
   }
 

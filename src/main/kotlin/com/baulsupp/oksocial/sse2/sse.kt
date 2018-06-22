@@ -11,14 +11,17 @@ import okhttp3.Response
 
 inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSourceListener {
   return object : EventSourceListener() {
-    override fun onEvent(eventSource: EventSource, id: String?, type: String?,
-                         data: String) {
+    override fun onEvent(
+      eventSource: EventSource,
+      id: String?,
+      type: String?,
+      data: String
+    ) {
       val m = moshi.adapter(T::class.java).fromJson(data) as T
       handler.invoke(m)
     }
 
     override fun onOpen(eventSource: EventSource?, response: Response?) {
-
     }
 
     override fun onFailure(eventSource: EventSource?, t: Throwable?, response: Response?) {

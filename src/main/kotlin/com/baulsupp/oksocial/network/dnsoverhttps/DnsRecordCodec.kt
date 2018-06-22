@@ -51,7 +51,7 @@ object DnsRecordCodec {
 
   @Throws(UnknownHostException::class)
   fun decodeAnswers(hostname: String, byteString: ByteString): List<InetAddress> {
-    //System.out.println("Response: " + byteString.hex());
+    // System.out.println("Response: " + byteString.hex());
 
     val result = ArrayList<InetAddress>()
 
@@ -66,7 +66,7 @@ object DnsRecordCodec {
 
     val responseCode = (flags and 0xf).toByte()
 
-    //System.out.println("Code: " + responseCode);
+    // System.out.println("Code: " + responseCode);
     if (responseCode == NXDOMAIN) {
       throw UnknownHostException("$hostname: NXDOMAIN")
     } else if (responseCode == SERVFAIL) {

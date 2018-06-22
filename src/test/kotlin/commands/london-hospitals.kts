@@ -4,8 +4,14 @@ import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.location.Location
 import com.baulsupp.oksocial.services.mapbox.staticMap
 
-data class Hospital(val OrganisationName: String, val Latitude: Double, val Longitude: Double, val Website: String?,
-                    val Phone: String?, val Email: String?) {
+data class Hospital(
+  val OrganisationName: String,
+  val Latitude: Double,
+  val Longitude: Double,
+  val Website: String?,
+  val Phone: String?,
+  val Email: String?
+) {
   val location = Location(Latitude, Longitude)
 }
 data class HospitalResultSet(val rows: List<Hospital>)

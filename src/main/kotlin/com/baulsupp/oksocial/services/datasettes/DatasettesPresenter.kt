@@ -29,7 +29,7 @@ class DatasettesPresenter : ApiDocPresenter {
 
     datasette.forEach { db, dbi ->
       outputHandler.info("")
-      outputHandler.info("name: ${db}")
+      outputHandler.info("name: $db")
       outputHandler.info("tables: " + dbi.tables.keys.joinToString())
 //    outputHandler.info("views: " + datasette.views.joinToString())
     }

@@ -29,22 +29,30 @@ enum class AudioEncoding {
   AUDIO_ENCODING_UNSPECIFIED, LINEAR16, MP3, OGG_OPUS
 }
 
-data class SynthesisInput(val text: String? = null,
-                          val ssml: String? = null)
+data class SynthesisInput(
+  val text: String? = null,
+  val ssml: String? = null
+)
 
-data class VoiceSelectionParams(val languageCode: String,
-                                val name: String? = null,
-                                val ssmlGender: SsmlVoiceGender? = null)
+data class VoiceSelectionParams(
+  val languageCode: String,
+  val name: String? = null,
+  val ssmlGender: SsmlVoiceGender? = null
+)
 
-data class AudioConfig(val audioEncoding: AudioEncoding,
-                       val speakingRate: Double? = 1.0,
-                       val pitch: Double? = 0.0,
-                       val volumeGainDb: Double? = 0.0,
-                       val sampleRateHertz: Double? = null)
+data class AudioConfig(
+  val audioEncoding: AudioEncoding,
+  val speakingRate: Double? = 1.0,
+  val pitch: Double? = 0.0,
+  val volumeGainDb: Double? = 0.0,
+  val sampleRateHertz: Double? = null
+)
 
-data class TextToSpeechRequest(val input: SynthesisInput,
-                               val voice: VoiceSelectionParams,
-                               val audioConfig: AudioConfig)
+data class TextToSpeechRequest(
+  val input: SynthesisInput,
+  val voice: VoiceSelectionParams,
+  val audioConfig: AudioConfig
+)
 
 data class TextToSpeechResponse(val audioContent: String) {
   fun audio() = ByteString.decodeBase64(audioContent)!!

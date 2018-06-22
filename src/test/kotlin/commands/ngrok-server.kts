@@ -12,14 +12,10 @@ import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-import okhttp3.MediaType
-import okhttp3.Response
-import okhttp3.ResponseBody
 import okio.BufferedSource
 import okio.Okio
 import java.io.PrintWriter
 import java.net.InetSocketAddress
-import java.nio.charset.StandardCharsets
 
 val server = HttpServer.create(InetSocketAddress("localhost", 0), 10)
 

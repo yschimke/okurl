@@ -2,10 +2,8 @@
 
 import com.baulsupp.oksocial.kotlin.client
 import com.baulsupp.oksocial.kotlin.moshi
-import com.baulsupp.oksocial.kotlin.okshell
 import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.kotlin.request
-import com.baulsupp.oksocial.kotlin.showOutput
 import com.baulsupp.oksocial.kotlin.simpleOutput
 import com.baulsupp.oksocial.services.google.model.DiscoveryApis
 import com.baulsupp.oksocial.services.google.model.DiscoveryDoc

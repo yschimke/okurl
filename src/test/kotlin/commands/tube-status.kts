@@ -5,9 +5,17 @@ import com.squareup.moshi.Json
 import kotlinx.coroutines.experimental.runBlocking
 import org.fusesource.jansi.Ansi
 
-data class StatusItem(val modeName: String, val lineStatuses: List<LineStatusesItem>?, val crowding: Crowding,
-                      val created: String, val name: String, val modified: String,
-                      val serviceTypes: List<ServiceTypesItem>?, val id: String, @Json(name = "\$type") val type: String) {
+data class StatusItem(
+  val modeName: String,
+  val lineStatuses: List<LineStatusesItem>?,
+  val crowding: Crowding,
+  val created: String,
+  val name: String,
+  val modified: String,
+  val serviceTypes: List<ServiceTypesItem>?,
+  val id: String,
+  @Json(name = "\$type") val type: String
+) {
   fun statusString(): String {
     return "%30s\t%s".format(this.name.color(statusColor()), this.lineStatuses?.sortedBy { it.statusSeverity }?.firstOrNull()?.statusSeverityDescription)
   }
@@ -21,8 +29,13 @@ data class StatusItem(val modeName: String, val lineStatuses: List<LineStatusesI
   }
 }
 
-data class LineStatusesItem(val statusSeverityDescription: String, val created: String,
-                            val statusSeverity: Int, val id: Int, @Json(name = "\$type") val type: String?)
+data class LineStatusesItem(
+  val statusSeverityDescription: String,
+  val created: String,
+  val statusSeverity: Int,
+  val id: Int,
+  @Json(name = "\$type") val type: String?
+)
 
 data class Crowding(@Json(name = "\$type") val type: String)
 

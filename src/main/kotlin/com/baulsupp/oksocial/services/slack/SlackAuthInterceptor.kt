@@ -19,7 +19,6 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("slack.com", "Slack API", "slack", "https://api.slack.com/",
     "https://api.slack.com/apps")
 
-
   override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 

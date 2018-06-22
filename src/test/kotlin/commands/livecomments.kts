@@ -11,17 +11,23 @@ val videoId = args.getOrNull(0) ?: throw UsageException("supply videoid")
 
 // https://developers.facebook.com/docs/graph-api/server-sent-events/endpoints/live-comments
 val uri = HttpUrl.parse(
-  "https://streaming-graph.facebook.com/${videoId}/live_comments?comment_rate=ten_per_second&fields=message")!!
+  "https://streaming-graph.facebook.com/$videoId/live_comments?comment_rate=ten_per_second&fields=message")!!
 
 data class From(val id: String, val name: String)
 data class Comment(val view_id: Long, val from: From?, val message: String, val id: String)
 
 // https://developers.facebook.com/docs/graph-api/server-sent-events/endpoints/live-reactions
 val uri2 = HttpUrl.parse(
-  "https://streaming-graph.facebook.com/${videoId}/live_reactions?fields=reaction_stream")!!
+  "https://streaming-graph.facebook.com/$videoId/live_reactions?fields=reaction_stream")!!
 
-data class ReactionCounts(val LIKE: Int, val LOVE: Int, val WOW: Int, val HAHA: Int, val SAD: Int,
-  val ANGRY: Int) {
+data class ReactionCounts(
+  val LIKE: Int,
+  val LOVE: Int,
+  val WOW: Int,
+  val HAHA: Int,
+  val SAD: Int,
+  val ANGRY: Int
+) {
   fun String.rep(count: Int): String {
     return this.repeat(Math.max(0, count))
   }

@@ -17,25 +17,52 @@ data class BuildBranch(val name: String, @Json(name = "@href") val href: String)
 
 data class BuildUser(val id: Int, val login: String?)
 
-data class Commit(val ref: String?, val compare_url: String?, val committed_at: String?,
-                  val id: Int, val message: String?, val sha: String)
+data class Commit(
+  val ref: String?,
+  val compare_url: String?,
+  val committed_at: String?,
+  val id: Int,
+  val message: String?,
+  val sha: String
+)
 
-data class BuildJob(val id: Int = 0,
-                    @Json(name = "@href") val href: String) {
+data class BuildJob(
+  val id: Int = 0,
+  @Json(name = "@href") val href: String
+) {
   val url: String get() = "https://api.travis-ci.org$href"
   val logUrl: String get() = "https://api.travis-ci.org$href/log"
   val logOutputTxt: String get() = "https://api.travis-ci.org$href/log.txt"
 }
 
-data class Permissions(val cancel: Boolean = false,
-                       val read: Boolean = false,
-                       val restart: Boolean = false)
+data class Permissions(
+  val cancel: Boolean = false,
+  val read: Boolean = false,
+  val restart: Boolean = false
+)
 
-data class Build(val private: Boolean?, val previous_state: String?, val finished_at: Instant, val jobs: List<BuildJob>,
-                 val commit: Commit, val repository: Repository, val branch: BuildBranch?, val created_by: BuildUser?,
-                 val duration: Int?, val number: String, val event_type: String, val pull_request_title: String?,
-                 val updated_at: Instant?, val pull_request_number: Int?, @Json(name = "@permissions") val permissions: Permissions,
-                 val started_at: Instant?, val id: Int, val state: String, val tag: Any?, @Json(name = "@href") val href: String) {
+data class Build(
+  val private: Boolean?,
+  val previous_state: String?,
+  val finished_at: Instant,
+  val jobs: List<BuildJob>,
+  val commit: Commit,
+  val repository: Repository,
+  val branch: BuildBranch?,
+  val created_by: BuildUser?,
+  val duration: Int?,
+  val number: String,
+  val event_type: String,
+  val pull_request_title: String?,
+  val updated_at: Instant?,
+  val pull_request_number: Int?,
+  @Json(name = "@permissions") val permissions: Permissions,
+  val started_at: Instant?,
+  val id: Int,
+  val state: String,
+  val tag: Any?,
+  @Json(name = "@href") val href: String
+) {
   val isErrored: Boolean get() = state == "errored" || state == "failed"
 
   val stateChar: String

@@ -23,7 +23,7 @@ object StandardSigner {
     val key = consumerSecret + AND + tokenSecret
     val signingKey = SecretKeySpec(key.toByteArray(StandardCharsets.UTF_8), algorithm)
 
-    //TODO: Mac looks thread safe, if not consider synchronizing this
+    // TODO: Mac looks thread safe, if not consider synchronizing this
     val mac = Mac.getInstance(algorithm)
     mac.init(signingKey)
     return mac.doFinal(str.toByteArray(StandardCharsets.UTF_8))
