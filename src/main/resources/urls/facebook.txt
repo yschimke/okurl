@@ -1,3 +1,5 @@
 https://www.facebook.com/scim/v1/Users/
 https://www.facebook.com/scim/v1/Users/{user-id}
 https://www.facebook.com/scim/v1/Users/?filter=userName%20eq%20%22user@example.com%22
+https://streaming-graph.facebook.com/{videoId}/live_comments
+https://streaming-graph.facebook.com/{videoId}/live_reactions
