@@ -2,9 +2,9 @@ package com.baulsupp.oksocial.sse2
 
 import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.request
-import okhttp3.EventSource
-import okhttp3.EventSourceListener
-import okhttp3.EventSources
+import okhttp3.sse.EventSource
+import okhttp3.sse.EventSourceListener
+import okhttp3.sse.EventSources
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
