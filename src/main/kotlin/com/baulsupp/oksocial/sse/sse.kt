@@ -3,12 +3,12 @@ package com.baulsupp.oksocial.sse
 import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.request
 import com.baulsupp.oksocial.kotlin.statusMessage
-import okhttp3.sse.EventSource
-import okhttp3.sse.EventSourceListener
-import okhttp3.sse.EventSources
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.sse.EventSource
+import okhttp3.sse.EventSourceListener
+import okhttp3.sse.EventSources
 
 inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSourceListener {
   return object : EventSourceListener() {

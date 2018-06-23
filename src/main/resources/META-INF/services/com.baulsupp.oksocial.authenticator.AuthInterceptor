@@ -36,6 +36,7 @@ com.baulsupp.oksocial.services.surveymonkey.SurveyMonkeyAuthInterceptor
 com.baulsupp.oksocial.services.tfl.TflAuthInterceptor
 com.baulsupp.oksocial.services.transferwise.TransferwiseAuthInterceptor
 com.baulsupp.oksocial.services.transferwise.TransferwiseTestAuthInterceptor
+com.baulsupp.oksocial.services.trello.TrelloAuthInterceptor
 com.baulsupp.oksocial.services.travisci.TravisCIAuthInterceptor
 com.baulsupp.oksocial.services.twilio.TwilioAuthInterceptor
 com.baulsupp.oksocial.services.twitter.TwitterAuthInterceptor

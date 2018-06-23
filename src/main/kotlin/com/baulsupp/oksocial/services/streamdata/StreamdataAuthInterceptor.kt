@@ -5,7 +5,6 @@ import com.baulsupp.oksocial.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.secrets.Secrets
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
-import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
