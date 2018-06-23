@@ -1,12 +1,8 @@
 package com.baulsupp.oksocial.services.smartystreets
 
 import com.baulsupp.oksocial.authenticator.AuthInterceptor
-import com.baulsupp.oksocial.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.services.AbstractServiceDefinition
-import com.baulsupp.oksocial.services.trello.model.MemberResponse
-import com.baulsupp.oksocial.services.trello.model.TokenResponse
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -41,7 +37,7 @@ class SmartyStreetsAuthInterceptor : AuthInterceptor<SmartStreetsToken>() {
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
   ): SmartStreetsToken {
-    return SmartyStreetsAuthFlow.login(outputHandler)
+    return SmartyStreetsAuthFlow.login()
   }
 
   override fun supportsUrl(url: HttpUrl): Boolean {
