@@ -25,6 +25,7 @@ import com.baulsupp.oksocial.okhttp.SuccessfulResponse
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.oksocial.sse.SseOutput
 import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
 import io.airlift.airline.Command
@@ -37,8 +38,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import okhttp3.ResponseBody
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
+import okhttp3.internal.sse.RealEventSource
+import okhttp3.internal.sse.ServerSentEventReader
 import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.io.IOException
@@ -271,7 +275,25 @@ class Main : CommandLineClient() {
       outputHandler.showError(StatusLine.get(response).toString(), null)
     }
 
-    outputHandler.showOutput(response)
+    showOutputBody(outputHandler, response)
+  }
+
+  private suspend fun showOutputBody(outputHandler: OutputHandler<Response>, response: Response) {
+    if (isEventStream(response.body()?.contentType())) {
+      processEventStream(response)
+    } else {
+      outputHandler.showOutput(response)
+    }
+  }
+
+  private fun processEventStream(response: Response) {
+    val reader = RealEventSource(response.request(), SseOutput(outputHandler))
+
+    reader.onResponse(null, response)
+  }
+
+  private fun isEventStream(contentType: MediaType?): Boolean {
+    return contentType != null && contentType.type() == "text" && contentType.subtype() == "event-stream"
   }
 
   private suspend fun enqueueRequests(requests: List<Request>, client: OkHttpClient): List<PotentialResponse> {

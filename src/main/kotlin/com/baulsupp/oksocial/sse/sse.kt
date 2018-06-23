@@ -1,4 +1,4 @@
-package com.baulsupp.oksocial.sse2
+package com.baulsupp.oksocial.sse
 
 import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.request

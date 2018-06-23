@@ -2,8 +2,8 @@
 
 import com.baulsupp.oksocial.kotlin.*
 import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.sse2.messageHandler
-import com.baulsupp.oksocial.sse2.newSse
+import com.baulsupp.oksocial.sse.messageHandler
+import com.baulsupp.oksocial.sse.newSse
 import okhttp3.HttpUrl
 import org.fusesource.jansi.Ansi
 
