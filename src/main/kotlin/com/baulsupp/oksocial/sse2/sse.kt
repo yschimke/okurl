@@ -2,6 +2,7 @@ package com.baulsupp.oksocial.sse2
 
 import com.baulsupp.oksocial.kotlin.moshi
 import com.baulsupp.oksocial.kotlin.request
+import com.baulsupp.oksocial.kotlin.statusMessage
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
@@ -25,7 +26,13 @@ inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSo
     }
 
     override fun onFailure(eventSource: EventSource?, t: Throwable?, response: Response?) {
-      println(t)
+      if (t != null) {
+        println(t)
+      } else if (response != null) {
+        println(response.statusMessage())
+      } else {
+        println("unknown failure")
+      }
     }
 
     override fun onClosed(eventSource: EventSource?) {

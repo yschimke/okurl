@@ -156,7 +156,7 @@ suspend fun OkHttpClient.execute(request: Request): Response {
     val msg: String = if (responseString.isNotEmpty()) {
       responseString
     } else {
-      response.code().toString() + " " + response.message()
+      response.statusMessage()
     }
 
     throw ClientException(msg, response.code())
@@ -164,6 +164,8 @@ suspend fun OkHttpClient.execute(request: Request): Response {
 
   return response
 }
+
+fun Response.statusMessage(): String = this.code().toString() + " " + this.message()
 
 fun OkHttpClient.warmup(vararg urls: String) {
   urls.forEach {

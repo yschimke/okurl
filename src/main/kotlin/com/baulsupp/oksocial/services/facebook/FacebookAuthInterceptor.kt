@@ -50,7 +50,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   }
 
   fun authenticated(request: Request): Boolean {
-    return request.url().queryParameter("access_token") != null
+    return request.url().queryParameter("access_token") != null || request.header("Authorization") != null
   }
 
   override suspend fun authorize(
