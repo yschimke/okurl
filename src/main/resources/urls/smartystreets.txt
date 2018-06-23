@@ -1,0 +1,4 @@
+https://international-street.api.smartystreets.com/verify
+https://us-street.api.smartystreets.com/street-address
+https://us-zipcode.api.smartystreets.com/lookup
+https://us-autocomplete.api.smartystreets.com/suggest
