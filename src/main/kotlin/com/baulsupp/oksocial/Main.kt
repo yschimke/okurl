@@ -33,16 +33,15 @@ import io.airlift.airline.Option
 import io.airlift.airline.ParseOptionConversionException
 import io.airlift.airline.ParseOptionMissingValueException
 import kotlinx.coroutines.experimental.runBlocking
+import okhttp3.Call
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import okhttp3.ResponseBody
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
 import okhttp3.internal.sse.RealEventSource
-import okhttp3.internal.sse.ServerSentEventReader
 import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.io.IOException
@@ -240,7 +239,7 @@ class Main : CommandLineClient() {
     for (response in responses) {
       when (response) {
         is SuccessfulResponse -> {
-          showOutput(outputHandler, response.response)
+          showOutput(outputHandler, response)
           response.response.close()
         }
         is FailedResponse -> {
@@ -252,7 +251,8 @@ class Main : CommandLineClient() {
     return failed
   }
 
-  suspend fun showOutput(outputHandler: OutputHandler<Response>, response: Response) {
+  suspend fun showOutput(outputHandler: OutputHandler<Response>, wrappedResponse: SuccessfulResponse) {
+    val response = wrappedResponse.response
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
       logger.fine("TLS Version: ${response.handshake().tlsVersion()}")
@@ -275,21 +275,17 @@ class Main : CommandLineClient() {
       outputHandler.showError(StatusLine.get(response).toString(), null)
     }
 
-    showOutputBody(outputHandler, response)
-  }
-
-  private suspend fun showOutputBody(outputHandler: OutputHandler<Response>, response: Response) {
     if (isEventStream(response.body()?.contentType())) {
-      processEventStream(response)
+      processEventStream(wrappedResponse.call, response)
     } else {
       outputHandler.showOutput(response)
     }
   }
 
-  private fun processEventStream(response: Response) {
+  private fun processEventStream(call: Call, response: Response) {
     val reader = RealEventSource(response.request(), SseOutput(outputHandler))
 
-    reader.onResponse(null, response)
+    reader.onResponse(call, response)
   }
 
   private fun isEventStream(contentType: MediaType?): Boolean {
@@ -328,10 +324,11 @@ class Main : CommandLineClient() {
   private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
     logger.log(Level.FINE, "Request $request")
 
+    val call = client.newCall(request)
     return try {
-      SuccessfulResponse(client.newCall(request).await())
+      SuccessfulResponse(call, call.await())
     } catch (ioe: IOException) {
-      FailedResponse(ioe)
+      FailedResponse(call, ioe)
     }
   }
 
