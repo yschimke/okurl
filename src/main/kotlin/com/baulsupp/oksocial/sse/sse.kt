@@ -47,3 +47,7 @@ fun OkHttpClient.newSse(handler: EventSourceListener, url: HttpUrl): EventSource
   }
   return EventSources.createFactory(this).newEventSource(req, handler)
 }
+
+fun Response.handleSseResponse(handler: EventSourceListener) {
+  EventSources.processResponse(this, handler)
+}

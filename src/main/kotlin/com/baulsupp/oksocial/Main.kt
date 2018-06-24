@@ -26,6 +26,7 @@ import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.sse.SseOutput
+import com.baulsupp.oksocial.sse.handleSseResponse
 import com.baulsupp.oksocial.util.FileContent
 import com.baulsupp.oksocial.util.HeaderUtil
 import io.airlift.airline.Command
@@ -276,16 +277,10 @@ class Main : CommandLineClient() {
     }
 
     if (isEventStream(response.body()?.contentType())) {
-      processEventStream(wrappedResponse.call, response)
+      response.handleSseResponse(SseOutput(outputHandler))
     } else {
       outputHandler.showOutput(response)
     }
-  }
-
-  private fun processEventStream(call: Call, response: Response) {
-    val reader = RealEventSource(response.request(), SseOutput(outputHandler))
-
-    reader.onResponse(call, response)
   }
 
   private fun isEventStream(contentType: MediaType?): Boolean {
