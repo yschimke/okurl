@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlin_version = '1.2.60-dev-794'
+  ext.kotlin_version = '1.2.50'
   ext.jackson_version = '2.9.6'
   ext.okhttp_version = '3.11.0-SNAPSHOT'
   repositories {
@@ -9,14 +9,14 @@ buildscript {
   }
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "com.github.shyiko:ktlint:0.23.1"
+    classpath "com.github.shyiko:ktlint:0.24.0"
   }
 }
 
 plugins {
   id "com.gradle.build-scan" version "1.14"
-  id 'com.github.ben-manes.versions' version '0.18.0'
-  id 'net.nemerosa.versioning' version '2.7.0'
+  id 'com.github.ben-manes.versions' version '0.20.0'
+  id 'net.nemerosa.versioning' version '2.7.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
   id 'org.jmailen.kotlinter' version '1.13.0'
   id 'com.github.johnrengelman.shadow' version '2.0.4'
@@ -111,6 +111,7 @@ dependencies {
   implementation "com.github.markusbernhardt:proxy-vole:1.0.4"
   implementation "com.github.mrmike:ok2curl:0.4.5"
   implementation "com.jakewharton.byteunits:byteunits:0.9.1"
+  implementation "com.soywiz:korio:0.20.0"
   implementation "com.squareup.moshi:moshi-adapters:1.6.0"
   implementation "com.squareup.moshi:moshi-kotlin:1.6.0"
   implementation "com.squareup.moshi:moshi:1.6.0"
@@ -119,10 +120,10 @@ dependencies {
   implementation "commons-io:commons-io:2.6"
   implementation "io.airlift:airline:0.8"
   implementation "io.netty:netty-resolver-dns:4.1.25.Final"
-  implementation "io.zipkin.brave:brave-instrumentation-okhttp3:5.1.0"
-  implementation "io.zipkin.brave:brave-okhttp:4.13.4"
-  implementation "io.zipkin.brave:brave:5.1.0"
-  implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.3"
+  implementation "io.zipkin.brave:brave-instrumentation-okhttp3:5.1.2"
+  implementation "io.zipkin.brave:brave-okhttp:4.13.5"
+  implementation "io.zipkin.brave:brave:5.1.2"
+  implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.6"
   implementation "io.zipkin.java:zipkin:2.9.4"
   implementation "javax.activation:activation:1.1.1"
   implementation "org.apache.commons:commons-lang3:3.7"

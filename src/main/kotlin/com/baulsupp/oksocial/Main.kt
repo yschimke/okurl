@@ -17,7 +17,7 @@ import com.baulsupp.oksocial.completion.DirCompletionVariableCache
 import com.baulsupp.oksocial.completion.UrlCompleter
 import com.baulsupp.oksocial.credentials.DefaultToken
 import com.baulsupp.oksocial.credentials.FixedTokenCredentialsStore
-import com.baulsupp.oksocial.kotlin.await
+import com.baulsupp.oksocial.kotlin.execute
 import com.baulsupp.oksocial.okhttp.FailedResponse
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
 import com.baulsupp.oksocial.okhttp.PotentialResponse
@@ -33,8 +33,10 @@ import io.airlift.airline.Command
 import io.airlift.airline.Option
 import io.airlift.airline.ParseOptionConversionException
 import io.airlift.airline.ParseOptionMissingValueException
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
-import okhttp3.Call
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -42,7 +44,6 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
-import okhttp3.internal.sse.RealEventSource
 import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.io.IOException
@@ -140,7 +141,7 @@ class Main : CommandLineClient() {
     }
   }
 
-  fun applyRequestFields(request: Request): Request {
+  suspend fun applyRequestFields(request: Request): Request {
     val requestBuilder = request.newBuilder()
 
     val headerMap = HeaderUtil.headerMap(headers?.toList()).toMutableMap()
@@ -217,14 +218,16 @@ class Main : CommandLineClient() {
   suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
     val command = getShellCommand()
 
-    val requests = command.buildRequests(client, arguments).map(this::applyRequestFields)
+    val requests = command.buildRequests(client, arguments)
 
     if (!command.handlesRequests()) {
       if (requests.isEmpty()) {
         throw UsageException("no urls specified")
       }
 
-      val responses = enqueueRequests(requests, client)
+      val responses = requests.map {
+        async(CommonPool) { submitRequest(it) }
+      }
       val failed = processResponses(outputHandler, responses)
       return if (failed) -5 else 0
     }
@@ -234,10 +237,11 @@ class Main : CommandLineClient() {
 
   suspend fun processResponses(
     outputHandler: OutputHandler<Response>,
-    responses: List<PotentialResponse>
+    responses: List<Deferred<PotentialResponse>>
   ): Boolean {
     var failed = false
-    for (response in responses) {
+    for (deferredResponse in responses) {
+      val response = deferredResponse.await()
       when (response) {
         is SuccessfulResponse -> {
           showOutput(outputHandler, response)
@@ -287,19 +291,18 @@ class Main : CommandLineClient() {
     return contentType != null && contentType.type() == "text" && contentType.subtype() == "event-stream"
   }
 
-  private suspend fun enqueueRequests(requests: List<Request>, client: OkHttpClient): List<PotentialResponse> {
-    val responses = mutableListOf<PotentialResponse>()
+  suspend fun submitRequest(request: Request): PotentialResponse {
+    val finalRequest = applyRequestFields(request)
 
-    for (request in requests) {
-      logger.log(Level.FINE, "url " + request.url())
+    logger.log(Level.FINE, "url " + finalRequest.url())
+    logger.log(Level.FINE, "Request $finalRequest")
 
-      if (requests.size > 1 && !debug) {
-        System.err.println(request.url())
-      }
-
-      responses.add(makeRequest(client, request))
+    return try {
+      val response = client.execute(finalRequest)
+      SuccessfulResponse(response)
+    } catch (ioe: IOException) {
+      FailedResponse(ioe)
     }
-    return responses
   }
 
   fun getShellCommand(): ShellCommand {
@@ -314,17 +317,6 @@ class Main : CommandLineClient() {
     }
 
     return shellCommand
-  }
-
-  private suspend fun makeRequest(client: OkHttpClient, request: Request): PotentialResponse {
-    logger.log(Level.FINE, "Request $request")
-
-    val call = client.newCall(request)
-    return try {
-      SuccessfulResponse(call, call.await())
-    } catch (ioe: IOException) {
-      FailedResponse(call, ioe)
-    }
   }
 
   suspend fun authorize() {
@@ -368,7 +360,7 @@ class Main : CommandLineClient() {
     else -> super.buildHandler()
   }
 
-  private fun getRequestBody(headerMap: MutableMap<String, String>): RequestBody? {
+  private suspend fun getRequestBody(headerMap: MutableMap<String, String>): RequestBody? {
     if (data == null) {
       return null
     }
