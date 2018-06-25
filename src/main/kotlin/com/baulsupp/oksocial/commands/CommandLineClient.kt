@@ -59,6 +59,7 @@ import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Cache
+import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.Dispatcher
@@ -217,11 +218,11 @@ open class CommandLineClient : HelpOption() {
 
   val closeables = mutableListOf<Closeable>()
 
-  fun buildDns(): Dns {
+  fun buildDns(builder: OkHttpClient.Builder): Dns {
     val dns = when (dnsMode) {
       DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers ?: "8.8.8.8")
       DnsMode.GOOGLE -> DnsSelector(ipMode, GoogleDns.build({ client }, ipMode))
-      DnsMode.DNSOVERHTTPS -> DnsSelector(ipMode, DohProviders.buildGoogle({ client }))
+      DnsMode.DNSOVERHTTPS -> DnsSelector(ipMode, DohProviders.buildGoogle(builder.build()))
       DnsMode.JAVA -> {
         if (dnsServers != null) {
           throw UsageException("unable to set dns servers with java DNS")
@@ -395,8 +396,6 @@ open class CommandLineClient : HelpOption() {
     builder.readTimeout(readTimeout.toLong(), TimeUnit.SECONDS)
     builder.pingInterval(pingInterval.toLong(), TimeUnit.SECONDS)
 
-    builder.dns(buildDns())
-
     if (networkInterface != null) {
       builder.socketFactory(getSocketFactory())
     } else if (unixSocket != null) {
@@ -440,6 +439,7 @@ open class CommandLineClient : HelpOption() {
       }
       val credential = Credentials.basic(userParts[0], userParts[1])
 
+      // TODO move to own class
       builder.authenticator({ _, response ->
         logger.fine("Challenges: " + response.challenges())
 
@@ -459,6 +459,9 @@ open class CommandLineClient : HelpOption() {
     dispatcher.maxRequestsPerHost = maxRequests
     builder.dispatcher(dispatcher)
 
+    val connectionPool = ConnectionPool()
+    builder.connectionPool(connectionPool)
+
     if (zipkin || zipkinTrace) {
       applyZipkin(builder)
     }
@@ -468,6 +471,8 @@ open class CommandLineClient : HelpOption() {
     if (curl) {
       builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
     }
+
+    builder.dns(buildDns(builder))
 
     return builder
   }
