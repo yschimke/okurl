@@ -12,7 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 /**
- * http://httpbin.org/
+ * https://httpbin.org/
  */
 class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
