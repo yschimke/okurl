@@ -78,6 +78,7 @@ import java.io.IOException
 import java.net.Proxy
 import java.security.KeyStore
 import java.util.ArrayList
+import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.net.SocketFactory
@@ -239,7 +240,7 @@ open class CommandLineClient : HelpOption() {
 
   fun createEventLoopGroup(): NioEventLoopGroup {
     if (eventLoopGroup == null) {
-      val threadFactory = DefaultThreadFactory("netty", true)
+      val threadFactory: ThreadFactory = DefaultThreadFactory("netty", true)
       eventLoopGroup = NioEventLoopGroup(5, threadFactory)
 
       closeables.add(Closeable { eventLoopGroup!!.shutdownGracefully(0, 0, TimeUnit.SECONDS) })

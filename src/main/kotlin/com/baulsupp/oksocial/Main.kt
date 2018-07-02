@@ -391,7 +391,11 @@ class Main : CommandLineClient() {
 
     @JvmStatic
     fun main(vararg args: String) = runBlocking {
-      Security.insertProviderAt(OpenSSLProvider(), 1)
+      try {
+        Security.insertProviderAt(OpenSSLProvider(), 1)
+      } catch (e: NoClassDefFoundError) {
+        // Drop back to JDK
+      }
       try {
         val result = CommandLineClient.fromArgs<Main>(*args).run()
         System.exit(result)

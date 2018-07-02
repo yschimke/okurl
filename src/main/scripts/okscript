@@ -8,14 +8,18 @@ JAVA_CMD=java
 if [ -x /usr/libexec/java_home ]; then
   VMOPTS="--add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/sun.security.x509=ALL-UNNAMED"
 
-  JAVA_HOME=$(/usr/libexec/java_home -v 10 2>/dev/null)
+  JAVA_HOME=$(/usr/libexec/java_home -v 11 2>/dev/null)
 
   if [ $? -ne 0 ]; then
-    JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
+    JAVA_HOME=$(/usr/libexec/java_home -v 10 2>/dev/null)
 
     if [ $? -ne 0 ]; then
-      JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
-      VMOPTS=""
+      JAVA_HOME=$(/usr/libexec/java_home -v 9 2>/dev/null)
+
+      if [ $? -ne 0 ]; then
+        JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null)
+        VMOPTS=""
+      fi
     fi
   fi
 
