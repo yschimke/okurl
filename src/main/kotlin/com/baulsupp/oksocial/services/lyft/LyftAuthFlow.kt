@@ -30,7 +30,7 @@ object LyftAuthFlow {
 
       val code = s.waitForCodeAsync()
 
-      val body = RequestBody.create(MediaType.parse("application/json"),
+      val body = RequestBody.create(MediaType.get("application/json"),
         "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
       val basic = Credentials.basic(clientId, clientSecret)
       val request = requestBuilder("https://api.lyft.com/oauth/token",

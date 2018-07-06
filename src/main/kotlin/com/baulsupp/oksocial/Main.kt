@@ -373,7 +373,7 @@ class Main : CommandLineClient() {
         ?.let { headerMap.remove(it)!! }
         ?: predictContentType(content)
 
-      RequestBody.create(MediaType.parse(mimeType), content)
+      RequestBody.create(MediaType.get(mimeType), content)
     } catch (e: IOException) {
       throw UsageException(e.message!!)
     }

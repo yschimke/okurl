@@ -17,7 +17,7 @@ class SignatureTest {
     val clock = Clock.fixed(Instant.ofEpochMilli(1460432867000L), ZoneId.of("UTC"))
     val s = Signature(clock) { 9L }
 
-    val body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),
+    val body = RequestBody.create(MediaType.get("application/x-www-form-urlencoded"),
         "oauth_callback=oob")
     val request = Request.Builder().url("https://api.twitter.com/oauth/request_token").post(
         body).build()

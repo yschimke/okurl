@@ -67,7 +67,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
-    val body = RequestBody.create(MediaType.parse("application/json"),
+    val body = RequestBody.create(MediaType.get("application/json"),
       "{\"grant_type\": \"refresh_token\", \"refresh_token\": \"" +
         credentials.refreshToken + "\"}")
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)

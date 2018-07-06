@@ -191,7 +191,7 @@ fun String.color(color: Ansi.Color): String = when {
   else -> this
 }
 
-val JSON = MediaType.parse("application/json")!!
+val JSON = MediaType.get("application/json")
 
 fun form(init: FormBody.Builder.() -> Unit = {}): FormBody = FormBody.Builder().apply(init).build()
 

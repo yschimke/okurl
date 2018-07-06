@@ -89,7 +89,7 @@ val terminalWidth: Int by lazy { runBlocking { (okshell.commandLine.outputHandle
 
 fun jsonPostRequest(url: String, body: String): Request =
   requestBuilder(url, DefaultToken).post(
-    RequestBody.create(MediaType.parse("application/json"), body)).build()
+    RequestBody.create(MediaType.get("application/json"), body)).build()
 
 var args: List<String> = listOf()
 
