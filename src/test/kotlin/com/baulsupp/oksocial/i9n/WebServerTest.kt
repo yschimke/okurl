@@ -2,13 +2,13 @@ package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
 import com.baulsupp.oksocial.kotlin.toJavaList
+import com.baulsupp.oksocial.okhttp.localhost
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.oksocial.security.CertificatePin
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.internal.tls.SslClient
 import org.junit.Rule
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -29,11 +29,11 @@ class WebServerTest {
     main.outputHandler = output
   }
 
-  private val sslClient = SslClient.localhost()
+  private val sslClient = localhost()
 
   @Test
   fun httpsRequestInsecureFails() {
-    server.useHttps(sslClient.socketFactory, false)
+    server.useHttps(sslClient.sslSocketFactory(), false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
     main.arguments = mutableListOf(server.url("/").toString())
@@ -49,7 +49,7 @@ class WebServerTest {
 
   @Test
   fun httpsRequestInsecure() {
-    server.useHttps(sslClient.socketFactory, false)
+    server.useHttps(sslClient.sslSocketFactory(), false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
     main.arguments = mutableListOf(server.url("/").toString())
@@ -66,7 +66,7 @@ class WebServerTest {
   @Test
   @Disabled
   fun httpsRequestSecure() {
-    server.useHttps(sslClient.socketFactory, false)
+    server.useHttps(sslClient.sslSocketFactory(), false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
     main.arguments = mutableListOf(server.url("/").toString())
@@ -81,12 +81,12 @@ class WebServerTest {
 
   @Test
   fun rejectedWithPin() {
-    server.useHttps(sslClient.socketFactory, false)
+    server.useHttps(sslClient.sslSocketFactory(), false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
     main.arguments = mutableListOf(server.url("/").toString())
     main.certificatePins = listOf(CertificatePin(server.hostName + ":" +
-        "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")).toJavaList()
+      "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")).toJavaList()
     main.allowInsecure = true
 
     runBlocking {

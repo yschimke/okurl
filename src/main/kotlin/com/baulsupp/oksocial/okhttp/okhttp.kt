@@ -3,6 +3,9 @@ package com.baulsupp.oksocial.okhttp
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
 import okhttp3.TlsVersion
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
+import java.net.InetAddress
 import kotlin.reflect.full.staticProperties
 import kotlin.reflect.jvm.javaType
 
@@ -32,3 +35,18 @@ class TlsVersionOption(s: String) {
 
 fun cipherSuites(): List<CipherSuite> =
   CipherSuite::class.staticProperties.filter { it.isFinal && it.returnType.javaType == CipherSuite::class.java }.map { it.get() as CipherSuite }
+
+
+/** Returns an SSL client for this host's localhost address.  */
+fun localhost(): HandshakeCertificates {
+  // Generate a self-signed cert for the server to serve and the client to trust.
+  val heldCertificate = HeldCertificate.Builder()
+    .commonName("localhost")
+    .addSubjectAlternativeName(InetAddress.getByName("localhost").canonicalHostName)
+    .build()
+
+  return HandshakeCertificates.Builder()
+    .heldCertificate(heldCertificate)
+    .addTrustedCertificate(heldCertificate.certificate())
+    .build()
+}

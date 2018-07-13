@@ -1,7 +1,7 @@
 buildscript {
-  ext.kotlin_version = '1.2.50'
+  ext.kotlin_version = '1.2.51'
   ext.jackson_version = '2.9.6'
-  ext.okhttp_version = '3.11.0-SNAPSHOT'
+  ext.okhttp_version = '3.11.0'
   repositories {
     maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
     mavenCentral()
@@ -14,11 +14,11 @@ buildscript {
 }
 
 plugins {
-  id "com.gradle.build-scan" version "1.14"
+  id "com.gradle.build-scan" version "1.15.1"
   id 'com.github.ben-manes.versions' version '0.20.0'
   id 'net.nemerosa.versioning' version '2.7.1'
   id 'io.codearte.nexus-staging' version '0.11.0'
-  id 'org.jmailen.kotlinter' version '1.13.0'
+  id 'org.jmailen.kotlinter' version '1.14.0'
   id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
@@ -100,6 +100,7 @@ dependencies {
   implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
   implementation "com.squareup.okhttp3:okhttp-dnsoverhttps:$okhttp_version"
   implementation "com.squareup.okhttp3:okhttp-sse:$okhttp_version"
+  implementation "com.squareup.okhttp3:okhttp-tls:$okhttp_version"
   implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
   implementation "com.squareup.okhttp3.sample:unixdomainsockets:$okhttp_version"
   implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
@@ -109,7 +110,7 @@ dependencies {
   implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
   implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version"
   implementation 'com.github.jnr:jnr-unixsocket:0.19'
-  implementation "com.github.markusbernhardt:proxy-vole:1.0.4"
+  implementation "com.github.markusbernhardt:proxy-vole:1.0.5"
   implementation "com.github.mrmike:ok2curl:0.4.5"
   implementation "com.jakewharton.byteunits:byteunits:0.9.1"
   implementation "com.soywiz:korio:0.20.0"
@@ -120,12 +121,12 @@ dependencies {
   implementation "com.squareup.okhttp3:okhttp:3.10.0"
   implementation "commons-io:commons-io:2.6"
   implementation "io.airlift:airline:0.8"
-  implementation "io.netty:netty-resolver-dns:4.1.25.Final"
+  implementation "io.netty:netty-resolver-dns:4.1.27.Final"
   implementation "io.zipkin.brave:brave-instrumentation-okhttp3:5.1.2"
   implementation "io.zipkin.brave:brave-okhttp:4.13.5"
   implementation "io.zipkin.brave:brave:5.1.2"
   implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.6"
-  implementation "io.zipkin.java:zipkin:2.9.4"
+  implementation "io.zipkin.java:zipkin:2.10.1"
   implementation "javax.activation:activation:1.1.1"
   implementation "org.apache.commons:commons-lang3:3.7"
   implementation "org.brotli:dec:0.1.2"
@@ -137,8 +138,8 @@ dependencies {
     exclude(module: 'kotlin-compiler')
   }
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.23.3"
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.23.3"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.23.4"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.23.4"
   implementation "org.slf4j:slf4j-jdk14:1.8.0-beta2"
   implementation "org.zeroturnaround:zt-exec:1.10"
   implementation "pt.davidafsilva.apple:jkeychain:1.0.0"

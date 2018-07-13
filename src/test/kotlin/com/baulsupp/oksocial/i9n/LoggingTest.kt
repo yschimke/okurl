@@ -1,15 +1,15 @@
 package com.baulsupp.oksocial.i9n
 
 import com.baulsupp.oksocial.Main
+import com.baulsupp.oksocial.okhttp.localhost
 import com.baulsupp.oksocial.output.TestOutputHandler
 import kotlinx.coroutines.experimental.runBlocking
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.internal.tls.SslClient
-import org.junit.jupiter.api.AfterAll
 import org.junit.Rule
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import java.util.logging.LogManager
 import kotlin.test.assertEquals
@@ -21,7 +21,7 @@ class LoggingTest {
 
   private val main = Main()
 
-  private val sslClient = SslClient.localhost()
+  private val sslClient = localhost()
   private val output = TestOutputHandler<Response>()
 
   init {
@@ -30,7 +30,7 @@ class LoggingTest {
 
   @Test
   fun logsData() {
-    server.useHttps(sslClient.socketFactory, false)
+    server.useHttps(sslClient.sslSocketFactory(), false)
     server.setProtocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
     server.enqueue(MockResponse().setBody("Isla Sorna"))
     main.allowInsecure = true
