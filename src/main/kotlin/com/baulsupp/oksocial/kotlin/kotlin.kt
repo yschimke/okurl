@@ -8,6 +8,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.async
 import okhttp3.Call
 import okhttp3.Callback
@@ -26,6 +27,7 @@ import java.io.IOException
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.util.concurrent.Executors
 
 inline fun <reified V> Moshi.mapAdapter() =
   this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java,
@@ -252,3 +254,5 @@ suspend fun Call.await(): Response {
     })
   }
 }
+
+val IO by lazy { Executors.newCachedThreadPool().asCoroutineDispatcher() }

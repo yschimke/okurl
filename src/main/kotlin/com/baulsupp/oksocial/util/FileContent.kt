@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.util
 
-import com.soywiz.korio.vfs.toVfs
+import com.baulsupp.oksocial.kotlin.IO
+import kotlinx.coroutines.experimental.async
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.nio.charset.Charset
@@ -13,7 +14,7 @@ object FileContent {
       return IOUtils.toByteArray(System.`in`)
     }
     return if (param.startsWith("@")) {
-      File(param.substring(1)).toVfs().readBytes()
+      async(IO) { File(param.substring(1)).readBytes() }.await()
     } else {
       param.toByteArray(StandardCharsets.UTF_8)
     }
@@ -24,7 +25,7 @@ object FileContent {
       return IOUtils.toString(System.`in`, Charset.defaultCharset())
     }
     return if (param.startsWith("@")) {
-      File(param.substring(1)).toVfs().readString()
+      async(IO) { File(param.substring(1)).readText() }.await()
     } else {
       param
     }
