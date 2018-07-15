@@ -1,6 +1,7 @@
 package com.baulsupp.oksocial.okhttp
 
 import okhttp3.CipherSuite
+import okhttp3.CipherSuite.forJavaName
 import okhttp3.ConnectionSpec
 import okhttp3.TlsVersion
 import okhttp3.tls.HandshakeCertificates
@@ -17,13 +18,35 @@ val RestrictedConnectionSpec: ConnectionSpec = ConnectionSpec.Builder(Connection
   CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
   CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384).build()
 
-enum class ConnectionSpecOption(val spec: ConnectionSpec) {
+val TLS13_CIPHER_SUITES = arrayOf(
+  forJavaName("TLS_AES_128_GCM_SHA256"),
+  forJavaName("TLS_AES_256_GCM_SHA384"),
+  forJavaName("TLS_CHACHA20_POLY1305_SHA256"),
+  forJavaName("TLS_AES_128_CCM_SHA256"),
+  forJavaName("TLS_AES_256_CCM_8_SHA256")
+)
+
+val TLS_13 = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+      .cipherSuites(*TLS13_CIPHER_SUITES)
+      .tlsVersions(TlsVersion.TLS_1_3)
+      .supportsTlsExtensions(true)
+      .build();
+
+enum class ConnectionSpecOption(vararg val specs: ConnectionSpec) {
   ALL(AllConnectionSpec),
   RESTRICTED_TLS(RestrictedConnectionSpec),
+  MODERN_TLS_13(TLS_13, ConnectionSpec.MODERN_TLS),
   MODERN_TLS(ConnectionSpec.MODERN_TLS),
   COMPATIBLE_TLS(ConnectionSpec.COMPATIBLE_TLS),
   CLEARTEXT(ConnectionSpec.CLEARTEXT);
 }
+
+fun defaultConnectionSpec(): ConnectionSpecOption =
+  if ("11" == System.getProperty("java.specification.version")) {
+    ConnectionSpecOption.MODERN_TLS_13
+  } else {
+    ConnectionSpecOption.MODERN_TLS
+  }
 
 class CipherSuiteOption(s: String) {
   val suite: CipherSuite = CipherSuite.forJavaName(s)

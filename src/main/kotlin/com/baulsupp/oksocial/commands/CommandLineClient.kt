@@ -29,6 +29,7 @@ import com.baulsupp.oksocial.okhttp.CipherSuiteOption
 import com.baulsupp.oksocial.okhttp.ConnectionSpecOption
 import com.baulsupp.oksocial.okhttp.OkHttpResponseExtractor
 import com.baulsupp.oksocial.okhttp.TlsVersionOption
+import com.baulsupp.oksocial.okhttp.defaultConnectionSpec
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
@@ -159,7 +160,7 @@ open class CommandLineClient : HelpOption() {
 
   @Option(name = ["--connectionSpec"],
     description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
-  var connectionSpec: ConnectionSpecOption? = null
+  var connectionSpec: ConnectionSpecOption = defaultConnectionSpec()
 
   @Option(name = ["--cipherSuite"], description = "Cipher Suites")
   var cipherSuites: java.util.List<CipherSuiteOption>? = null
@@ -264,7 +265,7 @@ open class CommandLineClient : HelpOption() {
     }
 
     if (cipherSuites != null || tlsVersions != null) {
-      val specBuilder = ConnectionSpec.Builder(connectionSpec?.spec ?: ConnectionSpec.MODERN_TLS)
+      val specBuilder = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
 
       if (cipherSuites != null) {
         specBuilder.cipherSuites(*(cipherSuites!!.map { it.suite }.toTypedArray()))
@@ -275,8 +276,8 @@ open class CommandLineClient : HelpOption() {
       }
 
       builder.connectionSpecs(listOf(specBuilder.build(), ConnectionSpec.CLEARTEXT))
-    } else if (connectionSpec != null) {
-      builder.connectionSpecs(listOf(connectionSpec!!.spec, ConnectionSpec.CLEARTEXT))
+    } else {
+      builder.connectionSpecs(connectionSpec.specs.asList() + ConnectionSpec.CLEARTEXT)
     }
 
     val keyManagers = mutableListOf<KeyManager>()

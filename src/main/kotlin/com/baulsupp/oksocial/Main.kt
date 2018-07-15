@@ -264,6 +264,8 @@ class Main : CommandLineClient() {
       logger.fine("Protocol: ${response.protocol()}")
       logger.fine("Cipher: ${response.handshake().cipherSuite()}")
       logger.fine("Peer Principal: ${response.handshake().peerPrincipal()}")
+      logger.fine("Local Principal: ${response.handshake().localPrincipal()}")
+      logger.fine("JVM: ${System.getProperty("java.vm.version")}")
     }
 
     if (showHeaders) {
@@ -391,11 +393,8 @@ class Main : CommandLineClient() {
 
     @JvmStatic
     fun main(vararg args: String) = runBlocking {
-      try {
-        Security.insertProviderAt(OpenSSLProvider(), 1)
-      } catch (e: NoClassDefFoundError) {
-        // Drop back to JDK
-      }
+      setupProvider()
+
       try {
         val result = CommandLineClient.fromArgs<Main>(*args).run()
         System.exit(result)
@@ -411,6 +410,20 @@ class Main : CommandLineClient() {
       } catch (e: Throwable) {
         e.printStackTrace()
         System.exit(-1)
+      }
+    }
+
+    private fun setupProvider() {
+      // Prefer JDK 11 over Conscrypt
+      if ("11" == System.getProperty("java.specification.version")) {
+        val spec28 = Integer.toString(0x7f00 or 28, 16)
+        System.setProperty("jdk.tls13.version", spec28)
+      } else {
+        try {
+          Security.insertProviderAt(OpenSSLProvider(), 1)
+        } catch (e: NoClassDefFoundError) {
+          // Drop back to JDK
+        }
       }
     }
   }
