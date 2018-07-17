@@ -260,11 +260,11 @@ class Main : CommandLineClient() {
     val response = wrappedResponse.response
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
-      logger.fine("TLS Version: ${response.handshake().tlsVersion()}")
+      logger.fine("TLS Version: ${response.handshake()?.tlsVersion()}")
       logger.fine("Protocol: ${response.protocol()}")
-      logger.fine("Cipher: ${response.handshake().cipherSuite()}")
-      logger.fine("Peer Principal: ${response.handshake().peerPrincipal()}")
-      logger.fine("Local Principal: ${response.handshake().localPrincipal()}")
+      logger.fine("Cipher: ${response.handshake()?AndroidPlatform.cipherSuite()}")
+      logger.fine("Peer Principal: ${response.handshake()?.peerPrincipal()}")
+      logger.fine("Local Principal: ${response.handshake()?.localPrincipal()}")
       logger.fine("JVM: ${System.getProperty("java.vm.version")}")
     }
 
