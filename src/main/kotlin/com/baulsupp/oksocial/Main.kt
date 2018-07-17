@@ -37,6 +37,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
+import okhttp3.Handshake
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -260,11 +261,12 @@ class Main : CommandLineClient() {
     val response = wrappedResponse.response
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
-      logger.fine("TLS Version: ${response.handshake()?.tlsVersion()}")
+      val handshake: Handshake? = response.handshake()
+      logger.fine("TLS Version: ${handshake?.tlsVersion()}")
       logger.fine("Protocol: ${response.protocol()}")
-      logger.fine("Cipher: ${response.handshake()?AndroidPlatform.cipherSuite()}")
-      logger.fine("Peer Principal: ${response.handshake()?.peerPrincipal()}")
-      logger.fine("Local Principal: ${response.handshake()?.localPrincipal()}")
+      logger.fine("Cipher: ${handshake?.cipherSuite()}")
+      logger.fine("Peer Principal: ${handshake?.peerPrincipal()}")
+      logger.fine("Local Principal: ${handshake?.localPrincipal()}")
       logger.fine("JVM: ${System.getProperty("java.vm.version")}")
     }
 
