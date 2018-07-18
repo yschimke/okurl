@@ -1,7 +1,7 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
-import com.baulsupp.oksocial.services.stackexchange.model.Questions
+import com.baulsupp.okurl.kotlin.*
+import com.baulsupp.okurl.services.stackexchange.model.Questions
 import kotlinx.coroutines.experimental.runBlocking
 
 var questions = runBlocking {

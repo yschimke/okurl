@@ -1,13 +1,13 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
+import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.services.mapbox.model.MapboxDrivingResults
-import com.baulsupp.oksocial.services.mapbox.model.MapboxPlacesResult
-import com.baulsupp.oksocial.services.mapbox.staticMap
-import com.baulsupp.oksocial.services.uber.model.UberPriceEstimates
-import com.baulsupp.oksocial.services.uber.model.UberTimeEstimates
-import com.baulsupp.oksocial.util.ClientException
+import com.baulsupp.okurl.services.mapbox.model.MapboxDrivingResults
+import com.baulsupp.okurl.services.mapbox.model.MapboxPlacesResult
+import com.baulsupp.okurl.services.mapbox.staticMap
+import com.baulsupp.okurl.services.uber.model.UberPriceEstimates
+import com.baulsupp.okurl.services.uber.model.UberTimeEstimates
+import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.experimental.runBlocking
 import kotlin.system.exitProcess
 

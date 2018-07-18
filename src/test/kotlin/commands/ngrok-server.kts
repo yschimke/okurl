@@ -1,8 +1,8 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.showOutput
+import com.baulsupp.okurl.kotlin.client
+import com.baulsupp.okurl.kotlin.query
+import com.baulsupp.okurl.kotlin.showOutput
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.ResponseExtractor
 import com.baulsupp.oksocial.output.isInstalled

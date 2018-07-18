@@ -1,14 +1,14 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.client
-import com.baulsupp.oksocial.kotlin.moshi
-import com.baulsupp.oksocial.kotlin.query
-import com.baulsupp.oksocial.kotlin.request
-import com.baulsupp.oksocial.kotlin.simpleOutput
-import com.baulsupp.oksocial.services.google.model.DiscoveryApis
-import com.baulsupp.oksocial.services.google.model.DiscoveryDoc
-import com.baulsupp.oksocial.services.google.model.DiscoveryIndexMap
-import com.baulsupp.oksocial.util.ClientException
+import com.baulsupp.okurl.kotlin.client
+import com.baulsupp.okurl.kotlin.moshi
+import com.baulsupp.okurl.kotlin.query
+import com.baulsupp.okurl.kotlin.request
+import com.baulsupp.okurl.kotlin.simpleOutput
+import com.baulsupp.okurl.services.google.model.DiscoveryApis
+import com.baulsupp.okurl.services.google.model.DiscoveryDoc
+import com.baulsupp.okurl.services.google.model.DiscoveryIndexMap
+import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import okio.Okio
@@ -39,7 +39,7 @@ runBlocking {
     restUrl
   }))
 
-  val discoveryIndexSink = Okio.sink(File("src/main/resources/com/baulsupp/oksocial/services/google/index.json"))
+  val discoveryIndexSink = Okio.sink(File("src/main/resources/com/baulsupp/okurl/services/google/index.json"))
   val buffer = Okio.buffer(discoveryIndexSink)
   moshi.adapter(DiscoveryIndexMap::class.java).indent("  ").toJson(buffer, result)
   buffer.flush()

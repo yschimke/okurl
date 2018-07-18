@@ -1,0 +1,18 @@
+#compdef okurl
+
+_okurl() {
+  local state
+
+  _arguments \
+    '*:arg: _default' --
+}
+
+# _okurl_urls() {
+#   _alternative (ITEM1 ITEM2)
+# }
+
+case "$service" in
+    okurl)
+        _okurl "$@" && return 0
+        ;;
+esac

@@ -30,12 +30,12 @@ RELEASE_BODY=$(cat <<EOF
 EOF
 )
 
-RELEASE_ID=$(oksocial -d "$RELEASE_BODY" https://api.github.com/repos/yschimke/oksocial/releases | jq .id)
+RELEASE_ID=$(okurl -d "$RELEASE_BODY" https://api.github.com/repos/yschimke/okurl/releases | jq .id)
 
-echo Created "https://api.github.com/repos/yschimke/oksocial/releases/${RELEASE_ID}"
+echo Created "https://api.github.com/repos/yschimke/okurl/releases/${RELEASE_ID}"
 
 ./gradlew -q clean distTar
 
-./oksocial -H "Content-Type: application/x-gzip" -d "@build/distributions/oksocial-${TAG_VERSION}.tgz" "https://uploads.github.com/repos/yschimke/oksocial/releases/${RELEASE_ID}/assets?name=oksocial-${TAG_VERSION}.tgz" | jq ".browser_download_url"
+./okurl -H "Content-Type: application/x-gzip" -d "@build/distributions/okurl-${TAG_VERSION}.tgz" "https://uploads.github.com/repos/yschimke/okurl/releases/${RELEASE_ID}/assets?name=okurl-${TAG_VERSION}.tgz" | jq ".browser_download_url"
 
 ./gradlew uploadArchives closeAndReleaseRepository

@@ -178,7 +178,6 @@ distributions {
       }
       from("${rootProject.projectDir}/src/main/resources") {
         into "scripts"
-        include "oksocial.js"
       }
       into('lib') {
         from jar
@@ -253,12 +252,12 @@ if (project.hasProperty('ossrhUser')) {
           name project.name
           group 'com.baulsupp'
           description "Command Line Output Library"
-          url "https://github.com/yschimke/oksocial"
+          url "https://github.com/yschimke/okurl"
 
           scm {
-            connection 'scm:git:https://github.com/yschimke/oksocial.git'
-            developerConnection 'scm:git:git@github.com:yschimke/oksocial.git'
-            url 'https://github.com/yschimke/oksocial.git'
+            connection 'scm:git:https://github.com/yschimke/okurl.git'
+            developerConnection 'scm:git:git@github.com:yschimke/okurl.git'
+            url 'https://github.com/yschimke/okurl.git'
           }
 
           licenses {

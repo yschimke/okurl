@@ -1,8 +1,8 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
-import com.baulsupp.oksocial.services.slack.model.RtmConnect
-import com.baulsupp.oksocial.ws.WebSocketPrinter
+import com.baulsupp.okurl.kotlin.*
+import com.baulsupp.okurl.services.slack.model.RtmConnect
+import com.baulsupp.okurl.ws.WebSocketPrinter
 import kotlinx.coroutines.experimental.runBlocking
 import java.util.concurrent.TimeUnit
 

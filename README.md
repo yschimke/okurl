@@ -1,19 +1,19 @@
 # OkHttp Social Client
 
-[![CircleCI](https://circleci.com/gh/yschimke/oksocial.svg?style=svg)](https://circleci.com/gh/yschimke/oksocial)
+[![CircleCI](https://circleci.com/gh/yschimke/okurl.svg?style=svg)](https://circleci.com/gh/yschimke/okurl)
 
 A curl like client based on OkHttp with tight integration for Mac OSX
 
 ```
-$ brew install yschimke/tap/oksocial
+$ brew install yschimke/tap/okurl
 
-$ oksocial --authorize twitter
+$ okurl --authorize twitter
 
 $ twitterapi '/1.1/statuses/show.json?id=733545978398040064'
 ...
 ``` 
 
-# Read the [Wiki](https://github.com/yschimke/oksocial/wiki) for more information
+# Read the [Wiki](https://github.com/yschimke/okurl/wiki) for more information
 
 ## Requirements
 

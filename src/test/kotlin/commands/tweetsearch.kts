@@ -1,7 +1,7 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
-import com.baulsupp.oksocial.services.twitter.model.SearchResults
+import com.baulsupp.okurl.kotlin.*
+import com.baulsupp.okurl.services.twitter.model.SearchResults
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import java.net.URLEncoder

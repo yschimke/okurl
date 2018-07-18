@@ -42,7 +42,7 @@
       <directory>src/main/resources</directory>
       <outputDirectory>scripts</outputDirectory>
       <includes>
-        <include>oksocial.js</include>
+        <include>okurl.js</include>
       </includes>
     </fileSet>
     <fileSet>

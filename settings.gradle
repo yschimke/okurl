@@ -1,4 +1,4 @@
-rootProject.name = 'oksocial'
+rootProject.name = 'okurl'
 
 ext.isCiServer = System.getenv().containsKey("CI")
 ext.isMasterBranch = System.getenv()["CIRRUS_BRANCH"] == "master"

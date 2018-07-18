@@ -1,6 +1,6 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
+import com.baulsupp.okurl.kotlin.*
 import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.kotlin.utils.keysToMap
 import java.io.File

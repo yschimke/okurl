@@ -1,7 +1,7 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
-import com.baulsupp.oksocial.services.travisci.queryAllBuilds
+import com.baulsupp.okurl.kotlin.*
+import com.baulsupp.okurl.services.travisci.queryAllBuilds
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking

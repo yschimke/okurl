@@ -1,9 +1,9 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
+import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.sse.messageHandler
-import com.baulsupp.oksocial.sse.newSse
+import com.baulsupp.okurl.sse.messageHandler
+import com.baulsupp.okurl.sse.newSse
 import okhttp3.HttpUrl
 import org.fusesource.jansi.Ansi
 

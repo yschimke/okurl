@@ -6,7 +6,7 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 .idea
-oksocial.iml
+okurl.iml
 
 # CMake
 cmake-build-debug/

@@ -26,4 +26,4 @@ if [ -x /usr/libexec/java_home ]; then
   JAVA_CMD=${JAVA_HOME}/bin/java
 fi
 
-${JAVA_CMD} ${VMOPTS} -classpath ${INSTALLDIR}/lib/\* -Dcommand.name=$CMD com.baulsupp.oksocial.kotlin.Main "$@"
+${JAVA_CMD} ${VMOPTS} -classpath ${INSTALLDIR}/lib/\* -Dcommand.name=$CMD com.baulsupp.okurl.kotlin.Main "$@"

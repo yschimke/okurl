@@ -1,8 +1,8 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
-import com.baulsupp.oksocial.location.Location
-import com.baulsupp.oksocial.services.mapbox.staticMap
+import com.baulsupp.okurl.kotlin.*
+import com.baulsupp.okurl.location.Location
+import com.baulsupp.okurl.services.mapbox.staticMap
 
 data class Hospital(
   val OrganisationName: String,

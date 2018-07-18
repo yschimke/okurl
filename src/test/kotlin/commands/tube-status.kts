@@ -1,6 +1,6 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.oksocial.kotlin.*
+import com.baulsupp.okurl.kotlin.*
 import com.squareup.moshi.Json
 import kotlinx.coroutines.experimental.runBlocking
 import org.fusesource.jansi.Ansi

@@ -1,8 +1,8 @@
 #!/usr/bin/env okscript
 
 // Step 1
-// Install oksocial
-// $ brew install yschimke/tap/oksocial
+// Install okurl
+// $ brew install yschimke/tap/okurl
 
 // Step 2
 // Confirm your account is working here, get oauth2 credentials etc, enable cloud APIs
@@ -10,13 +10,13 @@
 
 // Step 3
 // Authorise Google Access
-// $ oksocial --authorize google
+// $ okurl --authorize google
 // Use scopes: https://www.googleapis.com/auth/cloud-platform,plus.login,plus.profile.emails.read
 
 // Step 4 say stuff
 // $ ./text-to-speech.kts 'Hello, how are you?'
 
-import com.baulsupp.oksocial.kotlin.*
+import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.oksocial.output.SimpleResponse
 import kotlinx.coroutines.experimental.runBlocking
 import okio.ByteString
