@@ -294,8 +294,8 @@ open class CommandLineClient : HelpOption() {
 
     val trustManager: X509TrustManager
     if (allowInsecure) {
-      trustManager = InsecureTrustManager()
-      builder.hostnameVerifier(InsecureHostnameVerifier())
+      trustManager = InsecureTrustManager
+      builder.hostnameVerifier(InsecureHostnameVerifier)
     } else {
       val trustManagers = mutableListOf<X509TrustManager>()
 
