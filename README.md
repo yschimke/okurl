@@ -13,6 +13,13 @@ $ twitterapi '/1.1/statuses/show.json?id=733545978398040064'
 ...
 ``` 
 
+If bash completion is installed at the same time, consider activating it with
+
+```
+Add the following line to your ~/.bash_profile:
+  [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+```  
+
 # Read the [Wiki](https://github.com/yschimke/okurl/wiki) for more information
 
 ## Requirements
