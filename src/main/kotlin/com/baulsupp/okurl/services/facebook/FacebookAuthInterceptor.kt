@@ -20,7 +20,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import okio.ByteString
+import okio.ByteString.Companion.encodeUtf8
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
@@ -35,8 +35,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
       if (credentials.clientSecret != null) {
         val appsecretTime = (System.currentTimeMillis() / 1000).toString()
-        val appsecretProof = ByteString.encodeUtf8("${credentials.accessToken}|$appsecretTime").hmacSha256(
-          ByteString.encodeUtf8(credentials.clientSecret)).hex()
+        val appsecretProof = "${credentials.accessToken}|$appsecretTime".encodeUtf8().hmacSha256(
+          credentials.clientSecret.encodeUtf8()).hex()
         builder.addQueryParameter("appsecret_proof", appsecretProof)
         builder.addQueryParameter("appsecret_time", appsecretTime)
       }
