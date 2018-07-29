@@ -13,7 +13,8 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import okio.BufferedSource
-import okio.Okio
+import okio.buffer
+import okio.source
 import java.io.PrintWriter
 import java.net.InetSocketAddress
 
@@ -29,7 +30,7 @@ val outputHandler = ConsoleHandler.instance(object : ResponseExtractor<HttpExcha
   }
 
   override fun source(response: HttpExchange): BufferedSource {
-    return Okio.buffer(Okio.source(response.requestBody))
+    return response.requestBody.source().buffer()
   }
 })
 
