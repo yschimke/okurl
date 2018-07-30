@@ -19,7 +19,7 @@
 import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.oksocial.output.SimpleResponse
 import kotlinx.coroutines.experimental.runBlocking
-import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
 
 enum class SsmlVoiceGender {
   SSML_VOICE_GENDER_UNSPECIFIED, MALE, FEMALE, NEUTRAL
@@ -55,7 +55,7 @@ data class TextToSpeechRequest(
 )
 
 data class TextToSpeechResponse(val audioContent: String) {
-  fun audio() = ByteString.decodeBase64(audioContent)!!
+  fun audio() = audioContent.decodeBase64()!!
 }
 
 val text = args.joinToString(" ")

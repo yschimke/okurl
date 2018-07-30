@@ -11,7 +11,8 @@ import com.baulsupp.okurl.services.google.model.DiscoveryIndexMap
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
-import okio.Okio
+import okio.buffer
+import okio.sink
 import java.io.File
 
 val discoveryJsonUrl = "https://content.googleapis.com/discovery/v1/apis"
@@ -39,8 +40,8 @@ runBlocking {
     restUrl
   }))
 
-  val discoveryIndexSink = Okio.sink(File("src/main/resources/com/baulsupp/okurl/services/google/index.json"))
-  val buffer = Okio.buffer(discoveryIndexSink)
+  val discoveryIndexSink = File("src/main/resources/com/baulsupp/okurl/services/google/index.json").sink()
+  val buffer = discoveryIndexSink.buffer()
   moshi.adapter(DiscoveryIndexMap::class.java).indent("  ").toJson(buffer, result)
   buffer.flush()
 }

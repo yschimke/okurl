@@ -19,7 +19,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okio.Buffer
 import okio.ByteString
-import okio.ByteString.encodeString
+import okio.ByteString.Companion.encodeUtf8
+import okio.ByteString.Companion.decodeBase64
 import java.nio.charset.StandardCharsets.UTF_8
 
 class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
@@ -30,12 +31,12 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
 
     val timestamp = (System.currentTimeMillis() / 1000).toString()
 
-    val decodedKey = ByteString.decodeBase64(credentials.apiSecret)!!
+    val decodedKey = credentials.apiSecret.decodeBase64()!!
 
     val sink = Buffer()
     request.body()?.writeTo(sink)
     val prehash = "" + timestamp + request.method() + request.url().encodedPath() + sink.snapshot().string(UTF_8)
-    val signature = encodeString(prehash, UTF_8).hmacSha256(decodedKey)
+    val signature = prehash.encodeUtf8().hmacSha256(decodedKey)
 
     request = request.newBuilder()
       .addHeader("CB-ACCESS-KEY", credentials.apiKey)
