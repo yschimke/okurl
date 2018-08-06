@@ -4,7 +4,7 @@ import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Test

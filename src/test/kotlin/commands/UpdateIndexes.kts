@@ -9,8 +9,8 @@ import com.baulsupp.okurl.services.google.model.DiscoveryApis
 import com.baulsupp.okurl.services.google.model.DiscoveryDoc
 import com.baulsupp.okurl.services.google.model.DiscoveryIndexMap
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import okio.buffer
 import okio.sink
 import java.io.File

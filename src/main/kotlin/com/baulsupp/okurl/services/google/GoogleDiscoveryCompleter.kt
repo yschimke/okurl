@@ -5,9 +5,9 @@ import com.baulsupp.okurl.completion.CompletionMappings
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.experimental.CancellationException
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.async
 import okhttp3.HttpUrl
 import java.util.logging.Level
 import java.util.logging.Logger

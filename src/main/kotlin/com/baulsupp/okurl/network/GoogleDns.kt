@@ -2,7 +2,7 @@ package com.baulsupp.okurl.network
 
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Dns
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient

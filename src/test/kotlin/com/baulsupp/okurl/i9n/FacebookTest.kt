@@ -6,7 +6,7 @@ import com.baulsupp.okurl.services.facebook.FacebookApiDocPresenter
 import com.baulsupp.okurl.services.facebook.FacebookAuthInterceptor
 import com.baulsupp.okurl.services.facebook.VERSION
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

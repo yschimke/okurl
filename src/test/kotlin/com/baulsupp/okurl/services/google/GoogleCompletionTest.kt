@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

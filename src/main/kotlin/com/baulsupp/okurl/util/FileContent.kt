@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.util
 
 import com.baulsupp.okurl.kotlin.IO
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.async
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.nio.charset.Charset

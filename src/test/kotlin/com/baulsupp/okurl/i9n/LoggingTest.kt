@@ -3,7 +3,7 @@ package com.baulsupp.okurl.i9n
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.okhttp.localhost
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse

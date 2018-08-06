@@ -9,9 +9,9 @@ import com.baulsupp.oksocial.output.isInstalled
 import com.baulsupp.oksocial.output.process.exec
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okio.BufferedSource
 import okio.buffer
 import okio.source

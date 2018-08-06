@@ -5,7 +5,7 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.services.twilio.TwilioAuthInterceptor
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.Ignore
 import org.junit.jupiter.api.Test

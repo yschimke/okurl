@@ -2,8 +2,8 @@
 
 import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.okurl.services.giphy.model.SearchResults
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 val size = "preview_gif"
 

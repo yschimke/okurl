@@ -3,7 +3,7 @@
 import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.okurl.services.slack.model.RtmConnect
 import com.baulsupp.okurl.ws.WebSocketPrinter
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 val wsClient = client.newBuilder().readTimeout(0, TimeUnit.MINUTES).build()

@@ -58,7 +58,7 @@ import io.airlift.airline.Option
 import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec

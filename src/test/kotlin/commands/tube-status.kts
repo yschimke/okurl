@@ -2,7 +2,7 @@
 
 import com.baulsupp.okurl.kotlin.*
 import com.squareup.moshi.Json
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.fusesource.jansi.Ansi
 
 data class StatusItem(

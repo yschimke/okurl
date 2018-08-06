@@ -7,9 +7,9 @@ import com.baulsupp.okurl.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.async
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -28,6 +28,8 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.concurrent.Executors
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 inline fun <reified V> Moshi.mapAdapter() =
   this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java,
@@ -242,7 +244,7 @@ fun LocalDateTime.toInstant(): Instant {
 }
 
 suspend fun Call.await(): Response {
-  return kotlinx.coroutines.experimental.suspendCancellableCoroutine { c ->
+  return kotlinx.coroutines.suspendCancellableCoroutine { c ->
     enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
         c.resumeWithException(e)
