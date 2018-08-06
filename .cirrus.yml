@@ -1,5 +1,5 @@
 container:
-  image: gradle:4.8-jdk10
+  image: gradle:4.9-jdk10
 
 check_task:
   gradle_cache:
