@@ -5,7 +5,7 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.kotlin.toJavaList
 import com.baulsupp.okurl.okhttp.localhost
 import com.baulsupp.okurl.security.CertificatePin
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

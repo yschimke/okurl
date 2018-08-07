@@ -1,7 +1,7 @@
 #!/usr/bin/env okscript
 
 import com.baulsupp.okurl.kotlin.*
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.kotlin.utils.keysToMap
 import java.io.File
 import java.time.DayOfWeek.*

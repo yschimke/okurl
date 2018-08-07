@@ -3,10 +3,10 @@ package com.baulsupp.okurl.services.google
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.oksocial.output.OutputHandler
-import kotlinx.coroutines.experimental.CancellationException
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.withTimeout
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.concurrent.TimeUnit

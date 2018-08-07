@@ -2,7 +2,7 @@
 
 import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.okurl.services.stackexchange.model.Questions
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 
 var questions = runBlocking {
   client.query<Questions>("https://api.stackexchange.com/2.2/questions/unanswered/my-tags?order=desc&sort=creation&site=stackoverflow")

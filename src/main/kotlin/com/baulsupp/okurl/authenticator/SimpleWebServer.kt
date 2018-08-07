@@ -3,8 +3,8 @@ package com.baulsupp.okurl.authenticator
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
-import kotlinx.coroutines.experimental.future.await
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import java.io.Closeable
 import java.io.IOException

@@ -6,7 +6,7 @@ import com.baulsupp.okurl.util.ClientException
 import io.airlift.airline.Command
 import io.airlift.airline.ParseOptionConversionException
 import io.airlift.airline.ParseOptionMissingValueException
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.conscrypt.OpenSSLProvider
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.io.File

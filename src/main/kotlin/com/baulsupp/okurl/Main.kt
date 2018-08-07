@@ -33,10 +33,10 @@ import io.airlift.airline.Command
 import io.airlift.airline.Option
 import io.airlift.airline.ParseOptionConversionException
 import io.airlift.airline.ParseOptionMissingValueException
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
 import okhttp3.MediaType
 import okhttp3.OkHttpClient

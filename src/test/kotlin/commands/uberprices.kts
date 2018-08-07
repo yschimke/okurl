@@ -8,7 +8,7 @@ import com.baulsupp.okurl.services.mapbox.staticMap
 import com.baulsupp.okurl.services.uber.model.UberPriceEstimates
 import com.baulsupp.okurl.services.uber.model.UberTimeEstimates
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import kotlin.system.exitProcess
 
 if (args.isEmpty())

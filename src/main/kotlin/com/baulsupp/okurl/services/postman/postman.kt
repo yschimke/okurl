@@ -5,8 +5,8 @@ import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.services.postman.model.CollectionResult
 import com.baulsupp.okurl.services.postman.model.CollectionsResult
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.async
 
 suspend fun postmanCollectionUrls(tokenSet: Token): List<String> {
   val collections = client.query<CollectionsResult>(

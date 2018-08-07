@@ -3,7 +3,7 @@ package com.baulsupp.okurl.services.google
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.junit.jupiter.api.BeforeEach

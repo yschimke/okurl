@@ -6,7 +6,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.services.github.GithubAuthInterceptor
 import com.baulsupp.okurl.util.TestUtil.projectFile
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

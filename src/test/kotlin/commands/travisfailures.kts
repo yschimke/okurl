@@ -2,9 +2,9 @@
 
 import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.okurl.services.travisci.queryAllBuilds
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 

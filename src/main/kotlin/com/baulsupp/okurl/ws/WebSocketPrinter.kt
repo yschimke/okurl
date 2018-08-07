@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.ws
 
 import com.baulsupp.oksocial.output.OutputHandler
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener

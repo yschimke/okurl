@@ -18,7 +18,7 @@
 
 import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.oksocial.output.SimpleResponse
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okio.ByteString.Companion.decodeBase64
 
 enum class SsmlVoiceGender {

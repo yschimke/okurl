@@ -11,7 +11,7 @@ import com.baulsupp.okurl.services.mapbox.model.MapboxLatLongAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
