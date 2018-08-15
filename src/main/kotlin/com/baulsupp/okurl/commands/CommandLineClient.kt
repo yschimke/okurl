@@ -155,6 +155,9 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--keystore"], description = "Keystore")
   var keystoreFile: File? = null
 
+  @Option(name = ["--unixSocket"], description = "Unix Socket")
+  var unixSocket: File? = null
+
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: java.util.List<File>? = null
 
@@ -198,8 +201,8 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["-r", "--raw"], description = "Raw Output")
   var rawOutput = false
 
-  @Option(name = ["--unixSocket"], description = "Unix Socket")
-  var unixSocket: File? = null
+  @Option(name = ["--localCerts"], description = "Local Certificates")
+  var localCerts: File? = File(System.getenv("INSTALLDIR") ?: ".", "certificates")
 
   @Arguments(title = "arguments", description = "Remote resource URLs")
   var arguments: MutableList<String> = ArrayList()
@@ -307,7 +310,7 @@ open class CommandLineClient : HelpOption() {
         trustManagers.add(CertificateUtils.load(serverCerts!!.toList()))
       }
 
-      trustManager = CertificateUtils.combineTrustManagers(trustManagers)
+      trustManager = CertificateUtils.combineTrustManagers(trustManagers, includedDir = localCerts)
     }
 
     builder.sslSocketFactory(

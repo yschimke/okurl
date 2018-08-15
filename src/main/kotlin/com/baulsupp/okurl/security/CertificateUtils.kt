@@ -37,8 +37,8 @@ object CertificateUtils {
     return ks
   }
 
-  fun combineTrustManagers(trustManagers: MutableList<X509TrustManager>): X509TrustManager {
-    val localCerts = includedCertificates()
+  fun combineTrustManagers(trustManagers: MutableList<X509TrustManager>, includedDir: File? = null): X509TrustManager {
+    val localCerts = includedCertificates(includedDir)
     if (localCerts != null) {
       trustManagers.add(load(localCerts))
     }
@@ -53,12 +53,10 @@ object CertificateUtils {
 
   fun systemTrustManager() = trustManagerForKeyStore(null)
 
-  fun includedCertificates(): List<File>? {
-    var installDir: String? = System.getenv("INSTALLDIR")
-    if (installDir == null) {
-      installDir = "."
-    }
+  fun includedCertificates(includedDir: File?): List<File>? {
+    if (includedDir == null)
+      return listOf()
 
-    return File(installDir, "certificates").listFiles { f -> f.name.endsWith(".crt") }?.toList()
+    return includedDir.listFiles { f -> f.name.endsWith(".crt") }?.toList()
   }
 }
