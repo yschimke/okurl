@@ -3,14 +3,13 @@ package com.baulsupp.okurl.authenticator
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
-import kotlinx.coroutines.future.await
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import java.io.Closeable
 import java.io.IOException
 import java.io.PrintWriter
 import java.net.InetSocketAddress
-import java.util.concurrent.CompletableFuture
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -21,7 +20,7 @@ class SimpleWebServer(
   private val logger = Logger.getLogger(SimpleWebServer::class.java.name)
 
   private var server: HttpServer = HttpServer.create(InetSocketAddress("localhost", port), 1)
-  var f: CompletableFuture<String> = CompletableFuture()
+  private val channel = Channel<SuccessOrFailure<String>>()
 
   val redirectUri = "http://localhost:$port/callback"
 
@@ -33,30 +32,31 @@ class SimpleWebServer(
   }
 
   override fun handle(exchange: HttpExchange) {
-    val url = HttpUrl.parse("http://localhost:$port${exchange.requestURI}")!!
-
     exchange.responseHeaders.add("Content-Type", "text/html; charset=utf-8")
     exchange.sendResponseHeaders(200, 0)
+
     PrintWriter(exchange.responseBody).use { out ->
+      channel.offer(processRequest(exchange, out)) || throw IllegalStateException("unable to send to channel")
+    }
+
+    exchange.close()
+  }
+
+  fun processRequest(exchange: HttpExchange, out: PrintWriter): SuccessOrFailure<String> {
+    return runCatching {
+      val url = HttpUrl.get("http://localhost:$port${exchange.requestURI}")
+
       val error = url.queryParameter("error")
 
-      try {
-        if (error != null) {
-          IOException(error)
-        }
-
-        val code = codeReader(url) ?: throw IllegalArgumentException("no code read")
-
-        out.println(generateSuccessBody())
-        out.flush()
-        exchange.close()
-        f.complete(code)
-      } catch (e: Exception) {
-        out.println(generateFailBody(e.toString()))
-        out.flush()
-        exchange.close()
-        f.completeExceptionally(e)
+      if (error != null) {
+        throw IOException(error)
       }
+
+      codeReader(url) ?: throw IllegalArgumentException("no code read")
+    }.onSuccess {
+      out.println(generateSuccessBody())
+    }.onFailure {
+      out.println(generateFailBody("$it"))
     }
   }
 
@@ -73,14 +73,11 @@ class SimpleWebServer(
 </html>"""
 
   override fun close() {
+    channel.close()
     server.stop(0)
   }
 
-  suspend fun waitForCodeAsync(): String {
-    return f.await()
-  }
-
-  fun waitForCode(): String = runBlocking { waitForCodeAsync() }
+  suspend fun waitForCode(): String = channel.receive().getOrThrow()
 
   companion object {
     fun forCode(): SimpleWebServer {
@@ -93,7 +90,7 @@ class SimpleWebServer(
     fun main(args: Array<String>) {
       SimpleWebServer.forCode().use { ws ->
         val s = runBlocking {
-          ws.waitForCodeAsync()
+          ws.waitForCode()
         }
         println("result = $s")
       }

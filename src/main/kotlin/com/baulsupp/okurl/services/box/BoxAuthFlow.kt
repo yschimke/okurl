@@ -26,7 +26,7 @@ object BoxAuthFlow {
 
       outputHandler.openLink(loginUrl)
 
-      val code = s.waitForCodeAsync()
+      val code = s.waitForCode()
 
       val body = FormBody.Builder().add("grant_type", "authorization_code").add("code", code).add("client_id", clientId).add("client_secret", clientSecret).build()
       val request = requestBuilder("https://api.box.com/oauth2/token",

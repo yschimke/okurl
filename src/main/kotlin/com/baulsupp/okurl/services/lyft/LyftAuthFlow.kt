@@ -28,7 +28,7 @@ object LyftAuthFlow {
 
       outputHandler.openLink(loginUrl)
 
-      val code = s.waitForCodeAsync()
+      val code = s.waitForCode()
 
       val body = RequestBody.create(MediaType.get("application/json"),
         "{\"grant_type\": \"authorization_code\", \"code\": \"$code\"}")
