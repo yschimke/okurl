@@ -9,7 +9,7 @@ if [ "$INTELLIJ_BUILD" != "true" -o ! -d "build/install/okurl/lib" ]; then
   ./gradlew -q installDist
   MAIN_JAR=$(ls build/install/okurl/lib/okurl-*.jar | grep -v okurl-output)
 else
-  MAIN_JAR=out/production/classes:out/production/resources
+  MAIN_JAR=build/classes/kotlin/main:build/resources/main
 fi
 
 JAVA_CMD="$JAVA_HOME/bin/java"

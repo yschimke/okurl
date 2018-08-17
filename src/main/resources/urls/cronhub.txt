@@ -1,0 +1,6 @@
+https://cronhub.io/api/v1/monitors
+https://cronhub.io/api/v1/monitors/{uuid}
+https://cronhub.io/api/v1/monitors/{uuid}/pause
+https://cronhub.io/ping/{uuid}
+https://cronhub.io/start/{uuid}
+https://cronhub.io/finish/{uuid}

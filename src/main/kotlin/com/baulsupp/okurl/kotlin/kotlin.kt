@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.kotlin
 
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.Token
@@ -263,6 +264,10 @@ suspend fun Call.await(): Response {
       }
     })
   }
+}
+
+fun usage(msg: String): Nothing {
+  throw UsageException(msg)
 }
 
 val IO by lazy { Executors.newCachedThreadPool().asCoroutineDispatcher() }
