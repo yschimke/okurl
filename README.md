@@ -1,4 +1,4 @@
-# OkHttp Social Client
+# OkHttp Kotline command line
 
 [![CircleCI](https://circleci.com/gh/yschimke/okurl.svg?style=svg)](https://circleci.com/gh/yschimke/okurl)
 
