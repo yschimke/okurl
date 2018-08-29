@@ -25,7 +25,7 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
 
   companion object {
     val instance by lazy {
-      DiscoveryIndex::class.java.getResource("index.json")!!.let { parse(it.readText()) }
+      parse(DiscoveryIndex::class.java.getResource("index.json")!!.readText())
     }
 
     fun parse(definition: String): DiscoveryIndex {

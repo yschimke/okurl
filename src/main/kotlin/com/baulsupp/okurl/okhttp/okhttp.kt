@@ -27,10 +27,10 @@ val TLS13_CIPHER_SUITES = arrayOf(
 )
 
 val TLS_13 = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-      .cipherSuites(*TLS13_CIPHER_SUITES)
-      .tlsVersions(TlsVersion.TLS_1_3)
-      .supportsTlsExtensions(true)
-      .build();
+  .cipherSuites(*TLS13_CIPHER_SUITES)
+  .tlsVersions(TlsVersion.TLS_1_3)
+  .supportsTlsExtensions(true)
+  .build()!!
 
 enum class ConnectionSpecOption(vararg val specs: ConnectionSpec) {
   ALL(AllConnectionSpec),

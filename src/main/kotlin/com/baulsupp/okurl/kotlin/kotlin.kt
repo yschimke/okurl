@@ -197,7 +197,7 @@ fun String.color(color: Ansi.Color): String = when {
   else -> this
 }
 
-val JSON = MediaType.get("application/json")
+val JSON = MediaType.get("application/json")!!
 
 fun form(init: FormBody.Builder.() -> Unit = {}): FormBody = FormBody.Builder().apply(init).build()
 
@@ -211,7 +211,7 @@ fun requestBuilder(
   url: String? = null,
   tokenSet: Token = DefaultToken
 ) = Request.Builder().apply { if (url != null) url(url) }.tag(
-  tokenSet)
+  tokenSet)!!
 
 fun Request.Builder.tokenSet(tokenSet: Token) = tag(tokenSet)
 

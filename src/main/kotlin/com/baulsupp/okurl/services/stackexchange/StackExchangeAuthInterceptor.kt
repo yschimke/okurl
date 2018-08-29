@@ -29,7 +29,7 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   }
 
   override suspend fun validate(client: OkHttpClient, credentials: StackExchangeToken): ValidatedCredentials {
-    return client.query<MeResponse>("https://api.stackexchange.com/2.2/me?site=stackoverflow", TokenValue(credentials)).let { ValidatedCredentials(it.items.firstOrNull()?.display_name) }
+    return ValidatedCredentials(client.query<MeResponse>("https://api.stackexchange.com/2.2/me?site=stackoverflow", TokenValue(credentials)).items.firstOrNull()?.display_name)
   }
 
   override suspend fun authorize(

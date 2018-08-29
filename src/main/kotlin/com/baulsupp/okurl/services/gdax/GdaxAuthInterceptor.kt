@@ -18,7 +18,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okio.Buffer
-import okio.ByteString
 import okio.ByteString.Companion.encodeUtf8
 import okio.ByteString.Companion.decodeBase64
 import java.nio.charset.StandardCharsets.UTF_8

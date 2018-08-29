@@ -13,7 +13,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class DiscoveryRegistry(private val client: OkHttpClient) {
-  val newClient by lazy {
+  val newClient: OkHttpClient by lazy {
     client.newBuilder().cache(Cache(File(FileUtil.okurlSettingsDir, "google-cache"), MEBIBYTES.toBytes(20))).build()
   }
 

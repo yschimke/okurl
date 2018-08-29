@@ -10,9 +10,7 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.okurl.kotlin.queryList
 import com.baulsupp.okurl.secrets.Secrets
-import com.baulsupp.okurl.services.circleci.Project
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
