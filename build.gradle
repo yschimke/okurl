@@ -3,7 +3,7 @@ buildscript {
   ext.jackson_version = '2.9.6'
   ext.okhttp_version = '3.11.0'
   repositories {
-    maven { url "http://dl.bintray.com/kotlin/kotlin-eap" }
+    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
     mavenCentral()
     jcenter()
   }
@@ -84,12 +84,12 @@ artifacts {
 
 repositories {
   mavenLocal()
-  maven { url 'http://repo.spring.io/milestone' }
+  maven { url 'https://repo.spring.io/milestone' }
   maven { url 'https://oss.jfrog.org/libs-snapshot' }
   maven { url 'https://dl.bintray.com/reactivesocket/RSocket' }
   maven { url "https://jitpack.io" }
   maven { url "https://oss.sonatype.org/content/repositories/releases" }
-  maven { url "http://dl.bintray.com/kotlin/kotlin-eap" }
+  maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
   mavenCentral()
   jcenter()
 }
