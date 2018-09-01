@@ -6,7 +6,6 @@ import brave.internal.Platform
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
 import com.baulsupp.okurl.Main
-import com.baulsupp.okurl.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.brotli.BrotliInterceptor
@@ -41,6 +40,7 @@ import com.baulsupp.okurl.security.InsecureHostnameVerifier
 import com.baulsupp.okurl.security.InsecureTrustManager
 import com.baulsupp.okurl.security.KeystoreUtils
 import com.baulsupp.okurl.security.OpenSCUtil
+import com.baulsupp.okurl.security.PromptAuthenticator
 import com.baulsupp.okurl.services.twitter.TwitterCachingInterceptor
 import com.baulsupp.okurl.tracing.UriTransportRegistry
 import com.baulsupp.okurl.tracing.ZipkinConfig
@@ -49,6 +49,7 @@ import com.baulsupp.okurl.tracing.ZipkinTracingListener
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
+import com.burgstaller.okhttp.DispatchingAuthenticator
 import com.github.markusbernhardt.proxy.ProxySearch
 import com.google.common.io.Closeables
 import com.moczul.ok2curl.CurlInterceptor
@@ -82,6 +83,7 @@ import java.util.ArrayList
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import java.util.logging.Logger
 import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
@@ -432,6 +434,15 @@ open class CommandLineClient : HelpOption() {
       builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
     }
 
+    val basicAuthenticator = PromptAuthenticator
+    val authenticator = DispatchingAuthenticator.Builder()
+                    .with("basic", basicAuthenticator)
+                    .build();
+
+//    val authenticator = PromptAuthenticator
+    builder.authenticator(authenticator)
+    builder.proxyAuthenticator(authenticator)
+
     protocols?.let {
       builder.protocols(protocolList(it))
     }
@@ -564,6 +575,8 @@ open class CommandLineClient : HelpOption() {
   }
 
   companion object {
+    val logger = Logger.getLogger(CommandLineClient::class.java.name)!!
+
     inline fun <reified T> fromArgs(vararg args: String): T {
       return SingleCommand.singleCommand(T::class.java).parse(*args)
     }
