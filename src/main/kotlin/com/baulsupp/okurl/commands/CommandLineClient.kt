@@ -5,8 +5,11 @@ import brave.http.HttpTracing
 import brave.internal.Platform
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
+import com.baulsupp.oksocial.output.ConsoleHandler
+import com.baulsupp.oksocial.output.DownloadHandler
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
-import com.baulsupp.okurl.authenticator.AuthInterceptor.Companion.logger
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.brotli.BrotliInterceptor
@@ -30,10 +33,7 @@ import com.baulsupp.okurl.okhttp.ConnectionSpecOption
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.TlsVersionOption
 import com.baulsupp.okurl.okhttp.defaultConnectionSpec
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.DownloadHandler
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
 import com.baulsupp.okurl.security.CertificateUtils
 import com.baulsupp.okurl.security.ConsoleCallbackHandler
@@ -49,6 +49,8 @@ import com.baulsupp.okurl.tracing.ZipkinTracingListener
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
+import com.burgstaller.okhttp.DispatchingAuthenticator
+import com.burgstaller.okhttp.basic.BasicAuthenticator
 import com.github.markusbernhardt.proxy.ProxySearch
 import com.google.common.io.Closeables
 import com.moczul.ok2curl.CurlInterceptor
@@ -62,7 +64,6 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
-import okhttp3.Credentials
 import okhttp3.Dispatcher
 import okhttp3.Dns
 import okhttp3.OkHttpClient
@@ -82,6 +83,7 @@ import java.util.ArrayList
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import java.util.logging.Logger
 import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
@@ -432,31 +434,32 @@ open class CommandLineClient : HelpOption() {
       builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
     }
 
-    protocols?.let {
-      builder.protocols(protocolList(it))
-    }
+    val authenticatorBuilder = DispatchingAuthenticator.Builder()
 
-    // TODO rethink this auth
     if (user != null) {
-      val userParts = user!!.split(":".toRegex(), 2).toTypedArray()
+      val userParts = user!!.split(":".toRegex(), 2)
       if (userParts.size < 2) {
         throw UsageException("--user should have user:password")
       }
-      val credential = Credentials.basic(userParts[0], userParts[1])
 
-      // TODO move to own class
-      builder.authenticator({ _, response ->
-        logger.fine("Challenges: " + response.challenges())
+      val credentials = com.burgstaller.okhttp.digest.Credentials(userParts[0], userParts[1])
 
-        // authenticate once
-        if (response.request().header("Authorization") != null) {
-          null
-        } else {
-          response.request().newBuilder()
-            .header("Authorization", credential)
-            .build()
-        }
-      })
+      authenticatorBuilder.with("basic", BasicAuthenticator(credentials))
+    } else {
+      authenticatorBuilder.with("basic", BasicPromptAuthenticator)
+    }
+
+    val authenticator = authenticatorBuilder.build();
+
+    builder.authenticator(authenticator)
+
+    // TODO add caching
+//    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
+//    builder.authenticator(CachingAuthenticatorDecorator(authenticator, authCache))
+//    builder.addInterceptor(AuthenticationCacheInterceptor(authCache))
+
+    protocols?.let {
+      builder.protocols(protocolList(it))
     }
 
     val dispatcher = Dispatcher()
@@ -471,7 +474,7 @@ open class CommandLineClient : HelpOption() {
       applyZipkin(builder)
     }
 
-    builder.networkInterceptors().add(authenticatingInterceptor)
+    builder.addNetworkInterceptor(authenticatingInterceptor)
 
     if (curl) {
       builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
@@ -564,6 +567,8 @@ open class CommandLineClient : HelpOption() {
   }
 
   companion object {
+    val logger = Logger.getLogger(CommandLineClient::class.java.name)!!
+
     inline fun <reified T> fromArgs(vararg args: String): T {
       return SingleCommand.singleCommand(T::class.java).parse(*args)
     }
