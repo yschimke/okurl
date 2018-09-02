@@ -1,21 +1,26 @@
 package com.baulsupp.okurl.kotlin
 
-import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.util.ClientException
-import io.airlift.airline.Command
-import io.airlift.airline.ParseOptionConversionException
-import io.airlift.airline.ParseOptionMissingValueException
+import com.github.rvesse.airline.HelpOption
+import com.github.rvesse.airline.SingleCommand
+import com.github.rvesse.airline.annotations.Command
+import com.github.rvesse.airline.parser.errors.ParseException
 import kotlinx.coroutines.runBlocking
 import org.conscrypt.OpenSSLProvider
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.io.File
 import java.security.Security
+import javax.inject.Inject
 import javax.script.ScriptException
 import kotlin.reflect.KClass
 
 @Command(name = Main.NAME, description = "Kotlin scripting for APIs")
 class Main : CommandLineClient() {
+  @Inject
+  override var help: HelpOption<Main>? = null
+
   override fun initialise() {
     super.initialise()
 
@@ -55,6 +60,8 @@ class Main : CommandLineClient() {
     }
   }
 
+  override fun name(): String = NAME
+
   companion object {
     const val NAME = "okscript"
 
@@ -63,20 +70,19 @@ class Main : CommandLineClient() {
       Security.insertProviderAt(OpenSSLProvider(), 1)
 
       try {
-        val result = CommandLineClient.fromArgs<Main>(*args).run()
+        val result = SingleCommand.singleCommand(Main::class.java).parse(*args).run()
         System.exit(result)
-      } catch (e: ParseOptionMissingValueException) {
-        System.err.println("${com.baulsupp.okurl.Main.command}: ${e.message}")
-        System.exit(-1)
-      } catch (e: ParseOptionConversionException) {
-        System.err.println("${com.baulsupp.okurl.Main.command}: ${e.message}")
-        System.exit(-1)
-      } catch (e: UsageException) {
-        System.err.println("${com.baulsupp.okurl.Main.command}: ${e.message}")
-        System.exit(-1)
       } catch (e: Throwable) {
-        e.printStackTrace()
-        System.exit(-1)
+        when (e) {
+          is ParseException, is UsageException -> {
+            System.err.println("okurl: ${e.message}")
+            System.exit(-1)
+          }
+          else -> {
+            e.printStackTrace()
+            System.exit(-1)
+          }
+        }
       }
     }
   }

@@ -52,14 +52,14 @@ import com.baulsupp.okurl.util.LoggingUtil
 import com.burgstaller.okhttp.DispatchingAuthenticator
 import com.burgstaller.okhttp.basic.BasicAuthenticator
 import com.github.markusbernhardt.proxy.ProxySearch
-import com.google.common.io.Closeables
+import com.github.rvesse.airline.HelpOption
+import com.github.rvesse.airline.annotations.Arguments
+import com.github.rvesse.airline.annotations.Option
+import com.github.rvesse.airline.annotations.restrictions.AllowedRawValues
 import com.moczul.ok2curl.CurlInterceptor
-import io.airlift.airline.Arguments
-import io.airlift.airline.HelpOption
-import io.airlift.airline.Option
-import io.airlift.airline.SingleCommand
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
+import jdk.internal.jline.internal.Log
 import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.ConnectionPool
@@ -83,12 +83,11 @@ import java.util.ArrayList
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
-import java.util.logging.Logger
 import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
-open class CommandLineClient : HelpOption() {
+abstract class CommandLineClient {
 
   @Option(name = ["--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
@@ -131,12 +130,12 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--zipkinTrace"], description = "Activate Detailed Zipkin Tracing")
   var zipkinTrace = false
 
-  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)",
-    allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
+  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)")
+  @AllowedRawValues(allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(name = ["--dns"], description = "DNS (netty, java, doh)",
-    allowedValues = ["java", "netty", "doh"])
+  @Option(name = ["--dns"], description = "DNS (netty, java, dnsoverhttps)")
+  @AllowedRawValues(allowedValues = ["java", "netty", "dnsoverhttps"])
   var dnsMode = DnsMode.JAVA
 
   @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
@@ -146,7 +145,7 @@ open class CommandLineClient : HelpOption() {
   var resolve: List<String>? = null
 
   @Option(name = ["--certificatePin"], description = "Certificate Pin to define host:pinsha")
-  var certificatePins: java.util.List<CertificatePin>? = null
+  var certificatePins: List<CertificatePin>? = null
 
   @Option(name = ["--networkInterface"], description = "Specific Local Network Interface")
   var networkInterface: String? = null
@@ -161,17 +160,17 @@ open class CommandLineClient : HelpOption() {
   var unixSocket: File? = null
 
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
-  var serverCerts: java.util.List<File>? = null
+  var serverCerts: MutableList<File>? = null
 
   @Option(name = ["--connectionSpec"],
     description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
   var connectionSpec: ConnectionSpecOption = defaultConnectionSpec()
 
   @Option(name = ["--cipherSuite"], description = "Cipher Suites")
-  var cipherSuites: java.util.List<CipherSuiteOption>? = null
+  var cipherSuites: MutableList<CipherSuiteOption>? = null
 
   @Option(name = ["--tlsVersions"], description = "TLS Versions")
-  var tlsVersions: java.util.List<TlsVersionOption>? = null
+  var tlsVersions: MutableList<TlsVersionOption>? = null
 
   @Option(name = ["--opensc"], description = "Send OpenSC Client Certificate (slot)")
   var opensc: Int? = null
@@ -206,7 +205,7 @@ open class CommandLineClient : HelpOption() {
   @Option(name = ["--localCerts"], description = "Local Certificates")
   var localCerts: File? = File(System.getenv("INSTALLDIR") ?: ".", "certificates")
 
-  @Arguments(title = "arguments", description = "Remote resource URLs")
+  @Arguments(title = ["arguments"], description = "Remote resource URLs")
   var arguments: MutableList<String> = ArrayList()
 
   lateinit var authenticatingInterceptor: AuthenticatingInterceptor
@@ -329,15 +328,17 @@ open class CommandLineClient : HelpOption() {
     return this.javaClass.`package`.implementationVersion ?: "dev"
   }
 
+  abstract val help: HelpOption<*>?
+
   suspend fun run(): Int {
-    if (showHelpIfRequested()) {
+    if (help?.showHelpIfRequested() == true) {
       return 0
     }
 
     initialise()
 
     if (version) {
-      outputHandler.info(Main.NAME + " " + versionString())
+      outputHandler.info(name() + " " + versionString())
       return 0
     }
 
@@ -356,6 +357,8 @@ open class CommandLineClient : HelpOption() {
       closeClients()
     }
   }
+
+  abstract fun name(): String
 
   open fun runCommand(runArguments: List<String>): Int {
     return 0
@@ -551,7 +554,11 @@ open class CommandLineClient : HelpOption() {
 
   fun closeClients() {
     for (c in closeables) {
-      Closeables.close(c, true)
+      try {
+        c.close()
+      } catch (e: Exception) {
+        Log.debug("close failed", e)
+      }
     }
   }
 
@@ -564,13 +571,5 @@ open class CommandLineClient : HelpOption() {
     return tokenSet?.let {
       TokenSet(it)
     } ?: DefaultToken
-  }
-
-  companion object {
-    val logger = Logger.getLogger(CommandLineClient::class.java.name)!!
-
-    inline fun <reified T> fromArgs(vararg args: String): T {
-      return SingleCommand.singleCommand(T::class.java).parse(*args)
-    }
   }
 }
