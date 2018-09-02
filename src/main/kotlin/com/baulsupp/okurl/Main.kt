@@ -1,5 +1,8 @@
 package com.baulsupp.okurl
 
+import com.baulsupp.oksocial.output.DownloadHandler
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main.Companion.NAME
 import com.baulsupp.okurl.apidocs.ServiceApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
@@ -22,17 +25,15 @@ import com.baulsupp.okurl.okhttp.FailedResponse
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.PotentialResponse
 import com.baulsupp.okurl.okhttp.SuccessfulResponse
-import com.baulsupp.oksocial.output.DownloadHandler
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.sse.SseOutput
 import com.baulsupp.okurl.sse.handleSseResponse
 import com.baulsupp.okurl.util.FileContent
 import com.baulsupp.okurl.util.HeaderUtil
-import io.airlift.airline.Command
-import io.airlift.airline.Option
-import io.airlift.airline.ParseOptionConversionException
-import io.airlift.airline.ParseOptionMissingValueException
+import com.github.rvesse.airline.HelpOption
+import com.github.rvesse.airline.SingleCommand
+import com.github.rvesse.airline.annotations.Command
+import com.github.rvesse.airline.annotations.Option
+import com.github.rvesse.airline.parser.errors.ParseException
 import kotlinx.coroutines.CommonPool
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -51,10 +52,14 @@ import java.io.IOException
 import java.security.Security
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Inject
 
 @Command(name = NAME, description = "A curl for social apis.")
 class Main : CommandLineClient() {
   private val logger = Logger.getLogger(Main::class.java.name)
+
+  @Inject
+  override lateinit var help: HelpOption<Main>
 
   @Option(name = ["-X", "--request"], description = "Specify request command to use")
   var method: String? = null
@@ -63,7 +68,7 @@ class Main : CommandLineClient() {
   var data: String? = null
 
   @Option(name = ["-H", "--header"], description = "Custom header to pass to server")
-  var headers: java.util.List<String>? = null
+  var headers: MutableList<String>? = null
 
   @Option(name = ["--noFollow"], description = "Follow redirects")
   var dontFollowRedirects = false
@@ -389,6 +394,8 @@ class Main : CommandLineClient() {
     "application/x-www-form-urlencoded"
   }
 
+  override fun name(): String = NAME
+
   companion object {
     const val NAME = "okurl"
     val command = System.getProperty("command.name", "okurl")!!
@@ -398,29 +405,25 @@ class Main : CommandLineClient() {
       setupProvider()
 
       try {
-        val result = CommandLineClient.fromArgs<Main>(*args).run()
+        val result = SingleCommand.singleCommand(Main::class.java).parse(*args).run()
         System.exit(result)
-      } catch (e: ParseOptionMissingValueException) {
-        System.err.println("$command: ${e.message}")
-        System.exit(-1)
-      } catch (e: ParseOptionConversionException) {
-        System.err.println("$command: ${e.message}")
-        System.exit(-1)
-      } catch (e: UsageException) {
-        System.err.println("${com.baulsupp.okurl.Main.command}: ${e.message}")
-        System.exit(-1)
       } catch (e: Throwable) {
-        e.printStackTrace()
-        System.exit(-1)
+        when (e) {
+          is ParseException, is UsageException -> {
+            System.err.println("okurl: ${e.message}")
+            System.exit(-1)
+          }
+          else -> {
+            e.printStackTrace()
+            System.exit(-1)
+          }
+        }
       }
     }
 
     private fun setupProvider() {
       // Prefer JDK 11 over Conscrypt
-      if ("11" == System.getProperty("java.specification.version")) {
-        val spec28 = Integer.toString(0x7f00 or 28, 16)
-        System.setProperty("jdk.tls13.version", spec28)
-      } else {
+      if ("11" != System.getProperty("java.specification.version")) {
         try {
           Security.insertProviderAt(OpenSSLProvider(), 1)
         } catch (e: NoClassDefFoundError) {

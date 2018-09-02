@@ -86,7 +86,7 @@ class WebServerTest {
 
     main.arguments = mutableListOf(server.url("/").toString())
     main.certificatePins = listOf(CertificatePin(server.hostName + ":" +
-      "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=")).toJavaList()
+      "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18="))
     main.allowInsecure = true
 
     runBlocking {
