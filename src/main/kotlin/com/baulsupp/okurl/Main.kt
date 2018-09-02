@@ -59,7 +59,7 @@ class Main : CommandLineClient() {
   private val logger = Logger.getLogger(Main::class.java.name)
 
   @Inject
-  override lateinit var help: HelpOption<Main>
+  override var help: HelpOption<Main>? = null
 
   @Option(name = ["-X", "--request"], description = "Specify request command to use")
   var method: String? = null

@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 @Command(name = Main.NAME, description = "Kotlin scripting for APIs")
 class Main : CommandLineClient() {
   @Inject
-  override lateinit var help: HelpOption<Main>
+  override var help: HelpOption<Main>? = null
 
   override fun initialise() {
     super.initialise()

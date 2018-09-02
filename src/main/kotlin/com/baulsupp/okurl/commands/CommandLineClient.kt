@@ -326,10 +326,10 @@ abstract class CommandLineClient {
     return this.javaClass.`package`.implementationVersion ?: "dev"
   }
 
-  abstract val help: HelpOption<*>
+  abstract val help: HelpOption<*>?
 
   suspend fun run(): Int {
-    if (help.showHelpIfRequested()) {
+    if (help?.showHelpIfRequested() == true) {
       return 0
     }
 
