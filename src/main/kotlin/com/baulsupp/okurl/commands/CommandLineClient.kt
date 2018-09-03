@@ -2,7 +2,6 @@ package com.baulsupp.okurl.commands
 
 import brave.Tracing
 import brave.http.HttpTracing
-import brave.internal.Platform
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
 import com.baulsupp.oksocial.output.ConsoleHandler
@@ -50,7 +49,6 @@ import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
 import com.burgstaller.okhttp.DispatchingAuthenticator
-import com.burgstaller.okhttp.basic.BasicAuthenticator
 import com.github.markusbernhardt.proxy.ProxySearch
 import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.annotations.Arguments
@@ -59,7 +57,6 @@ import com.github.rvesse.airline.annotations.restrictions.AllowedRawValues
 import com.moczul.ok2curl.CurlInterceptor
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
-import jdk.internal.jline.internal.Log
 import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.ConnectionPool
@@ -69,6 +66,7 @@ import okhttp3.Dns
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
+import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.unixdomainsockets.UnixDomainSocketFactory
 import zipkin2.Span
@@ -224,6 +222,8 @@ abstract class CommandLineClient {
 
   val closeables = mutableListOf<Closeable>()
 
+  abstract val help: HelpOption<*>?
+
   fun buildDns(builder: OkHttpClient.Builder): Dns {
     val dns = when (dnsMode) {
       DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers ?: "8.8.8.8")
@@ -328,8 +328,6 @@ abstract class CommandLineClient {
     return this.javaClass.`package`.implementationVersion ?: "dev"
   }
 
-  abstract val help: HelpOption<*>?
-
   suspend fun run(): Int {
     if (help?.showHelpIfRequested() == true) {
       return 0
@@ -423,7 +421,7 @@ abstract class CommandLineClient {
     builder.addNetworkInterceptor(BrotliInterceptor)
 
     if (debug) {
-      val loggingInterceptor = HttpLoggingInterceptor(logger::info)
+      val loggingInterceptor = HttpLoggingInterceptor()
       loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
       builder.networkInterceptors().add(loggingInterceptor)
     }
@@ -446,11 +444,10 @@ abstract class CommandLineClient {
       }
 
       val credentials = com.burgstaller.okhttp.digest.Credentials(userParts[0], userParts[1])
-
-      authenticatorBuilder.with("basic", BasicAuthenticator(credentials))
-    } else {
-      authenticatorBuilder.with("basic", BasicPromptAuthenticator)
+      authenticatorBuilder.with("basic", BasicPromptAuthenticator(credentials))
     }
+
+    // TODO insert a default prompting authenticator
 
     val authenticator = authenticatorBuilder.build();
 
@@ -502,7 +499,7 @@ abstract class CommandLineClient {
     reporter = if (zipkinSenderUri != null) {
       UriTransportRegistry.forUri(zipkinSenderUri)
     } else {
-      Platform.get().reporter()
+      brave.internal.Platform.get().reporter()
     }
 
     val tracing = Tracing.newBuilder()
@@ -557,7 +554,7 @@ abstract class CommandLineClient {
       try {
         c.close()
       } catch (e: Exception) {
-        Log.debug("close failed", e)
+        Platform.get().log(Platform.INFO, "close failed", e)
       }
     }
   }

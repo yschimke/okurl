@@ -9,12 +9,13 @@ import java.io.IOException
 import java.net.HttpURLConnection.HTTP_PROXY_AUTH
 import java.util.logging.Logger
 
-object BasicPromptAuthenticator : Authenticator {
+class BasicPromptAuthenticator(val credentials: com.burgstaller.okhttp.digest.Credentials) : Authenticator {
   val logger = Logger.getLogger(BasicPromptAuthenticator::class.java.name)!!
 
   override fun authenticate(route: Route?, response: Response): Request? {
     val request = response.request()
-    val challenge = response.challenges().find { it.scheme() == "Basic" } ?: throw IOException("No Basic Challenge found")
+    val challenge = response.challenges().find { it.scheme() == "Basic" }
+      ?: throw IOException("No Basic Challenge found")
     val proxy = response.code() == HTTP_PROXY_AUTH
 
     val responseHeaderKey = if (proxy) "Proxy-Authenticate" else "WWW-Authenticate"
@@ -36,5 +37,7 @@ object BasicPromptAuthenticator : Authenticator {
     return request.newBuilder().header(requestHeaderKey, basicAuth()).build()
   }
 
-  fun basicAuth() = Credentials.basic("a", "b")
+  fun basicAuth(): String {
+    return Credentials.basic(credentials.userName!!, credentials.password!!)
+  }
 }
