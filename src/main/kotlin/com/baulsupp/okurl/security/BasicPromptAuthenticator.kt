@@ -1,6 +1,9 @@
 package com.baulsupp.okurl.security
 
+import com.baulsupp.okurl.authenticator.BasicCredentials
+import com.baulsupp.okurl.credentials.TokenValue
 import okhttp3.Authenticator
+import okhttp3.Challenge
 import okhttp3.Credentials
 import okhttp3.Request
 import okhttp3.Response
@@ -9,7 +12,7 @@ import java.io.IOException
 import java.net.HttpURLConnection.HTTP_PROXY_AUTH
 import java.util.logging.Logger
 
-class BasicPromptAuthenticator(val credentials: com.burgstaller.okhttp.digest.Credentials) : Authenticator {
+class BasicPromptAuthenticator(val credentials: BasicCredentials? = null) : Authenticator {
   val logger = Logger.getLogger(BasicPromptAuthenticator::class.java.name)!!
 
   override fun authenticate(route: Route?, response: Response): Request? {
@@ -18,10 +21,8 @@ class BasicPromptAuthenticator(val credentials: com.burgstaller.okhttp.digest.Cr
       ?: throw IOException("No Basic Challenge found")
     val proxy = response.code() == HTTP_PROXY_AUTH
 
-    val responseHeaderKey = if (proxy) "Proxy-Authenticate" else "WWW-Authenticate"
     val requestHeaderKey = if (proxy) "Proxy-Authorization" else "Authorization"
 
-    val challengeHeader = response.header(responseHeaderKey)
     val requestHeader = request.header(requestHeaderKey)
 
     if (requestHeader != null) {
@@ -29,15 +30,34 @@ class BasicPromptAuthenticator(val credentials: com.burgstaller.okhttp.digest.Cr
       return null
     }
 
-    if (challengeHeader == null) {
-      logger.warning("No challenge found")
-      return null
+    val basicCredentials = basicAuth(request, challenge)
+
+    if (basicCredentials != null) {
+      return request.newBuilder().header(requestHeaderKey, basicCredentials.header()).build()
     }
 
-    return request.newBuilder().header(requestHeaderKey, basicAuth()).build()
+    return null
   }
 
-  fun basicAuth(): String {
-    return Credentials.basic(credentials.userName!!, credentials.password!!)
+  fun basicAuth(request: Request, challenge: Challenge): BasicCredentials? {
+    val requestCredentials = (request.tag() as? TokenValue)?.token as? BasicCredentials
+
+    if (requestCredentials != null) {
+      return requestCredentials
+    }
+
+    if (credentials != null) {
+      return credentials
+    }
+
+    if (System.console() != null) {
+      System.console().printf("Basic Auth (${challenge.realm()})\n")
+      val user = System.console().readLine("User: ")
+      val password = System.console().readPassword("Password: ")
+
+      return BasicCredentials(user, String(password))
+    }
+
+    return null
   }
 }

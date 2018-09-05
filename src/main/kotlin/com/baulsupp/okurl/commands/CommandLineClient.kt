@@ -11,6 +11,7 @@ import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
+import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.brotli.BrotliInterceptor
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
@@ -443,11 +444,11 @@ abstract class CommandLineClient {
         throw UsageException("--user should have user:password")
       }
 
-      val credentials = com.burgstaller.okhttp.digest.Credentials(userParts[0], userParts[1])
+      val credentials = BasicCredentials(userParts[0], userParts[1])
       authenticatorBuilder.with("basic", BasicPromptAuthenticator(credentials))
+    } else {
+      authenticatorBuilder.with("basic", BasicPromptAuthenticator())
     }
-
-    // TODO insert a default prompting authenticator
 
     val authenticator = authenticatorBuilder.build();
 

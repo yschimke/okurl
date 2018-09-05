@@ -1,3 +1,7 @@
 package com.baulsupp.okurl.authenticator
 
-class BasicCredentials(var user: String, var password: String)
+import okhttp3.Credentials
+
+data class BasicCredentials(val user: String, val password: String) {
+  fun header() = Credentials.basic(user, password)
+}
