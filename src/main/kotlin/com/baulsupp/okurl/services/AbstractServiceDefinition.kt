@@ -6,8 +6,8 @@ abstract class AbstractServiceDefinition<T>(
   private val apiHost: String,
   private val serviceName: String,
   private val shortName: String,
-  private val apiDocs: String?,
-  private val accountsLink: String?
+  private val apiDocs: String? = null,
+  private val accountsLink: String? = null
 ) : ServiceDefinition<T> {
 
   override fun shortName() = shortName

@@ -2,32 +2,33 @@ package com.baulsupp.okurl.services.basicauth
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.basic.BasicAuthServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
+import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-/**
- * https://developer.lyft.com/docs/authentication
- */
-class BasicAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("basic", "Basic Auth", "basic",
+class BasicAuthInterceptor : AuthInterceptor<BasicCredentials>() {
+  override val serviceDefinition = BasicAuthServiceDefinition("basic", "Basic Auth", "basic",
     "https://en.wikipedia.org/wiki/Basic_access_authentication")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
-    request = request.newBuilder().addHeader("Authorization", "GenieKey ${credentials.accessToken}").build()
+    request = request.newBuilder().addHeader("Authorization", credentials.header()).build()
 
     return chain.proceed(request)
   }
 
+  // temporarily working with https://httpbin.org/hidden-basic-auth/a/b
   override fun supportsUrl(url: HttpUrl): Boolean {
     return url.encodedPath().startsWith("/hidden-basic-auth/") || url.encodedPath().startsWith("/basic-auth/")
   }
@@ -36,20 +37,12 @@ class BasicAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
-  ): Oauth2Token {
-    val apiKey = Secrets.prompt("OpsGenie API Key", "opsgenie.apiKey", "", false)
+  ): BasicCredentials {
+    val user = Secrets.prompt("Basic Auth User", "basic.user", "", false)
+    val password = Secrets.prompt("Basic Auth Password", "basic.password", "", false)
 
-    return Oauth2Token(apiKey)
+    return BasicCredentials(user, password)
   }
 
-  override suspend fun validate(
-    client: OkHttpClient,
-    credentials: Oauth2Token
-  ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile",
-      TokenValue(credentials), "id"))
-
-  override fun canRenew(credentials: Oauth2Token): Boolean = false
-
-  override fun hosts(): Set<String> = setOf("api.opsgenie.com")
+  override fun hosts(): Set<String> = setOf("basic")
 }
