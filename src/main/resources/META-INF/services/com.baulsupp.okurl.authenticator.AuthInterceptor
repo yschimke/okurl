@@ -24,6 +24,7 @@ com.baulsupp.okurl.services.linkedin.LinkedinAuthInterceptor
 com.baulsupp.okurl.services.lyft.LyftAuthInterceptor
 com.baulsupp.okurl.services.mapbox.MapboxAuthInterceptor
 com.baulsupp.okurl.services.microsoft.MicrosoftAuthInterceptor
+com.baulsupp.okurl.services.opsgenie.OpsGenieAuthInterceptor
 com.baulsupp.okurl.services.oxforddictionaries.OxfordDictionariesInterceptor
 com.baulsupp.okurl.services.paypal.PaypalAuthInterceptor
 com.baulsupp.okurl.services.paypal.PaypalSandboxAuthInterceptor
