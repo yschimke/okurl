@@ -7,8 +7,8 @@ class BasicAuthServiceDefinition(
   apiHost: String,
   serviceName: String,
   shortName: String,
-  apiDocs: String,
-  accountsLink: String?
+  apiDocs: String? = null,
+  accountsLink: String? = null
 ) : AbstractServiceDefinition<BasicCredentials>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
 
   override fun parseCredentialsString(s: String): BasicCredentials {

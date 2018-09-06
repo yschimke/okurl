@@ -453,6 +453,7 @@ abstract class CommandLineClient {
     val authenticator = authenticatorBuilder.build();
 
     builder.authenticator(authenticator)
+    builder.proxyAuthenticator(authenticator)
 
     // TODO add caching
 //    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
