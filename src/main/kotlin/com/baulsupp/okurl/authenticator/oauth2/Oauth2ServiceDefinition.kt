@@ -6,8 +6,8 @@ class Oauth2ServiceDefinition(
   apiHost: String,
   serviceName: String,
   shortName: String,
-  apiDocs: String?,
-  accountsLink: String?
+  apiDocs: String? = null,
+  accountsLink: String? = null
 ) : AbstractServiceDefinition<Oauth2Token>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
 
   override fun parseCredentialsString(s: String): Oauth2Token {
