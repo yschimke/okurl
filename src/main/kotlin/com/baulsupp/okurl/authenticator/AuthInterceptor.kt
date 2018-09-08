@@ -22,7 +22,7 @@ import java.util.logging.Logger
 abstract class AuthInterceptor<T> {
   open fun name(): String = serviceDefinition.shortName()
 
-  open fun supportsUrl(url: HttpUrl): Boolean = try {
+  open suspend fun supportsUrl(url: HttpUrl): Boolean = try {
     hosts().contains(url.host())
   } catch (e: IOException) {
     logger.log(Level.WARNING, "failed getting hosts", e)

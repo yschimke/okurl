@@ -12,10 +12,10 @@ class BasicAuthServiceDefinition(
 ) : AbstractServiceDefinition<BasicCredentials>(apiHost, serviceName, shortName, apiDocs, accountsLink) {
 
   override fun parseCredentialsString(s: String): BasicCredentials {
-    val parts = s.split(":".toRegex(), 2).toTypedArray()
-    return BasicCredentials(parts[0], parts[1])
+    val (user, password) = s.split(":".toRegex(), 2).toTypedArray()
+    return BasicCredentials(user, password)
   }
 
   override fun formatCredentialsString(credentials: BasicCredentials) =
-    credentials.user + ":" + credentials.password
+    "${credentials.user}:${credentials.password}"
 }
