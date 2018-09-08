@@ -17,7 +17,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       "https://developer.linkedin.com/docs/rest-api",
       "https://www.linkedin.com/developer/apps")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val request = chain.request()
 
     val token = credentials.accessToken

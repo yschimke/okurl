@@ -23,7 +23,7 @@ class OxfordDictionariesInterceptor : AuthInterceptor<ODToken>() {
     }
   }
 
-  override fun intercept(chain: Interceptor.Chain, credentials: ODToken): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: ODToken): Response {
     var request = chain.request()
 
     request = request.edit {

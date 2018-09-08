@@ -31,7 +31,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://graph.microsoft.io/en-us/docs/get-started/rest",
     "https://apps.dev.microsoft.com/#/appList")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

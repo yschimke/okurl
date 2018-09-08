@@ -17,7 +17,7 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token("dc6zaTOxFJmzC")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

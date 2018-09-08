@@ -27,7 +27,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://developer.surveymonkey.com/api/v3/#scopes",
     "https://developer.surveymonkey.com/apps/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val newRequest = chain.request().newBuilder().addHeader("Authorization",
       "bearer " + credentials.accessToken).build()
 

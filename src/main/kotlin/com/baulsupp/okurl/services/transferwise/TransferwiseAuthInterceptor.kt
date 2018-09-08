@@ -22,7 +22,7 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://api-docs.transferwise.com/docs/versions/v1/overview",
     "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

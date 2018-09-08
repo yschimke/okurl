@@ -21,7 +21,7 @@ import okhttp3.Response
 
 class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: TrelloToken): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: TrelloToken): Response {
     var request = chain.request()
 
     val signedUrl = request.url().newBuilder().addQueryParameter("token", credentials.token).addQueryParameter("key", credentials.apiKey).build()

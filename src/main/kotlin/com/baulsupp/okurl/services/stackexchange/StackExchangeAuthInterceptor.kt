@@ -14,7 +14,7 @@ import okhttp3.Response
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   override val serviceDefinition = StackExchangeServiceDefinition()
 
-  override fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
     var request = chain.request()
 
     val newUrl = request.url()

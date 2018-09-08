@@ -2,6 +2,7 @@ package com.baulsupp.okurl.services.smartystreets
 
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -10,7 +11,7 @@ import okhttp3.Response
 
 class SmartyStreetsAuthInterceptor : AuthInterceptor<SmartStreetsToken>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: SmartStreetsToken): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: SmartStreetsToken): Response {
     var request = chain.request()
 
     val signedUrl = request.url().newBuilder().addQueryParameter("auth-id", credentials.authId).addQueryParameter("auth-token", credentials.authToken).build()
@@ -40,7 +41,7 @@ class SmartyStreetsAuthInterceptor : AuthInterceptor<SmartStreetsToken>() {
     return SmartyStreetsAuthFlow.login()
   }
 
-  override fun supportsUrl(url: HttpUrl): Boolean {
+  override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
     return url.host() == "api.smartystreets.com" || url.host().endsWith(".api.smartystreets.com")
   }
 

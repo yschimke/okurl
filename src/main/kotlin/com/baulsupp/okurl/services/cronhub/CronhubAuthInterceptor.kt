@@ -18,7 +18,7 @@ import okhttp3.Response
 class CronhubAuthInterceptor : AuthInterceptor<CronhubCredentials>() {
   override val serviceDefinition = CronhubAuthServiceDefinition
 
-  override fun intercept(chain: Interceptor.Chain, credentials: CronhubCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: CronhubCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder().addHeader("X-Api-Key", credentials.token).build()

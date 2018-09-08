@@ -17,7 +17,7 @@ class OpsGenieAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.opsgenie.com", "OpsGenie API", "opsgenie",
     "https://docs.opsgenie.com/docs/api-overview", "https://app.opsgenie.com/integration")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     request = request.newBuilder().addHeader("Authorization", "GenieKey ${credentials.accessToken}").build()

@@ -30,7 +30,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://developer.spotify.com/web-api/endpoint-reference/",
     "https://developer.spotify.com/my-applications/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

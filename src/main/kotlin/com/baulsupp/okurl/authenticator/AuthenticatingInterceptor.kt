@@ -10,14 +10,23 @@ import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.ServiceLoader
+import java.util.logging.Logger
 
 class AuthenticatingInterceptor(private val main: CommandLineClient, val services: List<AuthInterceptor<*>> = defaultServices()) : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
-    services
-      .filter { it.supportsUrl(chain.request().url()) }
-      .forEach { return runBlocking { intercept(it, chain) } }
+    return runBlocking {
+      val filteredAuthenticators = services
+        .filter { it.supportsUrl(chain.request().url(), main.credentialsStore) }
+        .sortedBy { -it.priority }
 
-    return chain.proceed(chain.request())
+      logger.fine { "Matching interceptors: $filteredAuthenticators" }
+
+      if (filteredAuthenticators.isNotEmpty()) {
+        intercept(filteredAuthenticators.first(), chain)
+      } else {
+        chain.proceed(chain.request())
+      }
+    }
   }
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
@@ -60,7 +69,7 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
   fun getByUrl(url: String): AuthInterceptor<*>? {
     val httpUrl = HttpUrl.parse(url)
 
-    return httpUrl?.let { services.firstOrNull { it.supportsUrl(httpUrl) } }
+    return httpUrl?.run { runBlocking { services.find { it.supportsUrl(httpUrl, main.credentialsStore) } } }
   }
 
   fun findAuthInterceptor(nameOrUrl: String): AuthInterceptor<*>? = getByName(nameOrUrl) ?: getByUrl(nameOrUrl)
@@ -68,6 +77,8 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
   fun names(): List<String> = services.map { it.name() }
 
   companion object {
+    val logger = Logger.getLogger(AuthenticatingInterceptor::class.java.name)
+
     fun defaultServices() = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader).toList()
   }
 }

@@ -27,7 +27,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://developers.facebook.com/docs/graph-api",
     "https://developers.facebook.com/apps/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val request = chain.request()
 
     if (supportsUrl(request.url()) && !authenticated(request)) {
@@ -92,7 +92,9 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> = API_HOSTS
 
-  override fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || isScimApi(url) || isStreamingGraphApi(url)
+  override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore) = supportsUrl(url)
+
+  fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || isScimApi(url) || isStreamingGraphApi(url)
 
   fun isScimApi(url: HttpUrl) =
     url.host().startsWith("www.") && url.host().endsWith(".facebook.com") && url.encodedPath().contains("/scim/v1/")

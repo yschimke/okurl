@@ -8,7 +8,7 @@ import okhttp3.Response
 import java.io.IOException
 
 abstract class CompletionOnlyAuthInterceptor(private val apiHost: String, private val serviceName: String, private val shortName: String, private val apiDocs: String) : AuthInterceptor<Nothing>() {
-  override fun intercept(chain: Interceptor.Chain, credentials: Nothing): Response =
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Nothing): Response =
     chain.proceed(chain.request())
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Nothing =

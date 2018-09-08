@@ -19,7 +19,7 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.imgur.com", "Imgur API", "imgur",
       "https://api.imgur.com/endpoints", "https://imgur.com/account/settings/apps")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

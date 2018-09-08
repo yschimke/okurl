@@ -23,7 +23,7 @@ import okhttp3.Response
  */
 class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()

@@ -11,7 +11,7 @@ import okhttp3.Response
 
 class StreamdataAuthInterceptor : AuthInterceptor<String>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: String): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: String): Response {
     var request = chain.request()
 
     val signedUrl = request.url().newBuilder().addQueryParameter("X-Sd-Token", credentials).build()

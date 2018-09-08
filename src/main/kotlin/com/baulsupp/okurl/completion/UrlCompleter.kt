@@ -28,7 +28,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
 
   private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String, tokenSet: Token): UrlList {
     return (main.authenticatingInterceptor.services
-      .firstOrNull { it.supportsUrl(fullUrl) }
+      .firstOrNull { it.supportsUrl(fullUrl, main.credentialsStore) }
       ?.apiCompleter(prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet)
       ?.siteUrls(fullUrl, tokenSet)
       ?: UrlList(UrlList.Match.EXACT, listOf()))

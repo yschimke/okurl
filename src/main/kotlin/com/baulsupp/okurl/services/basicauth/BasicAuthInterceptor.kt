@@ -11,7 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class BasicAuthInterceptor(val credentialsStore: CredentialsStore) : AuthInterceptor<FilteredBasicCredentials>() {
+class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
   override val serviceDefinition = object : AbstractServiceDefinition<FilteredBasicCredentials>("basic", "Basic Auth", "basic",
     "https://en.wikipedia.org/wiki/Basic_access_authentication") {
 
@@ -24,7 +24,7 @@ class BasicAuthInterceptor(val credentialsStore: CredentialsStore) : AuthInterce
       "${credentials.basicCredentials.user}:${credentials.basicCredentials.password}:${credentials.hostPattern}"
   }
 
-  override fun intercept(chain: Interceptor.Chain, credentials: FilteredBasicCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: FilteredBasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder().addHeader("Authorization", credentials.basicCredentials.header()).build()
@@ -32,7 +32,7 @@ class BasicAuthInterceptor(val credentialsStore: CredentialsStore) : AuthInterce
     return chain.proceed(request)
   }
 
-  override suspend fun supportsUrl(url: HttpUrl): Boolean =
+  override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean =
     FilteredBasicCredentials.matches(credentialsStore.findAllNamed(serviceDefinition).values, url)
 
   override suspend fun authorize(
