@@ -6,15 +6,13 @@ import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
-import com.baulsupp.okurl.kotlin.queryMapValue
+import com.baulsupp.okurl.kotlin.query
+import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-/**
- * https://developer.lyft.com/docs/authentication
- */
 class OpsGenieAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.opsgenie.com", "OpsGenie API", "opsgenie",
     "https://docs.opsgenie.com/docs/api-overview", "https://app.opsgenie.com/integration")
@@ -40,9 +38,13 @@ class OpsGenieAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override suspend fun validate(
     client: OkHttpClient,
     credentials: Oauth2Token
-  ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.lyft.com/v1/profile",
-      TokenValue(credentials), "id"))
+  ): ValidatedCredentials {
+    // TODO account auth
+
+    // team auth
+    val teams = client.query<TeamsResponse>("https://api.opsgenie.com/v2/teams", TokenValue(credentials))
+    return ValidatedCredentials(teams.data.firstOrNull()?.name)
+  }
 
   override fun canRenew(credentials: Oauth2Token): Boolean = false
 
