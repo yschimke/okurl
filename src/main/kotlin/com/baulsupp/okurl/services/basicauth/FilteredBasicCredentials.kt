@@ -9,8 +9,14 @@ data class FilteredBasicCredentials(val basicCredentials: BasicCredentials, val 
   fun matches(url: HttpUrl): Boolean = patterns.any { matches(url, it) }
 
   companion object {
+    val DEFAULT = FilteredBasicCredentials(BasicCredentials("", ""), "")
+
     fun matches(tokens: Collection<FilteredBasicCredentials>, url: HttpUrl): Boolean {
       return tokens.any { it.matches(url) }
+    }
+
+    fun firstMatch(tokens: Collection<FilteredBasicCredentials>, url: HttpUrl): FilteredBasicCredentials? {
+      return tokens.first { it.matches(url) }
     }
 
     fun matches(url: HttpUrl, pattern: String): Boolean {

@@ -34,6 +34,14 @@ abstract class AuthInterceptor<T> {
 
   abstract suspend fun intercept(chain: Interceptor.Chain, credentials: T): Response
 
+  open suspend fun intercept(chain: Interceptor.Chain, credentials: T?, credentialsStore: CredentialsStore): Response {
+    return if (credentials != null) {
+      return intercept(chain, credentials)
+    } else {
+      chain.proceed(chain.request())
+    }
+  }
+
   abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
 
   abstract val serviceDefinition: ServiceDefinition<T>

@@ -39,9 +39,10 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
       else -> main.credentialsStore.get(interceptor.serviceDefinition, tokenSet) ?: interceptor.defaultCredentials()
     }
 
-    if (credentials != null) {
-      val result = interceptor.intercept(chain, credentials)
+    val result = interceptor.intercept(chain, credentials, main.credentialsStore)
 
+    // TODO move inside auth interceptor
+    if (credentials != null) {
       val tokenSetName = tokenSet.name()
       if (tokenSetName != null) {
         if (result.code() in 400..499) {
@@ -54,13 +55,9 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
           }
         }
       }
-
-      // TODO retry request
-
-      return result
-    } else {
-      return chain.proceed(chain.request())
     }
+
+    return result
   }
 
   fun getByName(authName: String): AuthInterceptor<*>? =

@@ -50,4 +50,8 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun hosts(): Set<String> = setOf((
     "httpbin.org")
   )
+
+  // lower priority than basic auth
+  override val priority: Int
+    get() = -200
 }

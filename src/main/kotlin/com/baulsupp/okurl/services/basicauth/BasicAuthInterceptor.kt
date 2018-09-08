@@ -25,15 +25,34 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
   }
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: FilteredBasicCredentials): Response {
-    var request = chain.request()
+    val request = chain.request().newBuilder().addHeader("Authorization", credentials.basicCredentials.header()).build()
+    return chain.proceed(request)
+  }
 
-    request = request.newBuilder().addHeader("Authorization", credentials.basicCredentials.header()).build()
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: FilteredBasicCredentials?, credentialsStore: CredentialsStore): Response {
+    var request = chain.request()
+    val url = chain.call().request().url()
+
+    var matchingCredentials: FilteredBasicCredentials?
+
+    if (credentials?.matches(url) == true) {
+      matchingCredentials = credentials
+    } else {
+      matchingCredentials = FilteredBasicCredentials.firstMatch(allStoredCredentials(credentialsStore), url)
+    }
+
+    if (matchingCredentials != null) {
+      request = request.newBuilder().addHeader("Authorization", matchingCredentials.basicCredentials.header()).build()
+    }
 
     return chain.proceed(request)
   }
 
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean =
-    FilteredBasicCredentials.matches(credentialsStore.findAllNamed(serviceDefinition).values, url)
+    FilteredBasicCredentials.matches(allStoredCredentials(credentialsStore), url)
+
+  suspend fun allStoredCredentials(credentialsStore: CredentialsStore) =
+    credentialsStore.findAllNamed(serviceDefinition).values
 
   override suspend fun authorize(
     client: OkHttpClient,

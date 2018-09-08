@@ -46,7 +46,7 @@ object TestDohMain {
 
       println("Bad targets\n***********\n")
 
-      val url = HttpUrl.parse("https://dns.cloudflare.com/.not-so-well-known/run-dmc-query")
+      val url = HttpUrl.get("https://dns.cloudflare.com/.not-so-well-known/run-dmc-query")
       val badProviders = listOf(DnsOverHttps.Builder().client(bootstrapClient)
               .url(url)
               .post(true)
