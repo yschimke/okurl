@@ -48,4 +48,8 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
   }
 
   override fun hosts(): Set<String> = setOf("basic")
+
+  // lower priority than any site specific auth
+  override val priority: Int
+    get() = -100
 }
