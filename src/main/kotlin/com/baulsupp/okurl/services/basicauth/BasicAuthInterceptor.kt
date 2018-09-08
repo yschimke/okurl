@@ -41,8 +41,8 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
     authArguments: List<String>
   ): FilteredBasicCredentials {
     val user = Secrets.prompt("Basic Auth User", "basic.user", "", false)
-    val password = Secrets.prompt("Basic Auth Password", "basic.password", "", false)
-    val hostPattern = Secrets.prompt("Basic Auth Password", "basic.password", "", false)
+    val password = Secrets.prompt("Basic Auth Password", "basic.password", "", true)
+    val hostPattern = Secrets.prompt("Matching Hosts *|*.site.com|app.site.com", "basic.hostpattern", "", false)
 
     return FilteredBasicCredentials(BasicCredentials(user, password), hostPattern)
   }
