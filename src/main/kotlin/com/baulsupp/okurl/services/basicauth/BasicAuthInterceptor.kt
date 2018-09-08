@@ -3,7 +3,10 @@ package com.baulsupp.okurl.services.basicauth
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.BasicCredentials
+import com.baulsupp.okurl.completion.CompletionVariableCache
+import com.baulsupp.okurl.completion.UrlCompleter
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.HttpUrl
@@ -65,6 +68,8 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
 
     return FilteredBasicCredentials(BasicCredentials(user, password), hostPattern)
   }
+
+  override fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token) = UrlCompleter.NullCompleter
 
   override fun hosts(): Set<String> = setOf("basic")
 

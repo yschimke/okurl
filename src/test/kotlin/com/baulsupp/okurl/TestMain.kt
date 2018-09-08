@@ -3,7 +3,7 @@ package com.baulsupp.okurl
 object TestMain {
   @JvmStatic
   fun main(args: Array<String>) {
-    runMain("https://httpbin.org/basic-auth/a/b")
+    runMain("https://httpbin. --urlCompletion")
   }
 
   private fun runMain(s: String) {

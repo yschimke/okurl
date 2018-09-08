@@ -79,6 +79,8 @@ data class UrlList(val match: Match, val urls: List<String>) {
   override fun toString() = urls.joinToString("\n")
 
   companion object {
+    val None = UrlList(UrlList.Match.EXACT, listOf())
+
     fun fromResource(serviceName: String): UrlList? {
       return UrlList::class.java.getResource("/urls/$serviceName.txt")?.let {
         val readText = it.readText().split('\n').filterNot { it.isBlank() }

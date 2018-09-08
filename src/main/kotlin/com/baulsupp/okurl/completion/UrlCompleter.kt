@@ -27,11 +27,18 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
   }
 
   private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String, tokenSet: Token): UrlList {
-    return (main.authenticatingInterceptor.services
-      .firstOrNull { it.supportsUrl(fullUrl, main.credentialsStore) }
-      ?.apiCompleter(prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet)
-      ?.siteUrls(fullUrl, tokenSet)
-      ?: UrlList(UrlList.Match.EXACT, listOf()))
+    val authInterceptors = main.authenticatingInterceptor.services
+      .filter { it.supportsUrl(fullUrl, main.credentialsStore) }
+
+    authInterceptors.forEach {
+      val apiCompleter = it.apiCompleter(prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet)
+      val results = apiCompleter.siteUrls(fullUrl, tokenSet)
+
+      if (results.urls.isNotEmpty())
+        return results
+    }
+
+    return UrlList.None
   }
 
   private suspend fun UrlCompleter.hostCompletion(tokenSet: Token): UrlList {
@@ -55,6 +62,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       }
     }
+
     return UrlList(UrlList.Match.HOSTS, results)
   }
 
@@ -67,6 +75,12 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
   private fun isSingleApi(prefix: String): Boolean = prefix.matches("https://[^/]+/.*".toRegex())
 
   companion object {
+    val NullCompleter = object : ApiCompleter {
+      override suspend fun prefixUrls() = UrlList.None
+
+      override suspend fun siteUrls(url: HttpUrl, tokenSet: Token) = UrlList.None
+    }
+
     private val logger = Logger.getLogger(UrlCompleter::class.java.name)
 
     fun isPossibleAddress(urlCompletion: String): Boolean {

@@ -17,7 +17,6 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
     return runBlocking {
       val filteredAuthenticators = services
         .filter { it.supportsUrl(chain.request().url(), main.credentialsStore) }
-        .sortedBy { -it.priority }
 
       logger.fine { "Matching interceptors: $filteredAuthenticators" }
 
@@ -76,6 +75,7 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
   companion object {
     val logger = Logger.getLogger(AuthenticatingInterceptor::class.java.name)
 
-    fun defaultServices() = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader).toList()
+    fun defaultServices() = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader)
+      .sortedBy { -it.priority }
   }
 }
