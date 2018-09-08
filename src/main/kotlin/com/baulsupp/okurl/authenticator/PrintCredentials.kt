@@ -48,19 +48,21 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
     val sd = key.auth.serviceDefinition
-    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(sd.serviceName() + " (" + sd.shortName() + ")", key.tokenSet, validated?.username
+    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(displayName(sd), key.tokenSet, validated?.username
       ?: "-", validated?.clientName ?: "-"))
   }
+
+  fun displayName(sd: ServiceDefinition<*>) = sd.serviceName() + " (" + sd.shortName() + ")"
 
   private fun printFailed(key: Key, e: Throwable) {
     val sd = key.auth.serviceDefinition
 
     when (e) {
-      is CancellationException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, "timeout"))
-      is TimeoutException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, "timeout"))
-      is ClientException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, key.auth.errorMessage(e)))
-      is IOException -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, e.toString()))
-      else -> outputHandler.info("%-20s\t%-20s	%s".format(sd.serviceName(), key.tokenSet, e.toString()))
+      is CancellationException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, "timeout"))
+      is TimeoutException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, "timeout"))
+      is ClientException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, key.auth.errorMessage(e)))
+      is IOException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, e.toString()))
+      else -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, e.toString()))
     }
   }
 

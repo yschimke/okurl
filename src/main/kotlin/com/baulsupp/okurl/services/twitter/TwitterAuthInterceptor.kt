@@ -17,7 +17,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
 
   override val serviceDefinition = TwitterServiceDefinition()
 
-  override fun intercept(chain: Interceptor.Chain, credentials: TwitterCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: TwitterCredentials): Response {
     var request = chain.request()
 
     val authHeader = Signature().generateAuthorization(request, credentials)

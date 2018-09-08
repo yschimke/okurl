@@ -24,7 +24,7 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.lyft.com", "Lyft API", "lyft",
     "https://developer.lyft.com/docs", "https://www.lyft.com/developers/manage")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

@@ -25,7 +25,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://docs.connect.squareup.com/api/connect/v2/",
     "https://connect.squareup.com/apps")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

@@ -24,7 +24,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://quip.com/dev/automation/documentation",
     "https://quip.com/dev/token")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

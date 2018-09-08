@@ -17,7 +17,7 @@ import okhttp3.Response
  */
 class HowsMySslAuthInterceptor : AuthInterceptor<String>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: String): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: String): Response {
     var request = chain.request()
 
     return chain.proceed(request)

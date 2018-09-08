@@ -13,7 +13,7 @@ import okhttp3.Response
 
 class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response = chain.proceed(chain.request())
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response = chain.proceed(chain.request())
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): Oauth2Token =
     if (authArguments.isEmpty()) {

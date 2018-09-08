@@ -18,7 +18,6 @@ class GoogleAuthInterceptorTest {
   private val credentialsStore = TestCredentialsStore()
 
   @Test
-
   fun hasManyHosts() {
     assertTrue(interceptor.hosts().size > 10)
     assertTrue(interceptor.hosts().contains("www.googleapis.com"))
@@ -26,9 +25,10 @@ class GoogleAuthInterceptorTest {
   }
 
   @Test
-
   fun supportsAnyGoogleApi() {
-    assertTrue(interceptor.supportsUrl(HttpUrl.parse("https://altrightfanfiction.googleapis.com")!!))
+    runBlocking {
+      assertTrue(interceptor.supportsUrl(HttpUrl.parse("https://altrightfanfiction.googleapis.com")!!, credentialsStore))
+    }
   }
 
   @Test

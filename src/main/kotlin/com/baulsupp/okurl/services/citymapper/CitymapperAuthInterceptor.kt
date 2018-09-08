@@ -16,7 +16,7 @@ class CitymapperAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("developer.citymapper.com", "Citymapper API", "citymapper",
     "https://citymapper.3scale.net/docs", "https://citymapper.3scale.net/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

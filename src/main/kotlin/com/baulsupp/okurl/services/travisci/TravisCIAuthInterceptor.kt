@@ -35,7 +35,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     }
   }
 
-  override fun intercept(chain: Interceptor.Chain, credentials: TravisToken): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: TravisToken): Response {
     var request = chain.request()
 
     request = request.newBuilder()

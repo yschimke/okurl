@@ -20,7 +20,7 @@ class FitbitAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.fitbit.com", "Fitbit API", "fitbit",
     "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

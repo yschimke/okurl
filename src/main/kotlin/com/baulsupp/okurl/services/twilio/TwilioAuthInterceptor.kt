@@ -25,7 +25,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     BasicAuthServiceDefinition("api.twilio.com", "Twilio API", "twilio",
       "https://www.twilio.com/docs/api/rest", "https://www.twilio.com/console")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()

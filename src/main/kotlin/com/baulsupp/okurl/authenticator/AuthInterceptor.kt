@@ -22,14 +22,25 @@ import java.util.logging.Logger
 abstract class AuthInterceptor<T> {
   open fun name(): String = serviceDefinition.shortName()
 
-  open fun supportsUrl(url: HttpUrl): Boolean = try {
+  open val priority: Int
+    get() = 0
+
+  open suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean = try {
     hosts().contains(url.host())
   } catch (e: IOException) {
     logger.log(Level.WARNING, "failed getting hosts", e)
     false
   }
 
-  abstract fun intercept(chain: Interceptor.Chain, credentials: T): Response
+  abstract suspend fun intercept(chain: Interceptor.Chain, credentials: T): Response
+
+  open suspend fun intercept(chain: Interceptor.Chain, credentials: T?, credentialsStore: CredentialsStore): Response {
+    return if (credentials != null) {
+      return intercept(chain, credentials)
+    } else {
+      chain.proceed(chain.request())
+    }
+  }
 
   abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
 
@@ -66,6 +77,10 @@ abstract class AuthInterceptor<T> {
 
   open fun errorMessage(ce: ClientException): String {
     return ce.message ?: "response code ${ce.code}"
+  }
+
+  override fun toString(): String {
+    return name()
   }
 
   companion object {

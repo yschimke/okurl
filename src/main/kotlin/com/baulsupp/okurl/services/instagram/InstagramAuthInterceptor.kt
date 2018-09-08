@@ -17,7 +17,7 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://www.instagram.com/developer/endpoints/",
     "https://www.instagram.com/developer/clients/manage/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

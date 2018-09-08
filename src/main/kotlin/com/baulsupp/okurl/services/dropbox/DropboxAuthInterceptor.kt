@@ -23,7 +23,7 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.dropboxapi.com", "Dropbox API", "dropbox",
     "https://www.dropbox.com/developers/documentation/http/documentation", "https://www.dropbox.com/developers/apps")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

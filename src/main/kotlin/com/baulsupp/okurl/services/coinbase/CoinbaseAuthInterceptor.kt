@@ -27,7 +27,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
     "https://www.coinbase.com/settings/api")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     request = request.newBuilder().header("Authorization", "Bearer ${credentials.accessToken}").header("CB-VERSION", "2017-12-17").build()

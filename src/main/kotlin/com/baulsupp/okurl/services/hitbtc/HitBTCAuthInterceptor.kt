@@ -25,7 +25,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override val serviceDefinition = BasicAuthServiceDefinition("api.hitbtc.com", "HitBTC API", "hitbtc",
       "https://api.hitbtc.com/", "https://hitbtc.com/settings/api-keys")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()

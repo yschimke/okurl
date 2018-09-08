@@ -26,7 +26,7 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("circleci.com", "CircleCI API", "circleci",
     "https://circleci.com/docs/api/v1-reference/", "https://circleci.com/account/api")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

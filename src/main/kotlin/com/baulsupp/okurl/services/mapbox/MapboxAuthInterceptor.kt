@@ -16,7 +16,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       "https://www.mapbox.com/api-documentation/",
       "https://www.mapbox.com/studio/account/tokens/")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

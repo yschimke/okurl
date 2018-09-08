@@ -29,7 +29,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   private fun host(): String = "api.uber.com"
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

@@ -16,7 +16,7 @@ import okhttp3.Response
  */
 class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
-  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()
@@ -50,4 +50,8 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override fun hosts(): Set<String> = setOf((
     "httpbin.org")
   )
+
+  // lower priority than basic auth
+  override val priority: Int
+    get() = -200
 }

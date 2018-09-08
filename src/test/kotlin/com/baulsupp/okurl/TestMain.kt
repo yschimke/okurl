@@ -3,7 +3,7 @@ package com.baulsupp.okurl
 object TestMain {
   @JvmStatic
   fun main(args: Array<String>) {
-    runMain("--dns dnsoverhttps --ip ipv4only https://httpbin.org/json")
+    runMain("https://httpbin.org/basic-auth/a/b")
   }
 
   private fun runMain(s: String) {

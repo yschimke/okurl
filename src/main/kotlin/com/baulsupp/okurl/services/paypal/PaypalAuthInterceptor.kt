@@ -22,7 +22,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   open fun shortName() = "paypal"
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken

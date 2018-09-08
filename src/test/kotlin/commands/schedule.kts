@@ -62,7 +62,7 @@ runBlocking {
 
   val all_slots = slots(start_day, start_time, end_time, days, length)
 
-  val principle_slots = free_slots(all_slots, busy_times.getValue(principal))
+//  val principle_slots = free_slots(all_slots, busy_times.getValue(principal))
   val people_slots = people.keysToMap { free_slots(all_slots, busy_times.getValue(it)) }
 
   // TODO schedule best meeting times

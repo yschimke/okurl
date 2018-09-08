@@ -13,7 +13,17 @@ class OSXCredentialsStore : CredentialsStore {
   override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
 
-    return pw.map { serviceDefinition.parseCredentialsString(it) }.orElse(null)
+    val pwString = if (pw.isPresent) pw.get() else null
+
+    if (pwString != null) {
+      try {
+        return serviceDefinition.parseCredentialsString(pwString)
+      } catch (e: Exception) {
+        logger.log(Level.FINE, "failed to parse", e)
+      }
+    }
+
+    return null
   }
 
   override fun <T> set(

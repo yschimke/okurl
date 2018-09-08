@@ -39,7 +39,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     "https://developers.google.com/",
     "https://console.developers.google.com/apis/credentials")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val token = credentials.accessToken
@@ -57,7 +57,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return response
   }
 
-  override fun supportsUrl(url: HttpUrl): Boolean {
+  override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
     val host = url.host()
 
     return setOf((

@@ -14,7 +14,7 @@ class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override val serviceDefinition =
     BasicAuthServiceDefinition("sheetsu.com", "Sheetsu API", "sheetsu", "https://docs.sheetsu.com/", "https://sheetsu.com/dashboard")
 
-  override fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
 
     request = request.newBuilder()
