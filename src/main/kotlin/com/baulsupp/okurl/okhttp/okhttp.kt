@@ -26,7 +26,13 @@ val TLS13_CIPHER_SUITES = arrayOf(
   forJavaName("TLS_AES_256_CCM_8_SHA256")
 )
 
-val TLS_13 = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+val MODERN_TLS_13_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+  .cipherSuites(*(TLS13_CIPHER_SUITES.toList() + ConnectionSpec.MODERN_TLS.cipherSuites()!!.toList()).toTypedArray())
+  .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2, TlsVersion.TLS_1_1, TlsVersion.TLS_1_0)
+  .supportsTlsExtensions(true)
+  .build()!!
+
+val TLS_13_ONLY_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
   .cipherSuites(*TLS13_CIPHER_SUITES)
   .tlsVersions(TlsVersion.TLS_1_3)
   .supportsTlsExtensions(true)
@@ -35,7 +41,8 @@ val TLS_13 = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
 enum class ConnectionSpecOption(vararg val specs: ConnectionSpec) {
   ALL(AllConnectionSpec),
   RESTRICTED_TLS(RestrictedConnectionSpec),
-  MODERN_TLS_13(TLS_13, ConnectionSpec.MODERN_TLS),
+  TLS_13_ONLY(TLS_13_ONLY_SPEC),
+  MODERN_TLS_13(MODERN_TLS_13_SPEC),
   MODERN_TLS(ConnectionSpec.MODERN_TLS),
   COMPATIBLE_TLS(ConnectionSpec.COMPATIBLE_TLS),
   CLEARTEXT(ConnectionSpec.CLEARTEXT);
