@@ -6,7 +6,8 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import okhttp3.HttpUrl
 import java.util.logging.Level
@@ -28,7 +29,7 @@ class GoogleDiscoveryCompleter(
 
   override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     val futures = discoveryDocPaths.map {
-      async(CommonPool) {
+      GlobalScope.async(Dispatchers.Default) {
         discoveryRegistry.load(it, tokenSet).urls
       }
     }.mapNotNull {

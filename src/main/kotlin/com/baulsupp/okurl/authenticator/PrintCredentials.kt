@@ -1,12 +1,13 @@
 package com.baulsupp.okurl.authenticator
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.CommonPool
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -110,7 +111,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
           }
 
           credentials?.let {
-            val x = async(CommonPool) {
+            val x = GlobalScope.async(Dispatchers.Default) {
               v(sv, credentials)
             }
             Pair(Key(sv, name), x)

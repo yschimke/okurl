@@ -22,8 +22,6 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
 
-import okhttp3.dnsoverhttps.DnsOverHttps.UDPWIREFORMAT
-
 /**
  * Temporary registry of known DNS over HTTPS providers.
  *
@@ -32,9 +30,8 @@ import okhttp3.dnsoverhttps.DnsOverHttps.UDPWIREFORMAT
 object DohProviders {
   fun buildGoogle(bootstrapClient: OkHttpClient): DnsOverHttps {
     return DnsOverHttps.Builder().client(bootstrapClient)
-            .url(parseUrl("https://dns.google.com/experimental?ct=$UDPWIREFORMAT"))
+            .url(parseUrl("https://dns.google.com/experimental"))
             .bootstrapDnsHosts(getByIp("216.58.204.78"), getByIp("2a00:1450:4009:814:0:0:0:200e"))
-            .contentType(UDPWIREFORMAT)
             .build()
   }
 
@@ -43,7 +40,6 @@ object DohProviders {
             .url(parseUrl("https://dns.google.com/experimental"))
             .bootstrapDnsHosts(getByIp("216.58.204.78"), getByIp("2a00:1450:4009:814:0:0:0:200e"))
             .post(true)
-            .contentType(UDPWIREFORMAT)
             .build()
   }
 
@@ -61,7 +57,6 @@ object DohProviders {
             .url(parseUrl("https://dns.cloudflare.com/.well-known/dns-query"))
             .includeIPv6(false)
             .post(true)
-            .contentType(UDPWIREFORMAT)
             .build()
   }
 

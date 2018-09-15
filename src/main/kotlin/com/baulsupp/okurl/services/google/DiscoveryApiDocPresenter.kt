@@ -1,10 +1,11 @@
 package com.baulsupp.okurl.services.google
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.Token
-import com.baulsupp.oksocial.output.OutputHandler
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
@@ -22,7 +23,7 @@ class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresente
     val discoveryPaths = DiscoveryIndex.instance.getDiscoveryUrlForPrefix(url)
 
     val docs = discoveryPaths.map { p ->
-      async(CommonPool) {
+      GlobalScope.async(Dispatchers.Default) {
         withTimeout(5, TimeUnit.SECONDS) { registry.load(p, tokenSet) }
       }
     }.mapNotNull {

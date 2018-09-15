@@ -5,7 +5,8 @@ import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.services.postman.model.CollectionResult
 import com.baulsupp.okurl.services.postman.model.CollectionsResult
-import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
 suspend fun postmanCollectionUrls(tokenSet: Token): List<String> {
@@ -14,7 +15,7 @@ suspend fun postmanCollectionUrls(tokenSet: Token): List<String> {
     tokenSet).collections.map { it.id }
 
   val jobs = collections.map {
-    async(CommonPool) {
+    GlobalScope.async(Dispatchers.Default) {
       client.query<CollectionResult>("https://api.getpostman.com/collections/$it", tokenSet)
     }
   }

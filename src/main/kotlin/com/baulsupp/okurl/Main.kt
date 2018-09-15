@@ -34,8 +34,9 @@ import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.annotations.Option
 import com.github.rvesse.airline.parser.errors.ParseException
-import kotlinx.coroutines.CommonPool
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
@@ -232,7 +233,7 @@ class Main : CommandLineClient() {
       }
 
       val responses = requests.map {
-        async(CommonPool) { submitRequest(it) }
+        GlobalScope.async(Dispatchers.Default) { submitRequest(it) }
       }
       val failed = processResponses(outputHandler, responses)
       return if (failed) -5 else 0

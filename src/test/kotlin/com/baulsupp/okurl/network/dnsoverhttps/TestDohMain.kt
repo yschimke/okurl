@@ -19,7 +19,6 @@ import okhttp3.Cache
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
-import okhttp3.dnsoverhttps.DnsOverHttps.UDPWIREFORMAT
 import java.io.File
 import java.io.IOException
 import java.net.UnknownHostException
@@ -50,7 +49,6 @@ object TestDohMain {
       val badProviders = listOf(DnsOverHttps.Builder().client(bootstrapClient)
               .url(url)
               .post(true)
-              .contentType(UDPWIREFORMAT)
               .build())
       runBatch(badProviders, names)
 

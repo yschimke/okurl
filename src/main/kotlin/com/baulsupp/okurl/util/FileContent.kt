@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.util
 
 import com.baulsupp.okurl.kotlin.IO
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -14,7 +15,7 @@ object FileContent {
       return IOUtils.toByteArray(System.`in`)
     }
     return if (param.startsWith("@")) {
-      async(IO) { File(param.substring(1)).readBytes() }.await()
+      GlobalScope.async(IO) { File(param.substring(1)).readBytes() }.await()
     } else {
       param.toByteArray(StandardCharsets.UTF_8)
     }
@@ -25,7 +26,7 @@ object FileContent {
       return IOUtils.toString(System.`in`, Charset.defaultCharset())
     }
     return if (param.startsWith("@")) {
-      async(IO) { File(param.substring(1)).readText() }.await()
+      GlobalScope.async(IO) { File(param.substring(1)).readText() }.await()
     } else {
       param
     }

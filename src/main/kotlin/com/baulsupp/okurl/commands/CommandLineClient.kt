@@ -50,6 +50,7 @@ import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
 import com.burgstaller.okhttp.DispatchingAuthenticator
+import com.github.kristofa.brave.LoggingReporter
 import com.github.markusbernhardt.proxy.ProxySearch
 import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.annotations.Arguments
@@ -501,7 +502,7 @@ abstract class CommandLineClient {
     reporter = if (zipkinSenderUri != null) {
       UriTransportRegistry.forUri(zipkinSenderUri)
     } else {
-      brave.internal.Platform.get().reporter()
+      Reporter.CONSOLE
     }
 
     val tracing = Tracing.newBuilder()

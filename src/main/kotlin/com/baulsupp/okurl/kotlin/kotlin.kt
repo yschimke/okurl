@@ -8,7 +8,8 @@ import com.baulsupp.okurl.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -69,7 +70,7 @@ suspend inline fun <reified T> OkHttpClient.queryPages(
       pages = paginator(page)
     } else if (pages is Rest) {
       val deferList = pages.urls.take(pageLimit).map {
-        async(CommonPool) {
+        GlobalScope.async(Dispatchers.Default) {
           query<T>(it, tokenSet)
         }
       }
