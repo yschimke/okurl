@@ -1,4 +1,4 @@
-package com.baulsupp.okurl.services.streamdata
+package com.baulsupp.okurl.services.symphony
 
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -9,9 +9,9 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class StreamdataAuthInterceptor : AuthInterceptor<String>() {
-  override val serviceDefinition = object : AbstractServiceDefinition<String>("streamdata.motwin.net", "Streamdata", "streamdata",
-    "https://streamdata.io/developers/docs/", "https://portal.streamdata.io/#/home") {
+class SymphonyAuthInterceptor : AuthInterceptor<String>() {
+  override val serviceDefinition = object : AbstractServiceDefinition<String>("foundation-dev.symphony.com", "Symphony", "symphony",
+    "https://rest-api.symphony.com/") {
     override fun parseCredentialsString(s: String): String = s
 
     override fun formatCredentialsString(credentials: String): String = credentials
@@ -20,15 +20,14 @@ class StreamdataAuthInterceptor : AuthInterceptor<String>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: String): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("X-Sd-Token", credentials).build()
-
-    request = request.newBuilder().url(signedUrl).build()
+    // noop
+    request = request.newBuilder().build()
 
     return chain.proceed(request)
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): String =
-    Secrets.prompt("Streamdata App Token", "streamdata.appKey", "", false)
+    TODO()
 
   override suspend fun validate(
     client: OkHttpClient,
@@ -36,5 +35,5 @@ class StreamdataAuthInterceptor : AuthInterceptor<String>() {
   ): ValidatedCredentials =
     ValidatedCredentials(credentials, null)
 
-  override fun hosts(): Set<String> = setOf("streamdata.motwin.net", "stockmarket.streamdata.io", "streamdata.motwin.net")
+  override fun hosts(): Set<String> = setOf("foundation-dev.symphony.com", "foundation-dev-api.symphony.com")
 }
