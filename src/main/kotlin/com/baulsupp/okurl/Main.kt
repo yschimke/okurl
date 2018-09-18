@@ -47,6 +47,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
+import org.conscrypt.Conscrypt
 import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.io.IOException
@@ -426,7 +427,7 @@ class Main : CommandLineClient() {
       // Prefer JDK 11 over Conscrypt
       if ("11" != System.getProperty("java.specification.version")) {
         try {
-          Security.insertProviderAt(OpenSSLProvider(), 1)
+          Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager().build(), 1)
         } catch (e: NoClassDefFoundError) {
           // Drop back to JDK
         }

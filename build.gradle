@@ -131,7 +131,7 @@ dependencies {
   implementation "javax.activation:activation:1.1.1"
   implementation "org.apache.commons:commons-lang3:3.8"
   implementation "org.brotli:dec:0.1.2"
-  implementation "org.conscrypt:conscrypt-openjdk-uber:1.2.0"
+  implementation "org.conscrypt:conscrypt-openjdk-uber:1.3.0"
   implementation "org.fusesource.jansi:jansi:1.17.1"
   implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
