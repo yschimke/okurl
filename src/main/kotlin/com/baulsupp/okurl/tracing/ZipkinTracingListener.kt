@@ -11,7 +11,6 @@ import okhttp3.Handshake
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import zipkin.TraceKeys
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -38,11 +37,11 @@ class ZipkinTracingListener(
   override fun callStart(call: Call) {
     callSpan = tracer.newTrace().name("http").start()
 
-    callSpan.tag(TraceKeys.HTTP_PATH, call.request().url().encodedPath())
-    callSpan.tag(TraceKeys.HTTP_METHOD, call.request().method())
-    callSpan.tag(TraceKeys.HTTP_HOST, call.request().url().host())
-    callSpan.tag(TraceKeys.HTTP_URL, call.request().url().toString())
-    callSpan.tag(TraceKeys.HTTP_ROUTE, "${call.request().method().toUpperCase()} ${call.request().url().encodedPath()}")
+    callSpan.tag("http.path", call.request().url().encodedPath())
+    callSpan.tag("http.method", call.request().method())
+    callSpan.tag("http.host", call.request().url().host())
+    callSpan.tag("http.url", call.request().url().toString())
+    callSpan.tag("http.route", "${call.request().method().toUpperCase()} ${call.request().url().encodedPath()}")
     callSpan.kind(Span.Kind.CLIENT)
 
     spanInScope = tracer.withSpanInScope(callSpan)
@@ -200,7 +199,7 @@ class ZipkinTracingListener(
       return
     }
 
-    requestSpan!!.tag(TraceKeys.HTTP_REQUEST_SIZE, "" + bytesWritten)
+    requestSpan!!.tag("http.request.size", "" + bytesWritten)
 
     requestSpan = finish(requestSpan)
   }
@@ -226,7 +225,7 @@ class ZipkinTracingListener(
     responseSpan = tracer.newChild(callSpan.context()).start()
       .name("response")
       .tag("responseHeaderLength", "" + response!!.headers().byteCount())
-      .tag(TraceKeys.HTTP_STATUS_CODE, response.code().toString())
+      .tag("http.status_code", response.code().toString())
   }
 
   override fun responseBodyEnd(call: Call, bytesRead: Long) {
@@ -234,7 +233,7 @@ class ZipkinTracingListener(
       return
     }
 
-    responseSpan!!.tag(TraceKeys.HTTP_RESPONSE_SIZE, "" + bytesRead)
+    responseSpan!!.tag("http.response.size", "" + bytesRead)
 
     responseSpan = finish(responseSpan)
   }

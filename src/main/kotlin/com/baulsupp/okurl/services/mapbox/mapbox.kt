@@ -8,7 +8,7 @@ class StaticMapBuilder {
 
   fun pinLocation(loc: Location?, markerType: String? = "m-marker+CCC") {
     if (loc != null) {
-      markers.add("pin-m-marker+CCC(" + loc.longitude + "," + loc.latitude + ")")
+      markers.add("pin-$markerType(" + loc.longitude + "," + loc.latitude + ")")
     }
   }
 
