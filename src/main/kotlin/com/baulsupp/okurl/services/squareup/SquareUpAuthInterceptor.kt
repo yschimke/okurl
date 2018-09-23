@@ -65,7 +65,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -76,13 +76,13 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "location", {
+    completer.withCachedVariable(name(), "location") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<LocationList>(
           "https://connect.squareup.com/v2/locations",
           tokenSet).locations.map { it.id }
       }
-    })
+    }
 
     return completer
   }

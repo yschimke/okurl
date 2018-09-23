@@ -48,7 +48,7 @@ class OkApiCommand : ShellCommand, MainAware {
     }
   }
 
-  fun credentials(name: String): Any? {
+  suspend fun credentials(name: String): Any? {
     if (!this::main.isInitialized) {
       val interceptor = main.authenticatingInterceptor.getByName(name)
 

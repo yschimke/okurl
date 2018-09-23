@@ -20,7 +20,7 @@ class GoogleDiscoveryCompleter(
   private val mappings = CompletionMappings()
 
   init {
-    mappings.withVariable("userId", { listOf("me") })
+    mappings.withVariable("userId") { listOf("me") }
   }
 
   override suspend fun prefixUrls(): UrlList {

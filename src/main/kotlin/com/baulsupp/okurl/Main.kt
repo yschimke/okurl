@@ -48,7 +48,6 @@ import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
 import org.conscrypt.Conscrypt
-import org.conscrypt.OpenSSLProvider
 import java.io.File
 import java.io.IOException
 import java.security.Security
@@ -130,7 +129,7 @@ class Main : CommandLineClient() {
     return 0
   }
 
-  private suspend fun Main.completeOption() {
+  private suspend fun completeOption() {
     return outputHandler.info(listOptions(complete!!).toSortedSet().joinToString(" "))
   }
 

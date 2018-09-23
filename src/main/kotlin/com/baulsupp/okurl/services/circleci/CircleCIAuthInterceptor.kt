@@ -58,7 +58,7 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> = setOf("circleci.com")
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -69,9 +69,9 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "project-path", {
+    completer.withCachedVariable(name(), "project-path") {
       client.queryList<Project>("https://circleci.com/api/v1.1/projects", tokenSet).map { it.vcs_type + "/" + it.username + "/" + it.reponame }
-    })
+    }
 
     return completer
   }

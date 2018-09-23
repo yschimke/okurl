@@ -50,7 +50,6 @@ import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
 import com.burgstaller.okhttp.DispatchingAuthenticator
-import com.github.kristofa.brave.LoggingReporter
 import com.github.markusbernhardt.proxy.ProxySearch
 import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.annotations.Arguments
@@ -428,13 +427,13 @@ abstract class CommandLineClient {
       builder.networkInterceptors().add(loggingInterceptor)
     }
 
-    if (osProxy) {
-      val proxySearch = ProxySearch.getDefaultProxySearch()
-      builder.proxySelector(proxySearch.proxySelector)
-    } else if (socksProxy != null) {
-      builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
-    } else if (proxy != null) {
-      builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
+    when {
+      osProxy -> {
+        val proxySearch = ProxySearch.getDefaultProxySearch()
+        builder.proxySelector(proxySearch.proxySelector)
+      }
+      socksProxy != null -> builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
+      proxy != null -> builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
     }
 
     val authenticatorBuilder = DispatchingAuthenticator.Builder()
@@ -451,10 +450,15 @@ abstract class CommandLineClient {
       authenticatorBuilder.with("basic", BasicPromptAuthenticator())
     }
 
-    val authenticator = authenticatorBuilder.build();
+    val authenticator = authenticatorBuilder.build()
 
     builder.authenticator(authenticator)
     builder.proxyAuthenticator(authenticator)
+
+      // TODO add caching
+//    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
+//    builder.authenticator(CachingAuthenticatorDecorator(authenticator, authCache))
+//    builder.addInterceptor(AuthenticationCacheInterceptor(authCache))
 
     // TODO add caching
 //    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()

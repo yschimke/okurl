@@ -14,8 +14,8 @@ class DnsSelector(private val mode: IPvMode, private val delegate: Dns) : Dns {
     addresses = when (mode) {
       IPvMode.IPV6_FIRST -> addresses.sortedBy { Inet4Address::class.java.isInstance(it) }
       IPvMode.IPV4_FIRST -> addresses.sortedBy { Inet6Address::class.java.isInstance(it) }
-      IPvMode.IPV6_ONLY -> addresses.filter({ Inet6Address::class.java.isInstance(it) })
-      IPvMode.IPV4_ONLY -> addresses.filter({ Inet4Address::class.java.isInstance(it) })
+      IPvMode.IPV6_ONLY -> addresses.filter { Inet6Address::class.java.isInstance(it) }
+      IPvMode.IPV4_ONLY -> addresses.filter { Inet4Address::class.java.isInstance(it) }
       IPvMode.SYSTEM -> addresses
     }
 

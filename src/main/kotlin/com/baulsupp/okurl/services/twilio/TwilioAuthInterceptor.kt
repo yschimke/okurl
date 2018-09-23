@@ -55,7 +55,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return ValidatedCredentials(map.accounts.firstOrNull()?.friendly_name)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -66,9 +66,9 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withVariable("AccountSid", {
+    completer.withVariable("AccountSid") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let { listOf(it.user) }
-    })
+    }
 
     return completer
   }

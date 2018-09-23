@@ -47,7 +47,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(token)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -58,14 +58,14 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "folderId", {
+    completer.withCachedVariable(name(), "folderId") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         currentUser(client, tokenSet).let {
           listOfNotNull(it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
             it.archive_folder_id) + it.shared_folder_ids.orEmpty()
         }
       }
-    })
+    }
 
     return completer
   }

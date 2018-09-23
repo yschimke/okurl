@@ -13,7 +13,7 @@ class PaypalSandboxAuthInterceptor : PaypalAuthInterceptor() {
 
   override fun host(): String = "api.sandbox.paypal.com"
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,

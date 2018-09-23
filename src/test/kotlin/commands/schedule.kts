@@ -48,7 +48,7 @@ fun free_slots(slots: List<MeetingTime>, busy_slots: List<MeetingTime>): List<Me
 
 runBlocking {
   val emails = File(args[0]).readLines()
-  val principal = emails.first()
+//  val principal = emails.first()
   val people = emails.drop(1)
 
   val pacific = ZoneOffset.ofHours(-7)

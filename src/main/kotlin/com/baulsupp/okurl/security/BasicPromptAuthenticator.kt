@@ -4,7 +4,6 @@ import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.credentials.TokenValue
 import okhttp3.Authenticator
 import okhttp3.Challenge
-import okhttp3.Credentials
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route

@@ -11,7 +11,7 @@ class WebAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Re
   suspend fun authorise(consumerKey: String, consumerSecret: String): TwitterCredentials {
     SimpleWebServer({
       it.queryParameter("oauth_verifier")!!
-    }).use({ s ->
+    }).use { s ->
       val unauthed = TwitterCredentials(null, consumerKey, consumerSecret, null, "")
 
       val requestCredentials = generateRequestToken(unauthed, s.redirectUri)
@@ -21,6 +21,6 @@ class WebAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Re
       val verifier = s.waitForCode()
 
       return generateAccessToken(requestCredentials, verifier)
-    })
+    }
   }
 }

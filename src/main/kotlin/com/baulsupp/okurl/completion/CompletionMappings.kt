@@ -4,7 +4,7 @@ class CompletionMappings {
   private val mappings = mutableListOf<suspend (UrlList) -> UrlList>()
 
   fun withVariable(name: String, values: suspend () -> List<String>) {
-    mappings.add({ ul: UrlList -> ul.replace(name, values(), true) })
+    mappings.add { ul: UrlList -> ul.replace(name, values(), true) }
   }
 
   suspend fun replaceVariables(urlList: UrlList): UrlList {

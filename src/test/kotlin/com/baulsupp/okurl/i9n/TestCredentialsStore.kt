@@ -7,12 +7,12 @@ import com.baulsupp.okurl.credentials.ServiceDefinition
 class TestCredentialsStore : CredentialsStore {
   var tokens: MutableMap<String, String> = linkedMapOf()
 
-  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
+  override suspend fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     return tokens[serviceDefinition.apiHost()]
         ?.let { serviceDefinition.parseCredentialsString(it) }
   }
 
-  override fun <T> set(
+  override suspend fun <T> set(
     serviceDefinition: ServiceDefinition<T>,
     tokenSet: String,
     credentials: T
@@ -20,7 +20,7 @@ class TestCredentialsStore : CredentialsStore {
     tokens[serviceDefinition.apiHost()] = serviceDefinition.formatCredentialsString(credentials)
   }
 
-  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
+  override suspend fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
     tokens.remove(serviceDefinition.apiHost())
   }
 }

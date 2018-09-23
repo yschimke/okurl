@@ -25,7 +25,7 @@ class Authorisation(val main: CommandLineClient) {
     }
   }
 
-  private fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String, tokenSet: String) {
+  private suspend fun <T> storeCredentials(auth: AuthInterceptor<T>, token: String, tokenSet: String) {
     val credentials = auth.serviceDefinition.parseCredentialsString(token)
     main.credentialsStore.set(auth.serviceDefinition, tokenSet, credentials)
   }
@@ -62,7 +62,7 @@ class Authorisation(val main: CommandLineClient) {
     main.credentialsStore.set(serviceDefinition, tokenSet, newCredentials)
   }
 
-  fun remove(auth: AuthInterceptor<*>?, tokenSet: String) {
+  suspend fun remove(auth: AuthInterceptor<*>?, tokenSet: String) {
     if (auth == null) {
       throw UsageException(
         "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))

@@ -68,7 +68,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return SpotifyAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,

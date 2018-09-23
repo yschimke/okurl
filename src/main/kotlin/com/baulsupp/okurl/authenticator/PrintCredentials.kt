@@ -89,14 +89,14 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   data class Key(val auth: AuthInterceptor<*>, val tokenSet: String)
 
-  private fun printCredentials(key: Key) {
+  private suspend fun printCredentials(key: Key) {
     val sd: ServiceDefinition<*> = key.auth.serviceDefinition
-    val credentialsString = credentialsStore.get(sd, key.tokenSet)?.let({ s(sd, it) })
+    val credentialsString = credentialsStore.get(sd, key.tokenSet)?.let { s(sd, it) }
       ?: "-"
     outputHandler.info(credentialsString)
   }
 
-  fun validate(
+  suspend fun validate(
     services: Iterable<AuthInterceptor<*>>,
     names: List<String>
   ): Map<Key, Deferred<ValidatedCredentials>> {

@@ -6,7 +6,7 @@ import javax.net.ssl.SSLContext
 object TestMain {
   @JvmStatic
   fun main(args: Array<String>) {
-    val x = SSLContext.getInstance("TLSv1.3", OpenSSLProvider())
+    SSLContext.getInstance("TLSv1.3", OpenSSLProvider())
 
     runMain("https://graph.facebook.com/robots.txt --debug --ssldebug")
   }

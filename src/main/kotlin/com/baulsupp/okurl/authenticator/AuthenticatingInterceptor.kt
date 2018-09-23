@@ -73,7 +73,7 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
   fun names(): List<String> = services.map { it.name() }
 
   companion object {
-    val logger = Logger.getLogger(AuthenticatingInterceptor::class.java.name)
+    val logger: Logger = Logger.getLogger(AuthenticatingInterceptor::class.java.name)
 
     fun defaultServices() = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader)
       .sortedBy { -it.priority }

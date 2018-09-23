@@ -105,7 +105,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   fun isStreamingGraphApi(url: HttpUrl) =
     url.host().startsWith("streaming-graph.") && url.host().endsWith(".facebook.com")
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,

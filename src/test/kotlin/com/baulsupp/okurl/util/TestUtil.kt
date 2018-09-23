@@ -38,7 +38,7 @@ object TestUtil {
   }
 
   @Synchronized
-  fun assumeHasToken(
+  suspend fun assumeHasToken(
     serviceDefinition: ServiceDefinition<out Any>
   ) {
     initialise()

@@ -52,7 +52,7 @@ class Secrets(
         }
       }
 
-      return Secrets(p.toMutableStringMap(), configFile, { classPathSecrets[it] })
+      return Secrets(p.toMutableStringMap(), configFile) { classPathSecrets[it] }
     }
 
     fun loadClasspathDefaults(): Secrets {
@@ -68,7 +68,7 @@ class Secrets(
         e.printStackTrace()
       }
 
-      return Secrets(p.toMutableStringMap(), null, { _ -> null })
+      return Secrets(p.toMutableStringMap(), null) { null }
     }
 
     suspend fun prompt(name: String, key: String, defaultValue: String, password: Boolean): String {

@@ -36,12 +36,12 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
     var request = chain.request()
     val url = chain.call().request().url()
 
-    var matchingCredentials: FilteredBasicCredentials?
+    val matchingCredentials: FilteredBasicCredentials?
 
-    if (credentials?.matches(url) == true) {
-      matchingCredentials = credentials
+    matchingCredentials = if (credentials?.matches(url) == true) {
+      credentials
     } else {
-      matchingCredentials = FilteredBasicCredentials.firstMatch(allStoredCredentials(credentialsStore), url)
+      FilteredBasicCredentials.firstMatch(allStoredCredentials(credentialsStore), url)
     }
 
     if (matchingCredentials != null) {
@@ -69,7 +69,7 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
     return FilteredBasicCredentials(BasicCredentials(user, password), hostPattern)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token) = UrlCompleter.NullCompleter
+  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token) = UrlCompleter.NullCompleter
 
   override fun hosts(): Set<String> = setOf("basic")
 

@@ -16,9 +16,10 @@ import okhttp3.Response
  * https://developer.paypal.com/docs/authentication
  */
 open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition(host(), "Paypal API", shortName(),
-      "https://developer.paypal.com/docs/api/",
-      "https://developer.paypal.com/developer/applications/")
+  override val serviceDefinition: Oauth2ServiceDefinition
+    get() = Oauth2ServiceDefinition(host(), "Paypal API", shortName(),
+        "https://developer.paypal.com/docs/api/",
+        "https://developer.paypal.com/developer/applications/")
 
   open fun shortName() = "paypal"
 

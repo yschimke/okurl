@@ -42,7 +42,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     return UrlList.None
   }
 
-  private suspend fun UrlCompleter.hostCompletion(tokenSet: Token): UrlList {
+  private suspend fun hostCompletion(tokenSet: Token): UrlList {
     val futures = main.authenticatingInterceptor.services.map {
       GlobalScope.async(Dispatchers.Default) {
         withTimeout(2, TimeUnit.SECONDS) {

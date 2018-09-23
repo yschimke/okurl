@@ -18,7 +18,7 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
     "https://api-docs.transferwise.com/",
     "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,

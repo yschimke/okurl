@@ -1,9 +1,8 @@
 package com.baulsupp.okurl.services.symphony
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

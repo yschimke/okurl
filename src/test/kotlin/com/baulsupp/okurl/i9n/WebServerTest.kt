@@ -2,7 +2,6 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
-import com.baulsupp.okurl.kotlin.toJavaList
 import com.baulsupp.okurl.okhttp.localhost
 import com.baulsupp.okurl.security.CertificatePin
 import kotlinx.coroutines.runBlocking

@@ -1,13 +1,8 @@
 package com.baulsupp.okurl.services.howsmyssl
 
-import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.BasicCredentials
-import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.okurl.authenticator.basic.BasicAuthServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.secrets.Secrets
+import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.services.AbstractServiceDefinition
-import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -18,7 +13,7 @@ import okhttp3.Response
 class HowsMySslAuthInterceptor : AuthInterceptor<String>() {
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: String): Response {
-    var request = chain.request()
+    val request = chain.request()
 
     return chain.proceed(request)
   }

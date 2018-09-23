@@ -79,7 +79,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(responseMap.access_token, responseMap.refresh_token, credentials.clientId, credentials.clientSecret)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -90,11 +90,11 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "itemId", {
+    completer.withCachedVariable(name(), "itemId") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<DriveRootList>("https://graph.microsoft.com/v1.0/me/drive/root/children", tokenSet).value.map { it.id }
       }
-    })
+    }
 
     return completer
   }

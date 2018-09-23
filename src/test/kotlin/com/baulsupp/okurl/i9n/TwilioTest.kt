@@ -26,12 +26,12 @@ class TwilioTest {
   @Test
   @Ignore
   fun completeEndpointWithReplacements() {
-    credentialsStore.set(service, DefaultToken.name, BasicCredentials("ABC", "PW"))
-
-    main.arguments = mutableListOf("https://api.twilio.com/")
-    main.urlComplete = true
-
     runBlocking {
+      credentialsStore.set(service, DefaultToken.name, BasicCredentials("ABC", "PW"))
+
+      main.arguments = mutableListOf("https://api.twilio.com/")
+      main.urlComplete = true
+
       main.run()
     }
 

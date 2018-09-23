@@ -97,7 +97,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return ValidatedCredentials(user.name)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -108,13 +108,13 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withVariable("user.id", {
+    completer.withVariable("user.id") {
       listOf(client.query<User>("https://api.travis-ci.org/user", tokenSet).id)
-    })
-    completer.withVariable("repository.id", {
+    }
+    completer.withVariable("repository.id") {
       client.query<RepositoryList>("https://api.travis-ci.org/repos",
         tokenSet).repositories.map { it.slug.replace("/", "%2F") }
-    })
+    }
 
     return completer
   }

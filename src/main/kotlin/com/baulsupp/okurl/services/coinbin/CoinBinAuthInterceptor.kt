@@ -49,7 +49,7 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
   override fun hosts(): Set<String> = setOf("coinbin.org")
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -60,9 +60,9 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "coin", {
+    completer.withCachedVariable(name(), "coin") {
       client.query<Coins>("https://coinbin.org/coins", tokenSet).coins.keys.toList()
-    })
+    }
 
     return completer
   }

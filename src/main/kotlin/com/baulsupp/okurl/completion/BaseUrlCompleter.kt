@@ -16,7 +16,7 @@ class BaseUrlCompleter(
   }
 
   fun withVariable(name: String, values: suspend () -> List<String>?) {
-    mappings.withVariable(name, { values().orEmpty() })
+    mappings.withVariable(name) { values().orEmpty() }
   }
 
   fun withCachedVariable(name: String, field: String, fn: suspend () -> List<String>?) {

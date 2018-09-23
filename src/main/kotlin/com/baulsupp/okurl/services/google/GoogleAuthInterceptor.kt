@@ -106,7 +106,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,

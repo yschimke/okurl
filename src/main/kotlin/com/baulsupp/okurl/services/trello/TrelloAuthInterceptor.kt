@@ -62,18 +62,18 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
     return TrelloAuthFlow.login(outputHandler)
   }
 
-  override fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
+  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "board_id", {
+    completer.withCachedVariable(name(), "board_id") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         val tokenResponse = client.query<TokenResponse>("https://api.trello.com/1/tokens/${it.token}")
 
         client.queryList<BoardResponse>("https://api.trello.com/1/members/${tokenResponse.idMember}/boards", tokenSet).map { it.id }
       }
-    })
+    }
 
     return completer
   }

@@ -26,12 +26,10 @@ inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSo
     }
 
     override fun onFailure(eventSource: EventSource?, t: Throwable?, response: Response?) {
-      if (t != null) {
-        println(t)
-      } else if (response != null) {
-        println(response.statusMessage())
-      } else {
-        println("unknown failure")
+      when {
+        t != null -> println(t)
+        response != null -> println(response.statusMessage())
+        else -> println("unknown failure")
       }
     }
 

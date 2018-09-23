@@ -10,7 +10,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
@@ -30,7 +29,6 @@ import java.io.IOException
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -139,7 +137,7 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 ): T? {
   val queryMap = this.queryMap<Any>(request)
 
-  val result = keys.fold(queryMap as Any, { map, key -> (map as Map<String, Any>)[key]!! })
+  val result = keys.fold(queryMap as Any) { map, key -> (map as Map<String, Any>)[key]!! }
 
   return result as T
 }

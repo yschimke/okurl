@@ -13,12 +13,10 @@ data class CollectionInfo(val name: String, val description: String, val schema:
 // url
 data class Request(val method: String, val url: Any) {
   fun urlString(): String? {
-    return if (url is String) {
-      url
-    } else if (url is Map<*, *>) {
-      url["raw"] as? String
-    } else {
-      null
+    return when (url) {
+      is String -> url
+      is Map<*, *> -> url["raw"] as? String
+      else -> null
     }
   }
 

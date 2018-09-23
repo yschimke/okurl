@@ -27,7 +27,7 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
 
   private fun dedup(candidates: List<String>) = candidates.toSortedSet().toList()
 
-  suspend fun thisNode(url: HttpUrl): List<String> {
+  fun thisNode(url: HttpUrl): List<String> {
     val path = url.encodedPath()
 
     return if (path.endsWith("/")) {

@@ -56,7 +56,7 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun hosts(): Set<String> = setOf("api.getpostman.com")
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -67,13 +67,13 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "collection_uid", {
+    completer.withCachedVariable(name(), "collection_uid") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<CollectionsResult>(
           "https://api.getpostman.com/collections",
           tokenSet).collections.map { it.id }
       }
-    })
+    }
 
     return completer
   }

@@ -68,7 +68,7 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     return ValidatedCredentials(accounts.map { it.id }.first())
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -80,12 +80,12 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
     credentialsStore.get(serviceDefinition, tokenSet)?.let {
-      completer.withVariable("account-id", {
+      completer.withVariable("account-id") {
         client.queryList<Account>("https://api.gdax.com/accounts", tokenSet).map { it.id }
-      })
-      completer.withVariable("product-id", {
+      }
+      completer.withVariable("product-id") {
         client.queryList<Product>("https://api.gdax.com/products", tokenSet).map { it.id }
-      })
+      }
     }
 
     return completer

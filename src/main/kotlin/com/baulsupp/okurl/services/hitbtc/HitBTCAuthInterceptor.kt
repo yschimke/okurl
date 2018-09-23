@@ -55,7 +55,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return ValidatedCredentials(account)
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -66,12 +66,12 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withVariable("currency", {
+    completer.withVariable("currency") {
       client.queryList<Currency>("https://api.hitbtc.com/api/2/public/currency", tokenSet).map { it.id }
-    })
-    completer.withVariable("symbol", {
+    }
+    completer.withVariable("symbol") {
       client.queryList<Symbol>("https://api.hitbtc.com/api/2/public/symbol", tokenSet).map { it.id }
-    })
+    }
 
     return completer
   }

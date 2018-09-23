@@ -67,7 +67,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     }
   }
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -78,11 +78,11 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "survey", {
+    completer.withCachedVariable(name(), "survey") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<SurveyList>("https://api.surveymonkey.net/v3/surveys", tokenSet).data.map { m -> m.id }
       }
-    })
+    }
 
     return completer
   }

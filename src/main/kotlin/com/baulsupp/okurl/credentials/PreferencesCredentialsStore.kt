@@ -5,7 +5,7 @@ import java.util.prefs.Preferences
 class PreferencesCredentialsStore : CredentialsStore {
   private val userNode = Preferences.userNodeForPackage(this.javaClass)
 
-  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
+  override suspend fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     val credentialsString = userNode.get(tokenKey(serviceDefinition.apiHost(), tokenSet), null)
     return credentialsString?.let { serviceDefinition.parseCredentialsString(it) }
   }
@@ -14,7 +14,7 @@ class PreferencesCredentialsStore : CredentialsStore {
     return "$name.token.$tokenSet"
   }
 
-  override fun <T> set(
+  override suspend fun <T> set(
     serviceDefinition: ServiceDefinition<T>,
     tokenSet: String,
     credentials: T
@@ -23,7 +23,7 @@ class PreferencesCredentialsStore : CredentialsStore {
     userNode.put(tokenKey(serviceDefinition.apiHost(), tokenSet), credentialsString)
   }
 
-  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
+  override suspend fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
     userNode.remove(tokenKey(serviceDefinition.apiHost(), tokenSet))
   }
 }

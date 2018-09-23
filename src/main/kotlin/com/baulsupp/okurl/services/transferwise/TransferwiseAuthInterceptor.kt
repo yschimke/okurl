@@ -18,9 +18,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
-    "https://api-docs.transferwise.com/docs/versions/v1/overview",
-    "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
+  override val serviceDefinition: Oauth2ServiceDefinition
+    get() = Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
+      "https://api-docs.transferwise.com/docs/versions/v1/overview",
+      "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()

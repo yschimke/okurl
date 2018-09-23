@@ -57,7 +57,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun canRenew(credentials: Oauth2Token): Boolean = false
 
-  override fun apiCompleter(
+  override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,
     credentialsStore: CredentialsStore,
@@ -68,21 +68,21 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
 
-    completer.withCachedVariable(name(), "file_id", {
+    completer.withCachedVariable(name(), "file_id") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<FolderItems>(
           "https://api.box.com/2.0/folders/0/items",
           tokenSet).entries.filter { it.type == "file" }.map { it.id }
       }
-    })
+    }
 
-    completer.withCachedVariable(name(), "folder_id", {
+    completer.withCachedVariable(name(), "folder_id") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         listOf("0") + client.query<FolderItems>(
           "https://api.box.com/2.0/folders/0/items",
           tokenSet).entries.filter { it.type == "folder" }.map { it.id }
       }
-    })
+    }
 
     return completer
   }

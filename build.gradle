@@ -144,6 +144,7 @@ dependencies {
   implementation "org.slf4j:slf4j-jdk14:1.8.0-beta2"
   implementation "org.zeroturnaround:zt-exec:1.10"
   implementation "pt.davidafsilva.apple:jkeychain:1.0.0"
+  implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'

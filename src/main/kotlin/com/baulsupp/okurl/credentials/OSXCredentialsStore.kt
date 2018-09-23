@@ -10,7 +10,7 @@ import java.util.logging.Logger
 class OSXCredentialsStore : CredentialsStore {
   private val keychain: OSXKeychain = OSXKeychain.getInstance()
 
-  override fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
+  override suspend fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
     val pw = keychain.findGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
 
     val pwString = if (pw.isPresent) pw.get() else null
@@ -26,7 +26,7 @@ class OSXCredentialsStore : CredentialsStore {
     return null
   }
 
-  override fun <T> set(
+  override suspend fun <T> set(
     serviceDefinition: ServiceDefinition<T>,
     tokenSet: String,
     credentials: T
@@ -44,7 +44,7 @@ class OSXCredentialsStore : CredentialsStore {
     }
   }
 
-  override fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
+  override suspend fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
     try {
       keychain.deleteGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet))
     } catch (e: OSXKeychainException) {

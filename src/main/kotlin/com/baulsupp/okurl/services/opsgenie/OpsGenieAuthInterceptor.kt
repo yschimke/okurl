@@ -7,7 +7,6 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
