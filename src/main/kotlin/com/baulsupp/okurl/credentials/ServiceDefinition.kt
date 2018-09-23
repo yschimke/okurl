@@ -15,6 +15,7 @@ interface ServiceDefinition<T> {
 
   fun accountsLink(): String? = null
 
+  @Suppress("UNCHECKED_CAST")
   fun castToken(token: Any): T {
     return token as T
   }

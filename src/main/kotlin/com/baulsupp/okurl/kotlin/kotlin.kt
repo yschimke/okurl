@@ -32,10 +32,12 @@ import java.time.OffsetDateTime
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+@Suppress("UNCHECKED_CAST")
 inline fun <reified V> Moshi.mapAdapter() =
   this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java,
     V::class.java)) as JsonAdapter<Map<String, V>>
 
+@Suppress("UNCHECKED_CAST")
 inline fun <reified V> Moshi.listAdapter() =
   this.adapter<Any>(
     Types.newParameterizedType(List::class.java, V::class.java)) as JsonAdapter<List<V>>
@@ -131,6 +133,7 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 ): T? =
   this.queryMapValue<T>(request(url, tokenSet), *keys)
 
+@Suppress("UNCHECKED_CAST")
 suspend inline fun <reified T> OkHttpClient.queryMapValue(
   request: Request,
   vararg keys: String
@@ -220,6 +223,7 @@ fun Request.Builder.postJsonBody(body: Any) {
   post(RequestBody.create(JSON, content))
 }
 
+@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 fun <T> List<T>.toJavaList(): java.util.List<T> {
   return this as java.util.List<T>
 }
