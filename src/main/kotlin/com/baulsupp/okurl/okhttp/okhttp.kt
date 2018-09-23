@@ -66,7 +66,6 @@ class TlsVersionOption(s: String) {
 fun cipherSuites(): List<CipherSuite> =
   CipherSuite::class.staticProperties.filter { it.isFinal && it.returnType.javaType == CipherSuite::class.java }.map { it.get() as CipherSuite }
 
-
 /** Returns an SSL client for this host's localhost address.  */
 fun localhost(): HandshakeCertificates {
   // Generate a self-signed cert for the server to serve and the client to trust.

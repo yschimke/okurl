@@ -95,6 +95,5 @@ object DohProviders {
       // unlikely
       throw RuntimeException(e)
     }
-
   }
 }
