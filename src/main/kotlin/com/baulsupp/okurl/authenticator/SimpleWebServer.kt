@@ -20,7 +20,7 @@ class SimpleWebServer(
   private val logger = Logger.getLogger(SimpleWebServer::class.java.name)
 
   private var server: HttpServer = HttpServer.create(InetSocketAddress("localhost", port), 1)
-  private val channel = Channel<SuccessOrFailure<String>>()
+  private val channel = Channel<Result<String>>()
 
   val redirectUri = "http://localhost:$port/callback"
 
@@ -36,14 +36,14 @@ class SimpleWebServer(
     exchange.sendResponseHeaders(200, 0)
 
     PrintWriter(exchange.responseBody).use { out ->
-      channel.offer(processRequest(exchange, out)) || throw IllegalStateException("unable to send to channel")
+      processRequest(exchange, out)
     }
 
     exchange.close()
   }
 
-  fun processRequest(exchange: HttpExchange, out: PrintWriter): SuccessOrFailure<String> {
-    return runCatching {
+  fun processRequest(exchange: HttpExchange, out: PrintWriter) {
+    val result = runCatching {
       val url = HttpUrl.get("http://localhost:$port${exchange.requestURI}")
 
       val error = url.queryParameter("error")
@@ -58,6 +58,8 @@ class SimpleWebServer(
     }.onFailure {
       out.println(generateFailBody("$it"))
     }
+
+    this.channel.offer(result) || throw IllegalStateException("unable to send to channel")
   }
 
   private fun generateSuccessBody(): String = """<html>

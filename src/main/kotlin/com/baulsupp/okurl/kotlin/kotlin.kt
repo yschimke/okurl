@@ -270,5 +270,3 @@ suspend fun Call.await(): Response {
 fun usage(msg: String): Nothing {
   throw UsageException(msg)
 }
-
-val IO by lazy { Executors.newCachedThreadPool().asCoroutineDispatcher() }

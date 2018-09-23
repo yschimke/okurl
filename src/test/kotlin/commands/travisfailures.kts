@@ -3,7 +3,6 @@
 import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.services.travisci.queryAllBuilds
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
@@ -17,7 +16,7 @@ runBlocking {
   val errorBuilds = builds.filter { it.isErrored && it.started_at?.isAfter(oneweekago) ?: false }
 
   val failingLogs = errorBuilds.map {
-    async(Dispatchers.Default) {
+    async {
       it.jobs.map {
         client.queryForString(it.logOutputTxt)
       }

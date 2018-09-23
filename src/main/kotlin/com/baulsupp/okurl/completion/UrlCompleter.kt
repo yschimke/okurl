@@ -5,7 +5,8 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
@@ -43,7 +44,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
 
   private suspend fun UrlCompleter.hostCompletion(tokenSet: Token): UrlList {
     val futures = main.authenticatingInterceptor.services.map {
-      async(CommonPool) {
+      GlobalScope.async(Dispatchers.Default) {
         withTimeout(2, TimeUnit.SECONDS) {
           it.apiCompleter("", client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
         }
