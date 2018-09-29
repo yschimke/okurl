@@ -73,5 +73,5 @@ runBlocking {
     }
   }
 
-  delay(Int.MAX_VALUE)
+  delay(Long.MAX_VALUE)
 }

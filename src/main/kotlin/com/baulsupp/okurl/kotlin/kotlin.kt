@@ -199,7 +199,7 @@ fun String.color(color: Ansi.Color): String = when {
   else -> this
 }
 
-val JSON = MediaType.get("application/json")!!
+val JSON = MediaType.get("application/json")
 
 fun form(init: FormBody.Builder.() -> Unit = {}): FormBody = FormBody.Builder().apply(init).build()
 
@@ -207,19 +207,18 @@ fun request(
   url: String? = null,
   tokenSet: Token = DefaultToken,
   init: Request.Builder.() -> Unit = {}
-) = requestBuilder(url, tokenSet).apply(init).build()!!
+): Request = requestBuilder(url, tokenSet).apply(init).build()
 
 fun requestBuilder(
   url: String? = null,
   tokenSet: Token = DefaultToken
-) = Request.Builder().apply { if (url != null) url(url) }.tag(
-  tokenSet)!!
+): Request.Builder = Request.Builder().apply { if (url != null) url(url) }.tag(
+  tokenSet)
 
-fun Request.Builder.tokenSet(tokenSet: Token) = tag(tokenSet)
+fun Request.Builder.tokenSet(tokenSet: Token): Request.Builder = tag(tokenSet)
 
 fun Request.Builder.postJsonBody(body: Any) {
   val content = moshi.adapter(body.javaClass).toJson(body)!!
-
   post(RequestBody.create(JSON, content))
 }
 

@@ -30,13 +30,13 @@ val MODERN_TLS_13_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
   .cipherSuites(*(TLS13_CIPHER_SUITES.toList() + ConnectionSpec.MODERN_TLS.cipherSuites()!!.toList()).toTypedArray())
   .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2, TlsVersion.TLS_1_1, TlsVersion.TLS_1_0)
   .supportsTlsExtensions(true)
-  .build()!!
+  .build()
 
 val TLS_13_ONLY_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
   .cipherSuites(*TLS13_CIPHER_SUITES)
   .tlsVersions(TlsVersion.TLS_1_3)
   .supportsTlsExtensions(true)
-  .build()!!
+  .build()
 
 enum class ConnectionSpecOption(vararg val specs: ConnectionSpec) {
   ALL(AllConnectionSpec),

@@ -155,9 +155,7 @@ class ZipkinTracingListener(
       connectionSpan!!.tag("peer", connection.handshake()!!.peerPrincipal()!!.toString())
       connectionSpan!!.tag("tls", connection.handshake()!!.tlsVersion().toString())
     }
-    if (connection.protocol() != null) {
-      connectionSpan!!.tag("protocol", connection.protocol().toString())
-    }
+    connectionSpan!!.tag("protocol", connection.protocol().toString())
 
     connectionSpan!!.finish()
   }

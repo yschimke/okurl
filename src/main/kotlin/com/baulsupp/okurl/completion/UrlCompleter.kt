@@ -45,7 +45,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
   private suspend fun hostCompletion(tokenSet: Token): UrlList {
     val futures = main.authenticatingInterceptor.services.map {
       GlobalScope.async(Dispatchers.Default) {
-        withTimeout(2, TimeUnit.SECONDS) {
+        withTimeout(TimeUnit.SECONDS.toMillis(2)) {
           it.apiCompleter("", client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
         }
       }

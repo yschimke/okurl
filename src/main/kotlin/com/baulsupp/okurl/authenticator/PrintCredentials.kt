@@ -36,7 +36,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     try {
       val left = 2000L - ZonedDateTime.now().until(started, ChronoUnit.MILLIS)
       val validated = runBlocking {
-        withTimeout(left, TimeUnit.MILLISECONDS) {
+        withTimeout(TimeUnit.MILLISECONDS.toMillis(left)) {
           future.await()
         }
       }
