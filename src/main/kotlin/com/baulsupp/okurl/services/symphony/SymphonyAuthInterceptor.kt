@@ -12,8 +12,10 @@ import com.baulsupp.okurl.services.symphony.model.SessionInfo
 import com.baulsupp.okurl.services.symphony.model.TokenResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import okio.Buffer
 import java.io.File
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -41,20 +43,24 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     if (credentials.sessionToken != null) {
       val builder = request.newBuilder().header("sessionToken", credentials.sessionToken).header("keyManagerToken", credentials.keyToken.orEmpty())
 
-//      if (request.header("Content-Type") == "application/x-www-form-urlencoded") {
-//        val buffer = Buffer()
-//        request.body()!!.writeTo(buffer)
-//
-//        // repair missing header
-//        if (buffer.size > 0 && (buffer[0] == '['.toByte() || buffer[0] == '{'.toByte())) {
-//          builder.header("Content-Type", "application/json")
-//        }
-//      }
+      repairJsonRequests(request, builder)
 
       request = builder.build()
     }
 
     return chain.proceed(request)
+  }
+
+  private fun repairJsonRequests(request: Request, builder: Request.Builder) {
+    if (request.header("Content-Type") == "application/x-www-form-urlencoded") {
+      val buffer = Buffer()
+      request.body()!!.writeTo(buffer)
+
+      // repair missing header
+      if (buffer.size > 0 && (buffer[0] == '['.toByte() || buffer[0] == '{'.toByte())) {
+        builder.header("Content-Type", "application/json")
+      }
+    }
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): SymphonyCredentials {
