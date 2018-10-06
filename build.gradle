@@ -97,6 +97,11 @@ repositories {
 }
 
 dependencies {
+  implementation 'org.bouncycastle:bcprov-jdk15on:1.60'
+  implementation 'io.jsonwebtoken:jjwt-api:0.10.5'
+  implementation 'io.jsonwebtoken:jjwt-impl:0.10.5'
+  implementation 'io.jsonwebtoken:jjwt-jackson:0.10.5'
+
   implementation "com.baulsupp:oksocial-output:4.19.0"
   implementation 'com.baulsupp:okhttp-digest:0.4.0'
   implementation "com.squareup.okio:okio:2.1.0"
@@ -116,6 +121,7 @@ dependencies {
   implementation 'com.github.jnr:jffi:1.2.17'
   implementation "com.github.markusbernhardt:proxy-vole:1.0.5"
   implementation "com.github.mrmike:ok2curl:0.4.5"
+  implementation 'com.google.crypto.tink:tink:1.2.0'
   implementation "com.jakewharton.byteunits:byteunits:0.9.1"
   implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
   implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
