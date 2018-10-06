@@ -56,7 +56,7 @@ class Main : CommandLineClient() {
     val badprefix = "${exceptionClass.qualifiedName}: "
     if (message != null && message.startsWith(badprefix)) {
       // TODO better handling
-      throw UsageException(message.lines().first().substring(badprefix.length))
+      throw usage(message.lines().first().substring(badprefix.length))
     }
   }
 
@@ -66,11 +66,12 @@ class Main : CommandLineClient() {
     const val NAME = "okscript"
 
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    fun main(vararg args: String) {
       Security.insertProviderAt(OpenSSLProvider(), 1)
 
       try {
-        val result = SingleCommand.singleCommand(Main::class.java).parse(*args).run()
+        val command = SingleCommand.singleCommand(Main::class.java).parse(*args)
+        val result = runBlocking { command.run() }
         System.exit(result)
       } catch (e: Throwable) {
         when (e) {
