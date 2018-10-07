@@ -74,7 +74,7 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "location") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
@@ -87,5 +87,5 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("connect.squareup.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("connect.squareup.com")
 }

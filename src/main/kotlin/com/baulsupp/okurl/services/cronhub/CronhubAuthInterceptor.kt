@@ -45,12 +45,12 @@ class CronhubAuthInterceptor : AuthInterceptor<CronhubCredentials>() {
 
   override fun canRenew(credentials: CronhubCredentials): Boolean = false
 
-  override fun hosts(): Set<String> = setOf("cronhub.io")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("cronhub.io")
 
   override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "uuid") {
       client.query<MonitorsResponse>("https://cronhub.io/api/v1/monitors", tokenSet).response.map { it.code }

@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.twitter
 
+import com.baulsupp.okurl.i9n.TestCredentialsStore
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
@@ -8,6 +9,6 @@ class TwitterAuthInterceptorTest {
 
   @Test
   fun testHosts() {
-    assertTrue(auth.hosts().contains("api.twitter.com"))
+    assertTrue(auth.hosts(TestCredentialsStore()).contains("api.twitter.com"))
   }
 }

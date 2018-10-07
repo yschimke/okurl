@@ -111,7 +111,7 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "account_id") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
@@ -131,5 +131,5 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user",
       TokenValue(credentials), "data", "name"))
 
-  override fun hosts(): Set<String> = setOf("api.coinbase.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.coinbase.com")
 }

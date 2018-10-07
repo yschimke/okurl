@@ -2,6 +2,7 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.credentials.DefaultToken
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
@@ -27,7 +28,7 @@ class AuthorizationTest {
       main.run()
     }
 
-    assertEquals("abc", credentialsStore.tokens["localhost"])
+    assertEquals("abc", credentialsStore.tokens[Pair("test", DefaultToken.name)])
   }
 
   @Test
@@ -39,7 +40,7 @@ class AuthorizationTest {
       main.run()
     }
 
-    assertEquals("testToken", credentialsStore.tokens["localhost"])
+    assertEquals("testToken", credentialsStore.tokens[Pair("test", DefaultToken.name)])
   }
 
   @Test
@@ -51,7 +52,7 @@ class AuthorizationTest {
       main.run()
     }
 
-    assertEquals("testToken", credentialsStore.tokens["localhost"])
+    assertEquals("testToken", credentialsStore.tokens[Pair("test", DefaultToken.name)])
   }
 
   @Test
@@ -63,6 +64,6 @@ class AuthorizationTest {
       main.run()
     }
 
-    assertEquals("TOKENARG", credentialsStore.tokens["localhost"])
+    assertEquals("TOKENARG", credentialsStore.tokens[Pair("test", DefaultToken.name)])
   }
 }

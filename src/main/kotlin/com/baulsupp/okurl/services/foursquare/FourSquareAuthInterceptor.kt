@@ -7,6 +7,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.foursquare.model.SelfResponse
 import okhttp3.Interceptor
@@ -57,5 +58,5 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ValidatedCredentials("${user.firstName} ${user.lastName}")
   }
 
-  override fun hosts(): Set<String> = setOf("api.foursquare.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.foursquare.com")
 }

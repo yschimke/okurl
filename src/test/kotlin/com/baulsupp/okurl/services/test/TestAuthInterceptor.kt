@@ -6,6 +6,7 @@ import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -28,7 +29,7 @@ class TestAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition =
     Oauth2ServiceDefinition("localhost", "Test Service", "test", "https://docs.test.com", "https://apps.test.com")
 
-  override fun hosts(): Set<String> = setOf("test.com", "api1.test.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("test.com", "api1.test.com")
 
   override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = object : ApiDocPresenter {
     override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {

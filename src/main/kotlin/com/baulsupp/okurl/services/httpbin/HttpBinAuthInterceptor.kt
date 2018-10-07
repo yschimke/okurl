@@ -5,6 +5,7 @@ import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.basic.BasicAuthServiceDefinition
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
 import okhttp3.Interceptor
@@ -47,7 +48,7 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   ): ValidatedCredentials =
     ValidatedCredentials(credentials.user, null)
 
-  override fun hosts(): Set<String> = setOf((
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf((
     "httpbin.org")
   )
 

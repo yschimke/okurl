@@ -7,6 +7,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -53,7 +54,7 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       TokenValue(credentials), "formattedName"))
   }
 
-  override fun hosts(): Set<String> {
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> {
     return setOf((
       "api.linkedin.com"))
   }

@@ -90,7 +90,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ValidatedCredentials(userName, appName)
   }
 
-  override fun hosts(): Set<String> = API_HOSTS
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = API_HOSTS
 
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore) = supportsUrl(url)
 
@@ -112,7 +112,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completionVariableCache: CompletionVariableCache,
     tokenSet: Token
   ): ApiCompleter =
-    FacebookCompleter(client, hosts())
+    FacebookCompleter(client, hosts(credentialsStore))
 
   override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition)
 }

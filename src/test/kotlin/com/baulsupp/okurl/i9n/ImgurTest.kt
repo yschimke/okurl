@@ -2,6 +2,7 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.credentials.DefaultToken
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
@@ -27,6 +28,6 @@ class ImgurTest {
       main.run()
     }
 
-    assertEquals("abc", credentialsStore.tokens["api.imgur.com"])
+    assertEquals("abc", credentialsStore.tokens[Pair("imgur", DefaultToken.name)])
   }
 }

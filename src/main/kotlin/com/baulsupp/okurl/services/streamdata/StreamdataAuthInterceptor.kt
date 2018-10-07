@@ -3,6 +3,7 @@ package com.baulsupp.okurl.services.streamdata
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Interceptor
@@ -36,5 +37,5 @@ class StreamdataAuthInterceptor : AuthInterceptor<String>() {
   ): ValidatedCredentials =
     ValidatedCredentials(credentials, null)
 
-  override fun hosts(): Set<String> = setOf("streamdata.motwin.net", "stockmarket.streamdata.io", "streamdata.motwin.net")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("streamdata.motwin.net", "stockmarket.streamdata.io", "streamdata.motwin.net")
 }

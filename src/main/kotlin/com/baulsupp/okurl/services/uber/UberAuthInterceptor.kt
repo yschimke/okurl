@@ -58,7 +58,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completionVariableCache: CompletionVariableCache,
     tokenSet: Token
   ): ApiCompleter {
-    return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
+    return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(credentialsStore), completionVariableCache)
   }
 
   override suspend fun validate(
@@ -70,7 +70,7 @@ class UberAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ValidatedCredentials("${map["first_name"]} ${map["last_name"]}")
   }
 
-  override fun hosts(): Set<String> = setOf("api.uber.com", "login.uber.com", "sandbox-api.uber.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.uber.com", "login.uber.com", "sandbox-api.uber.com")
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 

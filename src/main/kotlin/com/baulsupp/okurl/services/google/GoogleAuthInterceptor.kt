@@ -114,7 +114,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     tokenSet: Token
   ): ApiCompleter =
     if (!isPastHost(prefix)) {
-      hostCompletion(completionVariableCache)
+      hostCompletion(credentialsStore, completionVariableCache)
     } else if (isFirebaseUrl(prefix)) {
       FirebaseCompleter(client)
     } else {
@@ -137,12 +137,12 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     }.toSet()
   }
 
-  fun hostCompletion(completionVariableCache: CompletionVariableCache) =
-    BaseUrlCompleter(UrlList.fromResource(name())!!, hosts() + firebaseHosts(), completionVariableCache)
+  fun hostCompletion(credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache) =
+    BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(credentialsStore) + firebaseHosts(), completionVariableCache)
 
   private fun firebaseHosts() = FirebaseCompleter.knownHosts()
 
-  override fun hosts(): Set<String> = foundHosts
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = foundHosts
 
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 

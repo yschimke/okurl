@@ -5,6 +5,7 @@ import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -48,7 +49,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token(
     "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2plbW82ZDRmMHFjYTJxczMwbjZyb283biJ9.kR_CuRmA-qdRAU0rAlzN_Q")
 
-  override fun hosts(): Set<String> = setOf((
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf((
     "api.mapbox.com")
   )
 }

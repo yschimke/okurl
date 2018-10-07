@@ -5,6 +5,7 @@ import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.secrets.Secrets
@@ -47,5 +48,5 @@ class OpsGenieAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override fun canRenew(credentials: Oauth2Token): Boolean = false
 
-  override fun hosts(): Set<String> = setOf("api.opsgenie.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.opsgenie.com")
 }

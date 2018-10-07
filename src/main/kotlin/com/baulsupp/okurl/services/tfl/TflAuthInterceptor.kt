@@ -3,6 +3,7 @@ package com.baulsupp.okurl.services.tfl
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -39,5 +40,5 @@ class TflAuthInterceptor : AuthInterceptor<TflCredentials>() {
 
   override fun canRenew(credentials: TflCredentials): Boolean = false
 
-  override fun hosts(): Set<String> = setOf("api.tfl.gov.uk")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.tfl.gov.uk")
 }

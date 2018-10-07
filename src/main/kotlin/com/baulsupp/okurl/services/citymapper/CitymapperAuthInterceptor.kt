@@ -4,6 +4,7 @@ import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -36,5 +37,5 @@ class CitymapperAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): Oauth2Token =
     Oauth2Token(Secrets.prompt("Citymapper Key", "citymapper.token", "", true))
 
-  override fun hosts(): Set<String> = setOf("developer.citymapper.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("developer.citymapper.com")
 }

@@ -8,6 +8,7 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
 import okhttp3.Interceptor
@@ -84,5 +85,5 @@ class LyftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  override fun hosts(): Set<String> = setOf("api.lyft.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.lyft.com")
 }

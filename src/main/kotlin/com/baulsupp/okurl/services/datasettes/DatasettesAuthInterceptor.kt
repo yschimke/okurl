@@ -23,7 +23,7 @@ class DatasettesAuthInterceptor :
   ): ApiCompleter =
     DatasettesCompleter(client)
 
-  override fun hosts(): Set<String> = knownHosts()
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = knownHosts()
 
   override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = DatasettesPresenter()
 }

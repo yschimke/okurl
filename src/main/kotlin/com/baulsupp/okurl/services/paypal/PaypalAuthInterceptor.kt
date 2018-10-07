@@ -7,6 +7,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -54,7 +55,7 @@ open class PaypalAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return PaypalAuthFlow.login(client, host(), clientId, clientSecret)
   }
 
-  override fun hosts(): Set<String> = setOf(host())
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(host())
 
   open fun host() = "api.paypal.com"
 }

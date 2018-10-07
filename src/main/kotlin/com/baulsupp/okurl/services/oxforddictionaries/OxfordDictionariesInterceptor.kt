@@ -4,6 +4,7 @@ import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.kotlin.edit
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Interceptor
@@ -56,5 +57,5 @@ class OxfordDictionariesInterceptor : AuthInterceptor<ODToken>() {
   ): ValidatedCredentials =
     ValidatedCredentials(null, null)
 
-  override fun hosts(): Set<String> = setOf("od-api.oxforddictionaries.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("od-api.oxforddictionaries.com")
 }

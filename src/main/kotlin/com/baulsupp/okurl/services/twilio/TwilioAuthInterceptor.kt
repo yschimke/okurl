@@ -64,7 +64,7 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withVariable("AccountSid") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let { listOf(it.user) }
@@ -73,5 +73,5 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("api.twilio.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.twilio.com")
 }

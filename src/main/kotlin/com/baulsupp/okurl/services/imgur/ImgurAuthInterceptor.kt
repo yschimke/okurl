@@ -8,6 +8,7 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.FormBody
 import okhttp3.Interceptor
@@ -70,5 +71,5 @@ class ImgurAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret)
   }
 
-  override fun hosts(): Set<String> = setOf("api.imgur.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.imgur.com")
 }

@@ -7,6 +7,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -51,5 +52,5 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     ValidatedCredentials(client.queryMapValue<String>("https://api.instagram.com/v1/users/self",
       TokenValue(credentials), "data", "full_name"))
 
-  override fun hosts(): Set<String> = setOf("api.instagram.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.instagram.com")
 }

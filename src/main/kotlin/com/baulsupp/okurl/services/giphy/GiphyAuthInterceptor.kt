@@ -5,6 +5,7 @@ import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -46,5 +47,5 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ValidatedCredentials =
     ValidatedCredentials("ⁿ/ₐ", null)
 
-  override fun hosts(): Set<String> = setOf("api.giphy.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.giphy.com")
 }

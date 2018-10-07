@@ -1,15 +1,19 @@
 package com.baulsupp.okurl.i9n
 
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.ServiceDefinition
 
-// TODO use token set
 class TestCredentialsStore : CredentialsStore {
-  var tokens: MutableMap<String, String> = linkedMapOf()
+  var tokens: MutableMap<Pair<String, String?>, String> = linkedMapOf()
 
   override suspend fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: String): T? {
-    return tokens[serviceDefinition.apiHost()]
+    return tokens[Pair(serviceDefinition.shortName(), tokenSet)]
         ?.let { serviceDefinition.parseCredentialsString(it) }
+  }
+
+  override suspend fun names(): Set<String> {
+    return setOf(DefaultToken.name) + tokens.mapNotNull { it.key.second }
   }
 
   override suspend fun <T> set(
@@ -17,10 +21,10 @@ class TestCredentialsStore : CredentialsStore {
     tokenSet: String,
     credentials: T
   ) {
-    tokens[serviceDefinition.apiHost()] = serviceDefinition.formatCredentialsString(credentials)
+    tokens[Pair(serviceDefinition.shortName(), tokenSet)] = serviceDefinition.formatCredentialsString(credentials)
   }
 
   override suspend fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {
-    tokens.remove(serviceDefinition.apiHost())
+    tokens.remove(Pair(serviceDefinition.shortName(), tokenSet))
   }
 }

@@ -19,9 +19,9 @@ class GoogleAuthInterceptorTest {
 
   @Test
   fun hasManyHosts() {
-    assertTrue(interceptor.hosts().size > 10)
-    assertTrue(interceptor.hosts().contains("www.googleapis.com"))
-    assertTrue(interceptor.hosts().contains("people.googleapis.com"))
+    assertTrue(interceptor.hosts(credentialsStore).size > 10)
+    assertTrue(interceptor.hosts(credentialsStore).contains("www.googleapis.com"))
+    assertTrue(interceptor.hosts(credentialsStore).contains("people.googleapis.com"))
   }
 
   @Test

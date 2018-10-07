@@ -71,7 +71,7 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
 
   override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token) = UrlCompleter.NullCompleter
 
-  override fun hosts(): Set<String> = setOf("basic")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("basic")
 
   // lower priority than any site specific auth
   override val priority: Int

@@ -6,6 +6,7 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.twitter.joauth.Signature
 import com.baulsupp.okurl.services.twitter.twurlrc.TwurlrcImport
@@ -61,5 +62,5 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json",
       TokenValue(credentials), "name"))
 
-  override fun hosts(): Set<String> = TwitterUtil.TWITTER_API_HOSTS
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = TwitterUtil.TWITTER_API_HOSTS
 }

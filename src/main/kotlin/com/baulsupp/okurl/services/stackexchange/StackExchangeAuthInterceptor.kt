@@ -5,6 +5,7 @@ import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.stackexchange.model.MeResponse
 import okhttp3.Interceptor
@@ -50,5 +51,5 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
     return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey, scopes)
   }
 
-  override fun hosts(): Set<String> = setOf("api.stackexchange.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.stackexchange.com")
 }

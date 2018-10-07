@@ -2,6 +2,7 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.util.TestUtil.projectFile
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
@@ -34,7 +35,7 @@ class TwitterTest {
     }
 
     assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
-        credentialsStore.tokens["api.twitter.com"])
+        credentialsStore.tokens[Pair("twitter", DefaultToken.name)])
   }
 
   @Test
@@ -52,6 +53,6 @@ class TwitterTest {
     }
 
     assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
-        credentialsStore.tokens["api.twitter.com"])
+        credentialsStore.tokens[Pair("twitter", DefaultToken.name)])
   }
 }

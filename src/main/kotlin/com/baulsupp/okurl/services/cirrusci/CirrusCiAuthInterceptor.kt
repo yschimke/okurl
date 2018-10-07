@@ -4,6 +4,7 @@ import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -17,5 +18,5 @@ class CirrusCiAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("api.cirrus-ci.com", "Cirrus CI", "cirrusci",
     null, null)
 
-  override fun hosts(): Set<String> = setOf("api.cirrus-ci.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.cirrus-ci.com")
 }

@@ -8,6 +8,7 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.kotlin.requestBuilder
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.FormBody
 import okhttp3.Interceptor
@@ -60,5 +61,5 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ValidatedCredentials(client.queryMapValue<String>(request, "email"))
   }
 
-  override fun hosts(): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")
 }

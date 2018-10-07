@@ -45,5 +45,5 @@ class SmartyStreetsAuthInterceptor : AuthInterceptor<SmartStreetsToken>() {
     return url.host() == "api.smartystreets.com" || url.host().endsWith(".api.smartystreets.com")
   }
 
-  override fun hosts(): Set<String> = setOf("international-street.api.smartystreets.com", "us-street.api.smartystreets.com", "us-zipcode.api.smartystreets.com", "us-autocomplete.api.smartystreets.com", "us-extract.api.smartystreets.com", "download.api.smartystreets.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("international-street.api.smartystreets.com", "us-street.api.smartystreets.com", "us-zipcode.api.smartystreets.com", "us-autocomplete.api.smartystreets.com", "us-extract.api.smartystreets.com", "download.api.smartystreets.com")
 }

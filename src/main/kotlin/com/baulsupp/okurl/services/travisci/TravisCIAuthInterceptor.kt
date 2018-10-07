@@ -106,7 +106,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withVariable("user.id") {
       listOf(client.query<User>("https://api.travis-ci.org/user", tokenSet).id)
@@ -119,5 +119,5 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("api.travis-ci.com", "api.travis-ci.org")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.travis-ci.com", "api.travis-ci.org")
 }

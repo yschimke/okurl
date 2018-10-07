@@ -3,6 +3,7 @@ package com.baulsupp.okurl.services.companieshouse
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Credentials
@@ -38,5 +39,5 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
   ): ValidatedCredentials =
     ValidatedCredentials(credentials, null)
 
-  override fun hosts(): Set<String> = setOf("api.companieshouse.gov.uk", "account.companieshouse.gov.uk", "document-api.companieshouse.gov.uk")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.companieshouse.gov.uk", "account.companieshouse.gov.uk", "document-api.companieshouse.gov.uk")
 }

@@ -88,7 +88,7 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "itemId") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
@@ -102,5 +102,5 @@ class MicrosoftAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override suspend fun validate(client: OkHttpClient, credentials: Oauth2Token): ValidatedCredentials =
     ValidatedCredentials(client.query<User>("https://graph.microsoft.com/v1.0/me", TokenValue(credentials)).displayName)
 
-  override fun hosts(): Set<String> = setOf("graph.microsoft.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("graph.microsoft.com")
 }

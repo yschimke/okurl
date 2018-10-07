@@ -75,7 +75,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     completionVariableCache: CompletionVariableCache,
     tokenSet: Token
   ): ApiCompleter {
-    return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(), completionVariableCache)
+    return BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(credentialsStore), completionVariableCache)
   }
 
   override suspend fun validate(
@@ -86,7 +86,7 @@ class SpotifyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       TokenValue(credentials), "display_name"))
   }
 
-  override fun hosts(): Set<String> = setOf("api.spotify.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.spotify.com")
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 

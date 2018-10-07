@@ -2,6 +2,7 @@ package com.baulsupp.okurl.services.howsmyssl
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -40,7 +41,7 @@ class HowsMySslAuthInterceptor : AuthInterceptor<String>() {
 //  ): ValidatedCredentials =
 //    ValidatedCredentials(credentials, null)
 
-  override fun hosts(): Set<String> = setOf((
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf((
     "www.howsmyssl.com")
   )
 }

@@ -64,7 +64,7 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withVariable("currency") {
       client.queryList<Currency>("https://api.hitbtc.com/api/2/public/currency", tokenSet).map { it.id }
@@ -76,5 +76,5 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("api.hitbtc.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.hitbtc.com")
 }

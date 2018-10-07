@@ -56,7 +56,7 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "folderId") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
@@ -80,5 +80,5 @@ class QuipAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   private suspend fun currentUser(client: OkHttpClient, tokenSet: Token) =
     client.query<User>("https://platform.quip.com/1/users/current", tokenSet)
 
-  override fun hosts(): Set<String> = setOf("platform.quip.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("platform.quip.com")
 }

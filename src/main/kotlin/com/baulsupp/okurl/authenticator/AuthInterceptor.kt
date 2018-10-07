@@ -26,7 +26,7 @@ abstract class AuthInterceptor<T> {
     get() = 0
 
   open suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean = try {
-    hosts().contains(url.host())
+    hosts(credentialsStore).contains(url.host())
   } catch (e: IOException) {
     logger.log(Level.WARNING, "failed getting hosts", e)
     false
@@ -54,11 +54,11 @@ abstract class AuthInterceptor<T> {
 
   open suspend fun renew(client: OkHttpClient, credentials: T): T? = null
 
-  abstract fun hosts(): Set<String>
+  abstract fun hosts(credentialsStore: CredentialsStore): Set<String>
 
   open suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter =
-    UrlList.fromResource(name())?.let { BaseUrlCompleter(it, hosts(), completionVariableCache) }
-      ?: HostUrlCompleter(hosts())
+    UrlList.fromResource(name())?.let { BaseUrlCompleter(it, hosts(credentialsStore), completionVariableCache) }
+      ?: HostUrlCompleter(hosts(credentialsStore))
 
   open fun defaultCredentials(): T? = null
 

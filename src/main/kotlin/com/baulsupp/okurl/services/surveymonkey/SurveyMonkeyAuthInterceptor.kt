@@ -76,7 +76,7 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "survey") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
@@ -87,5 +87,5 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("api.surveymonkey.net")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.surveymonkey.net")
 }

@@ -3,6 +3,10 @@ package com.baulsupp.okurl.services.symphony
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.completion.ApiCompleter
+import com.baulsupp.okurl.completion.CompletionVariableCache
+import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.JSON
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
@@ -10,6 +14,8 @@ import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import com.baulsupp.okurl.services.symphony.model.SessionInfo
 import com.baulsupp.okurl.services.symphony.model.TokenResponse
+import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -25,16 +31,13 @@ import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
-  override val serviceDefinition = object : AbstractServiceDefinition<SymphonyCredentials>("foundation-dev.symphony.com", "Symphony", "symphony",
+  override val serviceDefinition = object : AbstractServiceDefinition<SymphonyCredentials>("symphony.com", "Symphony", "symphony",
     "https://rest-api.symphony.com/") {
     override fun parseCredentialsString(s: String): SymphonyCredentials {
-      val (pod, keystore, password, authToken, keyToken) = s.split(":", limit = 5)
-      return SymphonyCredentials(pod, keystore, password, if (authToken.isEmpty()) null else authToken, if (keyToken.isEmpty()) null else keyToken)
+      return SymphonyCredentials.parse(s)
     }
 
-    override fun formatCredentialsString(credentials: SymphonyCredentials): String = credentials.pod + ":" +
-      credentials.keystore + ":" + credentials.password + ":" + credentials.sessionToken.orEmpty() + ":" +
-      credentials.keyToken.orEmpty()
+    override fun formatCredentialsString(credentials: SymphonyCredentials): String = credentials.format()
   }
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: SymphonyCredentials): Response {
@@ -71,8 +74,6 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     val keystore = KeyStore.getInstance("PKCS12").apply {
       load(File(keystoreFile).inputStream(), password.toCharArray())
     }
-
-    val alias = keystore.aliases().toList().single()
 
     val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
     kmf.init(keystore, password.toCharArray())
@@ -120,6 +121,10 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     return ValidatedCredentials(result.displayName, result.company)
   }
 
+  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
+    return SymphonyUrlCompleter(pods(credentialsStore), completionVariableCache, client)
+  }
+
   override fun canRenew(credentials: SymphonyCredentials): Boolean {
     return true
   }
@@ -128,5 +133,16 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     return null
   }
 
-  override fun hosts(): Set<String> = setOf("foundation-dev.symphony.com", "foundation-dev-api.symphony.com")
+  suspend fun pods(credentialsStore: CredentialsStore): List<String> {
+    val pods = credentialsStore.findAllNamed(serviceDefinition).keys.toList()
+    return listOf("foundation-dev") + pods
+  }
+
+  override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean =
+    url.host().endsWith("symphony.com")
+
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> {
+    // TODO make suspend function
+    return runBlocking { SymphonyUrlCompleter.podsToHosts(pods(credentialsStore)) }
+  }
 }

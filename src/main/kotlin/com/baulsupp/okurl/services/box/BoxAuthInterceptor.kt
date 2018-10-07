@@ -66,7 +66,7 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     completer.withCachedVariable(name(), "file_id") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
@@ -87,5 +87,5 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("api.box.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.box.com")
 }

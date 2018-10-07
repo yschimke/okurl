@@ -77,7 +77,7 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
   ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
-    val completer = BaseUrlCompleter(urlList!!, hosts(), completionVariableCache)
+    val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
     credentialsStore.get(serviceDefinition, tokenSet)?.let {
       completer.withVariable("account-id") {
@@ -91,5 +91,5 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     return completer
   }
 
-  override fun hosts(): Set<String> = setOf("api.gdax.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.gdax.com")
 }

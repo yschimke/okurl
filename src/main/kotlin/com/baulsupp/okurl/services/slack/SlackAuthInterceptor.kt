@@ -7,6 +7,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -89,5 +90,5 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     ValidatedCredentials(client.queryMapValue<String>("https://slack.com/api/auth.test",
       TokenValue(credentials), "user"))
 
-  override fun hosts(): Set<String> = setOf("slack.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("slack.com")
 }
