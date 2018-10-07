@@ -67,10 +67,14 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
   }
 
   override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): SymphonyCredentials {
-    val pod = Secrets.prompt("Symphony Client ID", "symphony.pod", "foundation-dev", false)
+    val pod = Secrets.prompt("Symphony POD", "symphony.pod", "foundation-dev", false)
     val keystoreFile = Secrets.prompt("Symphony Client ID", "symphony.keystore", System.getenv("HOME") + "/.symphony/keystore.p12", false)
     val password = Secrets.prompt("Symphony Password", "symphony.password", "", true)
 
+    return auth(keystoreFile, password, client, pod)
+  }
+
+  private suspend fun auth(keystoreFile: String, password: String, client: OkHttpClient, pod: String): SymphonyCredentials {
     val keystore = KeyStore.getInstance("PKCS12").apply {
       load(File(keystoreFile).inputStream(), password.toCharArray())
     }
@@ -100,8 +104,6 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
       post(RequestBody.create(JSON, "{}"))
     })
 
-    println(keyResponse)
-
     return SymphonyCredentials(pod, keystoreFile, password, authResponse.token, keyResponse.token)
   }
 
@@ -130,7 +132,7 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
   }
 
   override suspend fun renew(client: OkHttpClient, credentials: SymphonyCredentials): SymphonyCredentials? {
-    return null
+    return auth(credentials.keystore, credentials.password, client, credentials.pod)
   }
 
   suspend fun pods(credentialsStore: CredentialsStore): List<String> {
