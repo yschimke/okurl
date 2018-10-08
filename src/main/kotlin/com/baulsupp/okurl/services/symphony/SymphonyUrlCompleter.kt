@@ -8,6 +8,7 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.postJsonBody
 import com.baulsupp.okurl.kotlin.queryList
 import com.baulsupp.okurl.kotlin.request
+import com.baulsupp.okurl.services.symphony.model.Signal
 import com.baulsupp.okurl.services.symphony.model.Stream
 import com.baulsupp.okurl.services.symphony.model.StreamListRequest
 import okhttp3.HttpUrl
@@ -46,6 +47,11 @@ class SymphonyUrlCompleter(
         postJsonBody(StreamListRequest("IM", "MIM", "ROOM", "POST"))
       }).flatMap { it.streamAttributes?.members?.map(Long::toString).orEmpty() }
     }
+    mappings.withVariable("sigid") {
+      client.queryList<Signal>(request {
+        url("https://$pod.symphony.com/agent/v1/signals/list")
+      }).map { it.id }
+    }
 
     val domainUrlLists = basePaths.replace("pod", listOf(pod), false)
     return mappings.replaceVariables(domainUrlLists)
@@ -54,14 +60,6 @@ class SymphonyUrlCompleter(
   fun hostPod(host: String): String {
     return host.replace("(-api)?.symphony.com$".toRegex(), "")
   }
-
-//  fun withVariable(name: String, values: suspend () -> List<String>?) {
-//    mappings.withVariable(name) { values().orEmpty() }
-//  }
-//
-//  fun withCachedVariable(name: String, field: String, fn: suspend () -> List<String>?) {
-//    withVariable(field) { completionVariableCache.compute(name, field, fn) }
-//  }
 
   companion object {
     fun podsToHosts(pods: Iterable<String>): Set<String> =
