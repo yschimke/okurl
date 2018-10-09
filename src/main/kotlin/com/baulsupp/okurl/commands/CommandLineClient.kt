@@ -33,6 +33,7 @@ import com.baulsupp.okurl.okhttp.ConnectionSpecOption
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.TlsVersionOption
 import com.baulsupp.okurl.okhttp.defaultConnectionSpec
+import com.baulsupp.okurl.preferences.Preferences
 import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
 import com.baulsupp.okurl.security.CertificateUtils
@@ -42,6 +43,7 @@ import com.baulsupp.okurl.security.InsecureTrustManager
 import com.baulsupp.okurl.security.KeystoreUtils
 import com.baulsupp.okurl.security.OpenSCUtil
 import com.baulsupp.okurl.services.twitter.TwitterCachingInterceptor
+import com.baulsupp.okurl.tracing.TracingMode
 import com.baulsupp.okurl.tracing.UriTransportRegistry
 import com.baulsupp.okurl.tracing.ZipkinConfig
 import com.baulsupp.okurl.tracing.ZipkinTracingInterceptor
@@ -123,11 +125,8 @@ abstract class CommandLineClient {
   @Option(name = ["--protocols"], description = "Protocols")
   var protocols: String? = null
 
-  @Option(name = ["--zipkin", "-z"], description = "Activate Zipkin Tracing")
-  var zipkin = false
-
-  @Option(name = ["--zipkinTrace"], description = "Activate Detailed Zipkin Tracing")
-  var zipkinTrace = false
+  @Option(name = ["--tracing"], description = "Activate Zipkin Tracing")
+  var tracing: TracingMode? = null
 
   @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)")
   @AllowedRawValues(allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
@@ -218,6 +217,8 @@ abstract class CommandLineClient {
   lateinit var credentialsStore: CredentialsStore
 
   lateinit var locationSource: LocationSource
+
+  lateinit var preferences: Preferences
 
   var eventLoopGroup: NioEventLoopGroup? = null
 
@@ -374,6 +375,12 @@ abstract class CommandLineClient {
       }
     })
 
+    if (!this::preferences.isInitialized) {
+      preferences = Preferences.local
+    }
+
+    println(preferences)
+
     if (!this::outputHandler.isInitialized) {
       outputHandler = buildHandler()
     }
@@ -427,14 +434,7 @@ abstract class CommandLineClient {
       builder.networkInterceptors().add(loggingInterceptor)
     }
 
-    when {
-      osProxy -> {
-        val proxySearch = ProxySearch.getDefaultProxySearch()
-        builder.proxySelector(proxySearch.proxySelector)
-      }
-      socksProxy != null -> builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
-      proxy != null -> builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
-    }
+    applyProxy(builder)
 
     val authenticatorBuilder = DispatchingAuthenticator.Builder()
 
@@ -460,11 +460,6 @@ abstract class CommandLineClient {
 //    builder.authenticator(CachingAuthenticatorDecorator(authenticator, authCache))
 //    builder.addInterceptor(AuthenticationCacheInterceptor(authCache))
 
-    // TODO add caching
-//    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
-//    builder.authenticator(CachingAuthenticatorDecorator(authenticator, authCache))
-//    builder.addInterceptor(AuthenticationCacheInterceptor(authCache))
-
     protocols?.let {
       builder.protocols(protocolList(it))
     }
@@ -477,9 +472,7 @@ abstract class CommandLineClient {
     val connectionPool = ConnectionPool()
     builder.connectionPool(connectionPool)
 
-    if (zipkin || zipkinTrace) {
-      applyZipkin(builder)
-    }
+    applyZipkin(builder)
 
     builder.addNetworkInterceptor(authenticatingInterceptor)
 
@@ -492,6 +485,16 @@ abstract class CommandLineClient {
     return builder
   }
 
+  private fun applyProxy(builder: OkHttpClient.Builder) {
+    when {
+      osProxy -> builder.proxySelector(ProxySearch.getDefaultProxySearch().proxySelector)
+      socksProxy != null -> builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
+      proxy != null -> builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
+      preferences.osProxy == true -> builder.proxySelector(ProxySearch.getDefaultProxySearch().proxySelector)
+      preferences.proxy != null -> builder.proxy(preferences.proxy!!.build())
+    }
+  }
+
   private fun protocolList(it: String): List<Protocol> = it.split(",").map {
     Protocol.get(it)
   }.let {
@@ -499,6 +502,11 @@ abstract class CommandLineClient {
   }
 
   private fun applyZipkin(clientBuilder: OkHttpClient.Builder) {
+    tracing = tracing ?: preferences.tracing
+
+    if (tracing == null)
+      return
+
     val config = ZipkinConfig.load()
     val zipkinSenderUri = config.zipkinSenderUri()
     val reporter: Reporter<Span>
@@ -532,7 +540,7 @@ abstract class CommandLineClient {
     }
 
     clientBuilder.eventListenerFactory { call ->
-      ZipkinTracingListener(call, tracer, httpTracing, opener, zipkinTrace)
+      ZipkinTracingListener(call, tracer, httpTracing, opener, tracing == TracingMode.ZIPKIN_TRACING)
     }
 
     clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
