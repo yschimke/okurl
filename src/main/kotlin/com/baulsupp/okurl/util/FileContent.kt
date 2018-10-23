@@ -2,7 +2,6 @@ package com.baulsupp.okurl.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import org.apache.commons.io.IOUtils
 import java.io.File
