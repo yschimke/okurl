@@ -33,7 +33,7 @@ group = "com.baulsupp"
 val artifactID = "okurl"
 description = "OkHttp Kotlin CLI"
 val projectVersion = versioning.info.display
-println("Version $projectVersion")
+//println("Version $projectVersion")
 version = projectVersion
 
 base {
