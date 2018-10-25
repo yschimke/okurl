@@ -90,6 +90,7 @@ repositories {
   maven { url "https://jitpack.io" }
   maven { url "https://oss.sonatype.org/content/repositories/releases" }
   maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+  maven { url "https://dl.bintray.com/yschimke/baulsupp.com" }
   mavenCentral()
   jcenter()
 }
@@ -100,7 +101,7 @@ dependencies {
   implementation 'io.jsonwebtoken:jjwt-impl:0.10.5'
   implementation 'io.jsonwebtoken:jjwt-jackson:0.10.5'
 
-  implementation "com.baulsupp:oksocial-output:4.19.0"
+  implementation "com.baulsupp:oksocial-output:4.20.1"
   implementation 'com.baulsupp:okhttp-digest:0.4.0'
   implementation "com.squareup.okio:okio:2.1.0"
   implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
