@@ -25,6 +25,7 @@ data class Preferences(
   val ipMode: IPvMode? = null,
   val tracing: TracingMode? = null,
   val cache: String? = null) {
+
   companion object {
     private val logger = Logger.getLogger(Preferences::class.java.name)
 
