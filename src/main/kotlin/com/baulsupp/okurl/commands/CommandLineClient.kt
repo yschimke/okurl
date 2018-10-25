@@ -379,8 +379,6 @@ abstract class CommandLineClient {
       preferences = Preferences.local
     }
 
-    println(preferences)
-
     if (!this::outputHandler.isInitialized) {
       outputHandler = buildHandler()
     }
@@ -392,6 +390,7 @@ abstract class CommandLineClient {
     if (!this::credentialsStore.isInitialized) {
       credentialsStore = CredentialFactory.createCredentialsStore()
     }
+
 
     if (!this::authenticatingInterceptor.isInitialized) {
       authenticatingInterceptor = AuthenticatingInterceptor(this)
