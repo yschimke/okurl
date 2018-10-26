@@ -54,6 +54,12 @@ tasks {
 }
 
 tasks {
+  withType(Tar::class) {
+    compression = Compression.GZIP
+  }
+}
+
+tasks {
   "dokka"(DokkaTask::class) {
     outputFormat = "javadoc"
     outputDirectory = "$buildDir/javadoc"
