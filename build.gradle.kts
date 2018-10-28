@@ -33,7 +33,6 @@ group = "com.baulsupp"
 val artifactID = "okurl"
 description = "OkHttp Kotlin CLI"
 val projectVersion = versioning.info.display
-//println("Version $projectVersion")
 version = projectVersion
 
 base {
@@ -78,7 +77,6 @@ dependencies {
   implementation(Deps.braveOkhttp3)
   implementation(Deps.brotli)
   implementation(Deps.byteunits)
-  implementation(Deps.byteUnits)
   implementation(Deps.commonsIo)
   implementation(Deps.commonsLang)
   implementation(Deps.conscryptUber)
