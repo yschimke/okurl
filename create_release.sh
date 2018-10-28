@@ -36,3 +36,5 @@ git push origin "$TAG_VERSION"
 
 ./okurl -H "Content-Type: application/x-gzip" -d "@build/distributions/okurl-${TAG_VERSION}.tgz" "https://uploads.github.com/repos/yschimke/okurl/releases/${RELEASE_ID}/assets?name=okurl-${TAG_VERSION}.tgz" | jq ".browser_download_url"
 
+git co master
+
