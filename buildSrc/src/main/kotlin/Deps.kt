@@ -3,11 +3,11 @@ object Versions {
   val jackson = "2.9.7"
   val jjwtVersion = "0.10.5"
   val junitVersion = "5.3.1"
-  val kotlin = "1.3.0-rc-198"
+  val kotlin = "1.3.0"
   val kotlinCoroutines = "1.0.0-RC1"
   val moshiVersion = "1.7.0"
   val okhttpVersion = "3.12.0-SNAPSHOT"
-  val oksocialOutputVersion = "4.22.0"
+  val oksocialOutputVersion = "4.23.0"
   val slf4jVersion = "1.8.0-beta2"
 }
 
