@@ -31,7 +31,7 @@ object WeekdoneAuthFlow {
         post(FormBody.Builder().add("code", code).add("grant_type", "authorization_code").add("redirect_uri", s.redirectUri).add("client_id", clientId).add("client_secret", clientSecret).build())
       })
 
-      return Oauth2Token(responseMap.access_token, responseMap.access_token, clientId, clientSecret)
+      return Oauth2Token(responseMap.access_token, responseMap.refresh_token, clientId, clientSecret)
     }
   }
 }
