@@ -4,10 +4,10 @@ object Versions {
   val jjwtVersion = "0.10.5"
   val junitVersion = "5.3.1"
   val kotlin = "1.3.0"
-  val kotlinCoroutines = "1.0.0-RC1"
+  val kotlinCoroutines = "1.0.0"
   val moshiVersion = "1.7.0"
   val okhttpVersion = "3.12.0-SNAPSHOT"
-  val oksocialOutputVersion = "4.23.0"
+  val oksocialOutputVersion = "4.24.0"
   val slf4jVersion = "1.8.0-beta2"
 }
 
