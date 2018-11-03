@@ -268,12 +268,15 @@ class Main : CommandLineClient() {
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
       val handshake: Handshake? = response.handshake()
-      logger.fine("TLS Version: ${handshake?.tlsVersion()}")
       logger.fine("Protocol: ${response.protocol()}")
-      logger.fine("Cipher: ${handshake?.cipherSuite()}")
-      logger.fine("Peer Principal: ${handshake?.peerPrincipal()}")
-      logger.fine("Local Principal: ${handshake?.localPrincipal()}")
-      logger.fine("JVM: ${System.getProperty("java.vm.version")}")
+
+      if (handshake != null) {
+        logger.fine("TLS Version: ${handshake.tlsVersion()}")
+        logger.fine("Cipher: ${handshake.cipherSuite()}")
+        logger.fine("Peer Principal: ${handshake.peerPrincipal() ?: "none"}")
+        logger.fine("Local Principal: ${handshake.localPrincipal() ?: "none"}")
+        logger.fine("JVM: ${System.getProperty("java.vm.version")}")
+      }
     }
 
     if (showHeaders) {
@@ -423,13 +426,11 @@ class Main : CommandLineClient() {
     }
 
     private fun setupProvider() {
-      // Prefer JDK 11 over Conscrypt
-      if ("11" != System.getProperty("java.specification.version")) {
-        try {
-          Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager().build(), 1)
-        } catch (e: NoClassDefFoundError) {
-          // Drop back to JDK
-        }
+      // Prefer Conscrypt over JDK 11
+      try {
+        Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager().build(), 1)
+      } catch (e: NoClassDefFoundError) {
+        // Drop back to JDK
       }
     }
   }
