@@ -71,6 +71,7 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.LoggingEventListener
 import okhttp3.unixdomainsockets.UnixDomainSocketFactory
 import zipkin2.Span
 import zipkin2.reporter.Reporter
@@ -471,7 +472,7 @@ abstract class CommandLineClient {
     val connectionPool = ConnectionPool()
     builder.connectionPool(connectionPool)
 
-    applyZipkin(builder)
+    applyTracing(builder)
 
     builder.addNetworkInterceptor(authenticatingInterceptor)
 
@@ -500,11 +501,17 @@ abstract class CommandLineClient {
     if (it.contains(Protocol.HTTP_1_1)) it else it + Protocol.HTTP_1_1
   }
 
-  private fun applyZipkin(clientBuilder: OkHttpClient.Builder) {
+  private fun applyTracing(clientBuilder: OkHttpClient.Builder) {
     tracing = tracing ?: preferences.tracing
 
     if (tracing == null)
       return
+
+    if (tracing == TracingMode.CONSOLE) {
+      val logger = HttpLoggingInterceptor.Logger { message -> println(message) }
+      clientBuilder.eventListenerFactory(LoggingEventListener.Factory(logger))
+      return
+    }
 
     val config = ZipkinConfig.load()
     val zipkinSenderUri = config.zipkinSenderUri()
