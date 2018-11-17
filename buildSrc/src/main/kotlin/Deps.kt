@@ -7,7 +7,7 @@ object Versions {
   val kotlin = "1.3.10"
   val kotlinCoroutines = "1.0.1"
   val moshiVersion = "1.8.0"
-  val okhttpVersion = "3.12.0-SNAPSHOT"
+  val okhttpVersion = "3.12.0"
   val oksocialOutputVersion = "4.24.0"
   val slf4jVersion = "1.8.0-beta2"
 }
@@ -68,7 +68,7 @@ object Deps {
   val proxyVol = "com.github.markusbernhardt:proxy-vole:1.0.5"
   val slf4jApi = "org.slf4j:slf4j-api:${Versions.slf4jVersion}"
   val slf4jJdk14 = "org.slf4j:slf4j-jdk14:${Versions.slf4jVersion}"
-  val tink = "com.google.crypto.tink:tink:1.2.0"
+  val tink = "com.google.crypto.tink:tink:1.2.1"
   val zipkin = "io.zipkin.java:zipkin:2.10.1"
   val zipkinSenderOkhttp3 = "io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.10"
   val ztExec = "org.zeroturnaround:zt-exec:1.10"

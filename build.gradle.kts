@@ -9,7 +9,7 @@ plugins {
   `maven-publish`
   distribution
   id("com.github.ben-manes.versions") version "0.20.0"
-//  id("org.jlleitschuh.gradle.ktlint") version "6.2.1"
+//  id("org.jlleitschuh.gradle.ktlint") version "6.3.0"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.17"
   id("net.nemerosa.versioning") version "2.8.2"
