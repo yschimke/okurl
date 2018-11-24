@@ -3,6 +3,9 @@ import org.gradle.api.publish.maven.MavenPom
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.gradle.api.tasks.wrapper.Wrapper
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 
 plugins {
   kotlin("jvm") version Versions.kotlin
@@ -32,7 +35,7 @@ repositories {
 group = "com.baulsupp"
 val artifactID = "okurl"
 description = "OkHttp Kotlin CLI"
-val projectVersion = versioning.info.display
+val projectVersion: String = versioning.info.display
 version = projectVersion
 
 base {
@@ -138,6 +141,7 @@ dependencies {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
+//  project.objects.named(KotlinSourceSet::class,"main").kotlin
   classifier = "sources"
   from(kotlin.sourceSets["main"].kotlin)
 }

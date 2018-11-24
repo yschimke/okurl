@@ -1,5 +1,5 @@
 object Versions {
-  val braveVersion = "5.5.0"
+  val braveVersion = "5.5.1"
   val conscrypt = "1.4.1"
   val jackson = "2.9.7"
   val jjwtVersion = "0.10.5"
