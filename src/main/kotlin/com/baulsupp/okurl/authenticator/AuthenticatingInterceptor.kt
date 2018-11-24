@@ -30,7 +30,7 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
     // TODO log bad tags?
-    val tokenSet = chain.request().tag() as? Token ?: NoToken
+    val tokenSet = chain.request().tag(Token::class.java) ?: NoToken
 
     val credentials = when (tokenSet) {
       is TokenValue -> interceptor.serviceDefinition.castToken(tokenSet.token)

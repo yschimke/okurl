@@ -20,6 +20,7 @@ import com.baulsupp.okurl.completion.DirCompletionVariableCache
 import com.baulsupp.okurl.completion.UrlCompleter
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.FixedTokenCredentialsStore
+import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.execute
 import com.baulsupp.okurl.okhttp.FailedResponse
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
@@ -163,7 +164,7 @@ class Main : CommandLineClient() {
     }
     requestBuilder.header("User-Agent", userAgent)
 
-    requestBuilder.tag(this.token())
+    requestBuilder.tag(Token::class.java, this.token())
 
     return requestBuilder.build()
   }

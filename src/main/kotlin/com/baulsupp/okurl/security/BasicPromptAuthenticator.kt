@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.security
 
 import com.baulsupp.okurl.authenticator.BasicCredentials
+import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import okhttp3.Authenticator
 import okhttp3.Challenge
@@ -39,7 +40,7 @@ class BasicPromptAuthenticator(val credentials: BasicCredentials? = null) : Auth
   }
 
   fun basicAuth(request: Request, challenge: Challenge): BasicCredentials? {
-    val requestCredentials = (request.tag() as? TokenValue)?.token as? BasicCredentials
+    val requestCredentials = (request.tag(Token::class.java) as? TokenValue)?.token as? BasicCredentials
 
     if (requestCredentials != null) {
       return requestCredentials

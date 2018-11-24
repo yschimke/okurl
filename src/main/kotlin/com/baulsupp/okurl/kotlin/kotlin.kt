@@ -212,10 +212,10 @@ fun request(
 fun requestBuilder(
   url: String? = null,
   tokenSet: Token = DefaultToken
-): Request.Builder = Request.Builder().apply { if (url != null) url(url) }.tag(
+): Request.Builder = Request.Builder().apply { if (url != null) url(url) }.tag(Token::class.java,
   tokenSet)
 
-fun Request.Builder.tokenSet(tokenSet: Token): Request.Builder = tag(tokenSet)
+fun Request.Builder.tokenSet(tokenSet: Token): Request.Builder = tag(Token::class.java, tokenSet)
 
 fun Request.Builder.postJsonBody(body: Any) {
   val content = moshi.adapter(body.javaClass).toJson(body)!!
