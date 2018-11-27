@@ -60,21 +60,20 @@ tasks {
   withType(Tar::class) {
     compression = Compression.GZIP
   }
-}
 
-tasks {
-  "dokka"(DokkaTask::class) {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/javadoc"
-  }
   withType<GenerateMavenPom> {
     destination = file("$buildDir/libs/${jar.get().baseName}.pom")
   }
 }
 
+tasks.named<DokkaTask>("dokka") {
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/javadoc"
+}
+
 dependencies {
-  implementation(enforcedPlatform("io.netty:netty-bom:${Versions.netty}"))
-  implementation(enforcedPlatform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
+  implementation(platform("io.netty:netty-bom:${Versions.netty}"))
+  implementation(platform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
 
   implementation(Deps.activation)
   implementation(Deps.airline)
@@ -145,7 +144,6 @@ dependencies {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-//  project.objects.named(KotlinSourceSet::class,"main").kotlin
   classifier = "sources"
   from(kotlin.sourceSets["main"].kotlin)
 }

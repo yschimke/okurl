@@ -8,7 +8,7 @@ object Versions {
   val kotlinCoroutines = "1.0.1"
   val moshiVersion = "1.8.0"
   val okhttpVersion = "3.12.0"
-  val oksocialOutputVersion = "4.24.0"
+  val oksocialOutputVersion = "4.25.0"
   val slf4jVersion = "1.8.0-beta2"
   val netty = "4.1.31.Final"
 }
