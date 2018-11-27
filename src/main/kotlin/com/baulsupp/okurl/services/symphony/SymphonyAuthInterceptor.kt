@@ -95,12 +95,12 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     val authClient = client.newBuilder().sslSocketFactory(ssf, tm).build()
 
     val authResponse = authClient.query<TokenResponse>(request {
-      url("https://${pod}-api.symphony.com/sessionauth/v1/authenticate")
+      url("https://$pod-api.symphony.com/sessionauth/v1/authenticate")
       post(RequestBody.create(JSON, "{}"))
     })
 
     val keyResponse = authClient.query<TokenResponse>(request {
-      url("https://${pod}-api.symphony.com/keyauth/v1/authenticate")
+      url("https://$pod-api.symphony.com/keyauth/v1/authenticate")
       post(RequestBody.create(JSON, "{}"))
     })
 

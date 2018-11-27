@@ -392,7 +392,6 @@ abstract class CommandLineClient {
       credentialsStore = CredentialFactory.createCredentialsStore()
     }
 
-
     if (!this::authenticatingInterceptor.isInitialized) {
       authenticatingInterceptor = AuthenticatingInterceptor(this)
     }

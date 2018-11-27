@@ -7,13 +7,14 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.gradle.api.tasks.wrapper.Wrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
+import org.jlleitschuh.gradle.ktlint.KtlintFormatTask
 
 plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
   distribution
   id("com.github.ben-manes.versions") version "0.20.0"
-//  id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
+  id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.17"
   id("net.nemerosa.versioning") version "2.8.2"
@@ -67,8 +68,12 @@ tasks {
 }
 
 tasks.named<DokkaTask>("dokka") {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/javadoc"
+  outputFormat = "javadoc"
+  outputDirectory = "$buildDir/javadoc"
+}
+
+ktlint {
+  ignoreFailures.set(true)
 }
 
 dependencies {
