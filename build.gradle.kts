@@ -1,3 +1,4 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.publish.maven.MavenPom
 import org.jetbrains.dokka.gradle.DokkaPlugin
@@ -12,7 +13,7 @@ plugins {
   `maven-publish`
   distribution
   id("com.github.ben-manes.versions") version "0.20.0"
-//  id("org.jlleitschuh.gradle.ktlint") version "6.3.0"
+//  id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.17"
   id("net.nemerosa.versioning") version "2.8.2"
@@ -72,6 +73,9 @@ tasks {
 }
 
 dependencies {
+  implementation(enforcedPlatform("io.netty:netty-bom:${Versions.netty}"))
+  implementation(enforcedPlatform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
+
   implementation(Deps.activation)
   implementation(Deps.airline)
   implementation(Deps.bouncyCastle)
@@ -260,6 +264,17 @@ distributions {
       }
       into("lib") {
         from(configurations.runtimeClasspath)
+      }
+    }
+  }
+}
+
+val dependencyUpdates = tasks["dependencyUpdates"] as DependencyUpdatesTask
+dependencyUpdates.resolutionStrategy {
+  componentSelection {
+    all {
+      if (candidate.group == "io.netty" && candidate.version.startsWith("5.")) {
+        reject("Alpha")
       }
     }
   }

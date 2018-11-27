@@ -3,13 +3,14 @@ object Versions {
   val conscrypt = "1.4.1"
   val jackson = "2.9.7"
   val jjwtVersion = "0.10.5"
-  val junitVersion = "5.3.1"
+  val junitVersion = "5.3.2"
   val kotlin = "1.3.10"
   val kotlinCoroutines = "1.0.1"
   val moshiVersion = "1.8.0"
   val okhttpVersion = "3.12.0"
   val oksocialOutputVersion = "4.24.0"
   val slf4jVersion = "1.8.0-beta2"
+  val netty = "4.1.31.Final"
 }
 
 object Deps {
@@ -39,7 +40,7 @@ object Deps {
   val jjwtImpl = "io.jsonwebtoken:jjwt-impl:${Versions.jjwtVersion}"
   val jjwtJackson = "io.jsonwebtoken:jjwt-jackson:${Versions.jjwtVersion}"
   val jkeychain = "pt.davidafsilva.apple:jkeychain:1.0.0"
-  val jnrUnixSocket = "com.github.jnr:jnr-unixsocket:0.20"
+  val jnrUnixSocket = "com.github.jnr:jnr-unixsocket:0.21"
   val jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
   val junitJupiterApi = "org.junit.jupiter:junit-jupiter-api:${Versions.junitVersion}"
   val junitJupiterEngine = "org.junit.jupiter:junit-jupiter-engine:${Versions.junitVersion}"
@@ -52,7 +53,7 @@ object Deps {
   val moshi = "com.squareup.moshi:moshi:${Versions.moshiVersion}"
   val moshiAdapters = "com.squareup.moshi:moshi-adapters:${Versions.moshiVersion}"
   val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshiVersion}"
-  val nettyResolveDns = "io.netty:netty-resolver-dns:4.1.30.Final"
+  val nettyResolveDns = "io.netty:netty-resolver-dns:${Versions.netty}"
   val ok2Curl = "com.github.mrmike:ok2curl:0.4.5"
   val okhttp = "com.squareup.okhttp3:okhttp:${Versions.okhttpVersion}"
   val okhttpDigest = "com.baulsupp:okhttp-digest:0.4.0"
