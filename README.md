@@ -1,6 +1,6 @@
 # OkHttp Kotlin command line
 
-[![CircleCI](https://circleci.com/gh/yschimke/okurl.svg?style=svg)](https://circleci.com/gh/yschimke/okurl)
+[![Build Status](https://api.cirrus-ci.com/github/yschimke/okurl.svg)](https://cirrus-ci.com/github/yschimke/okurl)
 
 A curl like client based on OkHttp with tight integration for Mac OSX
 
