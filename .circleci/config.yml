@@ -19,7 +19,7 @@ jobs:
           - v1-dependencies-{{ checksum "build.gradle.kts" }}
           - v1-dependencies-
 
-      - run: ./gradlew resolveDependencies
+      - run: ./gradlew downloadDependencies
 
       - save_cache:
           paths:

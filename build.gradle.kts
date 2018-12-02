@@ -160,6 +160,18 @@ val javadocJar by tasks.creating(Jar::class) {
 
 val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
 
+tasks.create("downloadDependencies") {
+  description = "Downloads dependencies"
+
+  doLast {
+    configurations.forEach {
+      if (it.isCanBeResolved) {
+        it.resolve()
+      }
+    }
+  }
+}
+
 fun MavenPom.addDependencies() = withXml {
   asNode().appendNode("dependencies").let { depNode ->
     configurations.implementation.get().allDependencies.forEach {
