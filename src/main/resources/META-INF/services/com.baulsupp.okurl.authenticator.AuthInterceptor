@@ -6,6 +6,7 @@ com.baulsupp.okurl.services.citymapper.CitymapperAuthInterceptor
 com.baulsupp.okurl.services.coinbase.CoinbaseAuthInterceptor
 com.baulsupp.okurl.services.coinbin.CoinBinAuthInterceptor
 com.baulsupp.okurl.services.companieshouse.CompaniesHouseAuthInterceptor
+com.baulsupp.okurl.services.cooee.CooeeAuthInterceptor
 com.baulsupp.okurl.services.cronhub.CronhubAuthInterceptor
 com.baulsupp.okurl.services.datasettes.DatasettesAuthInterceptor
 com.baulsupp.okurl.services.dropbox.DropboxAuthInterceptor
