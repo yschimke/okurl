@@ -16,9 +16,8 @@ buildCache {
   }
 }
 
-
-sourceControl {
-  gitRepository(uri("https://github.com/yschimke/oksocial-output.git")) {
-    producesModule("com.baulsupp:oksocial-output")
-  }
-}
+//sourceControl {
+//  gitRepository(uri("https://github.com/yschimke/oksocial-output.git")) {
+//    producesModule("com.baulsupp:oksocial-output")
+//  }
+//}

@@ -10,9 +10,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-/**
- * https://developer.lyft.com/docs/authentication
- */
 class CitymapperAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override val serviceDefinition = Oauth2ServiceDefinition("developer.citymapper.com", "Citymapper API", "citymapper",
     "https://citymapper.3scale.net/docs", "https://citymapper.3scale.net/")
