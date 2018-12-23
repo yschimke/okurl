@@ -1,16 +1,16 @@
 object Versions {
-  val braveVersion = "5.5.1"
-  val conscrypt = "1.4.1"
-  val jackson = "2.9.7"
+  val braveVersion = "5.6.0"
+  val conscrypt = "1.4.2"
+  val jackson = "2.9.8"
   val jjwtVersion = "0.10.5"
   val junitVersion = "5.3.2"
-  val kotlin = "1.3.10"
-  val kotlinCoroutines = "1.0.1"
+  val kotlin = "1.3.11"
+  val kotlinCoroutines = "1.1.0"
   val moshiVersion = "1.8.0"
   val okhttpVersion = "3.12.0"
   val oksocialOutputVersion = "4.25.0"
   val slf4jVersion = "1.8.0-beta2"
-  val netty = "4.1.31.Final"
+  val netty = "4.1.32.Final"
 }
 
 object Deps {
@@ -71,6 +71,6 @@ object Deps {
   val slf4jJdk14 = "org.slf4j:slf4j-jdk14:${Versions.slf4jVersion}"
   val tink = "com.google.crypto.tink:tink:1.2.1"
   val zipkin = "io.zipkin.java:zipkin:2.10.1"
-  val zipkinSenderOkhttp3 = "io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.10"
+  val zipkinSenderOkhttp3 = "io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.13"
   val ztExec = "org.zeroturnaround:zt-exec:1.10"
 }

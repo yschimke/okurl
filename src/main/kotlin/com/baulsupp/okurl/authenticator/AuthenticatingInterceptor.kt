@@ -77,7 +77,7 @@ class AuthenticatingInterceptor(
     return httpUrl?.run { runBlocking { services.find { it.supportsUrl(httpUrl, main.credentialsStore) } } }
   }
 
-  override fun findAuthInterceptor(nameOrUrl: String): AuthInterceptor<*>? = getByName(nameOrUrl) ?: getByUrl(nameOrUrl)
+  override fun findAuthInterceptor(name: String): AuthInterceptor<*>? = getByName(name) ?: getByUrl(name)
 
   fun names(): List<String> = services.map { it.name() }
 

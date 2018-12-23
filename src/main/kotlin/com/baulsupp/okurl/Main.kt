@@ -21,7 +21,6 @@ import com.baulsupp.okurl.completion.UrlCompleter
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.FixedTokenCredentialsStore
 import com.baulsupp.okurl.credentials.Token
-import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.kotlin.execute
 import com.baulsupp.okurl.okhttp.FailedResponse
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor

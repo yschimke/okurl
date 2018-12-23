@@ -91,7 +91,7 @@ import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
-abstract class CommandLineClient: ToolSession {
+abstract class CommandLineClient : ToolSession {
 
   @Option(name = ["--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
@@ -224,7 +224,7 @@ abstract class CommandLineClient: ToolSession {
   override val defaultTokenSet: TokenSet?
     get() = tokenSet?.let { TokenSet(it) }
 
-  override var serviceLibrary: ServiceLibrary = object: ServiceLibrary {
+  override var serviceLibrary: ServiceLibrary = object : ServiceLibrary {
     override fun knownServices(): Set<String> {
       return authenticatingInterceptor.names().toSortedSet()
     }

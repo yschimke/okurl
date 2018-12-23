@@ -14,8 +14,8 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class SimpleWebServer(
-  private val codeReader: (HttpUrl) -> String?,
-  private val port: Int = 3000
+  private val port: Int = 3000,
+  private val codeReader: (HttpUrl) -> String?
 ) : Closeable, HttpHandler {
   private val logger = Logger.getLogger(SimpleWebServer::class.java.name)
 
@@ -83,9 +83,9 @@ class SimpleWebServer(
 
   companion object {
     fun forCode(): SimpleWebServer {
-      return SimpleWebServer({ r ->
+      return SimpleWebServer { r ->
         r.queryParameter("code")
-      })
+      }
     }
 
     @JvmStatic

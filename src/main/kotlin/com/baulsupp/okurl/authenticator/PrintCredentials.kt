@@ -1,7 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
