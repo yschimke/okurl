@@ -18,4 +18,4 @@ runBlocking {
   response.body()!!.source().writeToSink(discoveryJsonSink)
 }
 
-okshell.commandLine.closeClients()
+okshell.commandLine.close()

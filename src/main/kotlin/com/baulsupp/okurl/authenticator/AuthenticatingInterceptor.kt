@@ -1,10 +1,11 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.okurl.commands.CommandLineClient
+import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.client
+import com.baulsupp.okurl.services.ServiceLibrary
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -12,7 +13,11 @@ import okhttp3.Response
 import java.util.ServiceLoader
 import java.util.logging.Logger
 
-class AuthenticatingInterceptor(private val main: CommandLineClient, val services: List<AuthInterceptor<*>> = defaultServices()) : Interceptor {
+class AuthenticatingInterceptor(
+  private val main: ToolSession,
+  override val services: List<AuthInterceptor<*>> = defaultServices()
+) : Interceptor,
+  ServiceLibrary {
   override fun intercept(chain: Interceptor.Chain): Response {
     return runBlocking {
       val filteredAuthenticators = services
@@ -26,6 +31,10 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
         chain.proceed(chain.request())
       }
     }
+  }
+
+  override fun knownServices(): Set<String> {
+    return services.map { it.name() }.toSortedSet()
   }
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
@@ -68,7 +77,7 @@ class AuthenticatingInterceptor(private val main: CommandLineClient, val service
     return httpUrl?.run { runBlocking { services.find { it.supportsUrl(httpUrl, main.credentialsStore) } } }
   }
 
-  fun findAuthInterceptor(nameOrUrl: String): AuthInterceptor<*>? = getByName(nameOrUrl) ?: getByUrl(nameOrUrl)
+  override fun findAuthInterceptor(nameOrUrl: String): AuthInterceptor<*>? = getByName(nameOrUrl) ?: getByUrl(nameOrUrl)
 
   fun names(): List<String> = services.map { it.name() }
 

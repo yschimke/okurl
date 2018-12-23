@@ -1,12 +1,12 @@
 package com.baulsupp.okurl.kotlin
 
-import com.baulsupp.okurl.commands.CommandLineClient
+import com.baulsupp.oksocial.output.ConsoleHandler
+import com.baulsupp.oksocial.output.SimpleResponseExtractor
+import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.location.Location
 import com.baulsupp.okurl.moshi.Rfc3339InstantJsonAdapter
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.SimpleResponseExtractor
 import com.baulsupp.okurl.services.mapbox.model.MapboxLatLongAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -24,7 +24,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.Locale
 
-class OkShell(val commandLine: CommandLineClient) {
+class OkShell(val commandLine: ToolSession) {
   companion object {
     var instance: OkShell? = null
     fun create(): OkShell {
@@ -79,7 +79,8 @@ suspend fun showOutput(response: Response) {
 }
 
 fun newWebSocket(url: String, listener: WebSocketListener): WebSocket = client.newWebSocket(
-  Request.Builder().url(url).build(), listener)
+  Request.Builder().url(url).build(), listener
+)
 
 var dateOnlyformat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
@@ -89,7 +90,8 @@ val terminalWidth: Int by lazy { runBlocking { (okshell.commandLine.outputHandle
 
 fun jsonPostRequest(url: String, body: String): Request =
   requestBuilder(url, DefaultToken).post(
-    RequestBody.create(MediaType.get("application/json"), body)).build()
+    RequestBody.create(MediaType.get("application/json"), body)
+  ).build()
 
 var args: List<String> = listOf()
 

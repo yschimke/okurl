@@ -2,8 +2,10 @@ package com.baulsupp.okurl.authenticator
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.commands.CommandLineClient
+import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
+import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +23,10 @@ import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class PrintCredentials(private val commandLineClient: CommandLineClient) {
+class PrintCredentials(private val commandLineClient: ToolSession) {
   private val logger = Logger.getLogger(PrintCredentials::class.java.name)
 
   val outputHandler: OutputHandler<Response> = commandLineClient.outputHandler
-
-  val authenticatingInterceptor: AuthenticatingInterceptor = commandLineClient.authenticatingInterceptor
 
   val credentialsStore: CredentialsStore = commandLineClient.credentialsStore
 
@@ -68,13 +68,13 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
   }
 
   suspend fun showCredentials(arguments: List<String>) {
-    var services: Iterable<AuthInterceptor<*>> = authenticatingInterceptor.services
-    val names = commandLineClient.tokenSet?.let { listOf(it) } ?: commandLineClient.credentialsStore.names().toList()
+    var services: Iterable<AuthInterceptor<*>> = commandLineClient.serviceLibrary.services
+    val names = commandLineClient.defaultTokenSet?.let { listOf(it) } ?: commandLineClient.credentialsStore.names().map { TokenSet(it) }
 
     val full = !arguments.isEmpty()
 
     if (!arguments.isEmpty()) {
-      services = arguments.mapNotNull { authenticatingInterceptor.findAuthInterceptor(it) }
+      services = arguments.mapNotNull { commandLineClient.serviceLibrary.findAuthInterceptor(it) }
     }
 
     val futures = validate(services, names)
@@ -87,7 +87,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
     }
   }
 
-  data class Key(val auth: AuthInterceptor<*>, val tokenSet: String)
+  data class Key(val auth: AuthInterceptor<*>, val tokenSet: TokenSet)
 
   private suspend fun printCredentials(key: Key) {
     val sd: ServiceDefinition<*> = key.auth.serviceDefinition
@@ -98,7 +98,7 @@ class PrintCredentials(private val commandLineClient: CommandLineClient) {
 
   suspend fun validate(
     services: Iterable<AuthInterceptor<*>>,
-    names: List<String>
+    names: List<TokenSet>
   ): Map<Key, Deferred<ValidatedCredentials>> {
     val pairs =
       services.flatMap { sv ->

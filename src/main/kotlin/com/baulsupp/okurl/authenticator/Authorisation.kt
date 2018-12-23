@@ -1,11 +1,11 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.okurl.commands.CommandLineClient
-import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.commands.ToolSession
+import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.secrets.Secrets
 
-class Authorisation(val main: CommandLineClient) {
+class Authorisation(val main: ToolSession) {
 
   suspend fun authorize(
     auth: AuthInterceptor<*>?,
@@ -15,7 +15,8 @@ class Authorisation(val main: CommandLineClient) {
   ) {
     if (auth == null) {
       throw UsageException(
-        "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + main.serviceLibrary.knownServices().joinToString(", ")
+      )
     }
 
     if (token != null) {
@@ -45,7 +46,8 @@ class Authorisation(val main: CommandLineClient) {
   suspend fun <T> renew(auth: AuthInterceptor<T>?, tokenSet: String) {
     if (auth == null) {
       throw UsageException(
-        "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + main.serviceLibrary.knownServices().joinToString(", ")
+      )
     }
 
     val serviceDefinition = auth.serviceDefinition
@@ -65,7 +67,8 @@ class Authorisation(val main: CommandLineClient) {
   suspend fun remove(auth: AuthInterceptor<*>?, tokenSet: String) {
     if (auth == null) {
       throw UsageException(
-        "unable to find authenticator. Specify name from " + main.authenticatingInterceptor.names().joinToString(", "))
+        "unable to find authenticator. Specify name from " + main.serviceLibrary.knownServices().joinToString(", ")
+      )
     }
 
     main.credentialsStore.remove(auth.serviceDefinition, tokenSet)

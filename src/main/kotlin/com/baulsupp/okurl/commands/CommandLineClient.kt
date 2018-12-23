@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.authenticator.BasicCredentials
@@ -42,6 +43,7 @@ import com.baulsupp.okurl.security.InsecureHostnameVerifier
 import com.baulsupp.okurl.security.InsecureTrustManager
 import com.baulsupp.okurl.security.KeystoreUtils
 import com.baulsupp.okurl.security.OpenSCUtil
+import com.baulsupp.okurl.services.ServiceLibrary
 import com.baulsupp.okurl.services.twitter.TwitterCachingInterceptor
 import com.baulsupp.okurl.tracing.TracingMode
 import com.baulsupp.okurl.tracing.UriTransportRegistry
@@ -89,7 +91,7 @@ import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
-abstract class CommandLineClient {
+abstract class CommandLineClient: ToolSession {
 
   @Option(name = ["--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
@@ -211,13 +213,38 @@ abstract class CommandLineClient {
 
   lateinit var authorisation: Authorisation
 
-  lateinit var client: OkHttpClient
+  override lateinit var client: OkHttpClient
 
-  lateinit var outputHandler: OutputHandler<Response>
+  override lateinit var outputHandler: OutputHandler<Response>
 
-  lateinit var credentialsStore: CredentialsStore
+  override lateinit var credentialsStore: CredentialsStore
 
-  lateinit var locationSource: LocationSource
+  override lateinit var locationSource: LocationSource
+
+  override val defaultTokenSet: TokenSet?
+    get() = tokenSet?.let { TokenSet(it) }
+
+  override var serviceLibrary: ServiceLibrary = object: ServiceLibrary {
+    override fun knownServices(): Set<String> {
+      return authenticatingInterceptor.names().toSortedSet()
+    }
+
+    override val services: Iterable<AuthInterceptor<*>>
+      get() = authenticatingInterceptor.services
+
+    override fun findAuthInterceptor(name: String): AuthInterceptor<*>? =
+      authenticatingInterceptor.findAuthInterceptor(name)
+  }
+
+  override fun close() {
+    for (c in closeables) {
+      try {
+        c.close()
+      } catch (e: Exception) {
+        Platform.get().log(Platform.INFO, "close failed", e)
+      }
+    }
+  }
 
   lateinit var preferences: Preferences
 
@@ -355,7 +382,13 @@ abstract class CommandLineClient {
       outputHandler.showError("unknown error", e)
       -2
     } finally {
-      closeClients()
+      for (c in closeables) {
+        try {
+          c.close()
+        } catch (e: Exception) {
+          Platform.get().log(Platform.INFO, "close failed", e)
+        }
+      }
     }
   }
 
@@ -566,16 +599,6 @@ abstract class CommandLineClient {
       outputHandler.openLink(link)
     } catch (e: IOException) {
       outputHandler.showError("Can't open link", e)
-    }
-  }
-
-  fun closeClients() {
-    for (c in closeables) {
-      try {
-        c.close()
-      } catch (e: Exception) {
-        Platform.get().log(Platform.INFO, "close failed", e)
-      }
     }
   }
 
