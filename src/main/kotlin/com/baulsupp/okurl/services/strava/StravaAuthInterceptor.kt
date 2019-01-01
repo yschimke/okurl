@@ -5,13 +5,19 @@ import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.kotlin.edit
 import com.baulsupp.okurl.kotlin.form
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.strava.model.Athlete
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import java.io.IOException
+import java.util.logging.Level
 
 class StravaAuthInterceptor : Oauth2AuthInterceptor() {
   override suspend fun authorize(
@@ -26,12 +32,30 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
     val scopes = Secrets.promptArray(
       "Scopes", "strava.scopes", listOf(
         "read_all",
+        "profile:read_all",
         "profile:write",
+        "activity:read_all",
         "activity:write"
       )
     )
 
     return StravaAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
+  }
+
+  override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
+    return try {
+      super.hosts(credentialsStore).contains(url.host())
+    } catch (e: IOException) {
+      logger.log(Level.WARNING, "failed getting hosts", e)
+      false
+    }
+  }
+
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
+    val newRew = chain.request().edit {
+      addHeader("Authorization", "Bearer ${credentials.accessToken}")
+    }
+    return chain.proceed(newRew)
   }
 
   override val serviceDefinition = Oauth2ServiceDefinition(
@@ -47,6 +71,12 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.isRenewable()
+  }
+
+  override fun canRenew(result: Response): Boolean {
+    // Not working
+    // {"message":"Authorization Error","errors":[{"resource":"AccessToken","field":"activity:read_permission","code":"missing"}]}
+    return false
   }
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {

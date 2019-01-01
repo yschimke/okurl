@@ -37,8 +37,10 @@ import com.github.rvesse.airline.annotations.Option
 import com.github.rvesse.airline.parser.errors.ParseException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
 import okhttp3.MediaType
@@ -243,7 +245,7 @@ class Main : CommandLineClient() {
     return 0
   }
 
-  suspend fun processResponses(
+  private suspend fun processResponses(
     outputHandler: OutputHandler<Response>,
     responses: List<Deferred<PotentialResponse>>
   ): Boolean {
@@ -405,33 +407,35 @@ class Main : CommandLineClient() {
     const val NAME = "okurl"
     val command = System.getProperty("command.name", "okurl")!!
 
-    @JvmStatic
-    fun main(vararg args: String) = runBlocking {
-      setupProvider()
-
-      try {
-        val result = SingleCommand.singleCommand(Main::class.java).parse(*args).run()
-        System.exit(result)
-      } catch (e: Throwable) {
-        when (e) {
-          is ParseException, is UsageException -> {
-            System.err.println("okurl: ${e.message}")
-            System.exit(-1)
-          }
-          else -> {
-            e.printStackTrace()
-            System.exit(-1)
-          }
-        }
-      }
-    }
-
-    private fun setupProvider() {
+    fun setupProvider() {
       // Prefer Conscrypt over JDK 11
       try {
         Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager().build(), 1)
       } catch (e: NoClassDefFoundError) {
         // Drop back to JDK
+      }
+    }
+  }
+}
+
+@ExperimentalCoroutinesApi
+suspend fun main(args: Array<String>) {
+  DebugProbes.install()
+
+  Main.setupProvider()
+
+  try {
+    val result = SingleCommand.singleCommand(Main::class.java).parse(*args).run()
+    System.exit(result)
+  } catch (e: Throwable) {
+    when (e) {
+      is ParseException, is UsageException -> {
+        System.err.println("okurl: ${e.message}")
+        System.exit(-1)
+      }
+      else -> {
+        e.printStackTrace()
+        System.exit(-1)
       }
     }
   }

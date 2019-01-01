@@ -15,4 +15,4 @@ DEBUG=
 JAVA_CMD="$JAVA_HOME/bin/java"
 
 MAIN_JAR=$(ls build/install/okurl/lib/okurl-*.jar | grep -v okurl-output)
-${JAVA_HOME}/bin/java ${DEBUG} ${VMOPTS} -classpath ${MAIN_JAR}:build/install/okurl/lib/\* -Dcommand.name="$CMD" com.baulsupp.okurl.kotlin.Main "$@"
+${JAVA_HOME}/bin/java ${DEBUG} ${VMOPTS} -classpath ${MAIN_JAR}:build/install/okurl/lib/\* -Dcommand.name="$CMD" com.baulsupp.okurl.kotlin.MainKt "$@"

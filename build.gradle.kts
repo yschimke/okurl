@@ -132,6 +132,7 @@ dependencies {
   implementation(Deps.zipkin)
   implementation(Deps.zipkinSenderOkhttp3)
   implementation(Deps.ztExec)
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.kotlinCoroutines}")
 
   implementation(Deps.kotlinScriptUtil) {
     exclude(module = "kotlin-compiler")
