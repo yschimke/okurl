@@ -1,11 +1,11 @@
 package com.baulsupp.okurl.services.stackexchange
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.stackexchange.model.MeResponse
 import okhttp3.Interceptor
@@ -30,7 +30,12 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   }
 
   override suspend fun validate(client: OkHttpClient, credentials: StackExchangeToken): ValidatedCredentials {
-    return ValidatedCredentials(client.query<MeResponse>("https://api.stackexchange.com/2.2/me?site=stackoverflow", TokenValue(credentials)).items.firstOrNull()?.display_name)
+    return ValidatedCredentials(
+      client.query<MeResponse>(
+        "https://api.stackexchange.com/2.2/me?site=stackoverflow",
+        TokenValue(credentials)
+      ).items.firstOrNull()?.display_name
+    )
   }
 
   override suspend fun authorize(
@@ -40,13 +45,19 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   ): StackExchangeToken {
 
     val clientId = Secrets.prompt("StackExchange Client Id", "stackexchange.clientId", "", false)
-    val clientSecret = Secrets.prompt("StackExchange Client Secret", "stackexchange.clientSecret",
-      "", true)
+    val clientSecret = Secrets.prompt(
+      "StackExchange Client Secret", "stackexchange.clientSecret",
+      "", true
+    )
     val clientKey = Secrets.prompt("StackExchange Key", "stackexchange.key", "", false)
-    val scopes = Secrets.promptArray("Scopes", "stackexchange.scopes", listOf("read_inbox",
-      "no_expiry",
-      "write_access",
-      "private_info"))
+    val scopes = Secrets.promptArray(
+      "Scopes", "stackexchange.scopes", listOf(
+        "read_inbox",
+        "no_expiry",
+        "write_access",
+        "private_info"
+      )
+    )
 
     return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey, scopes)
   }

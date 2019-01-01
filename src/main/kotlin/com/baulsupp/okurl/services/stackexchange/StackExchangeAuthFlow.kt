@@ -1,10 +1,10 @@
 package com.baulsupp.okurl.services.stackexchange
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.kotlin.requestBuilder
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -22,8 +22,10 @@ object StackExchangeAuthFlow {
     SimpleWebServer.forCode().use { s ->
       val serverUri = s.redirectUri
 
-      val loginUrl = "https://stackexchange.com/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
-        scopes.joinToString(","), "UTF-8")
+      val loginUrl =
+        "https://stackexchange.com/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
+          scopes.joinToString(","), "UTF-8"
+        )
 
       outputHandler.openLink(loginUrl)
 

@@ -1,22 +1,24 @@
 package com.baulsupp.okurl.services.instagram
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.instagram.com", "Instagram API", "instagram",
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.instagram.com", "Instagram API", "instagram",
     "https://www.instagram.com/developer/endpoints/",
-    "https://www.instagram.com/developer/clients/manage/")
+    "https://www.instagram.com/developer/clients/manage/"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -38,9 +40,13 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val clientId = Secrets.prompt("Instagram Client Id", "instagram.clientId", "", false)
     val clientSecret = Secrets.prompt("Instagram Client Secret", "instagram.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "instagram.scopes",
-      listOf("basic", "public_content", "follower_list", "comments", "relationships",
-        "likes"))
+    val scopes = Secrets.promptArray(
+      "Scopes", "instagram.scopes",
+      listOf(
+        "basic", "public_content", "follower_list", "comments", "relationships",
+        "likes"
+      )
+    )
 
     return InstagramAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
@@ -49,8 +55,12 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.instagram.com/v1/users/self",
-      TokenValue(credentials), "data", "full_name"))
+    ValidatedCredentials(
+      client.queryMapValue<String>(
+        "https://api.instagram.com/v1/users/self",
+        TokenValue(credentials), "data", "full_name"
+      )
+    )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.instagram.com")
 }

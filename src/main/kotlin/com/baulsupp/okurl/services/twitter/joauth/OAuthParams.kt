@@ -77,14 +77,16 @@ object OAuthParams {
     // we use String.format here, because we're probably not that worried about
     // effeciency when printing the class for debugging
     override fun toString(): String {
-      return String.format("%s=%s,%s=%s,%s=%s,%s=%s(->%s),%s=%s,%s=%s,%s=%s",
+      return String.format(
+        "%s=%s,%s=%s,%s=%s,%s=%s(->%s),%s=%s,%s=%s,%s=%s",
         OAUTH_TOKEN, valueOrUnset(token),
         OAUTH_CONSUMER_KEY, valueOrUnset(consumerKey),
         OAUTH_NONCE, valueOrUnset(nonce),
         OAUTH_TIMESTAMP, timestampStr, timestampSecs,
         OAUTH_SIGNATURE, valueOrUnset(signature),
         OAUTH_SIGNATURE_METHOD, valueOrUnset(signatureMethod),
-        OAUTH_VERSION, valueOrUnset(version))
+        OAUTH_VERSION, valueOrUnset(version)
+      )
     }
   }
 }

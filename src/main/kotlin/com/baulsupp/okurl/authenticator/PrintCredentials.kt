@@ -48,7 +48,7 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
 
   private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
     val sd = key.auth.serviceDefinition
-    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(displayName(sd), key.tokenSet, validated?.username
+    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(displayName(sd), key.tokenSet.name, validated?.username
       ?: "-", validated?.clientName ?: "-"))
   }
 

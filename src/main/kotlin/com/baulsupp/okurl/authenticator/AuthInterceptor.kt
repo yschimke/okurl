@@ -42,7 +42,7 @@ abstract class AuthInterceptor<T> {
     }
   }
 
-  abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): T
+  abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String> = listOf()): T
 
   abstract val serviceDefinition: ServiceDefinition<T>
 

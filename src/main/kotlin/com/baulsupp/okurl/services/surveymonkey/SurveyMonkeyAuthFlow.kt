@@ -1,11 +1,11 @@
 package com.baulsupp.okurl.services.surveymonkey
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.requestBuilder
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.services.surveymonkey.model.TokenResponse
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -21,7 +21,8 @@ object SurveyMonkeyAuthFlow {
     SimpleWebServer.forCode().use { s ->
       val redirectUri = s.redirectUri
 
-      val loginUrl = "https://api.surveymonkey.net/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=$redirectUri"
+      val loginUrl =
+        "https://api.surveymonkey.net/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=$redirectUri"
 
       outputHandler.openLink(loginUrl)
 
@@ -34,8 +35,10 @@ object SurveyMonkeyAuthFlow {
         .add("grant_type", "authorization_code")
         .build()
 
-      val request = requestBuilder("https://api.surveymonkey.net/oauth/token",
-        NoToken)
+      val request = requestBuilder(
+        "https://api.surveymonkey.net/oauth/token",
+        NoToken
+      )
         .post(body)
         .build()
 

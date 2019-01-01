@@ -1,8 +1,21 @@
 package com.baulsupp.okurl.services.twitter.model
 
-data class User(val id_str: String, val name: String, val screen_name: String, val location: String, val description: String)
+data class User(
+  val id_str: String,
+  val name: String,
+  val screen_name: String,
+  val location: String,
+  val description: String
+)
 
-data class Media(val id_str: String, val media_url_https: String, val display_url: String, val expanded_url: String, val type: String, val sizes: Map<String, Any> = mapOf())
+data class Media(
+  val id_str: String,
+  val media_url_https: String,
+  val display_url: String,
+  val expanded_url: String,
+  val type: String,
+  val sizes: Map<String, Any> = mapOf()
+)
 
 data class Entities(
   val hashtags: List<Any> = listOf(),

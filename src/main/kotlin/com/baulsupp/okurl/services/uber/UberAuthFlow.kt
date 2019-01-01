@@ -1,11 +1,11 @@
 package com.baulsupp.okurl.services.uber
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.requestBuilder
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -18,7 +18,8 @@ object UberAuthFlow {
     clientSecret: String
   ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
-      val loginUrl = "https://login.uber.com/oauth/v2/authorize?client_id=$clientId&response_type=code&state=x&redirect_uri=${s.redirectUri}"
+      val loginUrl =
+        "https://login.uber.com/oauth/v2/authorize?client_id=$clientId&response_type=code&state=x&redirect_uri=${s.redirectUri}"
 
       outputHandler.openLink(loginUrl)
 
@@ -35,8 +36,10 @@ object UberAuthFlow {
 
       val responseMap = client.queryMap<Any>(request)
 
-      return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, clientId, clientSecret)
+      return Oauth2Token(
+        responseMap["access_token"] as String,
+        responseMap["refresh_token"] as String, clientId, clientSecret
+      )
     }
   }
 }

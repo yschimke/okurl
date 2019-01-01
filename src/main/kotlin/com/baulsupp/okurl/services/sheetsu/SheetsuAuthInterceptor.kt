@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.sheetsu
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.basic.BasicAuthServiceDefinition
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
@@ -13,7 +13,13 @@ import okhttp3.Response
 
 class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   override val serviceDefinition =
-    BasicAuthServiceDefinition("sheetsu.com", "Sheetsu API", "sheetsu", "https://docs.sheetsu.com/", "https://sheetsu.com/dashboard")
+    BasicAuthServiceDefinition(
+      "sheetsu.com",
+      "Sheetsu API",
+      "sheetsu",
+      "https://docs.sheetsu.com/",
+      "https://sheetsu.com/dashboard"
+    )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
@@ -25,7 +31,11 @@ class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): BasicCredentials {
     val user =
       Secrets.prompt("Sheetsu API Key", "sheetsu.apiKey", "", false)
     val password =

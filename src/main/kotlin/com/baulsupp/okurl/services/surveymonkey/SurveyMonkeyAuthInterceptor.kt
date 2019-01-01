@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.surveymonkey
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
@@ -12,7 +13,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.surveymonkey.model.SurveyList
 import okhttp3.Interceptor
@@ -23,13 +23,17 @@ import okhttp3.Response
  * https://developer.surveymonkey.com/docs/authentication
  */
 class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
     "https://developer.surveymonkey.com/api/v3/#scopes",
-    "https://developer.surveymonkey.com/apps/")
+    "https://developer.surveymonkey.com/apps/"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    val newRequest = chain.request().newBuilder().addHeader("Authorization",
-      "bearer " + credentials.accessToken).build()
+    val newRequest = chain.request().newBuilder().addHeader(
+      "Authorization",
+      "bearer " + credentials.accessToken
+    ).build()
 
     return chain.proceed(newRequest)
   }
@@ -41,8 +45,10 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): Oauth2Token {
 
     val clientId = Secrets.prompt("SurveyMonkey Client ID", "surveymonkey.clientId", "", false)
-    val clientSecret = Secrets.prompt("SurveyMonkey Client Secret", "surveymonkey.clientSecret", "",
-      true)
+    val clientSecret = Secrets.prompt(
+      "SurveyMonkey Client Secret", "surveymonkey.clientSecret", "",
+      true
+    )
     return SurveyMonkeyAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
@@ -57,8 +63,10 @@ class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials {
-    val user = client.query<User>("https://api.surveymonkey.net/v3/users/me",
-      TokenValue(credentials))
+    val user = client.query<User>(
+      "https://api.surveymonkey.net/v3/users/me",
+      TokenValue(credentials)
+    )
 
     return if (user.first_name != null && user.last_name != null) {
       ValidatedCredentials(user.first_name + " " + user.last_name)

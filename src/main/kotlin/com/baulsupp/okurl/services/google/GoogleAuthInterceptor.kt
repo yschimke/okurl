@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.google
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -15,7 +16,6 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.moshi
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.google.firebase.FirebaseCompleter
 import com.baulsupp.okurl.services.google.model.AuthError
@@ -35,9 +35,11 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     googleDiscoveryHosts()
   }
 
-  override val serviceDefinition = Oauth2ServiceDefinition("www.googleapis.com", "Google API", "google",
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "www.googleapis.com", "Google API", "google",
     "https://developers.google.com/",
-    "https://console.developers.google.com/apis/credentials")
+    "https://console.developers.google.com/apis/credentials"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -60,8 +62,9 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
     val host = url.host()
 
-    return setOf((
-      "api.google.com")
+    return setOf(
+      (
+        "api.google.com")
     ).contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
 
@@ -82,8 +85,12 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://www.googleapis.com/oauth2/v3/userinfo",
-      TokenValue(credentials), "name"))
+    ValidatedCredentials(
+      client.queryMapValue<String>(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        TokenValue(credentials), "name"
+      )
+    )
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
@@ -101,9 +108,11 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val responseMap = client.queryMap<Any>(request)
 
     // TODO check if refresh token in response?
-    return Oauth2Token(responseMap["access_token"] as String,
+    return Oauth2Token(
+      responseMap["access_token"] as String,
       credentials.refreshToken, credentials.clientId,
-      credentials.clientSecret)
+      credentials.clientSecret
+    )
   }
 
   override suspend fun apiCompleter(
@@ -146,7 +155,8 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   private fun isPastHost(prefix: String): Boolean = prefix.matches("https://.*/.*".toRegex())
 
-  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = DiscoveryApiDocPresenter(DiscoveryRegistry(client))
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter =
+    DiscoveryApiDocPresenter(DiscoveryRegistry(client))
 
   override fun errorMessage(ce: ClientException): String {
     if (ce.code == 401) {

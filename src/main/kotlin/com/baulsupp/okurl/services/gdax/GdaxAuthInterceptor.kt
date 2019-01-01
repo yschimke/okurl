@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.gdax
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -10,7 +11,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryList
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.gdax.model.Account
 import com.baulsupp.okurl.services.gdax.model.Product
@@ -18,8 +18,8 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okio.Buffer
-import okio.ByteString.Companion.encodeUtf8
 import okio.ByteString.Companion.decodeBase64
+import okio.ByteString.Companion.encodeUtf8
 import java.nio.charset.StandardCharsets.UTF_8
 
 class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
@@ -63,8 +63,10 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     client: OkHttpClient,
     credentials: GdaxCredentials
   ): ValidatedCredentials {
-    val accounts = client.queryList<Account>("https://api.gdax.com/accounts",
-      TokenValue(credentials))
+    val accounts = client.queryList<Account>(
+      "https://api.gdax.com/accounts",
+      TokenValue(credentials)
+    )
     return ValidatedCredentials(accounts.map { it.id }.first())
   }
 

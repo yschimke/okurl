@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.github
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,7 +21,8 @@ object GithubAuthFlow {
     SimpleWebServer.forCode().use { s ->
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
-      val loginUrl = "https://github.com/login/oauth/authorize?client_id=$clientId&scope=$scopesString&redirect_uri=${s.redirectUri}"
+      val loginUrl =
+        "https://github.com/login/oauth/authorize?client_id=$clientId&scope=$scopesString&redirect_uri=${s.redirectUri}"
 
       outputHandler.openLink(loginUrl)
 

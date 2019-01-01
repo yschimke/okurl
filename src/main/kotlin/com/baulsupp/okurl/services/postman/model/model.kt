@@ -27,7 +27,12 @@ data class Request(val method: String, val url: Any) {
 
 data class RequestStruct(val name: String, val _postman_id: String, val request: Request?)
 
-data class CollectionItem(val _postman_id: String, val description: String?, val name: String, val item: List<RequestStruct>)
+data class CollectionItem(
+  val _postman_id: String,
+  val description: String?,
+  val name: String,
+  val item: List<RequestStruct>
+)
 
 data class Collection(val info: CollectionInfo, val item: List<CollectionItem>)
 

@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.fitbit
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -23,8 +23,10 @@ object FitbitAuthCodeFlow {
 
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
-      val loginUrl = "https://www.fitbit.com/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${URLEncoder.encode(
-        s.redirectUri, "UTF-8")}&scope=$scopesString"
+      val loginUrl =
+        "https://www.fitbit.com/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${URLEncoder.encode(
+          s.redirectUri, "UTF-8"
+        )}&scope=$scopesString"
 
       outputHandler.openLink(loginUrl)
 
@@ -44,8 +46,10 @@ object FitbitAuthCodeFlow {
 
       val responseMap = client.queryMap<Any>(request)
 
-      return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, clientId, clientSecret)
+      return Oauth2Token(
+        responseMap["access_token"] as String,
+        responseMap["refresh_token"] as String, clientId, clientSecret
+      )
     }
   }
 }

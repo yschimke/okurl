@@ -12,8 +12,10 @@ import okhttp3.OkHttpClient
  * https://datasettes.com/
  */
 class DatasettesAuthInterceptor :
-  CompletionOnlyAuthInterceptor("datasettes.com", "Datasettes", "datasettes",
-    "https://github.com/simonw/datasette") {
+  CompletionOnlyAuthInterceptor(
+    "datasettes.com", "Datasettes", "datasettes",
+    "https://github.com/simonw/datasette"
+  ) {
   override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,

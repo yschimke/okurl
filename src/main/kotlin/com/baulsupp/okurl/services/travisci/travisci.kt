@@ -8,7 +8,12 @@ import com.baulsupp.okurl.services.travisci.model.Build
 import com.baulsupp.okurl.services.travisci.model.BuildList
 import kotlin.math.min
 
-suspend fun queryAllBuilds(slug: String? = null, id: Int? = null, branch: String? = null, limit: Int = 100): List<Build> {
+suspend fun queryAllBuilds(
+  slug: String? = null,
+  id: Int? = null,
+  branch: String? = null,
+  limit: Int = 100
+): List<Build> {
   val repo = slug?.replace("/", "%2F") ?: id.toString()
   val url = "https://api.travis-ci.org/repo/$repo/builds?limit=${min(100, limit)}"
 

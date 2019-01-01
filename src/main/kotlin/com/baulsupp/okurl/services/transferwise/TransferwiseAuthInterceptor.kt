@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.transferwise
 
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -9,30 +10,19 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.kotlin.requestBuilder
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
 import okhttp3.FormBody
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+open class TransferwiseAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition: Oauth2ServiceDefinition
-    get() = Oauth2ServiceDefinition(host(), "Transferwise API", "transferwise",
+    get() = Oauth2ServiceDefinition(
+      host(), "Transferwise API", "transferwise",
       "https://api-docs.transferwise.com/docs/versions/v1/overview",
-      "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/")
-
-  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    var request = chain.request()
-
-    val token = credentials.accessToken
-
-    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
-
-    return chain.proceed(request)
-  }
+      "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/"
+    )
 
   override suspend fun authorize(
     client: OkHttpClient,
@@ -41,8 +31,10 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): Oauth2Token {
 
     val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
-    val clientSecret = Secrets.prompt("Transferwise Client Secret", "transferwise.clientSecret", "",
-      true)
+    val clientSecret = Secrets.prompt(
+      "Transferwise Client Secret", "transferwise.clientSecret", "",
+      true
+    )
 
     return TransferwiseAuthFlow.login(client, outputHandler, host(), clientId, clientSecret)
   }
@@ -51,8 +43,12 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.transferwise.com/v1/me",
-      TokenValue(credentials), "name"))
+    ValidatedCredentials(
+      client.queryMapValue<String>(
+        "https://api.transferwise.com/v1/me",
+        TokenValue(credentials), "name"
+      )
+    )
 
   override fun canRenew(credentials: Oauth2Token): Boolean {
     return credentials.isRenewable()
@@ -65,8 +61,10 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .add("refresh_token", credentials.refreshToken!!)
       .build()
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
-    val request = requestBuilder("https://" + host() + "/oauth/token",
-      NoToken)
+    val request = requestBuilder(
+      "https://" + host() + "/oauth/token",
+      NoToken
+    )
       .post(body)
       .header("Authorization", basic)
       .build()
@@ -74,12 +72,12 @@ open class TransferwiseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val responseMap = client.queryMap<Any>(request)
 
     // TODO check if refresh token in response?
-    return Oauth2Token(responseMap["access_token"] as String,
+    return Oauth2Token(
+      responseMap["access_token"] as String,
       responseMap["refresh_token"] as String, credentials.clientId,
-      credentials.clientSecret)
+      credentials.clientSecret
+    )
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(host())
 
   open fun host() = "api.transferwise.com"
 }

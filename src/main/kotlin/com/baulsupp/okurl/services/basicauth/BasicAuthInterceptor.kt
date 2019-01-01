@@ -15,8 +15,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
-  override val serviceDefinition = object : AbstractServiceDefinition<FilteredBasicCredentials>("basic", "Basic Auth", "basic",
-    "https://en.wikipedia.org/wiki/Basic_access_authentication") {
+  override val serviceDefinition = object : AbstractServiceDefinition<FilteredBasicCredentials>(
+    "basic", "Basic Auth", "basic",
+    "https://en.wikipedia.org/wiki/Basic_access_authentication"
+  ) {
 
     override fun parseCredentialsString(s: String): FilteredBasicCredentials {
       val (user, password, hostPattern) = s.split(":".toRegex(), 3).toTypedArray()
@@ -32,7 +34,11 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun intercept(chain: Interceptor.Chain, credentials: FilteredBasicCredentials?, credentialsStore: CredentialsStore): Response {
+  override suspend fun intercept(
+    chain: Interceptor.Chain,
+    credentials: FilteredBasicCredentials?,
+    credentialsStore: CredentialsStore
+  ): Response {
     var request = chain.request()
     val url = chain.call().request().url()
 
@@ -69,7 +75,13 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
     return FilteredBasicCredentials(BasicCredentials(user, password), hostPattern)
   }
 
-  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token) = UrlCompleter.NullCompleter
+  override suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ) = UrlCompleter.NullCompleter
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("basic")
 

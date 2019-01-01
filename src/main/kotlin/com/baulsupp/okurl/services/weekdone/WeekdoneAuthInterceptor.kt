@@ -28,8 +28,10 @@ class WeekdoneAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   }
 
   override val serviceDefinition =
-    Oauth2ServiceDefinition("api.weekdone.com", "Weekdone", "weekdone",
-      "https://weekdone.com/developer/", "https://weekdone.com/settings?tab=applications")
+    Oauth2ServiceDefinition(
+      "api.weekdone.com", "Weekdone", "weekdone",
+      "https://weekdone.com/developer/", "https://weekdone.com/settings?tab=applications"
+    )
 
   override suspend fun validate(
     client: OkHttpClient,
@@ -53,12 +55,22 @@ class WeekdoneAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val response = client.query<RefreshResponse>(request("https://weekdone.com/oauth_token") {
-      post(FormBody.Builder().add("refresh_token", credentials.refreshToken!!).add("grant_type", "refresh_token").add("redirect_uri", "http://localhost:3000/callback").add("client_id", credentials.clientId!!).add("client_secret", credentials.clientSecret!!).build())
+      post(
+        FormBody.Builder().add("refresh_token", credentials.refreshToken!!).add(
+          "grant_type",
+          "refresh_token"
+        ).add("redirect_uri", "http://localhost:3000/callback").add(
+          "client_id",
+          credentials.clientId!!
+        ).add("client_secret", credentials.clientSecret!!).build()
+      )
     })
 
-    return Oauth2Token(response.access_token,
+    return Oauth2Token(
+      response.access_token,
       credentials.refreshToken, credentials.clientId,
-      credentials.clientSecret)
+      credentials.clientSecret
+    )
   }
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.weekdone.com")

@@ -16,7 +16,13 @@ data class User(
   val userPrincipalName: String?
 )
 
-data class Token(val access_token: String, val refresh_token: String, val scope: String, val token_type: String, val expires_in: Int)
+data class Token(
+  val access_token: String,
+  val refresh_token: String,
+  val scope: String,
+  val token_type: String,
+  val expires_in: Int
+)
 
 data class LastModifiedBy(val application: Application, val user: User)
 data class ParentReference(val path: String, val driveId: String, val driveType: String, val id: String)
@@ -42,4 +48,5 @@ data class DriveItem(
   val specialFolder: SpecialFolder?,
   val fileSystemInfo: FileSystemInfo?
 )
+
 data class DriveRootList(@Json(name = "@odata.context") val OdataContext: String, val value: List<DriveItem>)

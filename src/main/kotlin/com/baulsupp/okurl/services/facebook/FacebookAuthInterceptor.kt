@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.facebook
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -10,7 +11,6 @@ import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.facebook.FacebookAuthFlow.ALL_PERMISSIONS
 import com.baulsupp.okurl.services.facebook.model.App
@@ -23,9 +23,11 @@ import okhttp3.Response
 import okio.ByteString.Companion.encodeUtf8
 
 class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("graph.facebook.com", "Facebook API", "facebook",
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "graph.facebook.com", "Facebook API", "facebook",
     "https://developers.facebook.com/docs/graph-api",
-    "https://developers.facebook.com/apps/")
+    "https://developers.facebook.com/apps/"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val request = chain.request()
@@ -36,7 +38,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       if (credentials.clientSecret != null) {
         val appsecretTime = (System.currentTimeMillis() / 1000).toString()
         val appsecretProof = "${credentials.accessToken}|$appsecretTime".encodeUtf8().hmacSha256(
-          credentials.clientSecret.encodeUtf8()).hex()
+          credentials.clientSecret.encodeUtf8()
+        ).hex()
         builder.addQueryParameter("appsecret_proof", appsecretProof)
         builder.addQueryParameter("appsecret_time", appsecretTime)
       }
@@ -68,8 +71,10 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     } else {
       val clientId = Secrets.prompt("Facebook App Id", "facebook.appId", "", false)
       val clientSecret = Secrets.prompt("Facebook App Secret", "facebook.appSecret", "", true)
-      var scopes = Secrets.promptArray("Scopes", "facebook.scopes",
-        listOf("public_profile", "user_friends", "email"))
+      var scopes = Secrets.promptArray(
+        "Scopes", "facebook.scopes",
+        listOf("public_profile", "user_friends", "email")
+      )
 
       if (scopes.contains("all")) {
         scopes = ALL_PERMISSIONS
@@ -82,10 +87,14 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials {
-    val userName = client.fbQuery<UserOrPage>("/me",
-      TokenValue(credentials)).name
-    val appName = client.fbQuery<App>("/app",
-      TokenValue(credentials)).name
+    val userName = client.fbQuery<UserOrPage>(
+      "/me",
+      TokenValue(credentials)
+    ).name
+    val appName = client.fbQuery<App>(
+      "/app",
+      TokenValue(credentials)
+    ).name
 
     return ValidatedCredentials(userName, appName)
   }
@@ -114,5 +123,6 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): ApiCompleter =
     FacebookCompleter(client, hosts(credentialsStore))
 
-  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter = FacebookApiDocPresenter(serviceDefinition)
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter =
+    FacebookApiDocPresenter(serviceDefinition)
 }

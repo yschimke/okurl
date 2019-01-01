@@ -1,10 +1,10 @@
 package com.baulsupp.okurl.services.facebook
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.net.URLEncoder
@@ -65,23 +65,29 @@ object FacebookAuthFlow {
 
       val serverUri = s.redirectUri
 
-      val loginUrl = "https://www.facebook.com/dialog/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
-        scopes.joinToString(","), "UTF-8")
+      val loginUrl =
+        "https://www.facebook.com/dialog/oauth?client_id=$clientId&redirect_uri=$serverUri&scope=" + URLEncoder.encode(
+          scopes.joinToString(","), "UTF-8"
+        )
 
       outputHandler.openLink(loginUrl)
 
       val code = s.waitForCode()
 
-      val tokenUrl = "https://graph.facebook.com/v2.10/oauth/access_token?client_id=$clientId&redirect_uri=$serverUri&client_secret=$clientSecret&code=$code"
+      val tokenUrl =
+        "https://graph.facebook.com/v2.10/oauth/access_token?client_id=$clientId&redirect_uri=$serverUri&client_secret=$clientSecret&code=$code"
 
       val map = client.queryMap<Any>(tokenUrl, NoToken)
 
       val shortToken = map["access_token"] as String
 
-      val exchangeUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=$clientId&client_secret=$clientSecret&fb_exchange_token=$shortToken"
+      val exchangeUrl =
+        "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=$clientId&client_secret=$clientSecret&fb_exchange_token=$shortToken"
 
-      val longTokenBody = client.queryMap<Any>(exchangeUrl,
-        NoToken)
+      val longTokenBody = client.queryMap<Any>(
+        exchangeUrl,
+        NoToken
+      )
 
       return Oauth2Token(longTokenBody["access_token"] as String, "", clientId, clientSecret)
     }

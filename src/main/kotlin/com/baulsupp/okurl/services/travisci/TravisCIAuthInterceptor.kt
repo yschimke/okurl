@@ -1,5 +1,9 @@
 package com.baulsupp.okurl.services.travisci
 
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.oksocial.output.process.exec
+import com.baulsupp.oksocial.output.stdErrLogging
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -10,10 +14,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.stdErrLogging
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import com.baulsupp.okurl.services.travisci.model.RepositoryList
 import com.baulsupp.okurl.services.travisci.model.User
@@ -24,8 +24,10 @@ import okhttp3.ResponseBody
 
 class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   override val serviceDefinition = object :
-    AbstractServiceDefinition<TravisToken>("api.travis-ci.org", "Travis CI API", "travisci",
-      "https://docs.travis-ci.com/api/", null) {
+    AbstractServiceDefinition<TravisToken>(
+      "api.travis-ci.org", "Travis CI API", "travisci",
+      "https://docs.travis-ci.com/api/", null
+    ) {
     override fun parseCredentialsString(s: String): TravisToken {
       return TravisToken(s)
     }
@@ -92,8 +94,10 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     client: OkHttpClient,
     credentials: TravisToken
   ): ValidatedCredentials {
-    val user = client.query<User>("https://api.travis-ci.org/user",
-      TokenValue(credentials))
+    val user = client.query<User>(
+      "https://api.travis-ci.org/user",
+      TokenValue(credentials)
+    )
     return ValidatedCredentials(user.name)
   }
 
@@ -112,8 +116,10 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
       listOf(client.query<User>("https://api.travis-ci.org/user", tokenSet).id)
     }
     completer.withVariable("repository.id") {
-      client.query<RepositoryList>("https://api.travis-ci.org/repos",
-        tokenSet).repositories.map { it.slug.replace("/", "%2F") }
+      client.query<RepositoryList>(
+        "https://api.travis-ci.org/repos",
+        tokenSet
+      ).repositories.map { it.slug.replace("/", "%2F") }
     }
 
     return completer

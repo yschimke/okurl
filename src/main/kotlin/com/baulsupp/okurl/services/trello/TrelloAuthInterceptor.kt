@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.trello
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -10,7 +11,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryList
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import com.baulsupp.okurl.services.trello.model.BoardResponse
 import com.baulsupp.okurl.services.trello.model.MemberResponse
@@ -24,7 +24,8 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: TrelloToken): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("token", credentials.token).addQueryParameter("key", credentials.apiKey).build()
+    val signedUrl = request.url().newBuilder().addQueryParameter("token", credentials.token)
+      .addQueryParameter("key", credentials.apiKey).build()
 
     request = request.newBuilder().url(signedUrl).build()
 
@@ -32,8 +33,10 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
   }
 
   override val serviceDefinition = object :
-    AbstractServiceDefinition<TrelloToken>("api.trello.com", "Trello", "trello",
-      "https://developers.trello.com/", "https://trello.com/app-key") {
+    AbstractServiceDefinition<TrelloToken>(
+      "api.trello.com", "Trello", "trello",
+      "https://developers.trello.com/", "https://trello.com/app-key"
+    ) {
     override fun parseCredentialsString(s: String): TrelloToken {
       val (token, key) = s.split(":", limit = 2)
       return TrelloToken(token, key)
@@ -62,7 +65,13 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
     return TrelloAuthFlow.login(outputHandler)
   }
 
-  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
+  override suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
@@ -71,7 +80,8 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         val tokenResponse = client.query<TokenResponse>("https://api.trello.com/1/tokens/${it.token}")
 
-        client.queryList<BoardResponse>("https://api.trello.com/1/members/${tokenResponse.idMember}/boards", tokenSet).map { it.id }
+        client.queryList<BoardResponse>("https://api.trello.com/1/members/${tokenResponse.idMember}/boards", tokenSet)
+          .map { it.id }
       }
     }
 

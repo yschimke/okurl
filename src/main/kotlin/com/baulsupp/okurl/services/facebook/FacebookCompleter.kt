@@ -72,12 +72,16 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
   suspend fun completePath(path: String, tokenSet: Token): UrlList {
     when {
       path == "/" -> {
-        return UrlList(UrlList.Match.EXACT,
-          (topLevel(tokenSet) + VERSION).map(addPath("https://graph.facebook.com/")))
+        return UrlList(
+          UrlList.Match.EXACT,
+          (topLevel(tokenSet) + VERSION).map(addPath("https://graph.facebook.com/"))
+        )
       }
       path.matches("/v\\d.\\d+/?".toRegex()) -> {
-        return UrlList(UrlList.Match.EXACT,
-          topLevel(tokenSet).map(addPath("https://graph.facebook.com$path")))
+        return UrlList(
+          UrlList.Match.EXACT,
+          topLevel(tokenSet).map(addPath("https://graph.facebook.com$path"))
+        )
       }
       else -> {
         val prefix = "https://graph.facebook.com$path"

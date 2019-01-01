@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.coinbase
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,7 +18,10 @@ object CoinbaseAuthFlow {
     scopes: Iterable<String>
   ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
-      val loginUrl = "https://www.coinbase.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString(",")}&account=all"
+      val loginUrl =
+        "https://www.coinbase.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=${s.redirectUri}&scope=${scopes.joinToString(
+          ","
+        )}&account=all"
 
       outputHandler.openLink(loginUrl)
 
@@ -36,7 +39,12 @@ object CoinbaseAuthFlow {
 
       val responseMap = client.queryMap<Any>(request)
 
-      return Oauth2Token(responseMap["access_token"] as String, responseMap["refresh_token"] as String, clientId, clientSecret)
+      return Oauth2Token(
+        responseMap["access_token"] as String,
+        responseMap["refresh_token"] as String,
+        clientId,
+        clientSecret
+      )
     }
   }
 }

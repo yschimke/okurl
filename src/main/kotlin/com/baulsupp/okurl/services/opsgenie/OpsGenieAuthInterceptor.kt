@@ -14,8 +14,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class OpsGenieAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.opsgenie.com", "OpsGenie API", "opsgenie",
-    "https://docs.opsgenie.com/docs/api-overview", "https://app.opsgenie.com/integration")
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.opsgenie.com", "OpsGenie API", "opsgenie",
+    "https://docs.opsgenie.com/docs/api-overview", "https://app.opsgenie.com/integration"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
