@@ -18,22 +18,33 @@ class ServiceApiDocPresenterTest {
     main.initialise()
   }
 
-  val presenter = ServiceApiDocPresenter(AuthenticatingInterceptor(main, main.authenticatingInterceptor.services))
+  val presenter =
+    ServiceApiDocPresenter(AuthenticatingInterceptor(main.credentialsStore, main.authenticatingInterceptor.services))
 
   @Test
   fun returnsAllUrls() {
-    runBlocking { presenter.explainApi("https://api1.test.com/me", main.outputHandler, main.client,
-      NoToken) }
+    runBlocking {
+      presenter.explainApi(
+        "https://api1.test.com/me", main.outputHandler, main.client,
+        NoToken
+      )
+    }
 
     assertEquals(mutableListOf("Test: https://api1.test.com/me"), testOutputHandler.stdout)
   }
 
   @Test
   fun errorForUnknown() {
-    runBlocking { presenter.explainApi("https://api1.blah.com/me", main.outputHandler, main.client,
-      NoToken) }
+    runBlocking {
+      presenter.explainApi(
+        "https://api1.blah.com/me", main.outputHandler, main.client,
+        NoToken
+      )
+    }
 
-    assertEquals(mutableListOf("No documentation for: https://api1.blah.com/me"),
-      testOutputHandler.stdout)
+    assertEquals(
+      mutableListOf("No documentation for: https://api1.blah.com/me"),
+      testOutputHandler.stdout
+    )
   }
 }

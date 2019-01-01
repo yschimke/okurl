@@ -1,12 +1,11 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.okurl.commands.ToolSession
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.services.ServiceLibrary
-import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -15,14 +14,14 @@ import java.util.ServiceLoader
 import java.util.logging.Logger
 
 class AuthenticatingInterceptor(
-  private val main: ToolSession,
+  private val credentialsStore: CredentialsStore,
   override val services: List<AuthInterceptor<*>> = defaultServices()
 ) : Interceptor,
   ServiceLibrary {
   override fun intercept(chain: Interceptor.Chain): Response {
     return runBlocking {
       val filteredAuthenticators = services
-        .filter { it.supportsUrl(chain.request().url(), main.credentialsStore) }
+        .filter { it.supportsUrl(chain.request().url(), credentialsStore) }
 
       logger.fine { "Matching interceptors: $filteredAuthenticators" }
 
@@ -45,10 +44,10 @@ class AuthenticatingInterceptor(
     val credentials = when (tokenSet) {
       is TokenValue -> interceptor.serviceDefinition.castToken(tokenSet.token)
       is NoToken -> null
-      else -> main.credentialsStore.get(interceptor.serviceDefinition, tokenSet) ?: interceptor.defaultCredentials()
+      else -> credentialsStore.get(interceptor.serviceDefinition, tokenSet) ?: interceptor.defaultCredentials()
     }
 
-    val result = interceptor.intercept(chain, credentials, main.credentialsStore)
+    val result = interceptor.intercept(chain, credentials, credentialsStore)
 
     // TODO move inside auth interceptor
     if (credentials != null) {
@@ -59,7 +58,7 @@ class AuthenticatingInterceptor(
             val newCredentials = interceptor.renew(client, credentials)
 
             if (newCredentials != null) {
-              main.credentialsStore.set(interceptor.serviceDefinition, tokenSetName, newCredentials)
+              credentialsStore.set(interceptor.serviceDefinition, tokenSetName, newCredentials)
             }
           }
         }
@@ -75,7 +74,7 @@ class AuthenticatingInterceptor(
   fun getByUrl(url: String): AuthInterceptor<*>? {
     val httpUrl = HttpUrl.parse(url)
 
-    return httpUrl?.run { runBlocking { services.find { it.supportsUrl(httpUrl, main.credentialsStore) } } }
+    return httpUrl?.run { runBlocking { services.find { it.supportsUrl(httpUrl, credentialsStore) } } }
   }
 
   override fun findAuthInterceptor(name: String): AuthInterceptor<*>? = getByName(name) ?: getByUrl(name)

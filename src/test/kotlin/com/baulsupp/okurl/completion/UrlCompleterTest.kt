@@ -12,7 +12,7 @@ class UrlCompleterTest {
   private val main = Main()
 
   init {
-    main.authenticatingInterceptor = AuthenticatingInterceptor(main, listOf(TestAuthInterceptor()))
+    main.authenticatingInterceptor = AuthenticatingInterceptor(main.credentialsStore, listOf(TestAuthInterceptor()))
     main.initialise()
   }
 
@@ -22,11 +22,16 @@ class UrlCompleterTest {
   fun returnsAllUrls() {
     runBlocking {
       assertEquals(
-              UrlList(UrlList.Match.HOSTS,
-                      listOf("https://test.com", "https://test.com/",
-                              "https://api1.test.com",
-                              "https://api1.test.com/")),
-              completer.urlList("", DefaultToken))
+        UrlList(
+          UrlList.Match.HOSTS,
+          listOf(
+            "https://test.com", "https://test.com/",
+            "https://api1.test.com",
+            "https://api1.test.com/"
+          )
+        ),
+        completer.urlList("", DefaultToken)
+      )
     }
   }
 
@@ -34,20 +39,29 @@ class UrlCompleterTest {
   fun returnsMatchingUrls() {
     runBlocking {
       assertEquals(
-              listOf("https://api1.test.com", "https://api1.test.com/"),
-              completer.urlList("https://api1", DefaultToken).getUrls("https://api1"))
-      assertEquals(listOf(),
-              completer.urlList("https://api2", DefaultToken).getUrls("https://api2"))
+        listOf("https://api1.test.com", "https://api1.test.com/"),
+        completer.urlList("https://api1", DefaultToken).getUrls("https://api1")
+      )
+      assertEquals(
+        listOf(),
+        completer.urlList("https://api2", DefaultToken).getUrls("https://api2")
+      )
     }
   }
 
   @Test
   fun returnsMatchingEndpointUrls() {
     runBlocking {
-      assertEquals(listOf("https://api1.test.com/users.json",
-              "https://api1.test.com/usersList.json"),
-              completer.urlList("https://api1.test.com/u",
-                DefaultToken).getUrls("https://api1.test.com/u"))
+      assertEquals(
+        listOf(
+          "https://api1.test.com/users.json",
+          "https://api1.test.com/usersList.json"
+        ),
+        completer.urlList(
+          "https://api1.test.com/u",
+          DefaultToken
+        ).getUrls("https://api1.test.com/u")
+      )
     }
   }
 }

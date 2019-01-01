@@ -426,7 +426,7 @@ abstract class CommandLineClient : ToolSession {
     }
 
     if (!this::authenticatingInterceptor.isInitialized) {
-      authenticatingInterceptor = AuthenticatingInterceptor(this)
+      authenticatingInterceptor = AuthenticatingInterceptor(this.credentialsStore)
     }
 
     if (!this::authorisation.isInitialized) {
