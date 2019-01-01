@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.google
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,7 +29,8 @@ object GoogleAuthFlow {
       val redirectUri = s.redirectUri
       val uuid = UUID.randomUUID().toString()
 
-      val loginUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=$clientId&response_type=code&scope=$scopesString&state=$uuid&access_type=offline&redirect_uri=$redirectUri&prompt=consent&include_granted_scopes=true"
+      val loginUrl =
+        "https://accounts.google.com/o/oauth2/v2/auth?client_id=$clientId&response_type=code&scope=$scopesString&state=$uuid&access_type=offline&redirect_uri=$redirectUri&prompt=consent&include_granted_scopes=true"
 
       outputHandler.openLink(loginUrl)
 
@@ -46,8 +47,10 @@ object GoogleAuthFlow {
 
       val responseMap = client.queryMap<Any>(request)
 
-      return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, clientId, clientSecret)
+      return Oauth2Token(
+        responseMap["access_token"] as String,
+        responseMap["refresh_token"] as String, clientId, clientSecret
+      )
     }
   }
 }

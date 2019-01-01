@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.spotify
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -23,7 +23,8 @@ object SpotifyAuthFlow {
 
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
-      val loginUrl = "https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&state=x&redirect_uri=${s.redirectUri}&scope=$scopesString"
+      val loginUrl =
+        "https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&state=x&redirect_uri=${s.redirectUri}&scope=$scopesString"
 
       outputHandler.openLink(loginUrl)
 
@@ -35,16 +36,20 @@ object SpotifyAuthFlow {
         .add("code", code)
         .add("grant_type", "authorization_code")
         .build()
-      val request = Request.Builder().header("Authorization",
-        Credentials.basic(clientId, clientSecret))
+      val request = Request.Builder().header(
+        "Authorization",
+        Credentials.basic(clientId, clientSecret)
+      )
         .url(tokenUrl)
         .method("POST", body)
         .build()
 
       val responseMap = client.queryMap<Any>(request)
 
-      return Oauth2Token(responseMap["access_token"] as String,
-        responseMap["refresh_token"] as String, clientId, clientSecret)
+      return Oauth2Token(
+        responseMap["access_token"] as String,
+        responseMap["refresh_token"] as String, clientId, clientSecret
+      )
     }
   }
 }

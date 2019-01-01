@@ -1,5 +1,7 @@
 package com.baulsupp.okurl.services.postman
 
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.readPasswordString
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
@@ -12,8 +14,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.readPasswordString
 import com.baulsupp.okurl.services.postman.model.CollectionsResult
 import com.baulsupp.okurl.services.postman.model.UserResult
 import okhttp3.Interceptor
@@ -21,9 +21,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.getpostman.com", "Postman API", "postman",
-      "https://docs.api.getpostman.com/",
-      "https://app.getpostman.com/dashboard/integrations")
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.getpostman.com", "Postman API", "postman",
+    "https://docs.api.getpostman.com/",
+    "https://app.getpostman.com/dashboard/integrations"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -51,8 +53,12 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.query<UserResult>("https://api.getpostman.com/me",
-      TokenValue(credentials)).user.id)
+    ValidatedCredentials(
+      client.query<UserResult>(
+        "https://api.getpostman.com/me",
+        TokenValue(credentials)
+      ).user.id
+    )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.getpostman.com")
 
@@ -71,7 +77,8 @@ class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<CollectionsResult>(
           "https://api.getpostman.com/collections",
-          tokenSet).collections.map { it.id }
+          tokenSet
+        ).collections.map { it.id }
       }
     }
 

@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.dropbox
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -19,7 +19,8 @@ object DropboxAuthFlow {
   ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
 
-      val loginUrl = "https://www.dropbox.com/1/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
+      val loginUrl =
+        "https://www.dropbox.com/1/oauth2/authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
 
       outputHandler.openLink(loginUrl)
 

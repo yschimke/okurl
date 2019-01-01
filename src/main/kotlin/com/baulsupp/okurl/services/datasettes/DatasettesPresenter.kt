@@ -1,11 +1,11 @@
 package com.baulsupp.okurl.services.datasettes
 
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.services.datasettes.model.DatasetteIndex2
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient

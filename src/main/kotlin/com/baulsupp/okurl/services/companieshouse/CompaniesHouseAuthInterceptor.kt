@@ -1,8 +1,8 @@
 package com.baulsupp.okurl.services.companieshouse
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
@@ -23,11 +23,20 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): String =
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): String =
     Secrets.prompt("Companies House API Key", "companieshouse.apiKey", "", false)
 
-  override val serviceDefinition = object : AbstractServiceDefinition<String>("api.companieshouse.gov.uk", "Companies House", "companieshouse",
-    "https://developer.companieshouse.gov.uk/api/docs/", "https://developer.companieshouse.gov.uk/developer/applications") {
+  override val serviceDefinition = object : AbstractServiceDefinition<String>(
+    "api.companieshouse.gov.uk",
+    "Companies House",
+    "companieshouse",
+    "https://developer.companieshouse.gov.uk/api/docs/",
+    "https://developer.companieshouse.gov.uk/developer/applications"
+  ) {
     override fun parseCredentialsString(s: String): String = s
 
     override fun formatCredentialsString(credentials: String): String = credentials
@@ -39,5 +48,6 @@ class CompaniesHouseAuthInterceptor : AuthInterceptor<String>() {
   ): ValidatedCredentials =
     ValidatedCredentials(credentials, null)
 
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.companieshouse.gov.uk", "account.companieshouse.gov.uk", "document-api.companieshouse.gov.uk")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> =
+    setOf("api.companieshouse.gov.uk", "account.companieshouse.gov.uk", "document-api.companieshouse.gov.uk")
 }

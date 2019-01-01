@@ -2,8 +2,10 @@ package com.baulsupp.okurl.services.gdax
 
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 
-object GdaxAuthServiceDefinition : AbstractServiceDefinition<GdaxCredentials>("api.gdax.com", "GDAX API", "gdax",
-  "https://docs.gdax.com/", "https://www.gdax.com/settings/api") {
+object GdaxAuthServiceDefinition : AbstractServiceDefinition<GdaxCredentials>(
+  "api.gdax.com", "GDAX API", "gdax",
+  "https://docs.gdax.com/", "https://www.gdax.com/settings/api"
+) {
 
   override fun parseCredentialsString(s: String): GdaxCredentials {
     val parts = s.split(":".toRegex(), 3)

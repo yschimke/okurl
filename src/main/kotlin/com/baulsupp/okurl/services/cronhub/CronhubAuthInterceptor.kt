@@ -1,8 +1,8 @@
 package com.baulsupp.okurl.services.cronhub
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.BaseUrlCompleter
 import com.baulsupp.okurl.completion.CompletionVariableCache
@@ -47,7 +47,13 @@ class CronhubAuthInterceptor : AuthInterceptor<CronhubCredentials>() {
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("cronhub.io")
 
-  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
+  override suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     val urlList = UrlList.fromResource(name())
 
     val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)

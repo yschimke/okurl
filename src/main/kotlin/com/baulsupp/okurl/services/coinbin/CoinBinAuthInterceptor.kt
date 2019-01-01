@@ -1,5 +1,7 @@
 package com.baulsupp.okurl.services.coinbin
 
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -11,8 +13,6 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -33,13 +33,19 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     return chain.proceed(request)
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): BasicCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): BasicCredentials {
     throw UsageException("authorization not required")
   }
 
   override val serviceDefinition =
-    BasicAuthServiceDefinition("coinbin.org", "Coin Bin", "coinbin",
-      "https://coinbin.org/", null)
+    BasicAuthServiceDefinition(
+      "coinbin.org", "Coin Bin", "coinbin",
+      "https://coinbin.org/", null
+    )
 
   override suspend fun validate(
     client: OkHttpClient,

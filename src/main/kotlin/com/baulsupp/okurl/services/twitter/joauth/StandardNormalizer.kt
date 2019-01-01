@@ -59,6 +59,9 @@ object StandardNormalizer {
    * when (1) it is port 80 and the scheme is HTTP or (2) it is port 443 and the scheme is HTTPS
    */
   private fun includePortString(port: Int, scheme: String): Boolean {
-    return !(port == 80 && "HTTP".equals(scheme, ignoreCase = true) || port == 443 && "HTTPS".equals(scheme, ignoreCase = true))
+    return !(port == 80 && "HTTP".equals(scheme, ignoreCase = true) || port == 443 && "HTTPS".equals(
+      scheme,
+      ignoreCase = true
+    ))
   }
 }

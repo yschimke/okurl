@@ -1,14 +1,14 @@
 package com.baulsupp.okurl.services.dropbox
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.kotlin.requestBuilder
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.FormBody
 import okhttp3.Interceptor
@@ -21,8 +21,10 @@ import okhttp3.Response
  * https://developer.dropbox.com/docs/authentication
  */
 class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.dropboxapi.com", "Dropbox API", "dropbox",
-    "https://www.dropbox.com/developers/documentation/http/documentation", "https://www.dropbox.com/developers/apps")
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.dropboxapi.com", "Dropbox API", "dropbox",
+    "https://www.dropbox.com/developers/documentation/http/documentation", "https://www.dropbox.com/developers/apps"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -56,10 +58,13 @@ class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     credentials: Oauth2Token
   ): ValidatedCredentials {
     val body = FormBody.create(MediaType.get("application/json"), "null")
-    val request = requestBuilder("https://api.dropboxapi.com/2/users/get_current_account",
-      TokenValue(credentials)).post(body).build()
+    val request = requestBuilder(
+      "https://api.dropboxapi.com/2/users/get_current_account",
+      TokenValue(credentials)
+    ).post(body).build()
     return ValidatedCredentials(client.queryMapValue<String>(request, "email"))
   }
 
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.dropboxapi.com", "content.dropboxapi.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> =
+    setOf("api.dropboxapi.com", "content.dropboxapi.com")
 }

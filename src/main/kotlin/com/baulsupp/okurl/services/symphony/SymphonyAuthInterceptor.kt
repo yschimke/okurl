@@ -31,8 +31,10 @@ import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
-  override val serviceDefinition = object : AbstractServiceDefinition<SymphonyCredentials>("symphony.com", "Symphony", "symphony",
-    "https://rest-api.symphony.com/") {
+  override val serviceDefinition = object : AbstractServiceDefinition<SymphonyCredentials>(
+    "symphony.com", "Symphony", "symphony",
+    "https://rest-api.symphony.com/"
+  ) {
     override fun parseCredentialsString(s: String): SymphonyCredentials {
       return SymphonyCredentials.parse(s)
     }
@@ -44,7 +46,8 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     var request = chain.request()
 
     if (credentials.sessionToken != null) {
-      val builder = request.newBuilder().header("sessionToken", credentials.sessionToken).header("keyManagerToken", credentials.keyToken.orEmpty())
+      val builder = request.newBuilder().header("sessionToken", credentials.sessionToken)
+        .header("keyManagerToken", credentials.keyToken.orEmpty())
 
       repairJsonRequests(request, builder)
 
@@ -66,15 +69,29 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     }
   }
 
-  override suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String>): SymphonyCredentials {
+  override suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String>
+  ): SymphonyCredentials {
     val pod = Secrets.prompt("Symphony POD", "symphony.pod", "foundation-dev", false)
-    val keystoreFile = Secrets.prompt("Symphony Client ID", "symphony.keystore", System.getenv("HOME") + "/.symphony/keystore.p12", false)
+    val keystoreFile = Secrets.prompt(
+      "Symphony Client ID",
+      "symphony.keystore",
+      System.getenv("HOME") + "/.symphony/keystore.p12",
+      false
+    )
     val password = Secrets.prompt("Symphony Password", "symphony.password", "", true)
 
     return auth(keystoreFile, password, client, pod)
   }
 
-  private suspend fun auth(keystoreFile: String, password: String, client: OkHttpClient, pod: String): SymphonyCredentials {
+  private suspend fun auth(
+    keystoreFile: String,
+    password: String,
+    client: OkHttpClient,
+    pod: String
+  ): SymphonyCredentials {
     val keystore = KeyStore.getInstance("PKCS12").apply {
       load(File(keystoreFile).inputStream(), password.toCharArray())
     }
@@ -123,7 +140,13 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
     return ValidatedCredentials(result.displayName, result.company)
   }
 
-  override suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter {
+  override suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter {
     return SymphonyUrlCompleter(pods(credentialsStore), completionVariableCache, client)
   }
 

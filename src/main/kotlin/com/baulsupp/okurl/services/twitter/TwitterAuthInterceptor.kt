@@ -1,12 +1,12 @@
 package com.baulsupp.okurl.services.twitter
 
-import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.okurl.credentials.TokenValue
-import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.TokenValue
+import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.twitter.joauth.Signature
 import com.baulsupp.okurl.services.twitter.twurlrc.TwurlrcImport
@@ -46,7 +46,8 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
 
     if (!authArguments.isEmpty()) {
       throw UsageException(
-        "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" "))
+        "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" ")
+      )
     }
 
     val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
@@ -59,8 +60,12 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     client: OkHttpClient,
     credentials: TwitterCredentials
   ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.twitter.com/1.1/account/verify_credentials.json",
-      TokenValue(credentials), "name"))
+    ValidatedCredentials(
+      client.queryMapValue<String>(
+        "https://api.twitter.com/1.1/account/verify_credentials.json",
+        TokenValue(credentials), "name"
+      )
+    )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = TwitterUtil.TWITTER_API_HOSTS
 }

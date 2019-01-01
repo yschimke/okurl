@@ -12,7 +12,8 @@ import kotlinx.coroutines.async
 suspend fun postmanCollectionUrls(tokenSet: Token): List<String> {
   val collections = client.query<CollectionsResult>(
     "https://api.getpostman.com/collections",
-    tokenSet).collections.map { it.id }
+    tokenSet
+  ).collections.map { it.id }
 
   val jobs = collections.map {
     GlobalScope.async(Dispatchers.Default) {

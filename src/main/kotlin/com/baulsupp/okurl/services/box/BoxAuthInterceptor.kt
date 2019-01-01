@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.box
 
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -13,26 +14,16 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryMapValue
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.box.model.FolderItems
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.box.com", "Box API", "box",
-    "https://developer.box.com/reference", "https://app.box.com/developers/console/")
-
-  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    var request = chain.request()
-
-    val token = credentials.accessToken
-
-    request = request.newBuilder().addHeader("Authorization", "Bearer $token").build()
-
-    return chain.proceed(request)
-  }
+class BoxAuthInterceptor : Oauth2AuthInterceptor() {
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.box.com", "Box API", "box",
+    "https://developer.box.com/reference", "https://app.box.com/developers/console/"
+  )
 
   override suspend fun authorize(
     client: OkHttpClient,
@@ -52,8 +43,12 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.box.com/2.0/users/me",
-      TokenValue(credentials), "name"))
+    ValidatedCredentials(
+      client.queryMapValue<String>(
+        "https://api.box.com/2.0/users/me",
+        TokenValue(credentials), "name"
+      )
+    )
 
   override fun canRenew(credentials: Oauth2Token): Boolean = false
 
@@ -72,7 +67,8 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<FolderItems>(
           "https://api.box.com/2.0/folders/0/items",
-          tokenSet).entries.filter { it.type == "file" }.map { it.id }
+          tokenSet
+        ).entries.filter { it.type == "file" }.map { it.id }
       }
     }
 
@@ -80,12 +76,11 @@ class BoxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         listOf("0") + client.query<FolderItems>(
           "https://api.box.com/2.0/folders/0/items",
-          tokenSet).entries.filter { it.type == "folder" }.map { it.id }
+          tokenSet
+        ).entries.filter { it.type == "folder" }.map { it.id }
       }
     }
 
     return completer
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.box.com")
 }

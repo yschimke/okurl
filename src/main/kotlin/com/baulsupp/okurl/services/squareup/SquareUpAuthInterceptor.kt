@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.squareup
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
@@ -12,7 +13,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.squareup.model.LocationList
 import com.baulsupp.okurl.services.squareup.model.User
@@ -21,9 +21,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("connect.squareup.com", "SquareUp API", "squareup",
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "connect.squareup.com", "SquareUp API", "squareup",
     "https://docs.connect.squareup.com/api/connect/v2/",
-    "https://connect.squareup.com/apps")
+    "https://connect.squareup.com/apps"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -43,8 +45,12 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.query<User>("https://connect.squareup.com/v1/me",
-      TokenValue(credentials)).name)
+    ValidatedCredentials(
+      client.query<User>(
+        "https://connect.squareup.com/v1/me",
+        TokenValue(credentials)
+      ).name
+    )
 
   override suspend fun authorize(
     client: OkHttpClient,
@@ -53,14 +59,18 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): Oauth2Token {
 
     val clientId = Secrets.prompt("SquareUp Application Id", "squareup.clientId", "", false)
-    val clientSecret = Secrets.prompt("SquareUp Application Secret", "squareup.clientSecret", "",
-      true)
-    val scopes = Secrets.promptArray("Scopes", "squareup.scopes", listOf(
-      "MERCHANT_PROFILE_READ",
-      "PAYMENTS_READ",
-      "SETTLEMENTS_READ",
-      "BANK_ACCOUNTS_READ"
-    ))
+    val clientSecret = Secrets.prompt(
+      "SquareUp Application Secret", "squareup.clientSecret", "",
+      true
+    )
+    val scopes = Secrets.promptArray(
+      "Scopes", "squareup.scopes", listOf(
+        "MERCHANT_PROFILE_READ",
+        "PAYMENTS_READ",
+        "SETTLEMENTS_READ",
+        "BANK_ACCOUNTS_READ"
+      )
+    )
 
     return SquareUpAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
@@ -80,7 +90,8 @@ class SquareUpAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<LocationList>(
           "https://connect.squareup.com/v2/locations",
-          tokenSet).locations.map { it.id }
+          tokenSet
+        ).locations.map { it.id }
       }
     }
 

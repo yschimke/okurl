@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.hitbtc
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -12,7 +13,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryList
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.hitbtc.model.Currency
 import com.baulsupp.okurl.services.hitbtc.model.Symbol
@@ -22,8 +22,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
-  override val serviceDefinition = BasicAuthServiceDefinition("api.hitbtc.com", "HitBTC API", "hitbtc",
-      "https://api.hitbtc.com/", "https://hitbtc.com/settings/api-keys")
+  override val serviceDefinition = BasicAuthServiceDefinition(
+    "api.hitbtc.com", "HitBTC API", "hitbtc",
+    "https://api.hitbtc.com/", "https://hitbtc.com/settings/api-keys"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: BasicCredentials): Response {
     var request = chain.request()
@@ -50,8 +52,10 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     client: OkHttpClient,
     credentials: BasicCredentials
   ): ValidatedCredentials {
-    val account = client.queryList<Any>("https://api.hitbtc.com/api/2/account/balance",
-      TokenValue(credentials)).let { "✓" }
+    val account = client.queryList<Any>(
+      "https://api.hitbtc.com/api/2/account/balance",
+      TokenValue(credentials)
+    ).let { "✓" }
     return ValidatedCredentials(account)
   }
 

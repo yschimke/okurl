@@ -5,13 +5,22 @@ import java.time.Instant
 
 data class Pagination(val offset: Int, val limit: Int, val count: Int, val is_first: Boolean, val is_last: Boolean)
 
-data class User(val id: String, val login: String, val name: String, val github_id: String?, val avatar_url: String, val is_syncing: Boolean, val synced_at: String)
+data class User(
+  val id: String,
+  val login: String,
+  val name: String,
+  val github_id: String?,
+  val avatar_url: String,
+  val is_syncing: Boolean,
+  val synced_at: String
+)
 
 abstract class ResultList(@Json(name = "@pagination") open val pagination: Pagination)
 
 data class Repository(val id: String, val name: String, val slug: String)
 
-data class RepositoryList(val repositories: List<Repository>, override val pagination: Pagination) : ResultList(pagination)
+data class RepositoryList(val repositories: List<Repository>, override val pagination: Pagination) :
+  ResultList(pagination)
 
 data class BuildBranch(val name: String, @Json(name = "@href") val href: String)
 
@@ -77,4 +86,5 @@ data class Build(
   val url: String get() = "https://api.travis-ci.org$href"
 }
 
-data class BuildList(val builds: List<Build>, @Json(name = "@pagination") override val pagination: Pagination) : ResultList(pagination)
+data class BuildList(val builds: List<Build>, @Json(name = "@pagination") override val pagination: Pagination) :
+  ResultList(pagination)

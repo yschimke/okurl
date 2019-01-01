@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.slack
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -23,7 +23,8 @@ object SlackAuthFlow {
 
       val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
-      val loginUrl = "https://slack.com/oauth/authorize?client_id=$clientId&redirect_uri=${s.redirectUri}&scope=$scopesString"
+      val loginUrl =
+        "https://slack.com/oauth/authorize?client_id=$clientId&redirect_uri=${s.redirectUri}&scope=$scopesString"
 
       outputHandler.openLink(loginUrl)
 

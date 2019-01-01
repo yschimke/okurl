@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.services.linkedin
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
-import com.baulsupp.oksocial.output.OutputHandler
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,8 +22,10 @@ object LinkedinAuthFlow {
 
       val uuid = UUID.randomUUID().toString()
 
-      val loginUrl = "https://www.linkedin.com/oauth/v2/authorization?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&state=$uuid&scope=${scopes.joinToString(
-        "+")}"
+      val loginUrl =
+        "https://www.linkedin.com/oauth/v2/authorization?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}&state=$uuid&scope=${scopes.joinToString(
+          "+"
+        )}"
 
       outputHandler.openLink(loginUrl)
 

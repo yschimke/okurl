@@ -1,10 +1,10 @@
 package com.baulsupp.okurl.services.httpbin
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.basic.BasicAuthServiceDefinition
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
@@ -39,8 +39,10 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   }
 
   override val serviceDefinition =
-    BasicAuthServiceDefinition("httpbin.org", "HTTP Bin", "httpbin",
-      "https://httpbin.org/", null)
+    BasicAuthServiceDefinition(
+      "httpbin.org", "HTTP Bin", "httpbin",
+      "https://httpbin.org/", null
+    )
 
   override suspend fun validate(
     client: OkHttpClient,
@@ -48,8 +50,9 @@ class HttpBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
   ): ValidatedCredentials =
     ValidatedCredentials(credentials.user, null)
 
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf((
-    "httpbin.org")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(
+    (
+      "httpbin.org")
   )
 
   // lower priority than basic auth

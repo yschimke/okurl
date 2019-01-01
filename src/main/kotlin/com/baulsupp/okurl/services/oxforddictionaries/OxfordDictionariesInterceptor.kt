@@ -1,10 +1,10 @@
 package com.baulsupp.okurl.services.oxforddictionaries
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.okurl.kotlin.edit
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.kotlin.edit
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Interceptor
@@ -12,8 +12,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class OxfordDictionariesInterceptor : AuthInterceptor<ODToken>() {
-  override val serviceDefinition = object : AbstractServiceDefinition<ODToken>("od-api.oxforddictionaries.com", "Oxford Dictionaries API", "oxforddictionaries",
-    "https://developer.oxforddictionaries.com/documentation", "https://developer.oxforddictionaries.com/admin/applications") {
+  override val serviceDefinition = object : AbstractServiceDefinition<ODToken>(
+    "od-api.oxforddictionaries.com",
+    "Oxford Dictionaries API",
+    "oxforddictionaries",
+    "https://developer.oxforddictionaries.com/documentation",
+    "https://developer.oxforddictionaries.com/admin/applications"
+  ) {
     override fun parseCredentialsString(s: String): ODToken {
       val (id, key) = s.split(":", limit = 2)
       return ODToken(id, key)

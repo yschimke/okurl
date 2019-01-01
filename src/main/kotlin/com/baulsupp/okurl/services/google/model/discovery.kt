@@ -35,6 +35,14 @@ data class Resource(
   val methods: Map<String, Method>?
 )
 
-data class Method(val scopes: List<String>?, val parameters: Map<String, Parameter>?, val name: String?, val httpMethod: String?, val description: String?, val path: String, val id: String)
+data class Method(
+  val scopes: List<String>?,
+  val parameters: Map<String, Parameter>?,
+  val name: String?,
+  val httpMethod: String?,
+  val description: String?,
+  val path: String,
+  val id: String
+)
 
 data class Parameter(val type: String, val location: String, val description: String?, val pattern: String?)

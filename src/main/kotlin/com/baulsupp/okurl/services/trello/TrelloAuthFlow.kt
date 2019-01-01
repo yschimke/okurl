@@ -14,7 +14,8 @@ object TrelloAuthFlow {
     val scopes = Secrets.promptArray("Scopes", "trello.scopes", listOf("read", "write", "account"))
     val scopesString = URLEncoder.encode(scopes.joinToString(","), "UTF-8")
 
-    val loginUrl = "https://trello.com/1/authorize?expiration=never&name=OkSocial&scope=$scopesString&key=$clientKey&response_type=token"
+    val loginUrl =
+      "https://trello.com/1/authorize?expiration=never&name=OkSocial&scope=$scopesString&key=$clientKey&response_type=token"
 
     outputHandler.openLink(loginUrl)
 

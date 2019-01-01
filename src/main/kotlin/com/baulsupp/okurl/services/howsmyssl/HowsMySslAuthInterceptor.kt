@@ -28,8 +28,10 @@ class HowsMySslAuthInterceptor : AuthInterceptor<String>() {
   }
 
   override val serviceDefinition =
-    object : AbstractServiceDefinition<String>("www.howsmyssl.com", "Hows My SSL", "howsmyssl",
-      "https://www.howsmyssl.com/s/api.html", null) {
+    object : AbstractServiceDefinition<String>(
+      "www.howsmyssl.com", "Hows My SSL", "howsmyssl",
+      "https://www.howsmyssl.com/s/api.html", null
+    ) {
       override fun parseCredentialsString(s: String): String = s
 
       override fun formatCredentialsString(credentials: String): String = credentials
@@ -41,7 +43,8 @@ class HowsMySslAuthInterceptor : AuthInterceptor<String>() {
 //  ): ValidatedCredentials =
 //    ValidatedCredentials(credentials, null)
 
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf((
-    "www.howsmyssl.com")
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(
+    (
+      "www.howsmyssl.com")
   )
 }

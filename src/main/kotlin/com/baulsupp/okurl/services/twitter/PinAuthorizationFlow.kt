@@ -10,7 +10,8 @@ class PinAuthorizationFlow(client: OkHttpClient, outputHandler: OutputHandler<Re
 
   private suspend fun promptForPin(newCredentials: TwitterCredentials): String {
     System.err.println(
-      "Authorise by entering the PIN through a web browser")
+      "Authorise by entering the PIN through a web browser"
+    )
 
     showUserLogin(newCredentials)
 

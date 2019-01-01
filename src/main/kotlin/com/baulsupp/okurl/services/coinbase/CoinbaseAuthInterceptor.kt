@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.coinbase
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
@@ -15,7 +16,6 @@ import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.kotlin.requestBuilder
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.coinbase.model.AccountList
 import okhttp3.FormBody
@@ -24,13 +24,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
-    "https://www.coinbase.com/settings/api")
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
+    "https://www.coinbase.com/settings/api"
+  )
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
-    request = request.newBuilder().header("Authorization", "Bearer ${credentials.accessToken}").header("CB-VERSION", "2017-12-17").build()
+    request = request.newBuilder().header("Authorization", "Bearer ${credentials.accessToken}")
+      .header("CB-VERSION", "2017-12-17").build()
 
     return chain.proceed(request)
   }
@@ -43,20 +46,21 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     val clientId = Secrets.prompt("Coinbase Client Id", "coinbase.clientId", "", false)
     val clientSecret = Secrets.prompt("Coinbase Client Secret", "coinbase.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "coinbase.scopes", listOf(
-      "wallet:accounts:read",
-      "wallet:addresses:read",
-      "wallet:buys:read",
-      "wallet:checkouts:read",
-      "wallet:deposits:read",
-      "wallet:notifications:read",
-      "wallet:orders:read",
-      "wallet:payment-methods:read",
-      "wallet:payment-methods:limits",
-      "wallet:sells:read",
-      "wallet:transactions:read",
-      "wallet:user:read",
-      "wallet:withdrawals:read"
+    val scopes = Secrets.promptArray(
+      "Scopes", "coinbase.scopes", listOf(
+        "wallet:accounts:read",
+        "wallet:addresses:read",
+        "wallet:buys:read",
+        "wallet:checkouts:read",
+        "wallet:deposits:read",
+        "wallet:notifications:read",
+        "wallet:orders:read",
+        "wallet:payment-methods:read",
+        "wallet:payment-methods:limits",
+        "wallet:sells:read",
+        "wallet:transactions:read",
+        "wallet:user:read",
+        "wallet:withdrawals:read"
 //            "wallet:accounts:update",
 //            "wallet:accounts:create",
 //            "wallet:accounts:delete",
@@ -74,7 +78,8 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 //            "wallet:user:update",
 //            "wallet:user:email",
 //            "wallet:withdrawals:create"
-    ))
+      )
+    )
 
     return CoinbaseAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
@@ -89,17 +94,21 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       .add("grant_type", "refresh_token")
       .build()
 
-    val request = requestBuilder("https://api.coinbase.com/oauth/token",
-      TokenValue(credentials))
+    val request = requestBuilder(
+      "https://api.coinbase.com/oauth/token",
+      TokenValue(credentials)
+    )
       .post(body)
       .build()
 
     val responseMap = client.queryMap<Any>(request)
 
     // TODO check if refresh token in response?
-    return Oauth2Token(responseMap["access_token"] as String,
+    return Oauth2Token(
+      responseMap["access_token"] as String,
       credentials.refreshToken, credentials.clientId,
-      credentials.clientSecret)
+      credentials.clientSecret
+    )
   }
 
   override suspend fun apiCompleter(
@@ -117,7 +126,8 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.query<AccountList>(
           "https://api.coinbase.com/v2/accounts",
-          tokenSet).data.map { it.id }
+          tokenSet
+        ).data.map { it.id }
       }
     }
 
@@ -128,8 +138,12 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.queryMapValue<String>("https://api.coinbase.com/v2/user",
-      TokenValue(credentials), "data", "name"))
+    ValidatedCredentials(
+      client.queryMapValue<String>(
+        "https://api.coinbase.com/v2/user",
+        TokenValue(credentials), "data", "name"
+      )
+    )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.coinbase.com")
 }

@@ -81,7 +81,8 @@ class Signature(
     log.log(Level.FINE, "secret " + credentials.secret)
     log.log(Level.FINE, "consumerSecret " + credentials.consumerSecret)
 
-    val signature = StandardSigner.getString(normalized, OAuthParams.HMAC_SHA1, credentials.secret!!, credentials.consumerSecret!!)
+    val signature =
+      StandardSigner.getString(normalized, OAuthParams.HMAC_SHA1, credentials.secret!!, credentials.consumerSecret!!)
 
     val oauthHeaders = linkedMapOf<String, String>()
     if (credentials.consumerKey != null) {
@@ -101,7 +102,8 @@ class Signature(
 
   private fun isFormContentType(request: Request): Boolean {
     return request.body()!!.contentType()!!.toString().startsWith(
-      "application/x-www-form-urlencoded")
+      "application/x-www-form-urlencoded"
+    )
   }
 
   companion object {

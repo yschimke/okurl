@@ -21,14 +21,20 @@ object WeekdoneAuthFlow {
       val clientId = Secrets.prompt("Weekdone Client ID", "weekdone.clientId", "", false)
       val clientSecret = Secrets.prompt("Weekdone Client Secret", "weekdone.clientSecret", "", true)
 
-      val loginUrl = "https://weekdone.com/oauth_authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
+      val loginUrl =
+        "https://weekdone.com/oauth_authorize?client_id=$clientId&response_type=code&redirect_uri=${s.redirectUri}"
 
       outputHandler.openLink(loginUrl)
 
       val code = s.waitForCode()
 
       val responseMap = client.query<OauthTokenResponse>(request("https://weekdone.com/oauth_token") {
-        post(FormBody.Builder().add("code", code).add("grant_type", "authorization_code").add("redirect_uri", s.redirectUri).add("client_id", clientId).add("client_secret", clientSecret).build())
+        post(
+          FormBody.Builder().add("code", code).add("grant_type", "authorization_code").add(
+            "redirect_uri",
+            s.redirectUri
+          ).add("client_id", clientId).add("client_secret", clientSecret).build()
+        )
       })
 
       return Oauth2Token(responseMap.access_token, responseMap.refresh_token, clientId, clientSecret)
