@@ -7,6 +7,8 @@ import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.parser.errors.ParseException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.debug.DebugProbes
 import org.conscrypt.OpenSSLProvider
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.io.File
@@ -66,7 +68,10 @@ class Main : CommandLineClient() {
   }
 }
 
+@ExperimentalCoroutinesApi
 suspend fun main(args: Array<String>) {
+  DebugProbes.install()
+
   Security.insertProviderAt(OpenSSLProvider(), 1)
 
   try {
