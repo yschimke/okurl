@@ -52,10 +52,9 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
   }
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    val newRew = chain.request().edit {
+    return chain.proceed(chain.request().edit {
       addHeader("Authorization", "Bearer ${credentials.accessToken}")
-    }
-    return chain.proceed(newRew)
+    })
   }
 
   override val serviceDefinition = Oauth2ServiceDefinition(

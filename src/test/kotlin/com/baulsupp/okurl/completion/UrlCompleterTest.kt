@@ -25,7 +25,8 @@ class UrlCompleterTest {
         UrlList(
           UrlList.Match.HOSTS,
           listOf(
-            "https://test.com", "https://test.com/",
+            "https://test.com",
+            "https://test.com/",
             "https://api1.test.com",
             "https://api1.test.com/"
           )
