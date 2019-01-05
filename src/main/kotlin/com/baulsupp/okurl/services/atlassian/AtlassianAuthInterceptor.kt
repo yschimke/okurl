@@ -10,9 +10,12 @@ import com.baulsupp.okurl.completion.BaseUrlCompleter
 import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.postJsonBody
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryList
+import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.atlassian.model.AccessibleResource
 import com.baulsupp.okurl.services.atlassian.model.Myself
@@ -35,7 +38,7 @@ class AtlassianAuthInterceptor : Oauth2AuthInterceptor() {
     val scopes = Secrets.promptArray(
       "Atlassian Scopes",
       "atlassian.scopes",
-      listOf("read:jira-user", "read:jira-work", "write:jira-work")
+      listOf("read:jira-user", "read:jira-work", "write:jira-work", "offline_access")
     )
 
     return AtlassianAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
@@ -73,9 +76,30 @@ class AtlassianAuthInterceptor : Oauth2AuthInterceptor() {
     val instanceId = resources.firstOrNull()?.id ?: return ValidatedCredentials()
 
     val user = client.query<Myself>("https://api.atlassian.com/ex/jira/$instanceId/rest/api/3/myself")
-    
+
     return ValidatedCredentials(user.displayName)
   }
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.atlassian.com")
+
+  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
+
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
+    val responseMap = client.query<ExchangeResponse>(request("https://auth.atlassian.com/oauth/token", NoToken) {
+      postJsonBody(
+        RefreshRequest(
+          client_id = credentials.clientId!!,
+          client_secret = credentials.clientSecret!!,
+          refresh_token = credentials.refreshToken!!
+        )
+      )
+    })
+
+    return Oauth2Token(
+      responseMap.access_token,
+      credentials.refreshToken,
+      credentials.clientId,
+      credentials.clientSecret
+    )
+  }
 }
