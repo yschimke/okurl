@@ -1,3 +1,4 @@
+com.baulsupp.okurl.services.atlassian.AtlassianAuthInterceptor
 com.baulsupp.okurl.services.basicauth.BasicAuthInterceptor
 com.baulsupp.okurl.services.box.BoxAuthInterceptor
 com.baulsupp.okurl.services.circleci.CircleCIAuthInterceptor
