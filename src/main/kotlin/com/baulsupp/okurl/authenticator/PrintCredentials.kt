@@ -58,11 +58,11 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     val sd = key.auth.serviceDefinition
 
     when (e) {
-      is CancellationException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, "timeout"))
-      is TimeoutException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, "timeout"))
-      is ClientException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, key.auth.errorMessage(e)))
-      is IOException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, e.toString()))
-      else -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet, e.toString()))
+      is CancellationException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, "timeout"))
+      is TimeoutException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, "timeout"))
+      is ClientException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, key.auth.errorMessage(e)))
+      is IOException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString()))
+      else -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString()))
     }
   }
 
