@@ -79,12 +79,12 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val responseMap = client.query<AuthResponse>(request("https://www.strava.com/oauth/token") {
-      form {
+      post(form {
         add("grant_type", "refresh_token")
         add("client_id", credentials.clientId!!)
         add("client_secret", credentials.clientSecret!!)
         add("refresh_token", credentials.refreshToken!!)
-      }
+      })
     })
 
     return Oauth2Token(

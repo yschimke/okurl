@@ -11,7 +11,7 @@ import okhttp3.Response
 data class AuthResponse(
   val token_type: String,
   val access_token: String,
-  val athlete: Map<String, Any>,
+  val athlete: Map<String, Any>?,
   val refresh_token: String,
   val expires_at: Long,
   val state: String? = null
