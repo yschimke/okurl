@@ -1,16 +1,15 @@
 package com.baulsupp.okurl.services.citymapper
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class CitymapperAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class CitymapperAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "developer.citymapper.com", "Citymapper API", "citymapper",
     "https://citymapper.3scale.net/docs", "https://citymapper.3scale.net/"
@@ -35,6 +34,4 @@ class CitymapperAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     authArguments: List<String>
   ): Oauth2Token =
     Oauth2Token(Secrets.prompt("Citymapper Key", "citymapper.token", "", true))
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("developer.citymapper.com")
 }

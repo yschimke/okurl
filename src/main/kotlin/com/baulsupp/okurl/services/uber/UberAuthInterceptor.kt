@@ -23,12 +23,10 @@ import okhttp3.Response
 class UberAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition =
     Oauth2ServiceDefinition(
-      host(), "Uber API", "uber",
+      "api.uber.com", "Uber API", "uber",
       "https://developer.uber.com/docs/riders/references/api",
       "https://developer.uber.com/dashboard/"
     )
-
-  private fun host(): String = "api.uber.com"
 
   override suspend fun authorize(
     client: OkHttpClient,
@@ -65,8 +63,6 @@ class UberAuthInterceptor : Oauth2AuthInterceptor() {
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> =
     setOf("api.uber.com", "login.uber.com", "sandbox-api.uber.com")
-
-  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val tokenUrl = "https://login.uber.com/oauth/v2/token"

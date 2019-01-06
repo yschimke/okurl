@@ -85,8 +85,6 @@ class SpotifyAuthInterceptor : Oauth2AuthInterceptor() {
     )
   }
 
-  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
-
   override fun errorMessage(ce: ClientException): String {
     if (ce.code == 401) {
       try {

@@ -2,7 +2,7 @@ package com.baulsupp.okurl.services.postman
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.readPasswordString
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -20,7 +20,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class PostmanAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class PostmanAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.getpostman.com", "Postman API", "postman",
     "https://docs.api.getpostman.com/",

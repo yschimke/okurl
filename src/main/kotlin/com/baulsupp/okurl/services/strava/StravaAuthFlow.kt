@@ -27,7 +27,9 @@ object StravaAuthFlow {
   ): Oauth2Token {
     SimpleWebServer.forCode().use { s ->
       val loginUrl =
-        "https://www.strava.com/oauth/authorize?client_id=$clientId&redirect_uri=${s.redirectUri}&response_type=code&scope=${scopes.joinToString(",")}"
+        "https://www.strava.com/oauth/authorize?client_id=$clientId&redirect_uri=${s.redirectUri}&response_type=code&scope=${scopes.joinToString(
+          ","
+        )}"
 
       outputHandler.openLink(loginUrl)
 

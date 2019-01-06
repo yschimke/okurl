@@ -2,7 +2,7 @@ package com.baulsupp.okurl.services.facebook
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -22,7 +22,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okio.ByteString.Companion.encodeUtf8
 
-class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class FacebookAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "graph.facebook.com", "Facebook API", "facebook",
     "https://developers.facebook.com/docs/graph-api",
@@ -52,7 +52,7 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return chain.proceed(request)
   }
 
-  fun authenticated(request: Request): Boolean {
+  private fun authenticated(request: Request): Boolean {
     return request.url().queryParameter("access_token") != null || request.header("Authorization") != null
   }
 
@@ -99,7 +99,8 @@ class FacebookAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return ValidatedCredentials(userName, appName)
   }
 
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = API_HOSTS
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> =
+    setOf("graph.facebook.com", "www.facebook.com", "streaming-graph.facebook.com")
 
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore) = supportsUrl(url)
 

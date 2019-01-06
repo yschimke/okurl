@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.github
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -16,7 +16,7 @@ import okhttp3.Response
 /**
  * https://developer.github.com/docs/authentication
  */
-class GithubAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class GithubAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.github.com", "Github API", "github",
     "https://developer.github.com/v3/", "https://github.com/settings/developers"

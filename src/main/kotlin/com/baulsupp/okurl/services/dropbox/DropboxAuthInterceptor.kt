@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.dropbox
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -20,7 +20,7 @@ import okhttp3.Response
 /**
  * https://developer.dropbox.com/docs/authentication
  */
-class DropboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class DropboxAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.dropboxapi.com", "Dropbox API", "dropbox",
     "https://www.dropbox.com/developers/documentation/http/documentation", "https://www.dropbox.com/developers/apps"

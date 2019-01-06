@@ -9,6 +9,7 @@ import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryList
 import com.baulsupp.okurl.services.AbstractServiceDefinition
@@ -50,9 +51,13 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
     client: OkHttpClient,
     credentials: TrelloToken
   ): ValidatedCredentials {
-    val tokenResponse = client.query<TokenResponse>("https://api.trello.com/1/tokens/${credentials.token}")
-    val memberId = tokenResponse.idMember
-    val userResponse = client.query<MemberResponse>("https://api.trello.com/1/members/$memberId")
+    val tokenResponse =
+      client.query<TokenResponse>("https://api.trello.com/1/tokens/${credentials.token}", TokenValue(credentials))
+    val userResponse =
+      client.query<MemberResponse>(
+        "https://api.trello.com/1/members/${tokenResponse.idMember}",
+        TokenValue(credentials)
+      )
 
     return ValidatedCredentials(userResponse.username, tokenResponse.identifier)
   }
@@ -81,12 +86,10 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
         val tokenResponse = client.query<TokenResponse>("https://api.trello.com/1/tokens/${it.token}")
 
         client.queryList<BoardResponse>("https://api.trello.com/1/members/${tokenResponse.idMember}/boards", tokenSet)
-          .map { it.id }
+          .map(BoardResponse::id)
       }
     }
 
     return completer
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.trello.com")
 }

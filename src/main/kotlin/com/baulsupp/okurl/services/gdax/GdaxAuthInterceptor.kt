@@ -12,6 +12,7 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryList
 import com.baulsupp.okurl.secrets.Secrets
+import com.baulsupp.okurl.services.AbstractServiceDefinition
 import com.baulsupp.okurl.services.gdax.model.Account
 import com.baulsupp.okurl.services.gdax.model.Product
 import okhttp3.Interceptor
@@ -23,7 +24,19 @@ import okio.ByteString.Companion.encodeUtf8
 import java.nio.charset.StandardCharsets.UTF_8
 
 class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
-  override val serviceDefinition = GdaxAuthServiceDefinition
+  override val serviceDefinition = object : AbstractServiceDefinition<GdaxCredentials>(
+    "api.gdax.com", "GDAX API", "gdax",
+    "https://docs.gdax.com/", "https://www.gdax.com/settings/api"
+  ) {
+
+    override fun parseCredentialsString(s: String): GdaxCredentials {
+      val parts = s.split(":".toRegex(), 3)
+      return GdaxCredentials(parts[0], parts[1], parts[2])
+    }
+
+    override fun formatCredentialsString(credentials: GdaxCredentials) =
+      "${credentials.apiKey}:${credentials.apiSecret}:${credentials.passphrase}"
+  }
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: GdaxCredentials): Response {
     var request = chain.request()
@@ -92,6 +105,4 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
 
     return completer
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.gdax.com")
 }

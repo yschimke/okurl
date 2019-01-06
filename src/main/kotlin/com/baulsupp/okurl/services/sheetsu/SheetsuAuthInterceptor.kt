@@ -43,6 +43,4 @@ class SheetsuAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
     return BasicCredentials(user, password)
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("sheetsu.com")
 }

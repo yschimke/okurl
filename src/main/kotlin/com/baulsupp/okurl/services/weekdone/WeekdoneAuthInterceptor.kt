@@ -1,11 +1,9 @@
 package com.baulsupp.okurl.services.weekdone
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
 import okhttp3.FormBody
@@ -15,7 +13,7 @@ import okhttp3.Response
 
 data class RefreshResponse(val access_token: String)
 
-class WeekdoneAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class WeekdoneAuthInterceptor : Oauth2AuthInterceptor() {
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
@@ -33,16 +31,6 @@ class WeekdoneAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       "https://weekdone.com/developer/", "https://weekdone.com/settings?tab=applications"
     )
 
-  override suspend fun validate(
-    client: OkHttpClient,
-    credentials: Oauth2Token
-  ): ValidatedCredentials {
-//      val body = credentials.accessToken.decodeBase64()
-//    println(body!!.utf8())
-
-    return ValidatedCredentials(null, null)
-  }
-
   override suspend fun authorize(
     client: OkHttpClient,
     outputHandler: OutputHandler<Response>,
@@ -50,8 +38,6 @@ class WeekdoneAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   ): Oauth2Token {
     return WeekdoneAuthFlow.login(client, outputHandler)
   }
-
-  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val response = client.query<RefreshResponse>(request("https://weekdone.com/oauth_token") {
@@ -72,6 +58,4 @@ class WeekdoneAuthInterceptor : AuthInterceptor<Oauth2Token>() {
       credentials.clientSecret
     )
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.weekdone.com")
 }

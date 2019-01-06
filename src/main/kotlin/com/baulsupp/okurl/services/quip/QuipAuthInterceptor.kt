@@ -51,11 +51,11 @@ class QuipAuthInterceptor : Oauth2AuthInterceptor() {
 
     completer.withCachedVariable(name(), "folderId") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
-        currentUser(client, tokenSet).let {
+        currentUser(client, tokenSet).let { user ->
           listOfNotNull(
-            it.starred_folder_id, it.private_folder_id, it.desktop_folder_id,
-            it.archive_folder_id
-          ) + it.shared_folder_ids.orEmpty()
+            user.starred_folder_id, user.private_folder_id, user.desktop_folder_id,
+            user.archive_folder_id
+          ) + user.shared_folder_ids.orEmpty()
         }
       }
     }

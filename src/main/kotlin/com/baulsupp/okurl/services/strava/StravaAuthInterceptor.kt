@@ -6,6 +6,7 @@ import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.edit
 import com.baulsupp.okurl.kotlin.form
 import com.baulsupp.okurl.kotlin.query
@@ -66,11 +67,7 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.query<Athlete>("https://www.strava.com/api/v3/athlete").username)
-
-  override fun canRenew(credentials: Oauth2Token): Boolean {
-    return credentials.isRenewable()
-  }
+    ValidatedCredentials(client.query<Athlete>("https://www.strava.com/api/v3/athlete", TokenValue(credentials)).username)
 
   override fun canRenew(result: Response): Boolean {
     // Not working

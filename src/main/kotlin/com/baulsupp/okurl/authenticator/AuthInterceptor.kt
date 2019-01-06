@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.BaseUrlCompleter
@@ -9,7 +10,6 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.Token
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -32,7 +32,7 @@ abstract class AuthInterceptor<T> {
     false
   }
 
-  abstract suspend fun intercept(chain: Interceptor.Chain, credentials: T): Response
+  open suspend fun intercept(chain: Interceptor.Chain, credentials: T): Response = chain.proceed(chain.request())
 
   open suspend fun intercept(chain: Interceptor.Chain, credentials: T?, credentialsStore: CredentialsStore): Response {
     return if (credentials != null) {
@@ -42,7 +42,12 @@ abstract class AuthInterceptor<T> {
     }
   }
 
-  abstract suspend fun authorize(client: OkHttpClient, outputHandler: OutputHandler<Response>, authArguments: List<String> = listOf()): T
+  open suspend fun authorize(
+    client: OkHttpClient,
+    outputHandler: OutputHandler<Response>,
+    authArguments: List<String> = listOf()
+  ): T =
+    TODO("only supports provided tokens")
 
   abstract val serviceDefinition: ServiceDefinition<T>
 
@@ -54,9 +59,15 @@ abstract class AuthInterceptor<T> {
 
   open suspend fun renew(client: OkHttpClient, credentials: T): T? = null
 
-  abstract fun hosts(credentialsStore: CredentialsStore): Set<String>
+  open fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(serviceDefinition.apiHost())
 
-  open suspend fun apiCompleter(prefix: String, client: OkHttpClient, credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache, tokenSet: Token): ApiCompleter =
+  open suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter =
     UrlList.fromResource(name())?.let { BaseUrlCompleter(it, hosts(credentialsStore), completionVariableCache) }
       ?: HostUrlCompleter(hosts(credentialsStore))
 
@@ -64,7 +75,12 @@ abstract class AuthInterceptor<T> {
 
   open fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter {
     return object : ApiDocPresenter {
-      override suspend fun explainApi(url: String, outputHandler: OutputHandler<Response>, client: OkHttpClient, tokenSet: Token) {
+      override suspend fun explainApi(
+        url: String,
+        outputHandler: OutputHandler<Response>,
+        client: OkHttpClient,
+        tokenSet: Token
+      ) {
         val sd = serviceDefinition
 
         outputHandler.info("service: " + sd.shortName())

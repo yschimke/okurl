@@ -1,11 +1,10 @@
 package com.baulsupp.okurl.services.instagram
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
@@ -13,7 +12,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class InstagramAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.instagram.com", "Instagram API", "instagram",
     "https://www.instagram.com/developer/endpoints/",
@@ -61,6 +60,4 @@ class InstagramAuthInterceptor : AuthInterceptor<Oauth2Token>() {
         TokenValue(credentials), "data", "full_name"
       )
     )
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.instagram.com")
 }

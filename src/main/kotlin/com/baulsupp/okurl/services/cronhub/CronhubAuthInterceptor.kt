@@ -2,7 +2,6 @@ package com.baulsupp.okurl.services.cronhub
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.BaseUrlCompleter
 import com.baulsupp.okurl.completion.CompletionVariableCache
@@ -37,15 +36,6 @@ class CronhubAuthInterceptor : AuthInterceptor<CronhubCredentials>() {
 
     return CronhubCredentials(apiKey)
   }
-
-  override suspend fun validate(
-    client: OkHttpClient,
-    credentials: CronhubCredentials
-  ): ValidatedCredentials = ValidatedCredentials()
-
-  override fun canRenew(credentials: CronhubCredentials): Boolean = false
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("cronhub.io")
 
   override suspend fun apiCompleter(
     prefix: String,

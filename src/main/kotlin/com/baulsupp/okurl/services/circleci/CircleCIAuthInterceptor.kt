@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.circleci
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -19,7 +19,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class CircleCIAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "circleci.com", "CircleCI API", "circleci",
     "https://circleci.com/docs/api/v1-reference/", "https://circleci.com/account/api"
@@ -58,8 +58,6 @@ class CircleCIAuthInterceptor : AuthInterceptor<Oauth2Token>() {
         TokenValue(credentials)
       ).name
     )
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("circleci.com")
 
   override suspend fun apiCompleter(
     prefix: String,

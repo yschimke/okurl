@@ -45,8 +45,6 @@ class ImgurAuthInterceptor : Oauth2AuthInterceptor() {
 
   override fun canRenew(result: Response): Boolean = result.code() == 403
 
-  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
-
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("refresh_token", credentials.refreshToken!!)
       .add("client_id", credentials.clientId!!)
@@ -59,7 +57,6 @@ class ImgurAuthInterceptor : Oauth2AuthInterceptor() {
 
     val responseMap = client.queryMap<Any>(request)
 
-    // TODO check if refresh token in response?
     return Oauth2Token(
       responseMap["access_token"] as String,
       credentials.refreshToken, credentials.clientId,

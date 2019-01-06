@@ -2,7 +2,7 @@ package com.baulsupp.okurl.services.google
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -30,7 +30,7 @@ import okhttp3.Response
 /**
  * https://developer.google.com/docs/authentication
  */
-class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
   private val foundHosts by lazy {
     googleDiscoveryHosts()
   }
@@ -62,10 +62,7 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
     val host = url.host()
 
-    return setOf(
-      (
-        "api.google.com")
-    ).contains(host) || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
+    return "api.google.com" == host || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
 
   override suspend fun authorize(
@@ -134,19 +131,19 @@ class GoogleAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
   private fun isFirebaseHost(host: String) = host.endsWith(".firebaseio.com")
 
-  fun discoveryCompletion(prefix: String, client: OkHttpClient): GoogleDiscoveryCompleter {
+  private fun discoveryCompletion(prefix: String, client: OkHttpClient): GoogleDiscoveryCompleter {
     val discoveryPaths = DiscoveryIndex.instance.getDiscoveryUrlForPrefix(prefix)
 
     return GoogleDiscoveryCompleter.forApis(DiscoveryRegistry(client), discoveryPaths)
   }
 
-  fun googleDiscoveryHosts(): Set<String> {
+  private fun googleDiscoveryHosts(): Set<String> {
     return UrlList.fromResource(name())!!.getUrls("").map {
       HttpUrl.parse(it)!!.host()
     }.toSet()
   }
 
-  fun hostCompletion(credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache) =
+  private fun hostCompletion(credentialsStore: CredentialsStore, completionVariableCache: CompletionVariableCache) =
     BaseUrlCompleter(UrlList.fromResource(name())!!, hosts(credentialsStore) + firebaseHosts(), completionVariableCache)
 
   private fun firebaseHosts() = FirebaseCompleter.knownHosts()

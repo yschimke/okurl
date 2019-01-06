@@ -58,10 +58,6 @@ class MicrosoftAuthInterceptor : Oauth2AuthInterceptor() {
     return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override fun canRenew(credentials: Oauth2Token): Boolean {
-    return credentials.isRenewable()
-  }
-
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
 
     val body = FormBody.Builder().add("grant_type", "refresh_token")

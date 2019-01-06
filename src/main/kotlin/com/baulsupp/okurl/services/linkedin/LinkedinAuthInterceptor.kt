@@ -1,11 +1,10 @@
 package com.baulsupp.okurl.services.linkedin
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
@@ -13,7 +12,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class LinkedinAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.linkedin.com", "Linkedin API", "linkedin",
     "https://developer.linkedin.com/docs/rest-api",
@@ -59,13 +58,6 @@ class LinkedinAuthInterceptor : AuthInterceptor<Oauth2Token>() {
         "https://api.linkedin.com/v1/people/~:(formatted-name)",
         TokenValue(credentials), "formattedName"
       )
-    )
-  }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> {
-    return setOf(
-      (
-        "api.linkedin.com")
     )
   }
 }

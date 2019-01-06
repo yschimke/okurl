@@ -62,8 +62,6 @@ class LyftAuthInterceptor : Oauth2AuthInterceptor() {
       )
     )
 
-  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
-
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
     val body = RequestBody.create(
@@ -79,7 +77,6 @@ class LyftAuthInterceptor : Oauth2AuthInterceptor() {
 
     val responseMap = client.queryMap<Any>(request)
 
-    // TODO check if refresh token in response?
     return Oauth2Token(
       responseMap["access_token"] as String,
       credentials.refreshToken, credentials.clientId,
