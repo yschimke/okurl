@@ -52,11 +52,11 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     client: OkHttpClient,
     credentials: BasicCredentials
   ): ValidatedCredentials {
-    val account = client.queryList<Any>(
+    client.queryList<Any>(
       "https://api.hitbtc.com/api/2/account/balance",
       TokenValue(credentials)
-    ).let { "✓" }
-    return ValidatedCredentials(account)
+    )
+    return ValidatedCredentials()
   }
 
   override suspend fun apiCompleter(
@@ -79,6 +79,4 @@ class HitBTCAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
     return completer
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.hitbtc.com")
 }

@@ -61,5 +61,3 @@ suspend fun getMetadata(client: OkHttpClient, requestUrl: HttpUrl, tokenSet: Tok
 }
 
 const val VERSION = "v3.0"
-
-val API_HOSTS = setOf("graph.facebook.com", "www.facebook.com", "streaming-graph.facebook.com")

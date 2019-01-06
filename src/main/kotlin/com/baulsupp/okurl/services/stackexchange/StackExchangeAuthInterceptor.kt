@@ -3,7 +3,7 @@ package com.baulsupp.okurl.services.stackexchange
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.secrets.Secrets
@@ -13,7 +13,25 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 
 class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
-  override val serviceDefinition = StackExchangeServiceDefinition()
+  override val serviceDefinition = object : ServiceDefinition<StackExchangeToken> {
+    override fun apiHost() = "api.stackexchange.com"
+
+    override fun serviceName() = "StackExchange API"
+
+    override fun shortName() = "stackexchange"
+
+    override fun parseCredentialsString(s: String): StackExchangeToken {
+      val parts = s.split(":".toRegex(), 2).toTypedArray()
+      return StackExchangeToken(parts[0], parts[1])
+    }
+
+    override fun formatCredentialsString(credentials: StackExchangeToken) =
+      credentials.accessToken + ":" + credentials.key
+
+    override fun apiDocs() = "https://api.stackexchange.com/docs"
+
+    override fun accountsLink() = "http://stackapps.com/apps/oauth"
+  }
 
   override suspend fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
     var request = chain.request()
@@ -61,6 +79,4 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
 
     return StackExchangeAuthFlow.login(client, outputHandler, clientId, clientSecret, clientKey, scopes)
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.stackexchange.com")
 }

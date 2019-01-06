@@ -1,17 +1,15 @@
 package com.baulsupp.okurl.services.giphy
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class GiphyAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition =
     Oauth2ServiceDefinition(
       "api.giphy.com", "Giphy API", "giphy",
@@ -42,12 +40,4 @@ class GiphyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
 
     return Oauth2Token(apiKey)
   }
-
-  override suspend fun validate(
-    client: OkHttpClient,
-    credentials: Oauth2Token
-  ): ValidatedCredentials =
-    ValidatedCredentials("ⁿ/ₐ", null)
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.giphy.com")
 }

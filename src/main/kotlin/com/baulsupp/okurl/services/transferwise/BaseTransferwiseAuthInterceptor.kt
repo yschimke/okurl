@@ -1,43 +1,34 @@
-package com.baulsupp.okurl.services.fitbit
+package com.baulsupp.okurl.services.transferwise
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
-import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
+import com.baulsupp.okurl.kotlin.requestBuilder
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 
-class FitbitAuthInterceptor : Oauth2AuthInterceptor() {
-  override val serviceDefinition = Oauth2ServiceDefinition(
-    "api.fitbit.com", "Fitbit API", "fitbit",
-    "https://dev.fitbit.com/docs/", "https://dev.fitbit.com/apps/"
-  )
-
+abstract class BaseTransferwiseAuthInterceptor : Oauth2AuthInterceptor() {
   override suspend fun authorize(
     client: OkHttpClient,
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
   ): Oauth2Token {
 
-    val clientId = Secrets.prompt("Fitbit Client Id", "fitbit.clientId", "", false)
-    val clientSecret = Secrets.prompt("Fitbit Client Secret", "fitbit.clientSecret", "", true)
-    val scopes = Secrets.promptArray(
-      "Scopes", "fitbit.scopes",
-      listOf(
-        "activity", "heartrate", "location", "nutrition", "profile",
-        "settings", "sleep", "social", "weight"
-      )
+    val clientId = Secrets.prompt("Transferwise Client Id", "transferwise.clientId", "", false)
+    val clientSecret = Secrets.prompt(
+      "Transferwise Client Secret", "transferwise.clientSecret", "",
+      true
     )
 
-    return FitbitAuthCodeFlow.login(client, outputHandler, clientId, clientSecret, scopes)
+    return TransferwiseAuthFlow.login(client, outputHandler, serviceDefinition.apiHost(), clientId, clientSecret)
   }
 
   override suspend fun validate(
@@ -46,17 +37,22 @@ class FitbitAuthInterceptor : Oauth2AuthInterceptor() {
   ): ValidatedCredentials =
     ValidatedCredentials(
       client.queryMapValue<String>(
-        "https://api.fitbit.com/1/user/-/profile.json",
-        TokenValue(credentials), "user", "fullName"
+        "https://api.transferwise.com/v1/me",
+        TokenValue(credentials), "name"
       )
     )
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
-    val body = FormBody.Builder().add("grant_type", "refresh_token")
+
+    val body = FormBody.Builder()
+      .add("grant_type", "refresh_token")
       .add("refresh_token", credentials.refreshToken!!)
       .build()
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
-    val request = Request.Builder().url("https://api.fitbit.com/oauth2/token")
+    val request = requestBuilder(
+      "https://" + serviceDefinition.apiHost() + "/oauth/token",
+      NoToken
+    )
       .post(body)
       .header("Authorization", basic)
       .build()
@@ -66,7 +62,7 @@ class FitbitAuthInterceptor : Oauth2AuthInterceptor() {
     // TODO check if refresh token in response?
     return Oauth2Token(
       responseMap["access_token"] as String,
-      credentials.refreshToken, credentials.clientId,
+      responseMap["refresh_token"] as String, credentials.clientId,
       credentials.clientSecret
     )
   }

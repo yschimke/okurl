@@ -13,6 +13,7 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.query
+import com.baulsupp.okurl.services.coinbin.model.Coins
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -52,8 +53,6 @@ class CoinBinAuthInterceptor : AuthInterceptor<BasicCredentials>() {
     credentials: BasicCredentials
   ): ValidatedCredentials =
     ValidatedCredentials(credentials.user, null)
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("coinbin.org")
 
   override suspend fun apiCompleter(
     prefix: String,

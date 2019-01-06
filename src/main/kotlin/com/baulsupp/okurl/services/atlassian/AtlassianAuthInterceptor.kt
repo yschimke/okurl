@@ -12,6 +12,7 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.postJsonBody
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryList
@@ -71,18 +72,18 @@ class AtlassianAuthInterceptor : Oauth2AuthInterceptor() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials {
-    val resources = client.queryList<AccessibleResource>("https://api.atlassian.com/oauth/token/accessible-resources")
+    val resources = client.queryList<AccessibleResource>(
+      "https://api.atlassian.com/oauth/token/accessible-resources",
+      TokenValue(credentials)
+    )
 
     val instanceId = resources.firstOrNull()?.id ?: return ValidatedCredentials()
 
-    val user = client.query<Myself>("https://api.atlassian.com/ex/jira/$instanceId/rest/api/3/myself")
+    val user =
+      client.query<Myself>("https://api.atlassian.com/ex/jira/$instanceId/rest/api/3/myself", TokenValue(credentials))
 
     return ValidatedCredentials(user.displayName)
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.atlassian.com")
-
-  override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val responseMap = client.query<ExchangeResponse>(request("https://auth.atlassian.com/oauth/token", NoToken) {

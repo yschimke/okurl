@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.surveymonkey
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -22,7 +22,7 @@ import okhttp3.Response
 /**
  * https://developer.surveymonkey.com/docs/authentication
  */
-class SurveyMonkeyAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class SurveyMonkeyAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.surveymonkey.net", "Survey Monkey API", "surveymonkey",
     "https://developer.surveymonkey.com/api/v3/#scopes",

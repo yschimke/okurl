@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.coinbase
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -23,7 +23,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class CoinbaseAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.coinbase.com", "Coinbase API", "coinbase", "https://developers.coinbase.com/api/v2/",
     "https://www.coinbase.com/settings/api"
@@ -84,8 +84,6 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return CoinbaseAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override fun canRenew(credentials: Oauth2Token) = credentials.isRenewable()
-
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
     val body = FormBody.Builder()
       .add("client_id", credentials.clientId!!)
@@ -144,6 +142,4 @@ class CoinbaseAuthInterceptor : AuthInterceptor<Oauth2Token>() {
         TokenValue(credentials), "data", "name"
       )
     )
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.coinbase.com")
 }

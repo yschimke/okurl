@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.slack
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
@@ -16,7 +16,7 @@ import okhttp3.Response
 /**
  * https://api.slack.com/docs/oauth
  */
-class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class SlackAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "slack.com", "Slack API", "slack", "https://api.slack.com/",
     "https://api.slack.com/apps"
@@ -98,6 +98,4 @@ class SlackAuthInterceptor : AuthInterceptor<Oauth2Token>() {
         TokenValue(credentials), "user"
       )
     )
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("slack.com")
 }

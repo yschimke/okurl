@@ -1,17 +1,15 @@
 package com.baulsupp.okurl.services.mapbox
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class MapboxAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition =
     Oauth2ServiceDefinition(
       "api.mapbox.com", "Mapbox API", "mapbox",
@@ -42,18 +40,7 @@ class MapboxAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     return Oauth2Token(apiKey)
   }
 
-  override suspend fun validate(
-    client: OkHttpClient,
-    credentials: Oauth2Token
-  ): ValidatedCredentials =
-    ValidatedCredentials("✓", null)
-
   override fun defaultCredentials(): Oauth2Token? = Oauth2Token(
     "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2plbW82ZDRmMHFjYTJxczMwbjZyb283biJ9.kR_CuRmA-qdRAU0rAlzN_Q"
-  )
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(
-    (
-      "api.mapbox.com")
   )
 }

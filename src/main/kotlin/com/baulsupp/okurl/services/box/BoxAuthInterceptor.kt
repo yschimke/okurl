@@ -50,8 +50,6 @@ class BoxAuthInterceptor : Oauth2AuthInterceptor() {
       )
     )
 
-  override fun canRenew(credentials: Oauth2Token): Boolean = false
-
   override suspend fun apiCompleter(
     prefix: String,
     client: OkHttpClient,

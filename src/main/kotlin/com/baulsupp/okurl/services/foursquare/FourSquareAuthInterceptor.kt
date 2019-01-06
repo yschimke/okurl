@@ -1,11 +1,10 @@
 package com.baulsupp.okurl.services.foursquare
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
-import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.secrets.Secrets
@@ -16,7 +15,7 @@ import okhttp3.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
+class FourSquareAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
     "api.foursquare.com", "FourSquare API", "4sq",
     "https://developer.foursquare.com/docs/", "https://foursquare.com/developers/apps"
@@ -61,6 +60,4 @@ class FourSquareAuthInterceptor : AuthInterceptor<Oauth2Token>() {
     val user = map.response.user
     return ValidatedCredentials("${user.firstName} ${user.lastName}")
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.foursquare.com")
 }

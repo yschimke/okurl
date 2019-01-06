@@ -56,9 +56,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return response
   }
 
-  override fun defaultCredentials(): TravisToken? {
-    return TravisToken.external()
-  }
+  override fun defaultCredentials(): TravisToken? = TravisToken.external()
 
   override suspend fun authorize(
     client: OkHttpClient,

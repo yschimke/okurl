@@ -7,7 +7,8 @@ data class AccessibleResource(
   val scopes: List<String>
 )
 
-data class ServerInfo(val baseUrl: String,
+data class ServerInfo(
+  val baseUrl: String,
   val deploymentType: String,
   val scmInfo: String,
   val serverTime: String,
@@ -15,9 +16,11 @@ data class ServerInfo(val baseUrl: String,
   val serverTitle: String,
   val version: String,
   val buildNumber: Int,
-  val versionNumbers: List<Integer>?)
+  val versionNumbers: List<Integer>?
+)
 
-data class Myself(val avatarUrls: Map<String, String>,
+data class Myself(
+  val avatarUrls: Map<String, String>,
   val displayName: String,
   val active: Boolean,
   val timeZone: String,
@@ -29,4 +32,5 @@ data class Myself(val avatarUrls: Map<String, String>,
   val name: String,
   val self: String,
   val key: String,
-  val applicationRoles: Map<String, Any>)
+  val applicationRoles: Map<String, Any>
+)

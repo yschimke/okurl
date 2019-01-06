@@ -76,6 +76,4 @@ class TwilioAuthInterceptor : AuthInterceptor<BasicCredentials>() {
 
     return completer
   }
-
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf("api.twilio.com")
 }

@@ -9,13 +9,9 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import okhttp3.OkHttpClient
 
-class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
-  override fun host(): String {
-    return "test-restgw.transferwise.com"
-  }
-
+class TransferwiseTestAuthInterceptor : BaseTransferwiseAuthInterceptor() {
   override val serviceDefinition = Oauth2ServiceDefinition(
-    host(), "Transferwise Test API", "transferwise-test",
+    "test-restgw.transferwise.com", "Transferwise Test API", "transferwise-test",
     "https://api-docs.transferwise.com/",
     "https://api-docs.transferwise.com/api-explorer/transferwise-api/versions/v1/"
   )
@@ -30,7 +26,7 @@ class TransferwiseTestAuthInterceptor : TransferwiseAuthInterceptor() {
     val urlList = UrlList.fromResource("transferwise")!!
 
     val testUrls = urlList.getUrls("")
-      .map { s -> s.replace("api.transferwise.com", host()) }
+      .map { s -> s.replace("api.transferwise.com", serviceDefinition.apiHost()) }
 
     return BaseUrlCompleter(UrlList(UrlList.Match.SITE, testUrls), hosts(credentialsStore), completionVariableCache)
   }
