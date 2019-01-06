@@ -4,7 +4,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
-import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.services.ServiceLibrary
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
@@ -13,20 +12,33 @@ import okhttp3.Response
 import java.util.ServiceLoader
 import java.util.logging.Logger
 
+// TODO log bad tags?
+fun Interceptor.Chain.token() = request().tag(Token::class.java) ?: NoToken
+
+suspend fun <T> credentials(
+  tokenSet: Token,
+  interceptor: AuthInterceptor<T>,
+  credentialsStore: CredentialsStore
+): T? {
+  return when (tokenSet) {
+    is TokenValue -> interceptor.serviceDefinition.castToken(tokenSet.token)
+    is NoToken -> null
+    else -> credentialsStore.get(interceptor.serviceDefinition, tokenSet) ?: interceptor.defaultCredentials()
+  }
+}
+
 class AuthenticatingInterceptor(
   private val credentialsStore: CredentialsStore,
   override val services: List<AuthInterceptor<*>> = defaultServices()
-) : Interceptor,
-  ServiceLibrary {
+) : Interceptor, ServiceLibrary {
   override fun intercept(chain: Interceptor.Chain): Response {
     return runBlocking {
-      val filteredAuthenticators = services
-        .filter { it.supportsUrl(chain.request().url(), credentialsStore) }
+      val firstInterceptor = services.find { it.supportsUrl(chain.request().url(), credentialsStore) }
 
-      logger.fine { "Matching interceptors: $filteredAuthenticators" }
+      logger.fine { "Matching interceptor: $firstInterceptor" }
 
-      if (filteredAuthenticators.isNotEmpty()) {
-        intercept(filteredAuthenticators.first(), chain)
+      if (firstInterceptor != null) {
+        intercept(firstInterceptor, chain)
       } else {
         chain.proceed(chain.request())
       }
@@ -38,34 +50,11 @@ class AuthenticatingInterceptor(
   }
 
   suspend fun <T> intercept(interceptor: AuthInterceptor<T>, chain: Interceptor.Chain): Response {
-    // TODO log bad tags?
-    val tokenSet = chain.request().tag(Token::class.java) ?: NoToken
+    val tokenSet = chain.token()
 
-    val credentials = when (tokenSet) {
-      is TokenValue -> interceptor.serviceDefinition.castToken(tokenSet.token)
-      is NoToken -> null
-      else -> credentialsStore.get(interceptor.serviceDefinition, tokenSet) ?: interceptor.defaultCredentials()
-    }
+    val credentials = credentials(tokenSet, interceptor, credentialsStore)
 
-    val result = interceptor.intercept(chain, credentials, credentialsStore)
-
-    // TODO move inside auth interceptor
-    if (credentials != null) {
-      val tokenSetName = tokenSet.name()
-      if (tokenSetName != null) {
-        if (result.code() in 400..499) {
-          if (interceptor.canRenew(result) && interceptor.canRenew(credentials)) {
-            val newCredentials = interceptor.renew(client, credentials)
-
-            if (newCredentials != null) {
-              credentialsStore.set(interceptor.serviceDefinition, tokenSetName, newCredentials)
-            }
-          }
-        }
-      }
-    }
-
-    return result
+    return interceptor.intercept(chain, credentials, credentialsStore)
   }
 
   fun getByName(authName: String): AuthInterceptor<*>? =

@@ -13,6 +13,7 @@ import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.authenticator.BasicCredentials
+import com.baulsupp.okurl.authenticator.RenewingInterceptor
 import com.baulsupp.okurl.brotli.BrotliInterceptor
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
@@ -210,6 +211,8 @@ abstract class CommandLineClient : ToolSession {
   var arguments: MutableList<String> = ArrayList()
 
   lateinit var authenticatingInterceptor: AuthenticatingInterceptor
+
+  lateinit var renewingInterceptor: RenewingInterceptor
 
   lateinit var authorisation: Authorisation
 
@@ -429,6 +432,10 @@ abstract class CommandLineClient : ToolSession {
       authenticatingInterceptor = AuthenticatingInterceptor(this.credentialsStore)
     }
 
+    if (!this::renewingInterceptor.isInitialized) {
+      renewingInterceptor = RenewingInterceptor(this.credentialsStore)
+    }
+
     if (!this::authorisation.isInitialized) {
       authorisation = Authorisation(this)
     }
@@ -456,6 +463,8 @@ abstract class CommandLineClient : ToolSession {
       builder.cache(Cache(cacheDirectory!!, (64 * 1024 * 1024).toLong()))
     }
 
+    builder.addInterceptor(renewingInterceptor)
+
     // TODO move behind AuthInterceptor API
     builder.addNetworkInterceptor(TwitterCachingInterceptor())
     builder.addNetworkInterceptor(BrotliInterceptor)
@@ -463,7 +472,7 @@ abstract class CommandLineClient : ToolSession {
     if (debug) {
       val loggingInterceptor = HttpLoggingInterceptor()
       loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
-      builder.networkInterceptors().add(loggingInterceptor)
+      builder.addNetworkInterceptor(loggingInterceptor)
     }
 
     applyProxy(builder)
