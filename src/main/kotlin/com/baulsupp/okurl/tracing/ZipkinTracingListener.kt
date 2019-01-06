@@ -82,7 +82,8 @@ class ZipkinTracingListener(
     }
 
     dnsSpan!!.tag("dns.results",
-      inetAddressList!!.joinToString(", ", transform = { it.toString() }))
+      inetAddressList!!.joinToString(", ", transform = { it.toString() })
+    )
 
     dnsSpan!!.finish()
   }

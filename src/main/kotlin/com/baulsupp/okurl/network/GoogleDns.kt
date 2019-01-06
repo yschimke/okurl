@@ -56,7 +56,8 @@ class GoogleDns(
     val base = HttpUrl.parse("https://dns.google.com/resolve")!!
 
     fun build(clientSupplier: () -> OkHttpClient, mode: IPvMode): GoogleDns {
-      val hosts = listOf("216.58.216.142", "216.239.34.10", "2607:f8b0:400a:809::200e").map { InetAddress.getByName(it) }
+      val hosts =
+        listOf("216.58.216.142", "216.239.34.10", "2607:f8b0:400a:809::200e").map { InetAddress.getByName(it) }
       return GoogleDns(hosts, mode, clientSupplier)
     }
   }

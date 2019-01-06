@@ -1,10 +1,10 @@
 package com.baulsupp.okurl.ws
 
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.commands.MainAware
 import com.baulsupp.okurl.commands.ShellCommand
 import com.baulsupp.okurl.kotlin.request
-import com.baulsupp.oksocial.output.UsageException
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.Scanner

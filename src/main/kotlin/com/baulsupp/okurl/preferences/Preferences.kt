@@ -11,7 +11,13 @@ import java.net.InetSocketAddress
 import java.util.logging.Level
 import java.util.logging.Logger
 
-data class Proxy(val host: String, val port: Int, val user: String?, val password: String?, val type: java.net.Proxy.Type?) {
+data class Proxy(
+  val host: String,
+  val port: Int,
+  val user: String?,
+  val password: String?,
+  val type: java.net.Proxy.Type?
+) {
   fun build(): java.net.Proxy {
     val address = InetSocketAddress(host, port)
     return java.net.Proxy(java.net.Proxy.Type.SOCKS, address)

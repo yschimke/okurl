@@ -34,13 +34,18 @@ import kotlin.coroutines.resumeWithException
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified V> Moshi.mapAdapter() =
-  this.adapter<Any>(Types.newParameterizedType(Map::class.java, String::class.java,
-    V::class.java)) as JsonAdapter<Map<String, V>>
+  this.adapter<Any>(
+    Types.newParameterizedType(
+      Map::class.java, String::class.java,
+      V::class.java
+    )
+  ) as JsonAdapter<Map<String, V>>
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified V> Moshi.listAdapter() =
   this.adapter<Any>(
-    Types.newParameterizedType(List::class.java, V::class.java)) as JsonAdapter<List<V>>
+    Types.newParameterizedType(List::class.java, V::class.java)
+  ) as JsonAdapter<List<V>>
 
 suspend inline fun <reified T> OkHttpClient.query(url: String, tokenSet: Token = DefaultToken): T {
   return this.query(request(url, tokenSet))
@@ -212,8 +217,10 @@ fun request(
 fun requestBuilder(
   url: String? = null,
   tokenSet: Token = DefaultToken
-): Request.Builder = Request.Builder().apply { if (url != null) url(url) }.tag(Token::class.java,
-  tokenSet)
+): Request.Builder = Request.Builder().apply { if (url != null) url(url) }.tag(
+  Token::class.java,
+  tokenSet
+)
 
 fun Request.Builder.tokenSet(tokenSet: Token): Request.Builder = tag(Token::class.java, tokenSet)
 

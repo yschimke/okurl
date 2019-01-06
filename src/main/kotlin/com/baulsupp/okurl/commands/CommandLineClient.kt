@@ -97,12 +97,16 @@ abstract class CommandLineClient : ToolSession {
   @Option(name = ["--user-agent"], description = "User-Agent to send to server")
   var userAgent = Main.NAME + "/" + versionString()
 
-  @Option(name = ["--connect-timeout"],
-    description = "Maximum time allowed for connection (seconds). (0 = disabled)")
+  @Option(
+    name = ["--connect-timeout"],
+    description = "Maximum time allowed for connection (seconds). (0 = disabled)"
+  )
   var connectTimeout: Int = 5
 
-  @Option(name = ["--read-timeout"],
-    description = "Maximum time allowed for reading data (seconds). (0 = disabled)")
+  @Option(
+    name = ["--read-timeout"],
+    description = "Maximum time allowed for reading data (seconds). (0 = disabled)"
+  )
   var readTimeout: Int = 20
 
   @Option(name = ["--ping-interval"], description = "Interval between pings. (0 = disabled)")
@@ -164,8 +168,10 @@ abstract class CommandLineClient : ToolSession {
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: MutableList<File>? = null
 
-  @Option(name = ["--connectionSpec"],
-    description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)")
+  @Option(
+    name = ["--connectionSpec"],
+    description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)"
+  )
   var connectionSpec: ConnectionSpecOption = defaultConnectionSpec()
 
   @Option(name = ["--cipherSuite"], description = "Cipher Suites")
@@ -348,9 +354,12 @@ abstract class CommandLineClient : ToolSession {
     }
 
     builder.sslSocketFactory(
-      KeystoreUtils.createSslSocketFactory(KeystoreUtils.keyManagerArray(keyManagers),
-        trustManager),
-      trustManager)
+      KeystoreUtils.createSslSocketFactory(
+        KeystoreUtils.keyManagerArray(keyManagers),
+        trustManager
+      ),
+      trustManager
+    )
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
@@ -496,7 +505,7 @@ abstract class CommandLineClient : ToolSession {
     builder.authenticator(authenticator)
     builder.proxyAuthenticator(authenticator)
 
-      // TODO add caching
+    // TODO add caching
 //    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
 //    builder.authenticator(CachingAuthenticatorDecorator(authenticator, authCache))
 //    builder.addInterceptor(AuthenticationCacheInterceptor(authCache))

@@ -9,7 +9,9 @@ import java.net.URI
 
 class HttpUriHandler : UriHandler {
   override fun buildSender(uri: URI): Reporter<Span>? = when {
-    uri.scheme == "http" || uri.scheme == "https" -> AsyncReporter.builder(OkHttpSender.create(uri.toString())).build(SpanBytesEncoder.JSON_V2)
+    uri.scheme == "http" || uri.scheme == "https" -> AsyncReporter.builder(OkHttpSender.create(uri.toString())).build(
+      SpanBytesEncoder.JSON_V2
+    )
     else -> null
   }
 }

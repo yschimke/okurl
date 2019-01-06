@@ -67,7 +67,12 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials =
-    ValidatedCredentials(client.query<Athlete>("https://www.strava.com/api/v3/athlete", TokenValue(credentials)).username)
+    ValidatedCredentials(
+      client.query<Athlete>(
+        "https://www.strava.com/api/v3/athlete",
+        TokenValue(credentials)
+      ).username
+    )
 
   override fun canRenew(result: Response): Boolean {
     // Not working

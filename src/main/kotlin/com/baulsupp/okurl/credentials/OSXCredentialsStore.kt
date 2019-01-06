@@ -36,8 +36,10 @@ class OSXCredentialsStore : CredentialsStore {
     remove(serviceDefinition, tokenSet)
 
     try {
-      keychain.addGenericPassword(serviceDefinition.apiHost(), tokenKey(tokenSet),
-        credentialsString)
+      keychain.addGenericPassword(
+        serviceDefinition.apiHost(), tokenKey(tokenSet),
+        credentialsString
+      )
     } catch (e: OSXKeychainException) {
       logger.log(Level.WARNING, "Failed to write to keychain", e)
       throw RuntimeException(e)

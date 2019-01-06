@@ -23,7 +23,8 @@ class Oauth2ServiceDefinition(
   override fun formatCredentialsString(credentials: Oauth2Token): String {
     return if (credentials.refreshToken != null &&
       credentials.clientId != null &&
-      credentials.clientSecret != null) {
+      credentials.clientSecret != null
+    ) {
       "${credentials.accessToken}:${credentials.refreshToken}:${credentials.clientId}:${credentials.clientSecret}"
     } else {
       credentials.accessToken

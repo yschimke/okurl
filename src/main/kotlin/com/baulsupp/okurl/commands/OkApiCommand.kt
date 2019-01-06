@@ -1,8 +1,8 @@
 package com.baulsupp.okurl.commands
 
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.kotlin.request
-import com.baulsupp.oksocial.output.UsageException
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory

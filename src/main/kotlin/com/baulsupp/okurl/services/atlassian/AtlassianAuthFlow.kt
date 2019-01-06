@@ -50,7 +50,7 @@ object AtlassianAuthFlow {
       val serverUriEncoded = URLEncoder.encode(serverUri, StandardCharsets.UTF_8)
 
       val loginUrl =
-        "https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=$clientId&scope=$scopeString&redirect_uri=${serverUriEncoded}&response_type=code&prompt=consent&state=secret"
+        "https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=$clientId&scope=$scopeString&redirect_uri=$serverUriEncoded&response_type=code&prompt=consent&state=secret"
 
       outputHandler.openLink(loginUrl)
 

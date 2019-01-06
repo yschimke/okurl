@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.okhttp
 
-import com.baulsupp.okurl.kotlin.JSON
 import com.baulsupp.oksocial.output.ResponseExtractor
+import com.baulsupp.okurl.kotlin.JSON
 import okhttp3.Response
 import okio.BufferedSource
 

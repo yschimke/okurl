@@ -48,8 +48,12 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
 
   private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
     val sd = key.auth.serviceDefinition
-    outputHandler.info("%-40s\t%-20s\t%-20s\t%-20s".format(displayName(sd), key.tokenSet.name, validated?.username
-      ?: "-", validated?.clientName ?: "-"))
+    outputHandler.info(
+      "%-40s\t%-20s\t%-20s\t%-20s".format(
+        displayName(sd), key.tokenSet.name, validated?.username
+          ?: "-", validated?.clientName ?: "-"
+      )
+    )
   }
 
   fun displayName(sd: ServiceDefinition<*>) = sd.serviceName() + " (" + sd.shortName() + ")"
@@ -58,9 +62,27 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     val sd = key.auth.serviceDefinition
 
     when (e) {
-      is CancellationException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, "timeout"))
-      is TimeoutException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, "timeout"))
-      is ClientException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, key.auth.errorMessage(e)))
+      is CancellationException -> outputHandler.info(
+        "%-40s\t%-20s	%s".format(
+          displayName(sd),
+          key.tokenSet.name,
+          "timeout"
+        )
+      )
+      is TimeoutException -> outputHandler.info(
+        "%-40s\t%-20s	%s".format(
+          displayName(sd),
+          key.tokenSet.name,
+          "timeout"
+        )
+      )
+      is ClientException -> outputHandler.info(
+        "%-40s\t%-20s	%s".format(
+          displayName(sd),
+          key.tokenSet.name,
+          key.auth.errorMessage(e)
+        )
+      )
       is IOException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString()))
       else -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString()))
     }
@@ -68,7 +90,8 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
 
   suspend fun showCredentials(arguments: List<String>) {
     var services: Iterable<AuthInterceptor<*>> = commandLineClient.serviceLibrary.services
-    val names = commandLineClient.defaultTokenSet?.let { listOf(it) } ?: commandLineClient.credentialsStore.names().map { TokenSet(it) }
+    val names = commandLineClient.defaultTokenSet?.let { listOf(it) }
+      ?: commandLineClient.credentialsStore.names().map { TokenSet(it) }
 
     val full = !arguments.isEmpty()
 

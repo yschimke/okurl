@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.commands
 
-import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.kotlin.request
 import okhttp3.OkHttpClient
 import okhttp3.Request
 

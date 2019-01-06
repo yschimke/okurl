@@ -19,7 +19,19 @@ suspend fun Main.listOptions(option: String): Collection<String> {
     "connectionSpec" -> ConnectionSpecOption.values().map { it.name }
     "cipherSuite" -> com.baulsupp.okurl.okhttp.cipherSuites().map { it.javaName() }
     "tlsVersions" -> TlsVersion.values().map { it.javaName() }
-    "complete" -> listOf("service", "alias", "tokenset", "ipmode", "dnsmode", "protocol", "method", "connectionSpec", "cipherSuite", "tlsVersions", "complete")
+    "complete" -> listOf(
+      "service",
+      "alias",
+      "tokenset",
+      "ipmode",
+      "dnsmode",
+      "protocol",
+      "method",
+      "connectionSpec",
+      "cipherSuite",
+      "tlsVersions",
+      "complete"
+    )
     else -> listOf()
   }
 }

@@ -1,12 +1,12 @@
 package com.baulsupp.okurl.location
 
-import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.output.isOSX
 import com.baulsupp.oksocial.output.process.exec
 import com.baulsupp.oksocial.output.stdErrLogging
+import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import okhttp3.Response
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -29,8 +29,12 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
       }
 
       return try {
-        val process = exec(listOf(LOCATION_APP, "-format",
-          "%latitude,%longitude", "-once", "yes")) {
+        val process = exec(
+          listOf(
+            LOCATION_APP, "-format",
+            "%latitude,%longitude", "-once", "yes"
+          )
+        ) {
           timeout(5, TimeUnit.SECONDS)
           readOutput(true)
           redirectError(stdErrLogging)
@@ -47,13 +51,15 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
         println("'${line.trim()}'")
 
         val parts = line.trim { it <= ' ' }.split(
-          ",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+          ",".toRegex()
+        ).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         Location(parts[0].toDouble(), parts[1].toDouble())
       } catch (e: TimeoutException) {
         logger.log(Level.FINE, "failed to get location", e)
         outputHandler.showError(
-          "Timeout fetching location, consider populating ~/.okurl-location.json")
+          "Timeout fetching location, consider populating ~/.okurl-location.json"
+        )
         return null
       } catch (e: Exception) {
         logger.log(Level.WARNING, "failed to get location", e)

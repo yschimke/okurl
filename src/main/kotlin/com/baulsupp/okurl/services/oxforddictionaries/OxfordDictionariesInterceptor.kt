@@ -2,7 +2,6 @@ package com.baulsupp.okurl.services.oxforddictionaries
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
-import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.kotlin.edit
 import com.baulsupp.okurl.secrets.Secrets

@@ -1,8 +1,8 @@
 package com.baulsupp.okurl.sse
 
+import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.kotlin.isInteractive
 import com.baulsupp.okurl.kotlin.success
-import com.baulsupp.oksocial.output.OutputHandler
 import kotlinx.coroutines.runBlocking
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
