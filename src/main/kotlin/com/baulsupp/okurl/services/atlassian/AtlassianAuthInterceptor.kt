@@ -56,12 +56,12 @@ class AtlassianAuthInterceptor : Oauth2AuthInterceptor() {
 
     val completer = BaseUrlCompleter(urlList!!, hosts(credentialsStore), completionVariableCache)
 
-    completer.withCachedVariable(name(), "cloudid") {
+    completer.withCachedVariable(name(), "cloudid", keepTemplate = false) {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
         client.queryList<AccessibleResource>(
           "https://api.atlassian.com/oauth/token/accessible-resources",
           tokenSet
-        ).map { it.id }
+        ).map(AccessibleResource::id)
       }
     }
 

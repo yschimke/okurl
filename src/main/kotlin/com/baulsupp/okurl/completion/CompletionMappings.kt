@@ -7,8 +7,8 @@ import java.util.logging.Logger
 class CompletionMappings {
   private val mappings = mutableListOf<suspend (UrlList) -> UrlList>()
 
-  fun withVariable(name: String, values: suspend () -> List<String>) {
-    mappings.add { ul: UrlList -> ul.replace(name, values(), true) }
+  fun withVariable(name: String, keepTemplate: Boolean = true, values: suspend () -> List<String>) {
+    mappings.add { ul: UrlList -> ul.replace(name, values(), keepTemplate) }
   }
 
   suspend fun replaceVariables(urlList: UrlList): UrlList {

@@ -15,11 +15,11 @@ class BaseUrlCompleter(
     return mappings.replaceVariables(urlList)
   }
 
-  fun withVariable(name: String, values: suspend () -> List<String>?) {
-    mappings.withVariable(name) { values().orEmpty() }
+  fun withVariable(name: String, keepTemplate: Boolean = true, values: suspend () -> List<String>?) {
+    mappings.withVariable(name, keepTemplate = keepTemplate) { values().orEmpty() }
   }
 
-  fun withCachedVariable(name: String, field: String, fn: suspend () -> List<String>?) {
-    withVariable(field) { completionVariableCache.compute(name, field, fn) }
+  fun withCachedVariable(name: String, field: String, keepTemplate: Boolean = true, fn: suspend () -> List<String>?) {
+    withVariable(field, keepTemplate) { completionVariableCache.compute(name, field, fn) }
   }
 }
