@@ -68,7 +68,7 @@ data class BoardResponse(
   val pinned: Any?,
   val labelNames: Map<String, String>,
   val shortUrl: String,
-  val invited: Boolean,
+  val invited: Boolean?,
   val dateLastActivity: String,
   val datePluginDisable: Any?,
   val shortLink: String,
