@@ -17,22 +17,22 @@ data class Permission(
 )
 
 data class MemberResponse(
-  val bio: String,
-  val avatarSource: String,
+  val bio: String?,
+  val avatarSource: String?,
   val idBoardsPinned: Any?,
-  val confirmed: Boolean = false,
+  val confirmed: Boolean?,
   val uploadedAvatarHash: Any?,
   val id: String,
   val bioData: Any?,
   val email: String,
-  val limits: Limits,
-  val uploadedAvatarUrl: String,
-  val avatarUrl: String,
+  val limits: Limits?,
+  val uploadedAvatarUrl: String?,
+  val avatarUrl: String?,
   val initials: String,
   val fullName: String,
   val loginTypes: List<String>,
   val url: String,
-  val marketingOptIn: MarketingOptIn,
+  val marketingOptIn: MarketingOptIn?,
   val prefs: Map<String, Any>,
   val gravatarHash: String,
   val avatarHash: String,
@@ -49,13 +49,13 @@ data class MarketingOptIn(
 )
 
 data class Limits(
-  val boards: Boards,
-  val orgs: Orgs
+  val boards: Boards?,
+  val orgs: Orgs?
 )
 
-data class Boards(val totalPerMember: TotalPerMember)
+data class Boards(val totalPerMember: TotalPerMember?)
 
-data class Orgs(val totalPerMember: TotalPerMember)
+data class Orgs(val totalPerMember: TotalPerMember?)
 
 data class TotalPerMember(
   val warnAt: Int,
@@ -69,7 +69,7 @@ data class BoardResponse(
   val labelNames: Map<String, String>,
   val shortUrl: String,
   val invited: Boolean?,
-  val dateLastActivity: String,
+  val dateLastActivity: String?,
   val datePluginDisable: Any?,
   val shortLink: String,
   val url: String,
@@ -80,9 +80,9 @@ data class BoardResponse(
   val invitations: Any?,
   val name: String,
   val idOrganization: Any?,
-  val dateLastView: String,
+  val dateLastView: String?,
   val closed: Boolean,
   val id: String,
   val limits: Any?,
-  val desc: String
+  val desc: String?
 )

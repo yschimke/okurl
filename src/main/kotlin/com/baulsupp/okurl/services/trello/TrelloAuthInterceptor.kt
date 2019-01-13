@@ -83,9 +83,7 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
 
     completer.withCachedVariable(name(), "board_id") {
       credentialsStore.get(serviceDefinition, tokenSet)?.let {
-        val tokenResponse = client.query<TokenResponse>("https://api.trello.com/1/tokens/${it.token}")
-
-        client.queryList<BoardResponse>("https://api.trello.com/1/members/${tokenResponse.idMember}/boards", tokenSet)
+        client.queryList<BoardResponse>("https://api.trello.com/1/members/me/boards", tokenSet)
           .map(BoardResponse::id)
       }
     }
