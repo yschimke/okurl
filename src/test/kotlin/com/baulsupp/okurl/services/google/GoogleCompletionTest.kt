@@ -11,13 +11,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class GoogleCompletionTest {
-  private val main = Main()
+  private val main = Main().apply {
+    credentialsStore = TestCredentialsStore()
+  }
   private val output = TestOutputHandler<Response>()
-  private val credentialsStore = TestCredentialsStore()
 
   init {
     main.outputHandler = output
-    main.credentialsStore = credentialsStore
   }
 
   @Test

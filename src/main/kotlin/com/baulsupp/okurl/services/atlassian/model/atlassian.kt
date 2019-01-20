@@ -16,7 +16,7 @@ data class ServerInfo(
   val serverTitle: String,
   val version: String,
   val buildNumber: Int,
-  val versionNumbers: List<Integer>?
+  val versionNumbers: List<Int>?
 )
 
 data class Myself(

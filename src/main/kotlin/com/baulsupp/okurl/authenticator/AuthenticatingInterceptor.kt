@@ -73,7 +73,10 @@ class AuthenticatingInterceptor(
   companion object {
     val logger: Logger = Logger.getLogger(AuthenticatingInterceptor::class.java.name)
 
-    fun defaultServices() = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader)
-      .sortedBy { -it.priority }
+    @Suppress("UNCHECKED_CAST")
+    fun defaultServices(): List<AuthInterceptor<Any>> {
+      val base = ServiceLoader.load(AuthInterceptor::class.java, AuthInterceptor::class.java.classLoader)
+      return (base as ServiceLoader<AuthInterceptor<Any>>).sortedBy { -it.priority }
+    }
   }
 }
