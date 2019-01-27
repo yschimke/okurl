@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.security
 
+import org.conscrypt.Conscrypt
 import java.io.File
 import java.io.FileInputStream
 import java.security.KeyStore
@@ -15,7 +16,10 @@ object CertificateUtils {
   }
 
   fun trustManagerForKeyStore(ks: KeyStore?): X509TrustManager {
-    val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+    val tmf = TrustManagerFactory.getInstance(
+      TrustManagerFactory.getDefaultAlgorithm(),
+      Conscrypt.newProviderBuilder().provideTrustManager().build()
+    )
 
     tmf.init(ks)
 
