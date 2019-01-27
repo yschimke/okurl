@@ -29,7 +29,6 @@ class LocalCredentialsTest {
   fun localCredentials(): Iterable<DynamicTest> = runBlocking {
     val services = AuthenticatingInterceptor.defaultServices()
     val credentialsStore = CredentialFactory.createCredentialsStore()
-    val names = credentialsStore.names()
 
     services.flatMap {
       testsForService(credentialsStore, it)

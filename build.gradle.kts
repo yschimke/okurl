@@ -1,13 +1,8 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.publish.maven.MavenPom
-import org.jetbrains.dokka.gradle.DokkaPlugin
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.gradle.api.tasks.wrapper.Wrapper
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
-import org.jlleitschuh.gradle.ktlint.KtlintFormatTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm") version Versions.kotlin
@@ -132,7 +127,7 @@ dependencies {
   implementation(Deps.zipkin)
   implementation(Deps.zipkinSenderOkhttp3)
   implementation(Deps.ztExec)
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.kotlinCoroutines}")
+  implementation(Deps.coroutinesDebug)
 
   implementation(Deps.kotlinScriptUtil) {
     exclude(module = "kotlin-compiler")
