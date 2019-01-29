@@ -8,7 +8,7 @@ https://api.opsgenie.com/v1/policies/{policyId}/disable
 https://api.opsgenie.com/v1/policies/{policyId}/enable
 https://api.opsgenie.com/v2/account
 https://api.opsgenie.com/v2/alerts
-https://api.opsgenie.com/v2/alerts/{id}
+https://api.opsgenie.com/v2/alerts/{alertId}
 https://api.opsgenie.com/v2/alerts/{id}/acknowledge
 https://api.opsgenie.com/v2/alerts/{id}/actions/{actionName}
 https://api.opsgenie.com/v2/alerts/{id}/assign
@@ -38,10 +38,10 @@ https://api.opsgenie.com/v2/heartbeats/{name}/disable
 https://api.opsgenie.com/v2/heartbeats/{name}/enable
 https://api.opsgenie.com/v2/heartbeats/{name}/ping
 https://api.opsgenie.com/v2/integrations
-https://api.opsgenie.com/v2/integrations/{id}
-https://api.opsgenie.com/v2/integrations/{id}/actions
-https://api.opsgenie.com/v2/integrations/{id}/disable
-https://api.opsgenie.com/v2/integrations/{id}/enable
+https://api.opsgenie.com/v2/integrations/{integrationId}
+https://api.opsgenie.com/v2/integrations/{integrationId}/actions
+https://api.opsgenie.com/v2/integrations/{integrationId}/disable
+https://api.opsgenie.com/v2/integrations/{integrationId}/enable
 https://api.opsgenie.com/v2/integrations/authenticate
 https://api.opsgenie.com/v2/policies
 https://api.opsgenie.com/v2/policies/{policyId}
@@ -51,10 +51,10 @@ https://api.opsgenie.com/v2/policies/{policyId}/enable
 https://api.opsgenie.com/v2/policies/alert
 https://api.opsgenie.com/v2/policies/notification
 https://api.opsgenie.com/v2/roles
-https://api.opsgenie.com/v2/roles/{id}
+https://api.opsgenie.com/v2/roles/{roleId}
 https://api.opsgenie.com/v2/schedules
 https://api.opsgenie.com/v2/schedules/{id}.ics
-https://api.opsgenie.com/v2/schedules/{id}
+https://api.opsgenie.com/v2/schedules/{scheduleId}
 https://api.opsgenie.com/v2/schedules/{id}/next-on-calls
 https://api.opsgenie.com/v2/schedules/{id}/on-calls
 https://api.opsgenie.com/v2/schedules/{id}/overrides
@@ -65,7 +65,7 @@ https://api.opsgenie.com/v2/schedules/{id}/timeline
 https://api.opsgenie.com/v2/schedules/on-calls
 https://api.opsgenie.com/v2/schedules/on-calls/{id}.ics
 https://api.opsgenie.com/v2/teams
-https://api.opsgenie.com/v2/teams/{id}
+https://api.opsgenie.com/v2/teams/{teamId}
 https://api.opsgenie.com/v2/teams/{id}/logs
 https://api.opsgenie.com/v2/teams/{id}/members
 https://api.opsgenie.com/v2/teams/{id}/members/{memberid}
@@ -75,7 +75,7 @@ https://api.opsgenie.com/v2/teams/{id}/routing-rules
 https://api.opsgenie.com/v2/teams/{id}/routing-rules/{id}
 https://api.opsgenie.com/v2/teams/{id}/routing-rules/{id}/change-order
 https://api.opsgenie.com/v2/users
-https://api.opsgenie.com/v2/users/{id}
+https://api.opsgenie.com/v2/users/{userId}
 https://api.opsgenie.com/v2/users/{id}/contacts
 https://api.opsgenie.com/v2/users/{id}/contacts/{contactId}
 https://api.opsgenie.com/v2/users/{id}/contacts/{contactId}/disable

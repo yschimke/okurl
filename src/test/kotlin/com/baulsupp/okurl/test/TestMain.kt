@@ -14,7 +14,5 @@ private suspend fun runMain(s: String) {
 suspend fun main(args: Array<String>) {
   DebugProbes.install()
 
-  SSLContext.getInstance("TLSv1.3", OpenSSLProvider())
-
-  runMain("https://www.strava.com/api/v3/athlete/activities")
+  runMain("--debug --urlCompletion https://api.opsgenie.com/")
 }

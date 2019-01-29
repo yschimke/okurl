@@ -20,7 +20,7 @@ data class Proxy(
 ) {
   fun build(): java.net.Proxy {
     val address = InetSocketAddress(host, port)
-    return java.net.Proxy(java.net.Proxy.Type.SOCKS, address)
+    return java.net.Proxy(type ?: java.net.Proxy.Type.HTTP, address)
   }
 }
 
