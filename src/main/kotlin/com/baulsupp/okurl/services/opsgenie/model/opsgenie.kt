@@ -113,7 +113,7 @@ data class Alert(
   val seen: Boolean,
   val createdAt: String,
   val tinyId: String,
-  val integration: Integration,
+  val integration: Integration?,
   val report: Report?,
   val alias: String,
   val id: String,
