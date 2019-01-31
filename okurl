@@ -2,7 +2,7 @@
 
 CMD=$(basename "$0")
 
-JAVA_HOME=$(/usr/libexec/java_home -v 10 2>/dev/null)
+JAVA_HOME=$(/usr/libexec/java_home -v 11 2>/dev/null)
 VMOPTS="--add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/sun.security.x509=ALL-UNNAMED"
 
 if [ "$INTELLIJ_BUILD" != "true" -o ! -d "build/install/okurl/lib" ]; then
