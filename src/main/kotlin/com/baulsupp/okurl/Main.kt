@@ -35,13 +35,8 @@ import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.annotations.Option
 import com.github.rvesse.airline.parser.errors.ParseException
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
-import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -225,7 +220,7 @@ class Main : CommandLineClient() {
     }
   }
 
-  suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int {
+  suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int = coroutineScope {
     val command = getShellCommand()
 
     val requests = command.buildRequests(client, arguments)
@@ -235,14 +230,12 @@ class Main : CommandLineClient() {
         throw UsageException("no urls specified")
       }
 
-      val responses = requests.map {
-        GlobalScope.async(Dispatchers.Default) { submitRequest(it) }
-      }
+      val responses = requests.map { async { submitRequest(it) } }
       val failed = processResponses(outputHandler, responses)
-      return if (failed) -5 else 0
+      if (failed) -5 else 0
+    } else {
+      0
     }
-
-    return 0
   }
 
   private suspend fun processResponses(

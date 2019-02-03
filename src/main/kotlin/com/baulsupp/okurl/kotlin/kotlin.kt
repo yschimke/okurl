@@ -9,8 +9,8 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -59,10 +59,10 @@ suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
 
 suspend inline fun <reified T> OkHttpClient.queryPages(
   url: String,
-  paginator: T.() -> Pagination,
+  crossinline paginator: T.() -> Pagination,
   tokenSet: Token = DefaultToken,
   pageLimit: Int = Int.MAX_VALUE
-): List<T> {
+): List<T> = coroutineScope {
   var page = query<T>(url, tokenSet)
   val resultList = mutableListOf(page)
 
@@ -75,7 +75,7 @@ suspend inline fun <reified T> OkHttpClient.queryPages(
       pages = paginator(page)
     } else if (pages is Rest) {
       val deferList = pages.urls.take(pageLimit).map {
-        GlobalScope.async(Dispatchers.Default) {
+        async {
           query<T>(it, tokenSet)
         }
       }
@@ -84,7 +84,7 @@ suspend inline fun <reified T> OkHttpClient.queryPages(
     }
   }
 
-  return resultList
+  resultList
 }
 
 suspend inline fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {

@@ -7,8 +7,8 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import okhttp3.HttpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -27,9 +27,9 @@ class GoogleDiscoveryCompleter(
     throw UnsupportedOperationException()
   }
 
-  override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
+  override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList = coroutineScope {
     val futures = discoveryDocPaths.map {
-      GlobalScope.async(Dispatchers.Default) {
+      async {
         discoveryRegistry.load(it, tokenSet).urls
       }
     }.mapNotNull {
@@ -44,7 +44,7 @@ class GoogleDiscoveryCompleter(
       }
     }.flatten()
 
-    return mappings.replaceVariables(UrlList(UrlList.Match.SITE, futures))
+    mappings.replaceVariables(UrlList(UrlList.Match.SITE, futures))
   }
 
   companion object {

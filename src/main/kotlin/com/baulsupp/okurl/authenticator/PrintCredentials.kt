@@ -6,12 +6,7 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 import okhttp3.Response
 import java.io.IOException
 import java.time.ZonedDateTime
@@ -51,7 +46,7 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     outputHandler.info(
       "%-40s\t%-20s\t%-20s\t%-20s".format(
         displayName(sd), key.tokenSet.name, validated?.username
-          ?: "-", validated?.clientName ?: "-"
+        ?: "-", validated?.clientName ?: "-"
       )
     )
   }
@@ -121,26 +116,24 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
   suspend fun validate(
     services: Iterable<AuthInterceptor<*>>,
     names: List<TokenSet>
-  ): Map<Key, Deferred<ValidatedCredentials>> {
-    val pairs =
-      services.flatMap { sv ->
-        names.mapNotNull { name ->
-          val credentials = try {
-            credentialsStore.get(sv.serviceDefinition, name)
-          } catch (e: Exception) {
-            logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
-            null
-          }
+  ): Map<Key, Deferred<ValidatedCredentials>> = coroutineScope {
+    services.flatMap { sv ->
+      names.mapNotNull { name ->
+        val credentials = try {
+          credentialsStore.get(sv.serviceDefinition, name)
+        } catch (e: Exception) {
+          logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
+          null
+        }
 
-          credentials?.let {
-            val x = GlobalScope.async(Dispatchers.Default) {
-              v(sv, credentials)
-            }
-            Pair(Key(sv, name), x)
+        credentials?.let {
+          val x = async {
+            v(sv, credentials)
           }
+          Pair(Key(sv, name), x)
         }
       }
-    return pairs.toMap()
+    }.toMap()
   }
 
   suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any) =

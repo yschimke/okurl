@@ -8,20 +8,21 @@ import com.baulsupp.okurl.services.postman.model.CollectionsResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
-suspend fun postmanCollectionUrls(tokenSet: Token): List<String> {
+suspend fun postmanCollectionUrls(tokenSet: Token): List<String> = coroutineScope {
   val collections = client.query<CollectionsResult>(
     "https://api.getpostman.com/collections",
     tokenSet
   ).collections.map { it.id }
 
   val jobs = collections.map {
-    GlobalScope.async(Dispatchers.Default) {
+    async {
       client.query<CollectionResult>("https://api.getpostman.com/collections/$it", tokenSet)
     }
   }
 
-  return jobs.flatMap {
+  jobs.flatMap {
     it.await().collection.item.flatMap { it.item.map { it.request?.urlString() } }.filterNotNull()
   }
 }
