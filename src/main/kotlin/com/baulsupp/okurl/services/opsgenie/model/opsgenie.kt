@@ -93,6 +93,12 @@ data class AlertsResponse(
   val paging: Paging
 )
 
+data class AlertResponse(
+  val took: Double,
+  val data: Alert,
+  val requestId: String
+)
+
 data class Report(
   val closedBy: String?,
   val ackTime: Int?,
@@ -106,6 +112,7 @@ data class Alert(
   val count: Int,
   val source: String?,
   val message: String,
+  val description: String?,
   val snoozed: Boolean,
   val priority: String,
   val isSeen: Boolean,
