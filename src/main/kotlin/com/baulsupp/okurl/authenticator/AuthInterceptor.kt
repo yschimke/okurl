@@ -2,6 +2,7 @@ package com.baulsupp.okurl.authenticator
 
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
+import com.baulsupp.okurl.authenticator.authflow.AuthFlow
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.BaseUrlCompleter
 import com.baulsupp.okurl.completion.CompletionVariableCache
@@ -98,6 +99,8 @@ abstract class AuthInterceptor<T> {
   override fun toString(): String {
     return name()
   }
+
+  open fun authFlow(): AuthFlow<T>? = null
 
   companion object {
     val logger = Logger.getLogger(AuthInterceptor::class.java.name)!!
