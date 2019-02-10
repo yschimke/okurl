@@ -3,6 +3,7 @@ package com.baulsupp.okurl.services.atlassian
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.authflow.AuthFlow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -29,21 +30,7 @@ class AtlassianAuthInterceptor : Oauth2AuthInterceptor() {
     "https://developer.atlassian.com/cloud/jira/platform/rest/", "https://developer.atlassian.com/apps/"
   )
 
-  override suspend fun authorize(
-    client: OkHttpClient,
-    outputHandler: OutputHandler<Response>,
-    authArguments: List<String>
-  ): Oauth2Token {
-    val clientId = Secrets.prompt("Atlassian Application Id", "atlassian.clientId", "", false)
-    val clientSecret = Secrets.prompt("Atlassian Application Secret", "atlassian.clientSecret", "", true)
-    val scopes = Secrets.promptArray(
-      "Atlassian Scopes",
-      "atlassian.scopes",
-      listOf("read:jira-user", "read:jira-work", "write:jira-work", "offline_access")
-    )
-
-    return AtlassianAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
-  }
+  override fun authFlow() = AtlassianAuthFlow(serviceDefinition)
 
   override suspend fun apiCompleter(
     prefix: String,

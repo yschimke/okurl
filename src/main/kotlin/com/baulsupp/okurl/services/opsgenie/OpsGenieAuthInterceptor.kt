@@ -3,6 +3,7 @@ package com.baulsupp.okurl.services.opsgenie
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.authflow.PromptDesktopFlow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -41,11 +42,7 @@ class OpsGenieAuthInterceptor : Oauth2AuthInterceptor() {
     client: OkHttpClient,
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
-  ): Oauth2Token {
-    val apiKey = Secrets.prompt("OpsGenie API Key", "opsgenie.apiKey", "", false)
-
-    return Oauth2Token(apiKey)
-  }
+  ): Oauth2Token = PromptDesktopFlow.prompt(OpsGenieAuthFlow(serviceDefinition), client)
 
   override suspend fun validate(
     client: OkHttpClient,

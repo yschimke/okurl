@@ -1,14 +1,16 @@
 package com.baulsupp.okurl.services.atlassian
 
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.okurl.authenticator.SimpleWebServer
+import com.baulsupp.okurl.authenticator.authflow.AuthOption
+import com.baulsupp.okurl.authenticator.authflow.Callback
+import com.baulsupp.okurl.authenticator.authflow.Prompt
+import com.baulsupp.okurl.authenticator.authflow.Scopes
+import com.baulsupp.okurl.authenticator.oauth2.Oauth2Flow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.NoToken
+import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.kotlin.postJsonBody
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
-import okhttp3.OkHttpClient
-import okhttp3.Response
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -35,39 +37,53 @@ data class RefreshRequest(
   val refresh_token: String
 )
 
-object AtlassianAuthFlow {
-  suspend fun login(
-    client: OkHttpClient,
-    outputHandler: OutputHandler<Response>,
-    clientId: String,
-    clientSecret: String,
-    scopes: List<String>
-  ): Oauth2Token {
-    SimpleWebServer.forCode().use { s ->
-      val serverUri = s.redirectUri
+class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow(
+  serviceDefinition) {
+  override fun options(): List<AuthOption<*>> {
+    return listOf(
+      Prompt("atlassian.clientId", "Atlassian Application Id", null, false),
+      Prompt("atlassian.clientSecret", "Atlassian Application Secret", null, true),
+      Scopes("atlassian.scopes", "Scopes", known = listOf(
+        "read:jira-user", "read:jira-work", "write:jira-work", "offline_access")),
+      Callback
+    )
+  }
 
-      val scopeString = URLEncoder.encode(scopes.joinToString(" "), StandardCharsets.UTF_8).replace("+", "%20")
-      val serverUriEncoded = URLEncoder.encode(serverUri, StandardCharsets.UTF_8)
+  val startOptions = mutableMapOf<String, Any>()
 
-      val loginUrl =
-        "https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=$clientId&scope=$scopeString&redirect_uri=$serverUriEncoded&response_type=code&prompt=consent&state=secret"
+  override suspend fun start(options: Map<String, Any>): String {
+    this.startOptions.putAll(options)
 
-      outputHandler.openLink(loginUrl)
+    val clientId = startOptions["atlassian.clientId"] as String
+    @Suppress("UNCHECKED_CAST") val scopes = startOptions["atlassian.scopes"] as List<String>
+    val callback = startOptions["callback"] as String
 
-      val code = s.waitForCode()
+    val serverUriEncoded = URLEncoder.encode(callback, StandardCharsets.UTF_8)
+    val scopeString =
+      URLEncoder.encode(scopes.joinToString(" "), StandardCharsets.UTF_8).replace("+", "%20")
 
-      val responseMap = client.query<ExchangeResponse>(request("https://auth.atlassian.com/oauth/token", NoToken) {
+    return "https://auth.atlassian.com/authorize?" +
+      "audience=api.atlassian.com&client_id=$clientId&scope=$scopeString&" +
+      "redirect_uri=$serverUriEncoded&response_type=code&prompt=consent&state=$state"
+  }
+
+  override suspend fun complete(code: String): Oauth2Token {
+    val clientId = startOptions["atlassian.clientId"] as String
+    val clientSecret = startOptions["atlassian.clientSecret"] as String
+    val callback = startOptions["callback"] as String
+
+    val responseMap =
+      client.query<ExchangeResponse>(request("https://auth.atlassian.com/oauth/token", NoToken) {
         postJsonBody(
           ExchangeRequest(
             client_id = clientId,
             client_secret = clientSecret,
             code = code,
-            redirect_uri = serverUri
+            redirect_uri = callback
           )
         )
       })
 
-      return Oauth2Token(responseMap.access_token, responseMap.refresh_token, clientId, clientSecret)
-    }
+    return Oauth2Token(responseMap.access_token, responseMap.refresh_token, clientId, clientSecret)
   }
 }
