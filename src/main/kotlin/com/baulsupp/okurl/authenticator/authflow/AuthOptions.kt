@@ -23,3 +23,7 @@ data class Scopes(
 object Callback: AuthOption<String>() {
   override val param = "callback"
 }
+
+object State: AuthOption<String>() {
+  override val param = "state"
+}

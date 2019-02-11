@@ -4,6 +4,7 @@ import com.baulsupp.okurl.authenticator.authflow.AuthOption
 import com.baulsupp.okurl.authenticator.authflow.Callback
 import com.baulsupp.okurl.authenticator.authflow.Prompt
 import com.baulsupp.okurl.authenticator.authflow.Scopes
+import com.baulsupp.okurl.authenticator.authflow.State
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Flow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.ServiceDefinition
@@ -20,29 +21,26 @@ class GithubAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Tok
       Prompt("github.clientSecret", "Github Client Secret", null, true),
       Scopes("github.scopes", "Scopes", known = listOf(
         "user", "repo", "gist", "admin:org")),
-      Callback
+      Callback,
+      State
     )
   }
 
-  val startOptions = mutableMapOf<String, Any>()
-
-  override suspend fun start(options: Map<String, Any>): String {
-    this.startOptions.putAll(options)
-
-    val clientId = startOptions["github.clientId"] as String
-    @Suppress("UNCHECKED_CAST") val scopes = startOptions["github.scopes"] as List<String>
-    val callback = startOptions["callback"] as String
+  override suspend fun start(): String {
+    val clientId = options["github.clientId"] as String
+    @Suppress("UNCHECKED_CAST") val scopes = options["github.scopes"] as List<String>
+    val callback = options["callback"] as String
+    val state = options["state"] as String
 
     val scopesString = URLEncoder.encode(scopes.joinToString(" "), "UTF-8")
 
-    return "https://github.com/login/oauth/authorize?client_id=$clientId&scope=$scopesString&redirect_uri=$callback"
-
+    return "https://github.com/login/oauth/authorize?client_id=$clientId&scope=$scopesString&redirect_uri=$callback&state=$state"
   }
 
   override suspend fun complete(code: String): Oauth2Token {
-    val clientId = startOptions["github.clientId"] as String
-    val clientSecret = startOptions["github.clientSecret"] as String
-    val callback = startOptions["callback"] as String
+    val clientId = options["github.clientId"] as String
+    val clientSecret = options["github.clientSecret"] as String
+    val callback = options["callback"] as String
 
     val body = FormBody.Builder().add("client_id", clientId)
       .add("client_id", clientId)

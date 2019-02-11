@@ -49,14 +49,11 @@ class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2
     )
   }
 
-  val startOptions = mutableMapOf<String, Any>()
-
-  override suspend fun start(options: Map<String, Any>): String {
-    this.startOptions.putAll(options)
-
-    val clientId = startOptions["atlassian.clientId"] as String
-    @Suppress("UNCHECKED_CAST") val scopes = startOptions["atlassian.scopes"] as List<String>
-    val callback = startOptions["callback"] as String
+  override suspend fun start(): String {
+    val clientId = options["atlassian.clientId"] as String
+    @Suppress("UNCHECKED_CAST") val scopes = options["atlassian.scopes"] as List<String>
+    val callback = options["callback"] as String
+    val state = options["state"] as String
 
     val serverUriEncoded = URLEncoder.encode(callback, StandardCharsets.UTF_8)
     val scopeString =
@@ -68,9 +65,9 @@ class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2
   }
 
   override suspend fun complete(code: String): Oauth2Token {
-    val clientId = startOptions["atlassian.clientId"] as String
-    val clientSecret = startOptions["atlassian.clientSecret"] as String
-    val callback = startOptions["callback"] as String
+    val clientId = options["atlassian.clientId"] as String
+    val clientSecret = options["atlassian.clientSecret"] as String
+    val callback = options["callback"] as String
 
     val responseMap =
       client.query<ExchangeResponse>(request("https://auth.atlassian.com/oauth/token", NoToken) {

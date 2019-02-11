@@ -6,6 +6,7 @@ import com.baulsupp.okurl.authenticator.authflow.AuthFlow
 import com.baulsupp.okurl.authenticator.authflow.Callback
 import com.baulsupp.okurl.authenticator.authflow.Prompt
 import com.baulsupp.okurl.authenticator.authflow.Scopes
+import com.baulsupp.okurl.authenticator.authflow.State
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.OkHttpClient
 import java.util.UUID
@@ -18,7 +19,7 @@ object Oauth2DesktopFlow {
   ): Oauth2Token {
     return SimpleWebServer.forCode().use { s ->
       val state = UUID.randomUUID().toString()
-      authFlow.init(client, state)
+      authFlow.init(client)
 
       val options = authFlow.options()
 
@@ -27,12 +28,14 @@ object Oauth2DesktopFlow {
           is Prompt -> Secrets.prompt(it.label, it.param, it.default ?: "", it.secret)
           is Scopes -> Secrets.promptArray("Scopes", it.param, it.default ?: it.known)
           is Callback -> s.redirectUri
+          is State -> state
         }
 
         it.param to value
       }.toMap()
 
-      val url = authFlow.start(params)
+      authFlow.defineOptions(params)
+      val url = authFlow.start()
 
       outputHandler.openLink(url)
       val code = s.waitForCode()

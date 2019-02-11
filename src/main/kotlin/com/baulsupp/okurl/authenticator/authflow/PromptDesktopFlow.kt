@@ -3,15 +3,13 @@ package com.baulsupp.okurl.authenticator.authflow
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.OkHttpClient
-import java.util.UUID
 
 object PromptDesktopFlow {
   suspend fun <T> prompt(
     authFlow: PromptAuthFlow<T>,
     client: OkHttpClient
   ): T {
-    val state = UUID.randomUUID().toString()
-    authFlow.init(client, state)
+    authFlow.init(client)
 
     val options = authFlow.options()
 

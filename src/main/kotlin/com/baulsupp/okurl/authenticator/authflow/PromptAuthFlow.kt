@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 abstract class PromptAuthFlow<T>: AuthFlow<T> {
   override val type = AuthFlowType.Prompt
 
-  override suspend fun init(client: OkHttpClient, state: String) {
+  override suspend fun init(client: OkHttpClient) {
   }
 
   abstract suspend fun complete(params: Map<String, Any>): T

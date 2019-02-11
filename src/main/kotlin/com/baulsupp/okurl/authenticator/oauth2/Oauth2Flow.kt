@@ -9,13 +9,16 @@ abstract class Oauth2Flow(override val serviceDefinition: ServiceDefinition<Oaut
   override val type = AuthFlowType.Oauth2
 
   lateinit var client: OkHttpClient
-  lateinit var state: String
+  val options = mutableMapOf<String, Any>()
 
-  override suspend fun init(client: OkHttpClient, state: String) {
+  override suspend fun init(client: OkHttpClient) {
     this.client = client
-    this.state = state
   }
 
-  abstract suspend fun start(options: Map<String, Any>): String
+  fun defineOptions(options: Map<String, Any>) {
+    this.options.putAll(options)
+  }
+
+  abstract suspend fun start(): String
   abstract suspend fun complete(code: String): Oauth2Token
 }

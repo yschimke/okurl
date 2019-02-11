@@ -36,22 +36,18 @@ class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Tok
     )
   }
 
-  val startOptions = mutableMapOf<String, Any>()
-
-  override suspend fun start(options: Map<String, Any>): String {
-    this.startOptions.putAll(options)
-
-    val clientId = startOptions["strava.clientId"] as String
-    @Suppress("UNCHECKED_CAST") val scopes = startOptions["strava.scopes"] as List<String>
-    val callback = startOptions["callback"] as String
+  override suspend fun start(): String {
+    val clientId = options["strava.clientId"] as String
+    @Suppress("UNCHECKED_CAST") val scopes = options["strava.scopes"] as List<String>
+    val callback = options["callback"] as String
 
     return "https://www.strava.com/oauth/authorize?client_id=$clientId&redirect_uri=${callback}&response_type=code&scope=${scopes.joinToString(
       ",")}"
   }
 
   override suspend fun complete(code: String): Oauth2Token {
-    val clientId = startOptions["strava.clientId"] as String
-    val clientSecret = startOptions["strava.clientSecret"] as String
+    val clientId = options["strava.clientId"] as String
+    val clientSecret = options["strava.clientSecret"] as String
 
     val responseMap =
       client.query<AuthResponse>(request("https://www.strava.com/oauth/token") {
