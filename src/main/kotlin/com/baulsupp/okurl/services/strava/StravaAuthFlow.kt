@@ -4,6 +4,7 @@ import com.baulsupp.okurl.authenticator.authflow.AuthOption
 import com.baulsupp.okurl.authenticator.authflow.Callback
 import com.baulsupp.okurl.authenticator.authflow.Prompt
 import com.baulsupp.okurl.authenticator.authflow.Scopes
+import com.baulsupp.okurl.authenticator.authflow.State
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Flow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.ServiceDefinition
@@ -32,7 +33,8 @@ class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Tok
         "profile:write",
         "activity:read_all",
         "activity:write")),
-      Callback
+      Callback,
+      State
     )
   }
 

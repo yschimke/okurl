@@ -4,6 +4,7 @@ import com.baulsupp.okurl.authenticator.authflow.AuthOption
 import com.baulsupp.okurl.authenticator.authflow.Callback
 import com.baulsupp.okurl.authenticator.authflow.Prompt
 import com.baulsupp.okurl.authenticator.authflow.Scopes
+import com.baulsupp.okurl.authenticator.authflow.State
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Flow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.NoToken
@@ -45,7 +46,8 @@ class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2
       Prompt("atlassian.clientSecret", "Atlassian Application Secret", null, true),
       Scopes("atlassian.scopes", "Scopes", known = listOf(
         "read:jira-user", "read:jira-work", "write:jira-work", "offline_access")),
-      Callback
+      Callback,
+      State
     )
   }
 
