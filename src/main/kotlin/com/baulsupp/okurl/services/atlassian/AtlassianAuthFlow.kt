@@ -55,9 +55,9 @@ class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2
     val callback = options["callback"] as String
     val state = options["state"] as String
 
-    val serverUriEncoded = URLEncoder.encode(callback, StandardCharsets.UTF_8)
+    val serverUriEncoded = URLEncoder.encode(callback, StandardCharsets.UTF_8.name())
     val scopeString =
-      URLEncoder.encode(scopes.joinToString(" "), StandardCharsets.UTF_8).replace("+", "%20")
+      URLEncoder.encode(scopes.joinToString(" "), StandardCharsets.UTF_8.name()).replace("+", "%20")
 
     return "https://auth.atlassian.com/authorize?" +
       "audience=api.atlassian.com&client_id=$clientId&scope=$scopeString&" +
