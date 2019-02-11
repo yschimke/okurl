@@ -40,9 +40,10 @@ class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Tok
     val clientId = options["strava.clientId"] as String
     @Suppress("UNCHECKED_CAST") val scopes = options["strava.scopes"] as List<String>
     val callback = options["callback"] as String
+    val state = options["state"] as String
 
     return "https://www.strava.com/oauth/authorize?client_id=$clientId&redirect_uri=${callback}&response_type=code&scope=${scopes.joinToString(
-      ",")}"
+      ",")}&state=$state"
   }
 
   override suspend fun complete(code: String): Oauth2Token {
