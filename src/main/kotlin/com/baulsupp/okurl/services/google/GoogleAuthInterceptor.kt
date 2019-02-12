@@ -4,6 +4,7 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.authflow.AuthFlow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -59,23 +60,14 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
     return response
   }
 
+  override fun authFlow(): AuthFlow<Oauth2Token>? {
+    return GoogleAuthFlow(serviceDefinition)
+  }
+
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
     val host = url.host()
 
     return "api.google.com" == host || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
-  }
-
-  override suspend fun authorize(
-    client: OkHttpClient,
-    outputHandler: OutputHandler<Response>,
-    authArguments: List<String>
-  ): Oauth2Token {
-
-    val clientId = Secrets.prompt("Google Client Id", "google.clientId", "", false)
-    val clientSecret = Secrets.prompt("Google Client Secret", "google.clientSecret", "", true)
-    val scopes = Secrets.promptArray("Scopes", "google.scopes", listOf("plus.login", "plus.profile.emails.read"))
-
-    return GoogleAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override suspend fun validate(
