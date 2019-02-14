@@ -38,7 +38,7 @@ data class RefreshRequest(
   val refresh_token: String
 )
 
-class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow(
+class AtlassianAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow<Oauth2Token>(
   serviceDefinition) {
   override fun options(): List<AuthOption<*>> {
     return listOf(

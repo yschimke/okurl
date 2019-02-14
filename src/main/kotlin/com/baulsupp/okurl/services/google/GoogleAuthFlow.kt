@@ -12,7 +12,7 @@ import com.baulsupp.okurl.kotlin.queryMap
 import okhttp3.FormBody
 import okhttp3.Request
 
-class GoogleAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow(
+class GoogleAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow<Oauth2Token>(
   serviceDefinition
 ) {
   fun fullScope(suffix: String): String {

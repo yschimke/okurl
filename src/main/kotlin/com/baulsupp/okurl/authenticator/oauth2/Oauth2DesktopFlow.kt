@@ -13,7 +13,7 @@ import java.util.UUID
 
 object Oauth2DesktopFlow {
   suspend fun login(
-    authFlow: Oauth2Flow,
+    authFlow: Oauth2Flow<Oauth2Token>,
     client: OkHttpClient,
     outputHandler: OutputHandler<*>
   ): Oauth2Token {

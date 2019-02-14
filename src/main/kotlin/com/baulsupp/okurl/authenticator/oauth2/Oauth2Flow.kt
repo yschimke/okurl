@@ -5,7 +5,7 @@ import com.baulsupp.okurl.authenticator.authflow.AuthFlowType
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import okhttp3.OkHttpClient
 
-abstract class Oauth2Flow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : AuthFlow<Oauth2Token> {
+abstract class Oauth2Flow<T>(override val serviceDefinition: ServiceDefinition<T>) : AuthFlow<T> {
   override val type = AuthFlowType.Oauth2
 
   lateinit var client: OkHttpClient

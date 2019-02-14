@@ -21,7 +21,7 @@ data class AuthResponse(
   val state: String? = null
 )
 
-class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow(
+class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow<Oauth2Token>(
   serviceDefinition) {
   override fun options(): List<AuthOption<*>> {
     return listOf(

@@ -13,7 +13,7 @@ import okhttp3.FormBody
 import okhttp3.Request
 import java.net.URLEncoder
 
-class GithubAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow(
+class GithubAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow<Oauth2Token>(
   serviceDefinition) {
   override fun options(): List<AuthOption<*>> {
     return listOf(
