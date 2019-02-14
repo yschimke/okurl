@@ -20,5 +20,5 @@ abstract class Oauth2Flow<T>(override val serviceDefinition: ServiceDefinition<T
   }
 
   abstract suspend fun start(): String
-  abstract suspend fun complete(code: String): Oauth2Token
+  abstract suspend fun complete(code: String): T
 }
