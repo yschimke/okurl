@@ -14,7 +14,7 @@ import org.brotli.dec.BrotliInputStream
  */
 object BrotliInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
-    val request = chain.request().newBuilder().addHeader("Accept-Encoding", "br").build()
+    val request = chain.request().newBuilder().header("Accept-Encoding", "br").build()
 
     val response = chain.proceed(request)
 

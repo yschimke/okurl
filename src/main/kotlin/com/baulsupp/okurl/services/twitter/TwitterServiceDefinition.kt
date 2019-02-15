@@ -9,9 +9,9 @@ class TwitterServiceDefinition : ServiceDefinition<TwitterCredentials> {
 
   override fun shortName() = "twitter"
 
-  override fun apiDocs() = "https://apps.twitter.com/"
+  override fun apiDocs() = "https://developer.twitter.com/en/docs/api-reference-index"
 
-  override fun accountsLink() = "https://apps.twitter.com/"
+  override fun accountsLink() = "https://developer.twitter.com/en/apps"
 
   override fun parseCredentialsString(s: String): TwitterCredentials {
     val list = s.split(',')
