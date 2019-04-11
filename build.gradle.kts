@@ -13,6 +13,7 @@ plugins {
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
+  id("com.palantir.consistent-versions") version "1.4.0"
 }
 
 repositories {
