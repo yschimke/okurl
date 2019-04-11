@@ -1,3 +1,3 @@
 object Versions {
-  val kotlin = "1.3.21"
+  val kotlin = "1.3.30"
 }
