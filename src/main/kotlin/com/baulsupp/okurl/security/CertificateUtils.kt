@@ -18,7 +18,7 @@ object CertificateUtils {
   fun trustManagerForKeyStore(ks: KeyStore?): X509TrustManager {
     val tmf = TrustManagerFactory.getInstance(
       TrustManagerFactory.getDefaultAlgorithm(),
-      Conscrypt.newProviderBuilder().provideTrustManager().build()
+      Conscrypt.newProviderBuilder().provideTrustManager(true).build()
     )
 
     tmf.init(ks)

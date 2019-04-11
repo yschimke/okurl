@@ -73,9 +73,6 @@ ktlint {
 }
 
 dependencies {
-  implementation(platform("io.netty:netty-bom:${Versions.netty}"))
-  implementation(platform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
-
   implementation(Deps.activation)
   implementation(Deps.airline)
   implementation(Deps.bouncyCastle)
