@@ -31,6 +31,8 @@ class Secrets(
       val p = Properties()
       p.putAll(secrets)
 
+      file.parent.toFile().mkdirs()
+
       Files.newBufferedWriter(file).use { w -> p.store(w, null) }
     }
   }

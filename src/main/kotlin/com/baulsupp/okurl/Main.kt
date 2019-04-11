@@ -35,8 +35,12 @@ import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.annotations.Option
 import com.github.rvesse.airline.parser.errors.ParseException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -142,7 +146,8 @@ class Main : CommandLineClient() {
 
   suspend fun showApiDocs() {
     getFullCompletionUrl()?.let { u ->
-      ServiceApiDocPresenter(authenticatingInterceptor).explainApi(u, outputHandler, client, token())
+      ServiceApiDocPresenter(authenticatingInterceptor).explainApi(u, outputHandler, client,
+        token())
     }
   }
 
@@ -259,7 +264,10 @@ class Main : CommandLineClient() {
     return failed
   }
 
-  suspend fun showOutput(outputHandler: OutputHandler<Response>, wrappedResponse: SuccessfulResponse) {
+  suspend fun showOutput(
+    outputHandler: OutputHandler<Response>,
+    wrappedResponse: SuccessfulResponse
+  ) {
     val response = wrappedResponse.response
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
@@ -403,7 +411,8 @@ class Main : CommandLineClient() {
     fun setupProvider() {
       // Prefer Conscrypt over JDK 11
       try {
-        Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager().build(), 1)
+        Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager(true).build(),
+          1)
       } catch (e: NoClassDefFoundError) {
         // Drop back to JDK
       }

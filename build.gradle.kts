@@ -8,11 +8,12 @@ plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
   distribution
-  id("com.github.ben-manes.versions") version "0.20.0"
-  id("org.jlleitschuh.gradle.ktlint") version "7.1.0"
+  id("com.github.ben-manes.versions") version "0.21.0"
   id("com.jfrog.bintray") version "1.8.4"
-  id("org.jetbrains.dokka") version "0.9.17"
+  id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
+  id("com.palantir.consistent-versions") version "1.4.0"
+  id("com.diffplug.gradle.spotless") version "3.13.0"
 }
 
 repositories {
@@ -67,81 +68,74 @@ tasks.named<DokkaTask>("dokka") {
   outputDirectory = "$buildDir/javadoc"
 }
 
-ktlint {
-  ignoreFailures.set(true)
-}
-
 dependencies {
-  implementation(platform("io.netty:netty-bom:${Versions.netty}"))
-  implementation(platform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
+  implementation("javax.activation:activation")
+  implementation("com.github.rvesse:airline")
+  implementation("org.bouncycastle:bcprov-jdk15on")
+  implementation("io.zipkin.brave:brave")
+  implementation("io.zipkin.brave:brave-instrumentation-okhttp3")
+  implementation("io.zipkin.brave:brave-okhttp")
+  implementation("org.brotli:dec")
+  implementation("com.jakewharton.byteunits:byteunits")
+  implementation("commons-io:commons-io")
+  implementation("org.apache.commons:commons-lang3")
+  implementation("org.conscrypt:conscrypt-openjdk-uber")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
+  implementation("com.fasterxml.jackson.core:jackson-databind")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+  implementation("org.fusesource.jansi:jansi")
+  implementation("com.github.jnr:jffi")
+  implementation("io.jsonwebtoken:jjwt-api")
+  implementation("io.jsonwebtoken:jjwt-impl")
+  implementation("io.jsonwebtoken:jjwt-jackson")
+  implementation("pt.davidafsilva.apple:jkeychain")
+  implementation("com.github.jnr:jnr-unixsocket")
+  implementation("com.google.code.findbugs:jsr305")
+  implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+  implementation("com.squareup.moshi:moshi")
+  implementation("com.squareup.moshi:moshi-adapters")
+  implementation("com.squareup.moshi:moshi-kotlin")
+  implementation("io.netty:netty-resolver-dns")
+  implementation("com.github.mrmike:ok2curl")
+  implementation("com.squareup.okhttp3:okhttp")
+  implementation("com.baulsupp:okhttp-digest")
+  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
+  implementation("com.squareup.okhttp3:logging-interceptor")
+  implementation("com.squareup.okhttp3:okhttp-sse")
+  implementation("com.squareup.okhttp3:okhttp-tls")
+  implementation("com.squareup.okhttp3.sample:unixdomainsockets")
+  implementation("com.squareup.okio:okio")
+  implementation("com.baulsupp:oksocial-output")
+  implementation("com.github.markusbernhardt:proxy-vole")
+  implementation("org.slf4j:slf4j-api")
+  implementation("org.slf4j:slf4j-jdk14")
+  implementation("com.google.crypto.tink:tink")
+  implementation("io.zipkin.java:zipkin")
+  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3")
+  implementation("org.zeroturnaround:zt-exec")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug")
 
-  implementation(Deps.activation)
-  implementation(Deps.airline)
-  implementation(Deps.bouncyCastle)
-  implementation(Deps.brave)
-  implementation(Deps.braveInstrumentationOkhttp3)
-  implementation(Deps.braveOkhttp3)
-  implementation(Deps.brotli)
-  implementation(Deps.byteunits)
-  implementation(Deps.commonsIo)
-  implementation(Deps.commonsLang)
-  implementation(Deps.conscryptUber)
-  implementation(Deps.coroutinesCore)
-  implementation(Deps.coroutinesJdk8)
-  implementation(Deps.jacksonCbor)
-  implementation(Deps.jacksonDatabind)
-  implementation(Deps.jacksonJdk8)
-  implementation(Deps.jacksonJsr310)
-  implementation(Deps.jacksonKotlin)
-  implementation(Deps.jacksonParams)
-  implementation(Deps.jacksonYaml)
-  implementation(Deps.jansi)
-  implementation(Deps.jffi)
-  implementation(Deps.jjwt)
-  implementation(Deps.jjwtImpl)
-  implementation(Deps.jjwtJackson)
-  implementation(Deps.jkeychain)
-  implementation(Deps.jnrUnixSocket)
-  implementation(Deps.jsr305)
-  implementation(Deps.kotlinCompilerEmbeddable)
-  implementation(Deps.kotlinReflect)
-  implementation(Deps.kotlinStandardLibrary)
-  implementation(Deps.moshi)
-  implementation(Deps.moshiAdapters)
-  implementation(Deps.moshiKotlin)
-  implementation(Deps.nettyResolveDns)
-  implementation(Deps.ok2Curl)
-  implementation(Deps.okhttp)
-  implementation(Deps.okhttpDigest)
-  implementation(Deps.okhttpDoh)
-  implementation(Deps.okhttpLoggingInterceptor)
-  implementation(Deps.okhttpSse)
-  implementation(Deps.okhttpTls)
-  implementation(Deps.okhttpUDS)
-  implementation(Deps.okio)
-  implementation(Deps.oksocialOutput)
-  implementation(Deps.proxyVol)
-  implementation(Deps.slf4jApi)
-  implementation(Deps.slf4jJdk14)
-  implementation(Deps.tink)
-  implementation(Deps.zipkin)
-  implementation(Deps.zipkinSenderOkhttp3)
-  implementation(Deps.ztExec)
-  implementation(Deps.coroutinesDebug)
-
-  implementation(Deps.kotlinScriptUtil) {
+  implementation("org.jetbrains.kotlin:kotlin-script-util") {
     exclude(module = "kotlin-compiler")
   }
 
-  testImplementation(Deps.junitJupiterApi)
-  testImplementation(Deps.kotlinTest)
-  testImplementation(Deps.kotlinTestJunit)
-  testImplementation(Deps.okhttpTesting)
-  testImplementation(Deps.okhttpMWS)
-  testImplementation(Deps.conscryptUber)
+  testImplementation("org.junit.jupiter:junit-jupiter-api")
+  testImplementation("org.jetbrains.kotlin:kotlin-test")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+  testImplementation("com.squareup.okhttp3:okhttp-testing-support")
+  testImplementation("com.squareup.okhttp3:mockwebserver")
+  testImplementation("org.conscrypt:conscrypt-openjdk-uber")
 
-  testRuntime(Deps.junitJupiterEngine)
-  testRuntime(Deps.slf4jJdk14)
+  testRuntime("org.junit.jupiter:junit-jupiter-engine")
+  testRuntime("org.slf4j:slf4j-jdk14")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -288,5 +282,13 @@ dependencyUpdates.resolutionStrategy {
         reject("Alpha")
       }
     }
+  }
+}
+
+spotless {
+  kotlinGradle {
+    ktlint("0.31.0").userData(mutableMapOf("indent_size" to "2", "continuation_indent_size" to "2"))
+    trimTrailingWhitespace()
+    endWithNewline()
   }
 }
