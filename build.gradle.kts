@@ -12,8 +12,8 @@ plugins {
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
-  id("com.palantir.consistent-versions") version "1.4.0"
-  id("com.diffplug.gradle.spotless") version "3.13.0"
+  id("com.palantir.consistent-versions") version "1.5.0"
+  id("com.diffplug.gradle.spotless") version "3.21.1"
 }
 
 repositories {
