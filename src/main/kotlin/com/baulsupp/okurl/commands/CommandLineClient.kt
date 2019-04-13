@@ -596,7 +596,7 @@ abstract class CommandLineClient : ToolSession {
     }
 
     clientBuilder.eventListenerFactory { call ->
-      ZipkinTracingListener(call, tracer, httpTracing, opener, tracing == TracingMode.ZIPKIN_TRACING)
+      ZipkinTracingListener(call, tracer, httpTracing, opener, this.tracing == TracingMode.ZIPKIN_TRACING)
     }
 
     clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
