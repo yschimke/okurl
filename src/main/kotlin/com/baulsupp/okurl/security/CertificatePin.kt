@@ -30,7 +30,8 @@ class CertificatePin(patternAndPin: String) {
       val builder = CertificatePinner.Builder()
 
       pins.groupBy { it.pattern }.forEach { (pattern, pins) ->
-        builder.add(pattern, *(pins.map { it.pin }.toTypedArray()))
+        builder.add(pattern, *pins.map { it.pin!! }.toTypedArray())
+        Unit
       }
 
       return builder.build()

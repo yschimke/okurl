@@ -18,7 +18,7 @@ import javax.security.auth.callback.PasswordCallback
 object KeystoreUtils {
   fun keyManagerArray(keyManagers: List<KeyManager>): Array<KeyManager>? {
     var kms: Array<KeyManager>? = null
-    if (!keyManagers.isEmpty()) {
+    if (keyManagers.isNotEmpty()) {
       kms = keyManagers.toTypedArray()
     }
     return kms
@@ -28,7 +28,7 @@ object KeystoreUtils {
     keyManagers: Array<KeyManager>?,
     trustManagers: X509TrustManager
   ): SSLSocketFactory {
-    val context = Platform.get().sslContext
+    val context = Platform.get().newSSLContext()
 
     context.init(keyManagers, arrayOf<TrustManager>(trustManagers), null)
 

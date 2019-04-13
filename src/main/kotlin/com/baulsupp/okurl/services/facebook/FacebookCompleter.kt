@@ -23,7 +23,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
     var result = completePath(url.encodedPath(), tokenSet)
 
     if (!url.encodedPath().endsWith("/")) {
-      val parentPaths = url.encodedPathSegments()
+      val parentPaths = url.encodedPathSegments().toMutableList()
       parentPaths.removeAt(parentPaths.size - 1)
 
       val parentPath = "/" + parentPaths.joinToString("/")

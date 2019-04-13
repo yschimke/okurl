@@ -57,7 +57,7 @@ class DropboxAuthInterceptor : Oauth2AuthInterceptor() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials {
-    val body = FormBody.create(MediaType.get("application/json"), "null")
+    val body = RequestBody.create(MediaType.get("application/json"), "null")
     val request = requestBuilder(
       "https://api.dropboxapi.com/2/users/get_current_account",
       TokenValue(credentials)

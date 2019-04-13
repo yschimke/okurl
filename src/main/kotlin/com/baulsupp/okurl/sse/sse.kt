@@ -22,10 +22,10 @@ inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSo
       handler.invoke(m)
     }
 
-    override fun onOpen(eventSource: EventSource?, response: Response?) {
+    override fun onOpen(eventSource: EventSource, response: Response) {
     }
 
-    override fun onFailure(eventSource: EventSource?, t: Throwable?, response: Response?) {
+    override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
       when {
         t != null -> println(t)
         response != null -> println(response.statusMessage())
@@ -33,7 +33,7 @@ inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSo
       }
     }
 
-    override fun onClosed(eventSource: EventSource?) {
+    override fun onClosed(eventSource: EventSource) {
       println("closed")
     }
   }

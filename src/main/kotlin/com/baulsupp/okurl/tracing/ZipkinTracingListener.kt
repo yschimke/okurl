@@ -58,17 +58,17 @@ class ZipkinTracingListener(
     opener.accept(callSpan.context())
   }
 
-  override fun callFailed(call: Call, ioe: IOException?) {
+  override fun callFailed(call: Call, ioe: IOException) {
     if (callSpan.isNoop) {
       return
     }
 
-    callSpan.tag("error", ioe!!.toString())
+    callSpan.tag("error", ioe.toString())
 
     callEnd(call)
   }
 
-  override fun dnsStart(call: Call, domainName: String?) {
+  override fun dnsStart(call: Call, domainName: String) {
     if (callSpan.isNoop || !detailed) {
       return
     }
@@ -76,50 +76,50 @@ class ZipkinTracingListener(
     dnsSpan = tracer.newChild(callSpan.context()).start().name("dns")
   }
 
-  override fun dnsEnd(call: Call, domainName: String?, inetAddressList: List<InetAddress>?) {
+  override fun dnsEnd(call: Call, domainName: String, inetAddressList: List<InetAddress>) {
     if (callSpan.isNoop || !detailed) {
       return
     }
 
     dnsSpan!!.tag("dns.results",
-      inetAddressList!!.joinToString(", ", transform = { it.toString() })
+      inetAddressList.joinToString(", ", transform = { it.toString() })
     )
 
     dnsSpan!!.finish()
   }
 
-  override fun connectStart(call: Call, inetSocketAddress: InetSocketAddress?, proxy: Proxy?) {
+  override fun connectStart(call: Call, inetSocketAddress: InetSocketAddress, proxy: Proxy) {
     if (callSpan.isNoop || !detailed) {
       return
     }
 
     connectSpan = tracer.newChild(callSpan.context()).start().name("connect")
 
-    connectSpan!!.tag("host", inetSocketAddress!!.toString())
-    connectSpan!!.tag("proxy", proxy!!.toString())
+    connectSpan!!.tag("host", inetSocketAddress.toString())
+    connectSpan!!.tag("proxy", proxy.toString())
   }
 
   override fun connectEnd(
     call: Call,
-    inetSocketAddress: InetSocketAddress?,
-    proxy: Proxy?,
+    inetSocketAddress: InetSocketAddress,
+    proxy: Proxy,
     protocol: Protocol?
   ) {
     if (callSpan.isNoop || !detailed) {
       return
     }
 
-    connectSpan!!.tag("protocol", protocol!!.toString())
+    connectSpan!!.tag("protocol", protocol.toString())
 
     connectSpan!!.finish()
   }
 
   override fun connectFailed(
     call: Call,
-    inetSocketAddress: InetSocketAddress?,
-    proxy: Proxy?,
+    inetSocketAddress: InetSocketAddress,
+    proxy: Proxy,
     protocol: Protocol?,
-    ioe: IOException?
+    ioe: IOException
   ) {
     if (callSpan.isNoop || !detailed) {
       return
@@ -128,7 +128,7 @@ class ZipkinTracingListener(
     if (protocol != null) {
       connectSpan!!.tag("protocol", protocol.toString())
     }
-    connectSpan!!.tag("failed", ioe!!.toString())
+    connectSpan!!.tag("failed", ioe.toString())
 
     connectSpan!!.finish()
   }
@@ -143,12 +143,12 @@ class ZipkinTracingListener(
     connectionSpan!!.tag("route", route)
   }
 
-  override fun connectionReleased(call: Call, connection: Connection?) {
+  override fun connectionReleased(call: Call, connection: Connection) {
     if (callSpan.isNoop) {
       return
     }
 
-    if (connection!!.route().proxy().type() != Proxy.Type.DIRECT) {
+    if (connection.route().proxy().type() != Proxy.Type.DIRECT) {
       connectionSpan!!.tag("proxy", connection.route().proxy().toString())
     }
     if (connection.handshake() != null) {
@@ -185,20 +185,20 @@ class ZipkinTracingListener(
     requestSpan = tracer.newChild(callSpan.context()).start().name("request")
   }
 
-  override fun requestHeadersEnd(call: Call, request: Request?) {
+  override fun requestHeadersEnd(call: Call, request: Request) {
     if (callSpan.isNoop || !detailed) {
       return
     }
 
-    requestSpan!!.tag("requestHeaderLength", "" + request!!.headers().byteCount())
+    requestSpan!!.tag("requestHeaderLength", "" + request.headers().byteCount())
   }
 
-  override fun requestBodyEnd(call: Call, bytesWritten: Long) {
+  override fun requestBodyEnd(call: Call, byteCount: Long) {
     if (callSpan.isNoop) {
       return
     }
 
-    requestSpan!!.tag("http.request.size", "" + bytesWritten)
+    requestSpan!!.tag("http.request.size", "" + byteCount)
 
     requestSpan = finish(requestSpan)
   }
@@ -216,23 +216,23 @@ class ZipkinTracingListener(
     requestSpan = finish(requestSpan)
   }
 
-  override fun responseHeadersEnd(call: Call, response: Response?) {
+  override fun responseHeadersEnd(call: Call, response: Response) {
     if (callSpan.isNoop || !detailed) {
       return
     }
 
     responseSpan = tracer.newChild(callSpan.context()).start()
       .name("response")
-      .tag("responseHeaderLength", "" + response!!.headers().byteCount())
+      .tag("responseHeaderLength", "" + response.headers().byteCount())
       .tag("http.status_code", response.code().toString())
   }
 
-  override fun responseBodyEnd(call: Call, bytesRead: Long) {
+  override fun responseBodyEnd(call: Call, byteCount: Long) {
     if (callSpan.isNoop || !detailed) {
       return
     }
 
-    responseSpan!!.tag("http.response.size", "" + bytesRead)
+    responseSpan!!.tag("http.response.size", "" + byteCount)
 
     responseSpan = finish(responseSpan)
   }

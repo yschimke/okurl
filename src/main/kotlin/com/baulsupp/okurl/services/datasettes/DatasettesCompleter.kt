@@ -38,7 +38,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
   private fun tablesInDatabase(
     datasettes: Map<String, DatasetteIndex2>,
     host: String?,
-    path: MutableList<String>
+    path: List<String>
   ): UrlList {
     val db = path.first().replace("-[0-9a-z]+".toRegex(), "")
     val datasette = datasettes.getValue(db)
