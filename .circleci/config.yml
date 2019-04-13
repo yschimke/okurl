@@ -24,11 +24,20 @@ jobs:
 
       - save_cache:
           paths:
-            - ~/.gradle
-          key: v2-dependencies-{{ checksum "versions.lock" }}
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+          key: v2-dependencies-{{ checksum "versions.lock" }}-{{ epoch }}
 
       - run:
           name: Test
           command: ./gradlew --build-cache test
           environment:
             GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=3 -Xmx768m
+
+      - store_test_results:
+          name: Store test results
+          path: build/test-results
+
+      - store_artifacts:
+          name: Store gradle reports
+          path: build/reports
