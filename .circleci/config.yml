@@ -18,7 +18,7 @@ jobs:
 
       - run:
           name: Compile
-          command: ./gradlew --build-cache testCompile
+          command: ./gradlew --build-cache testClasses
           environment:
             GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=3 -Xmx768m
 
