@@ -16,7 +16,9 @@ jobs:
           keys:
           - v2-dependencies-{{ checksum "versions.lock" }}
 
-      - run: ./gradlew --build-cache testCompile
+      - run:
+          name: Compile
+          command: ./gradlew --build-cache testCompile
           environment:
             GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=3 -Xmx768m
 
@@ -25,6 +27,8 @@ jobs:
             - ~/.gradle
           key: v2-dependencies-{{ checksum "versions.lock" }}
 
-      - run: ./gradlew --build-cache test
+      - run:
+          name: Test
+          command: ./gradlew --build-cache test
           environment:
             GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=3 -Xmx768m
