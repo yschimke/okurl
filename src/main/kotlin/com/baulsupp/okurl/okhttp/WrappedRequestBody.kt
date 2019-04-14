@@ -10,7 +10,7 @@ class WrappedRequestBody(private val body: RequestBody, private val contentType:
     return MediaType.get(contentType)
   }
 
-  override fun writeTo(bufferedSink: BufferedSink) {
-    body.writeTo(bufferedSink)
+  override fun writeTo(sink: BufferedSink) {
+    body.writeTo(sink)
   }
 }

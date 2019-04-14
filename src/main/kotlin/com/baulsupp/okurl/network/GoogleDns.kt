@@ -18,8 +18,8 @@ class GoogleDns(
   data class Answer(val name: String, val type: Int, val TTL: Int, val data: String)
   data class Response(val Status: Int, val Answer: List<Answer>)
 
-  override fun lookup(host: String): List<InetAddress> {
-    if (host == "dns.google.com") {
+  override fun lookup(hostname: String): List<InetAddress> {
+    if (hostname == "dns.google.com") {
       return dnsHosts
     }
 
@@ -27,7 +27,7 @@ class GoogleDns(
       val result = runBlocking {
         client().query<Response>(
           request {
-            url(base.newBuilder().addQueryParameter("name", host).addQueryParameter("type", type(mode)).build())
+            url(base.newBuilder().addQueryParameter("name", hostname).addQueryParameter("type", type(mode)).build())
             header("Accept", "application/dns+json")
           }
         )
@@ -39,7 +39,7 @@ class GoogleDns(
 
       result.Answer.filter { it.type == 1 || it.type == 28 }.map { InetAddress.getByName(it.data) }
     } catch (e: IOException) {
-      val unknownHostException = UnknownHostException("failed to lookup $host via dns.google.com")
+      val unknownHostException = UnknownHostException("failed to lookup $hostname via dns.google.com")
       unknownHostException.initCause(e)
       throw unknownHostException
     }
