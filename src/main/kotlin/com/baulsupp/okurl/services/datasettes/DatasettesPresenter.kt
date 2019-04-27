@@ -27,7 +27,7 @@ class DatasettesPresenter : ApiDocPresenter {
     outputHandler.info("docs: https://github.com/simonw/datasette")
     outputHandler.info("database: https://${urlI.host()}/")
 
-    datasette.forEach { db, dbi ->
+    datasette.forEach { (db, dbi) ->
       outputHandler.info("")
       outputHandler.info("name: $db")
       outputHandler.info("tables: " + dbi.tables.keys.joinToString())

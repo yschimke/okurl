@@ -5,8 +5,6 @@ import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.services.postman.model.CollectionResult
 import com.baulsupp.okurl.services.postman.model.CollectionsResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 

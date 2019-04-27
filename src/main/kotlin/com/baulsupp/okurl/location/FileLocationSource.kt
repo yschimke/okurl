@@ -15,7 +15,7 @@ class FileLocationSource(private val file: File) : LocationSource {
 
       val values = mapper.readValue<Map<String, Double>>(file, object : TypeReference<Map<String, Double>>() {})
 
-      return Location(values["latitude"]!!, values["longitude"]!!)
+      return Location(values.getValue("latitude"), values.getValue("longitude"))
     }
 
     return null

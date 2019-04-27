@@ -1,7 +1,5 @@
 package com.baulsupp.okurl.services.opsgenie.model
 
-import com.squareup.moshi.Json
-
 data class Role(
   val name: String,
   val id: String

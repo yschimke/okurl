@@ -28,7 +28,7 @@ object StandardNormalizer {
     // TODO proper sort
     sigParams.sortBy { it.first + ":" + it.second }
 
-    if (!sigParams.isEmpty()) {
+    if (sigParams.isNotEmpty()) {
       val head = sigParams[0]
       paramsBuilder.append(head.first).append('=').append(head.second)
       (1 until sigParams.size)

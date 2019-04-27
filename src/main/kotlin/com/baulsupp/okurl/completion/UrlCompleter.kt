@@ -4,7 +4,10 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException

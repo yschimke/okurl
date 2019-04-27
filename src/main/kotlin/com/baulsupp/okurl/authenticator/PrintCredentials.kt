@@ -6,7 +6,11 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.util.ClientException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import okhttp3.Response
 import java.io.IOException
 import java.time.ZonedDateTime
@@ -88,9 +92,9 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     val names = commandLineClient.defaultTokenSet?.let { listOf(it) }
       ?: commandLineClient.credentialsStore.names().map { TokenSet(it) }
 
-    val full = !arguments.isEmpty()
+    val full = arguments.isNotEmpty()
 
-    if (!arguments.isEmpty()) {
+    if (arguments.isNotEmpty()) {
       services = arguments.mapNotNull { commandLineClient.serviceLibrary.findAuthInterceptor(it) }
     }
 

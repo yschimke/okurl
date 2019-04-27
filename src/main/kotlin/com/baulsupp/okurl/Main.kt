@@ -106,7 +106,7 @@ class Main : CommandLineClient() {
   @Option(name = ["--apidoc"], description = "API Documentation")
   var apiDoc: Boolean = false
 
-  var commandName = Main.command
+  var commandName = command
 
   var completionFile: File? = System.getenv("COMPLETION_FILE")?.let { File(it) }
 
@@ -159,7 +159,7 @@ class Main : CommandLineClient() {
     requestBuilder.method(getRequestMethod(), getRequestBody(headerMap))
 
     if (headers != null) {
-      headerMap.forEach { k, v -> requestBuilder.header(k, v) }
+      headerMap.forEach { (k, v) -> requestBuilder.header(k, v) }
     }
     if (referer != null) {
       requestBuilder.header("Referer", referer!!)
@@ -249,8 +249,7 @@ class Main : CommandLineClient() {
   ): Boolean {
     var failed = false
     for (deferredResponse in responses) {
-      val response = deferredResponse.await()
-      when (response) {
+      when (val response = deferredResponse.await()) {
         is SuccessfulResponse -> {
           showOutput(outputHandler, response)
           response.response.close()
@@ -358,7 +357,7 @@ class Main : CommandLineClient() {
       auth = authenticatingInterceptor.getByName(authenticator)
     }
 
-    if (auth == null && !arguments.isEmpty()) {
+    if (auth == null && arguments.isNotEmpty()) {
       val name = arguments.removeAt(0)
 
       auth = authenticatingInterceptor.findAuthInterceptor(name)

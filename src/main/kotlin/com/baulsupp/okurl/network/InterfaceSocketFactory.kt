@@ -8,7 +8,7 @@ import java.net.UnknownHostException
 import javax.net.SocketFactory
 
 class InterfaceSocketFactory(private val localAddress: InetAddress) : SocketFactory() {
-  private val systemFactory = SocketFactory.getDefault()
+  private val systemFactory = getDefault()
 
   override fun createSocket(): Socket {
     val s = systemFactory.createSocket()

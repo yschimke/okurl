@@ -71,6 +71,6 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
   }
 }
 
-fun main(args: Array<String>) {
+fun main() {
   CoreLocationCLI(ConsoleHandler.instance(OkHttpResponseExtractor()))
 }

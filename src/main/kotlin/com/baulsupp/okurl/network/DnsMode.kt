@@ -11,7 +11,7 @@ enum class DnsMode {
   companion object {
     @JvmStatic
     fun fromString(dnsMode: String): DnsMode =
-      DnsMode.values().find { it.name.toLowerCase() == dnsMode } ?: throw UsageException(
+      values().find { it.name.toLowerCase() == dnsMode } ?: throw UsageException(
         "unknown dns mode '$dnsMode'"
       )
   }

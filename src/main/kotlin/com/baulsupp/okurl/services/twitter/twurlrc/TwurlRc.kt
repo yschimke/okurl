@@ -7,10 +7,10 @@ class TwurlRc {
   var configuration: Map<String, List<String>>? = null
 
   fun defaultProfile(): List<String> {
-    return configuration!!["default_profile"]!!
+    return configuration!!.getValue("default_profile")
   }
 
   fun readCredentials(username: String, consumerKey: String): TwitterCredentials {
-    return profiles!![username]!![consumerKey]!!
+    return profiles!!.getValue(username).getValue(consumerKey)
   }
 }

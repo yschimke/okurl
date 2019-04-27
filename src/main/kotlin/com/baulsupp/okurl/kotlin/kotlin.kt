@@ -8,7 +8,6 @@ import com.baulsupp.okurl.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -145,7 +144,7 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 ): T? {
   val queryMap = this.queryMap<Any>(request)
 
-  val result = keys.fold(queryMap as Any) { map, key -> (map as Map<String, Any>)[key]!! }
+  val result = keys.fold(queryMap as Any) { map, key -> (map as Map<String, Any>).getValue(key) }
 
   return result as T
 }

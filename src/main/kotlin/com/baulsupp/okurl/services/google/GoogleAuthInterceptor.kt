@@ -1,6 +1,5 @@
 package com.baulsupp.okurl.services.google
 
-import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -17,7 +16,6 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.moshi
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
-import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.google.firebase.FirebaseCompleter
 import com.baulsupp.okurl.services.google.model.AuthError
 import com.baulsupp.okurl.util.ClientException

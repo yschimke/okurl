@@ -1,8 +1,8 @@
 package com.baulsupp.okurl.util
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.nio.charset.Charset
@@ -12,7 +12,9 @@ object FileContent {
   suspend fun readParamBytes(param: String): ByteArray = coroutineScope {
     when {
       param == "@-" -> IOUtils.toByteArray(System.`in`)
-      param.startsWith("@") -> async(Dispatchers.IO) { File(param.substring(1)).readBytes() }.await()
+      param.startsWith("@") -> withContext(Dispatchers.IO) {
+        File(param.substring(1)).readBytes()
+      }
       else -> param.toByteArray(StandardCharsets.UTF_8)
     }
   }
@@ -20,7 +22,9 @@ object FileContent {
   suspend fun readParamString(param: String): String = coroutineScope {
     when {
       param == "@-" -> IOUtils.toString(System.`in`, Charset.defaultCharset())
-      param.startsWith("@") -> async(Dispatchers.IO) { File(param.substring(1)).readText() }.await()
+      param.startsWith("@") -> withContext(Dispatchers.IO) {
+        File(param.substring(1)).readText()
+      }
       else -> param
     }
   }

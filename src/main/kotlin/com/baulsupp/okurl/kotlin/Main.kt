@@ -37,7 +37,7 @@ class Main : CommandLineClient() {
     }
 
     val script = runArguments[0]
-    com.baulsupp.okurl.kotlin.args = runArguments.drop(1)
+    args = runArguments.drop(1)
 
     try {
       engine.eval(File(script).readText())

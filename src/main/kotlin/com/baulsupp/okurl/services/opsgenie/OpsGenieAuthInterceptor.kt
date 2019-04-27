@@ -14,7 +14,6 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.opsgenie.model.AccountResponse
 import com.baulsupp.okurl.services.opsgenie.model.AlertsResponse
 import com.baulsupp.okurl.services.opsgenie.model.SchedulesResponse

@@ -44,7 +44,7 @@ class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Tok
     val callback = options["callback"] as String
     val state = options["state"] as String
 
-    return "https://www.strava.com/oauth/authorize?client_id=$clientId&redirect_uri=${callback}&response_type=code&scope=${scopes.joinToString(
+    return "https://www.strava.com/oauth/authorize?client_id=$clientId&redirect_uri=$callback&response_type=code&scope=${scopes.joinToString(
       ",")}&state=$state"
   }
 

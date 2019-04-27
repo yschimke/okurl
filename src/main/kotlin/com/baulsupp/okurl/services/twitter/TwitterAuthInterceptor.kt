@@ -33,7 +33,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     authArguments: List<String>
   ): TwitterCredentials {
 
-    if (!authArguments.isEmpty() && authArguments[0] == "--twurlrc") {
+    if (authArguments.isNotEmpty() && authArguments[0] == "--twurlrc") {
       return TwurlrcImport.authorize(authArguments)
     }
 
@@ -44,7 +44,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
       return PinAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
     }
 
-    if (!authArguments.isEmpty()) {
+    if (authArguments.isNotEmpty()) {
       throw UsageException(
         "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" ")
       )

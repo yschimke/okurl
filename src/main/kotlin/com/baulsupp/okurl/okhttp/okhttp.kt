@@ -58,7 +58,7 @@ fun defaultConnectionSpec(): ConnectionSpecOption =
   }
 
 class CipherSuiteOption(s: String) {
-  val suite: CipherSuite = CipherSuite.forJavaName(s)
+  val suite: CipherSuite = forJavaName(s)
 }
 
 class TlsVersionOption(s: String) {

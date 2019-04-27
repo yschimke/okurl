@@ -12,6 +12,6 @@ enum class IPvMode(val code: String) {
   companion object {
     @JvmStatic
     fun fromString(ipMode: String): IPvMode =
-      IPvMode.values().find { it.code == ipMode } ?: throw UsageException("Unknown value $ipMode")
+      values().find { it.code == ipMode } ?: throw UsageException("Unknown value $ipMode")
   }
 }

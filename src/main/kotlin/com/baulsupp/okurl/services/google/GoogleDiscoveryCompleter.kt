@@ -6,7 +6,6 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import okhttp3.HttpUrl
