@@ -22,7 +22,7 @@ class RenewingInterceptor(
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
 
-    val response = chain.proceed(request)
+    var response = chain.proceed(request)
 
     if (!request.isRetry() && response.code() in 400..499) {
       runBlocking {
@@ -31,7 +31,8 @@ class RenewingInterceptor(
         if (firstInterceptor != null) {
           if (renew(firstInterceptor, chain.token(), response)) {
             logger.fine("Reattempting request")
-            chain.proceed(request.markAsRetry())
+            response.close()
+            response = chain.proceed(request.markAsRetry())
           }
         }
       }
