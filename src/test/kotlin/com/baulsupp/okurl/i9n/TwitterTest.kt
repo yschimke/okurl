@@ -30,7 +30,7 @@ class TwitterTest {
       main.run()
     }
 
-    if (!output.failures.isEmpty()) {
+    if (output.failures.isNotEmpty()) {
       throw output.failures[0]
     }
 
@@ -48,7 +48,7 @@ class TwitterTest {
       main.run()
     }
 
-    if (!output.failures.isEmpty()) {
+    if (output.failures.isNotEmpty()) {
       throw output.failures[0]
     }
 

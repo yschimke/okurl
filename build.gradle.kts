@@ -13,7 +13,7 @@ plugins {
   id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
   id("com.palantir.consistent-versions") version "1.5.0"
-  id("com.diffplug.gradle.spotless") version "3.21.1"
+  id("com.diffplug.gradle.spotless") version "3.23.0"
 }
 
 repositories {
@@ -24,6 +24,7 @@ repositories {
   maven(url = "https://jitpack.io")
   maven(url = "http://repo.maven.apache.org/maven2")
   maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/")
+  maven(url = "https://dl.bintray.com/kotlin/kotlin-dev/")
   maven(url = "https://repo.spring.io/milestone/")
   maven(url = "https://dl.bintray.com/reactivesocket/RSocket/")
   maven(url = "https://oss.sonatype.org/content/repositories/releases/")
