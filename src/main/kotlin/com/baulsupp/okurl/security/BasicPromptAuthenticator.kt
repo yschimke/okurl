@@ -51,7 +51,7 @@ class BasicPromptAuthenticator(val credentials: BasicCredentials? = null) : Auth
     }
 
     if (System.console() != null) {
-      System.console().printf("Basic Auth (${challenge.realm()})\n")
+      System.console().printf("Basic Auth (${challenge.realm})\n")
       val user = System.console().readLine("User: ")
       val password = System.console().readPassword("Password: ")
 
