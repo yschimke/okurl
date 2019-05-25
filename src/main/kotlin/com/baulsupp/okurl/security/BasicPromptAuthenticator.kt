@@ -17,7 +17,7 @@ class BasicPromptAuthenticator(val credentials: BasicCredentials? = null) : Auth
 
   override fun authenticate(route: Route?, response: Response): Request? {
     val request = response.request()
-    val challenge = response.challenges().find { it.scheme == "Basic" }
+    val challenge = response.challenges().find { it.scheme() == "Basic" }
       ?: throw IOException("No Basic Challenge found")
     val proxy = response.code() == HTTP_PROXY_AUTH
 
