@@ -5,7 +5,6 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.services.github.GithubAuthInterceptor
-import com.baulsupp.okurl.util.TestUtil.projectFile
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.Test
@@ -21,23 +20,6 @@ class GithubTest {
   init {
     main.outputHandler = output
     main.credentialsStore = credentialsStore
-  }
-
-  @Test
-  fun completeEndpointShortCommand1() {
-    runBlocking {
-      credentialsStore.set(service, DefaultToken.name, Oauth2Token("ABC"))
-
-      main.commandName = "okapi"
-      main.arguments = mutableListOf(projectFile("src/test/kotlin/commands/githubapi").absolutePath, "/")
-      main.urlComplete = true
-      main.debug = true
-
-      main.run()
-    }
-
-    assertEquals(mutableListOf(), output.failures)
-    assertTrue(output.stdout[0].contains("/user"))
   }
 
   @Test

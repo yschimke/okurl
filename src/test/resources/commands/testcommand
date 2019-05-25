@@ -1,3 +1,0 @@
-#!/usr/bin/env okapi
-
-"https://api1.test.com" + item

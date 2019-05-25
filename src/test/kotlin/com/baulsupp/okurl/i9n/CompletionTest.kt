@@ -2,7 +2,6 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
-import com.baulsupp.okurl.util.TestUtil.projectFile
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.jupiter.api.BeforeEach
@@ -58,53 +57,6 @@ class CompletionTest {
 
     val cacheFileContent = readCompletionFile()
     assertEquals("[^/]*:?/?/?[^/]*", cacheFileContent[0])
-  }
-
-  @Test
-  fun completeEndpointShortCommand1() {
-    main.commandName = "okapi"
-    main.arguments = mutableListOf(projectFile("src/test/resources/commands/testcommand").absolutePath, "")
-
-    runBlocking {
-      main.run()
-    }
-
-    assertEquals(listOf("/account.json\n/users.json\n/usersList.json"), output.stdout)
-
-    val cacheFileContent = readCompletionFile()
-    assertEquals("/.*", cacheFileContent[0])
-  }
-
-  @Test
-  fun completeEndpointShortCommand2() {
-    main.commandName = "okapi"
-    main.arguments = mutableListOf(projectFile("src/test/resources/commands/testcommand").absolutePath, "/users")
-
-    runBlocking {
-      main.run()
-    }
-
-    assertEquals(listOf("/users.json\n/usersList.json"), output.stdout)
-
-    val cacheFileContent = readCompletionFile()
-    assertEquals("/users.*", cacheFileContent[0])
-  }
-
-  @Test
-  fun completeEndpointsForTwitter() {
-    main.commandName = "okapi"
-    main.arguments = mutableListOf(projectFile("src/test/kotlin/commands/twitterapi").absolutePath, "/")
-
-    runBlocking {
-      main.run()
-    }
-
-    assertEquals(1, output.stdout.size)
-    assertTrue(output.stdout[0].contains("\n/1.1/geo/places.json\n"))
-
-    val cacheFileContent = readCompletionFile()
-    assertEquals("/.*", cacheFileContent[0])
-    assertTrue(cacheFileContent.contains("/1.1/geo/places.json"))
   }
 
   @Test
