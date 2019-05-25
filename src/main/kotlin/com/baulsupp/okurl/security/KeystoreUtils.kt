@@ -28,7 +28,7 @@ object KeystoreUtils {
     keyManagers: Array<KeyManager>?,
     trustManagers: X509TrustManager
   ): SSLSocketFactory {
-    val context = Platform.get().newSSLContext()
+    val context = Platform.get().sslContext
 
     context.init(keyManagers, arrayOf<TrustManager>(trustManagers), null)
 

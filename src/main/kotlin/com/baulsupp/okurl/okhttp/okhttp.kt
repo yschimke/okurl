@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.okhttp
 
 import okhttp3.CipherSuite
-import okhttp3.CipherSuite.Companion.forJavaName
+import okhttp3.CipherSuite.forJavaName
 import okhttp3.ConnectionSpec
 import okhttp3.TlsVersion
 import okhttp3.tls.HandshakeCertificates

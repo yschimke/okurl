@@ -4,7 +4,7 @@ import com.baulsupp.oksocial.output.UsageException
 
 enum class CtMode {
   OFF,
-  REPORT,
+  LOG,
   FAIL;
 
   companion object {

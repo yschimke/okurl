@@ -375,7 +375,7 @@ abstract class CommandLineClient : ToolSession {
     }
 
     if (certificateTransparency != CtMode.OFF) {
-      builder.interceptors() += certificateTransparencyInterceptor {
+      builder.networkInterceptors() += certificateTransparencyInterceptor {
         trustManager { trustManager }
 
         certificateTransparencyHosts?.forEach {
