@@ -27,6 +27,7 @@ import com.baulsupp.okurl.okhttp.PotentialResponse
 import com.baulsupp.okurl.okhttp.SuccessfulResponse
 import com.baulsupp.okurl.sse.SseOutput
 import com.baulsupp.okurl.sse.handleSseResponse
+import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.FileContent
 import com.baulsupp.okurl.util.HeaderUtil
 import com.github.rvesse.airline.CommandFactory
@@ -234,7 +235,11 @@ class Main : CommandLineClient() {
           response.response.close()
         }
         is FailedResponse -> {
-          outputHandler.showError("request failed", response.exception)
+          if (response.exception is ClientException) {
+            outputHandler.showError(response.exception.responseMessage)
+          } else {
+            outputHandler.showError("request failed", response.exception)
+          }
           failed = true
         }
       }
