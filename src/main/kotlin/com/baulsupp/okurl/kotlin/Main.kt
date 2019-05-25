@@ -7,8 +7,8 @@ import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.parser.errors.ParseException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.runBlocking
 import org.conscrypt.OpenSSLProvider
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.io.File
@@ -68,25 +68,26 @@ class Main : CommandLineClient() {
   }
 }
 
-@ExperimentalCoroutinesApi
-suspend fun main(args: Array<String>) {
-  DebugProbes.install()
+fun main(args: Array<String>) {
+  runBlocking {
+    DebugProbes.install()
 
-  Security.insertProviderAt(OpenSSLProvider(), 1)
+    Security.insertProviderAt(OpenSSLProvider(), 1)
 
-  try {
-    val command = SingleCommand.singleCommand(Main::class.java).parse(*args)
-    val result = command.run()
-    System.exit(result)
-  } catch (e: Throwable) {
-    when (e) {
-      is ParseException, is UsageException -> {
-        System.err.println("okurl: ${e.message}")
-        System.exit(-1)
-      }
-      else -> {
-        e.printStackTrace()
-        System.exit(-1)
+    try {
+      val command = SingleCommand.singleCommand(Main::class.java).parse(*args)
+      val result = command.run()
+      System.exit(result)
+    } catch (e: Throwable) {
+      when (e) {
+        is ParseException, is UsageException -> {
+          System.err.println("okurl: ${e.message}")
+          System.exit(-1)
+        }
+        else -> {
+          e.printStackTrace()
+          System.exit(-1)
+        }
       }
     }
   }

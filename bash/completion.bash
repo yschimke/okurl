@@ -155,24 +155,3 @@ function _okurl_complete ()
 }
 
 complete -F _okurl_complete okurl
-
-complete -F _okurl_complete 4sqapi
-complete -F _okurl_complete fbapi
-complete -F _okurl_complete fitbitapi
-complete -F _okurl_complete giphyapi
-complete -F _okurl_complete githubapi
-complete -F _okurl_complete imgurapi
-complete -F _okurl_complete igapi
-complete -F _okurl_complete linkedinapi
-complete -F _okurl_complete lyftapi
-complete -F _okurl_complete mapboxapi
-complete -F _okurl_complete msftapi
-complete -F _okurl_complete slackapi
-complete -F _okurl_complete spotifyapi
-complete -F _okurl_complete squareapi
-complete -F _okurl_complete stackexchangeapi
-complete -F _okurl_complete surveymonkeyapi
-complete -F _okurl_complete transferwiseapi
-complete -F _okurl_complete twilioapi
-complete -F _okurl_complete twitterapi
-complete -F _okurl_complete uberapi

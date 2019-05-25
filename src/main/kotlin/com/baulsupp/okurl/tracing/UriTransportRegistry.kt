@@ -5,8 +5,6 @@ import com.baulsupp.okurl.tracing.UriHandler.Companion.loadServices
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.net.URI
-import java.util.ArrayList
-import java.util.ServiceLoader
 
 /**
  * Registry for looking up transports by URI.
@@ -14,14 +12,7 @@ import java.util.ServiceLoader
  *
  * Uses the Jar Services mechanism with services defined by [UriHandler].
  */
-class UriTransportRegistry(services: ServiceLoader<UriHandler>) {
-  private val handlers: List<UriHandler>
-
-  init {
-    handlers = ArrayList()
-    services.forEach { handlers.add(it) }
-  }
-
+class UriTransportRegistry(val handlers: List<UriHandler>) {
   private fun findClient(uriString: String): Reporter<Span> {
     val uri = URI.create(uriString)
 

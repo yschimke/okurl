@@ -10,6 +10,11 @@ import okhttp3.Request
 import java.util.Scanner
 
 class OkWsCommand : ShellCommand, MainAware {
+  init {
+    println("OkWsCommand")
+    Exception().printStackTrace()
+  }
+
   private var main: Main? = null
 
   override fun setMain(main: Main) {
