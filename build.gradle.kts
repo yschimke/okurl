@@ -128,6 +128,7 @@ dependencies {
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3")
   implementation("org.zeroturnaround:zt-exec")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug")
+  implementation("com.babylon.certificatetransparency:certificatetransparency")
 
   implementation("org.jetbrains.kotlin:kotlin-script-util") {
     exclude(module = "kotlin-compiler")

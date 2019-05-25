@@ -40,3 +40,4 @@ org.junit.jupiter:*=5.5.0-M1
 org.slf4j:*=1.8.0-beta4
 org.zeroturnaround:zt-exec=1.10
 pt.davidafsilva.apple:jkeychain=1.0.0
+com.babylon.certificatetransparency:certificatetransparency=0.1.1
