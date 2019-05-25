@@ -2,8 +2,6 @@ package com.baulsupp.okurl.test
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
-import org.conscrypt.OpenSSLProvider
-import javax.net.ssl.SSLContext
 
 @ExperimentalCoroutinesApi
 private suspend fun runMain(s: String) {
@@ -11,8 +9,8 @@ private suspend fun runMain(s: String) {
 }
 
 @ExperimentalCoroutinesApi
-suspend fun main(args: Array<String>) {
+suspend fun main() {
   DebugProbes.install()
 
-  runMain("--debug --urlCompletion https://api.opsgenie.com/")
+  runMain("--ct FAIL --ctHost *.twitter.com https://api.twitter.com/robots.txt")
 }

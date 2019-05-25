@@ -4,6 +4,8 @@ import brave.Tracing
 import brave.http.HttpTracing
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
+import com.babylon.certificatetransparency.VerificationResult
+import com.babylon.certificatetransparency.certificateTransparencyInterceptor
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
@@ -40,6 +42,7 @@ import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
 import com.baulsupp.okurl.security.CertificateUtils
 import com.baulsupp.okurl.security.ConsoleCallbackHandler
+import com.baulsupp.okurl.security.CtMode
 import com.baulsupp.okurl.security.InsecureHostnameVerifier
 import com.baulsupp.okurl.security.InsecureTrustManager
 import com.baulsupp.okurl.security.KeystoreUtils
@@ -213,6 +216,12 @@ abstract class CommandLineClient : ToolSession {
   @Option(name = ["--localCerts"], description = "Local Certificates")
   var localCerts: File? = File(System.getenv("INSTALLDIR") ?: ".", "certificates")
 
+  @Option(name = ["--ct"], description = "Certificate Transparency")
+  var certificateTransparency = CtMode.OFF
+
+  @Option(name = ["--ctHost"], description = "Certificate Transparency")
+  var certificateTransparencyHosts: List<String>? = null
+
   @Arguments(title = ["arguments"], description = "Remote resource URLs")
   var arguments: MutableList<String> = ArrayList()
 
@@ -363,6 +372,26 @@ abstract class CommandLineClient : ToolSession {
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
+    }
+
+    if (certificateTransparency != CtMode.OFF) {
+      builder.interceptors() += certificateTransparencyInterceptor {
+        trustManager { trustManager }
+
+        certificateTransparencyHosts?.forEach {
+          addHost(it)
+        }
+
+        failOnError = certificateTransparency == CtMode.FAIL
+
+        logger = object: com.babylon.certificatetransparency.Logger {
+          override fun log(host: String, result: VerificationResult) {
+            runBlocking {
+              outputHandler.showError("CT: $host $result")
+            }
+          }
+        }
+      }
     }
   }
 
