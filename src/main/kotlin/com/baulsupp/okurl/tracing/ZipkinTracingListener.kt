@@ -152,9 +152,9 @@ class ZipkinTracingListener(
       connectionSpan!!.tag("proxy", connection.route().proxy().toString())
     }
     if (connection.handshake() != null) {
-      connectionSpan!!.tag("cipher", connection.handshake()!!.cipherSuite().toString())
-      connectionSpan!!.tag("peer", connection.handshake()!!.peerPrincipal()!!.toString())
-      connectionSpan!!.tag("tls", connection.handshake()!!.tlsVersion().toString())
+      connectionSpan!!.tag("cipher", connection.handshake()!!.cipherSuite.toString())
+      connectionSpan!!.tag("peer", connection.handshake()!!.peerPrincipal!!.toString())
+      connectionSpan!!.tag("tls", connection.handshake()!!.tlsVersion.toString())
     }
     connectionSpan!!.tag("protocol", connection.protocol().toString())
 

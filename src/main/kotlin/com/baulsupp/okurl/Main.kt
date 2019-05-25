@@ -253,10 +253,10 @@ class Main : CommandLineClient() {
       logger.fine("Protocol: ${response.protocol()}")
 
       if (handshake != null) {
-        logger.fine("TLS Version: ${handshake.tlsVersion()}")
-        logger.fine("Cipher: ${handshake.cipherSuite()}")
-        logger.fine("Peer Principal: ${handshake.peerPrincipal() ?: "none"}")
-        logger.fine("Local Principal: ${handshake.localPrincipal() ?: "none"}")
+        logger.fine("TLS Version: ${handshake.tlsVersion}")
+        logger.fine("Cipher: ${handshake.cipherSuite}")
+        logger.fine("Peer Principal: ${handshake.peerPrincipal ?: "none"}")
+        logger.fine("Local Principal: ${handshake.localPrincipal ?: "none"}")
         logger.fine("JVM: ${System.getProperty("java.vm.version")}")
       }
     }
