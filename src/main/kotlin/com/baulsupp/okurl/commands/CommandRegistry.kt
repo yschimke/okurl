@@ -1,9 +1,11 @@
 package com.baulsupp.okurl.commands
 
-import java.util.ServiceLoader
+import com.baulsupp.okurl.ws.OkWsCommand
 
 class CommandRegistry {
-  private val commands: List<ShellCommand> = ServiceLoader.load(ShellCommand::class.java).toList()
+  private val commands: List<ShellCommand> by lazy {
+    listOf(OkurlCommand(), OkWsCommand())
+  }
 
   fun names(): List<String> {
     return commands.map { it.name() }

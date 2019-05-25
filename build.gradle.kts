@@ -14,6 +14,8 @@ plugins {
   id("net.nemerosa.versioning") version "2.8.2"
   id("com.palantir.consistent-versions") version "1.5.0"
   id("com.diffplug.gradle.spotless") version "3.23.0"
+  id("com.palantir.graal") version "0.3.0-6-g0b828af"
+  id("com.hpe.kraal") version "0.0.15"
 }
 
 repositories {
@@ -51,6 +53,9 @@ tasks {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.apiVersion = "1.3"
     kotlinOptions.languageVersion = "1.3"
+
+    kotlinOptions.allWarningsAsErrors = false
+    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
   }
 }
 
@@ -284,6 +289,14 @@ dependencyUpdates.resolutionStrategy {
       }
     }
   }
+}
+
+graal {
+  graalVersion("1.0.0-rc16")
+  mainClass("com.baulsupp.okurl.MainKt")
+  outputName("okurl")
+  option("--configurations-path")
+  option("graal.config")
 }
 
 spotless {

@@ -10,8 +10,7 @@ import com.baulsupp.okurl.authenticator.PrintCredentials
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.commands.CommandRegistry
 import com.baulsupp.okurl.commands.MainAware
-import com.baulsupp.okurl.commands.OkApiCommand
-import com.baulsupp.okurl.commands.OksocialCommand
+import com.baulsupp.okurl.commands.OkurlCommand
 import com.baulsupp.okurl.commands.ShellCommand
 import com.baulsupp.okurl.commands.listOptions
 import com.baulsupp.okurl.completion.CompletionCommand
@@ -30,16 +29,17 @@ import com.baulsupp.okurl.sse.SseOutput
 import com.baulsupp.okurl.sse.handleSseResponse
 import com.baulsupp.okurl.util.FileContent
 import com.baulsupp.okurl.util.HeaderUtil
+import com.github.rvesse.airline.CommandFactory
 import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.annotations.Option
+import com.github.rvesse.airline.model.MetadataLoader
+import com.github.rvesse.airline.model.ParserMetadata
 import com.github.rvesse.airline.parser.errors.ParseException
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
 import okhttp3.MediaType
@@ -183,30 +183,9 @@ class Main : CommandLineClient() {
       return null
     }
 
-    var urlToComplete = arguments[arguments.size - 1]
+    val urlToComplete = arguments[arguments.size - 1]
 
-    val command = getShellCommand()
-
-    if (command is OkApiCommand) {
-      val requests = command.buildRequests(client, arguments)
-
-      if (requests.isNotEmpty()) {
-        val newUrl = requests[0].url()
-
-        // support "" -> http://api.test.com
-        if (urlToComplete.isEmpty() && newUrl.encodedPath() == "/") {
-          urlToComplete = "/"
-          arguments.removeAt(arguments.size - 1)
-          arguments.add(urlToComplete)
-        }
-
-        val newUrlCompletion = newUrl.toString()
-
-        if (newUrlCompletion.endsWith(urlToComplete)) {
-          return newUrlCompletion
-        }
-      }
-    } else if (UrlCompleter.isPossibleAddress(urlToComplete)) {
+    if (UrlCompleter.isPossibleAddress(urlToComplete)) {
       return urlToComplete
     }
 
@@ -321,18 +300,21 @@ class Main : CommandLineClient() {
     }
   }
 
-  fun getShellCommand(): ShellCommand {
-    var shellCommand = commandRegistry.getCommandByName(commandName)
+  fun getShellCommand(): ShellCommand = when (commandName) {
+    "okurl" -> OkurlCommand()
+    else -> {
+      var shellCommand = commandRegistry.getCommandByName(commandName)
 
-    if (shellCommand == null) {
-      shellCommand = OksocialCommand()
+      if (shellCommand == null) {
+        shellCommand = OkurlCommand()
+      }
+
+      shellCommand
     }
-
-    if (shellCommand is MainAware) {
-      (shellCommand as MainAware).setMain(this)
+  }.apply {
+    if (this is MainAware) {
+      (this as MainAware).setMain(this@Main)
     }
-
-    return shellCommand
   }
 
   suspend fun authorize() {
@@ -419,14 +401,10 @@ class Main : CommandLineClient() {
   }
 }
 
-@ExperimentalCoroutinesApi
 suspend fun main(args: Array<String>) {
-  DebugProbes.install()
-
-  Main.setupProvider()
-
   try {
-    val result = SingleCommand.singleCommand(Main::class.java).parse(*args).run()
+    val parserConfig2 = parserMetadata()
+    val result = SingleCommand.singleCommand(Main::class.java, parserConfig2).parse(*args).run()
     System.exit(result)
   } catch (e: Throwable) {
     when (e) {
@@ -440,4 +418,16 @@ suspend fun main(args: Array<String>) {
       }
     }
   }
+}
+
+private fun parserMetadata(): ParserMetadata<Main> {
+  val parserConfig = MetadataLoader.loadParser<Main>(Main::class.java)
+  val commandFactory = CommandFactory { Main() }
+  return ParserMetadata(commandFactory, parserConfig.optionParsers, parserConfig.typeConverter,
+    parserConfig.errorHandler, parserConfig.allowsAbbreviatedCommands(),
+    parserConfig.allowsAbbreviatedOptions(),
+    parserConfig.aliases, parserConfig.userAliasesSource, parserConfig.aliasesOverrideBuiltIns(),
+    parserConfig.aliasesMayChain(), parserConfig.aliasForceBuiltInPrefix,
+    parserConfig.argumentsSeparator,
+    parserConfig.flagNegationPrefix)
 }

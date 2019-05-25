@@ -31,13 +31,13 @@ class LocalCredentialsTest {
     val credentialsStore = CredentialFactory.createCredentialsStore()
 
     services.flatMap {
-      testsForService(credentialsStore, it)
+      testsForService(credentialsStore, it as AuthInterceptor<Any>)
     }
   }
 
-  private suspend fun <T : Any> testsForService(
+  private suspend fun testsForService(
     credentialsStore: CredentialsStore,
-    it: AuthInterceptor<T>
+    it: AuthInterceptor<Any>
   ): List<DynamicTest> {
     val x = credentialsStore.findAllNamed(it.serviceDefinition)
 
