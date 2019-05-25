@@ -402,10 +402,6 @@ class Main : CommandLineClient() {
 }
 
 suspend fun main(args: Array<String>) {
-//  DebugProbes.install()
-
-//  Main.setupProvider()
-
   try {
     val parserConfig2 = parserMetadata()
     val result = SingleCommand.singleCommand(Main::class.java, parserConfig2).parse(*args).run()
