@@ -12,9 +12,9 @@ plugins {
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
-  id("com.palantir.consistent-versions") version "1.5.0"
+  id("com.palantir.consistent-versions") version "1.8.0"
   id("com.diffplug.gradle.spotless") version "3.23.0"
-  id("com.palantir.graal") version "0.3.0-6-g0b828af"
+  id("com.palantir.graal") version "0.3.0-29-gf737c91"
   id("com.hpe.kraal") version "0.0.15"
 }
 

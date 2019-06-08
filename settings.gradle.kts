@@ -16,6 +16,16 @@ buildCache {
   }
 }
 
+pluginManagement {
+  repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+    gradlePluginPortal()
+    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+  }
+}
+
 // sourceControl {
 //  gitRepository(uri("https://github.com/yschimke/oksocial-output.git")) {
 //    producesModule("com.baulsupp:oksocial-output")
