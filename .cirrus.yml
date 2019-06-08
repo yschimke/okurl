@@ -1,0 +1,5 @@
+container:
+  image: gradle:5.4.1-jdk11
+
+check_task:
+  script: gradle check
