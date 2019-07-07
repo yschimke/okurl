@@ -26,7 +26,7 @@ class SlackAuthInterceptor : Oauth2AuthInterceptor() {
 
     val token = credentials.accessToken
 
-    val newUrl = request.url().newBuilder().addQueryParameter("token", token).build()
+    val newUrl = request.url.newBuilder().addQueryParameter("token", token).build()
 
     request = request.newBuilder().url(newUrl).build()
 

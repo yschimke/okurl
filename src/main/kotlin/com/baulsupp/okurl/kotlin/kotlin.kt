@@ -16,9 +16,11 @@ import okhttp3.Callback
 import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.Ansi.Color.GREEN
@@ -152,7 +154,7 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 // TODO
 fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
-suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body()!!.string()
+suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body!!.string()
 
 suspend fun OkHttpClient.queryForString(url: String, tokenSet: Token = DefaultToken): String =
   this.queryForString(request(url, tokenSet))
@@ -163,7 +165,7 @@ suspend fun OkHttpClient.execute(request: Request): Response {
   val response = call.await()
 
   if (!response.isSuccessful) {
-    val responseString = response.body()!!.string()
+    val responseString = response.body!!.string()
 
     val msg: String = if (responseString.isNotEmpty()) {
       responseString
@@ -171,13 +173,13 @@ suspend fun OkHttpClient.execute(request: Request): Response {
       response.statusMessage()
     }
 
-    throw ClientException(msg, response.code())
+    throw ClientException(msg, response.code)
   }
 
   return response
 }
 
-fun Response.statusMessage(): String = this.code().toString() + " " + this.message()
+fun Response.statusMessage(): String = this.code.toString() + " " + this.message
 
 fun OkHttpClient.warmup(vararg urls: String) {
   urls.forEach {
@@ -203,7 +205,7 @@ fun String.color(color: Ansi.Color): String = when {
   else -> this
 }
 
-val JSON = MediaType.get("application/json")
+val JSON = "application/json".toMediaType()
 
 fun form(init: FormBody.Builder.() -> Unit = {}): FormBody = FormBody.Builder().apply(init).build()
 
@@ -225,7 +227,7 @@ fun Request.Builder.tokenSet(tokenSet: Token): Request.Builder = tag(Token::clas
 
 fun Request.Builder.postJsonBody(body: Any) {
   val content = moshi.adapter(body.javaClass).toJson(body)!!
-  post(RequestBody.create(JSON, content))
+  post(content.toRequestBody(JSON))
 }
 
 @Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")

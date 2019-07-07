@@ -30,10 +30,10 @@ class CircleCIAuthInterceptor : Oauth2AuthInterceptor() {
 
     val token = credentials.accessToken
 
-    val newUrl = request.url().newBuilder().addQueryParameter("circle-token", token).build()
+    val newUrl = request.url.newBuilder().addQueryParameter("circle-token", token).build()
 
     val builder = request.newBuilder()
-    if (request.url().encodedPath().startsWith("/api/v1.1/")) {
+    if (request.url.encodedPath.startsWith("/api/v1.1/")) {
       builder.addHeader("Accept", "application/json")
     }
     request = builder.url(newUrl).build()

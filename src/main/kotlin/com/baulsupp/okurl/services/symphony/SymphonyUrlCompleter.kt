@@ -26,7 +26,7 @@ class SymphonyUrlCompleter(
 
   override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
     val basePaths = UrlList.fromResource("symphony") ?: throw IllegalStateException("missing resource")
-    val pod = hostPod(url.host())
+    val pod = hostPod(url.host)
 
     val mappings = CompletionMappings()
     mappings.withVariable("sid") {

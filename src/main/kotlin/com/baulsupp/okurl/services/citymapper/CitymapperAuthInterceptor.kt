@@ -20,7 +20,7 @@ class CitymapperAuthInterceptor : Oauth2AuthInterceptor() {
 
     val token = credentials.accessToken
 
-    val newUrl = request.url().newBuilder().addQueryParameter("key", token).build()
+    val newUrl = request.url.newBuilder().addQueryParameter("key", token).build()
 
     val builder = request.newBuilder()
     request = builder.url(newUrl).build()

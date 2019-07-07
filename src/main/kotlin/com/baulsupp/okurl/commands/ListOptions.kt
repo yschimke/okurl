@@ -17,8 +17,8 @@ suspend fun Main.listOptions(option: String): Collection<String> {
     "protocol" -> Protocol.values().map { it.toString() }
     "method" -> listOf("GET", "HEAD", "POST", "DELETE", "PUT", "PATCH")
     "connectionSpec" -> ConnectionSpecOption.values().map { it.name }
-    "cipherSuite" -> com.baulsupp.okurl.okhttp.cipherSuites().map { it.javaName() }
-    "tlsVersions" -> TlsVersion.values().map { it.javaName() }
+    "cipherSuite" -> com.baulsupp.okurl.okhttp.cipherSuites().map { it.javaName }
+    "tlsVersions" -> TlsVersion.values().map { it.javaName }
     "complete" -> listOf(
       "service",
       "alias",

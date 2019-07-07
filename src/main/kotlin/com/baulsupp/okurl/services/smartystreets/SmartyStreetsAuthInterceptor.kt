@@ -14,7 +14,7 @@ class SmartyStreetsAuthInterceptor : AuthInterceptor<SmartStreetsToken>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: SmartStreetsToken): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("auth-id", credentials.authId)
+    val signedUrl = request.url.newBuilder().addQueryParameter("auth-id", credentials.authId)
       .addQueryParameter("auth-token", credentials.authToken).build()
 
     request = request.newBuilder().url(signedUrl).build()
@@ -45,7 +45,7 @@ class SmartyStreetsAuthInterceptor : AuthInterceptor<SmartStreetsToken>() {
   }
 
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
-    return url.host() == "api.smartystreets.com" || url.host().endsWith(".api.smartystreets.com")
+    return url.host == "api.smartystreets.com" || url.host.endsWith(".api.smartystreets.com")
   }
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(

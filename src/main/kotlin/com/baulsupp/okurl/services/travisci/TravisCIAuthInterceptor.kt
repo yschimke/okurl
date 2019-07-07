@@ -21,6 +21,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 
 class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
   override val serviceDefinition = object :
@@ -49,7 +50,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
 
     // TODO incorrect response type for errors
     if (!response.isSuccessful && response.header("Content-Type") == "application/json") {
-      val newBody = ResponseBody.create(null, response.body()!!.bytes())
+      val newBody = response.body!!.bytes().toResponseBody(null)
       response = response.newBuilder().body(newBody).removeHeader("Content-Type").build()
     }
 

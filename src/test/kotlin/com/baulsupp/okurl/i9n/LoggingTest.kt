@@ -31,7 +31,7 @@ class LoggingTest {
   @Test
   fun logsData() {
     server.useHttps(sslClient.sslSocketFactory(), false)
-    server.setProtocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+    server.run { server.protocols = listOf(Protocol.HTTP_2, Protocol.HTTP_1_1) }
     server.enqueue(MockResponse().setBody("Isla Sorna"))
     main.allowInsecure = true
 

@@ -8,6 +8,7 @@ import com.baulsupp.okurl.services.facebook.model.AccountList
 import com.baulsupp.okurl.services.facebook.model.UserOrPage
 import com.baulsupp.okurl.util.ClientException
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -16,14 +17,14 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
   HostUrlCompleter(hosts) {
 
   override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
-    if (url.host() == "www.facebook.com") {
+    if (url.host == "www.facebook.com") {
       return UrlList.fromResource("facebook")!!
     }
 
-    var result = completePath(url.encodedPath(), tokenSet)
+    var result = completePath(url.encodedPath, tokenSet)
 
-    if (!url.encodedPath().endsWith("/")) {
-      val parentPaths = url.encodedPathSegments().toMutableList()
+    if (!url.encodedPath.endsWith("/")) {
+      val parentPaths = url.encodedPathSegments.toMutableList()
       parentPaths.removeAt(parentPaths.size - 1)
 
       val parentPath = "/" + parentPaths.joinToString("/")
@@ -86,7 +87,7 @@ class FacebookCompleter(private val client: OkHttpClient, hosts: Collection<Stri
       else -> {
         val prefix = "https://graph.facebook.com$path"
 
-        val metadata = getMetadata(client, HttpUrl.parse(prefix)!!, tokenSet)
+        val metadata = getMetadata(client, prefix.toHttpUrlOrNull()!!, tokenSet)
 
         return try {
           if (metadata == null) {

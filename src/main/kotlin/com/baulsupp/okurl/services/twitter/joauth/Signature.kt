@@ -42,20 +42,20 @@ class Signature(
 
     val javaParams = mutableListOf<Pair<String, String>>()
 
-    val queryParamNames = request.url().queryParameterNames()
+    val queryParamNames = request.url.queryParameterNames
     for (queryParam in queryParamNames) {
-      val values = request.url().queryParameterValues(queryParam)
+      val values = request.url.queryParameterValues(queryParam)
 
       values.mapTo(javaParams) {
         Pair(UrlCodec.encode(queryParam)!!, UrlCodec.encode(it)!!)
       }
     }
 
-    if (request.method() == "POST") {
-      val body: RequestBody = request.body()!!
+    if (request.method == "POST") {
+      val body: RequestBody = request.body!!
 
       if (body is FormBody) {
-        (0 until body.size()).mapTo(javaParams) {
+        (0 until body.size).mapTo(javaParams) {
           Pair(body.encodedName(it), body.encodedValue(it))
         }
       } else if (isFormContentType(request)) {
@@ -73,8 +73,8 @@ class Signature(
     }
 
     val normalized = StandardNormalizer.normalize(
-      if (request.isHttps) "https" else "http", request.url().host(), request.url().port(),
-      request.method(), request.url().encodedPath(), javaParams, oAuth1Params
+      if (request.isHttps) "https" else "http", request.url.host, request.url.port,
+      request.method, request.url.encodedPath, javaParams, oAuth1Params
     )
 
     log.log(Level.FINE, "normalised $normalized")
@@ -101,7 +101,7 @@ class Signature(
   }
 
   private fun isFormContentType(request: Request): Boolean {
-    return request.body()!!.contentType()!!.toString().startsWith(
+    return request.body!!.contentType()!!.toString().startsWith(
       "application/x-www-form-urlencoded"
     )
   }

@@ -6,6 +6,7 @@ import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -27,7 +28,8 @@ class GoogleAuthInterceptorTest {
   @Test
   fun supportsAnyGoogleApi() {
     runBlocking {
-      assertTrue(interceptor.supportsUrl(HttpUrl.parse("https://altrightfanfiction.googleapis.com")!!, credentialsStore))
+      assertTrue(interceptor.supportsUrl(
+        "https://altrightfanfiction.googleapis.com".toHttpUrlOrNull()!!, credentialsStore))
     }
   }
 
@@ -50,7 +52,7 @@ class GoogleAuthInterceptorTest {
       val hostCompleter = interceptor.apiCompleter("https://people.googleapis.com", client,
         credentialsStore, cache, DefaultToken)
 
-      val urls = hostCompleter.siteUrls(HttpUrl.parse("https://people.googleapis.com")!!,
+      val urls = hostCompleter.siteUrls("https://people.googleapis.com".toHttpUrlOrNull()!!,
         DefaultToken)
               .getUrls("https://people.googleapis.com")
 
@@ -69,7 +71,7 @@ class GoogleAuthInterceptorTest {
         credentialsStore, cache, DefaultToken)
 
       val urlList = hostCompleter.siteUrls(
-              HttpUrl.parse("https://www.googleapis.com/urlshortener/v1/url")!!,
+              "https://www.googleapis.com/urlshortener/v1/url".toHttpUrlOrNull()!!,
         DefaultToken)
 
       val urls = urlList
@@ -89,7 +91,7 @@ class GoogleAuthInterceptorTest {
       val hostCompleter = interceptor.apiCompleter("https://www.googleapis.com/", client,
         credentialsStore, cache, DefaultToken)
 
-      val urlList = hostCompleter.siteUrls(HttpUrl.parse("https://www.googleapis.com/")!!,
+      val urlList = hostCompleter.siteUrls("https://www.googleapis.com/".toHttpUrlOrNull()!!,
         DefaultToken)
 
       val urls = urlList

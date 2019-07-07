@@ -1,24 +1,25 @@
 #!/usr/bin/env okscript
 
-import com.baulsupp.okurl.kotlin.*
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.kotlin.client
+import com.baulsupp.okurl.kotlin.color
 import com.baulsupp.okurl.sse.messageHandler
 import com.baulsupp.okurl.sse.newSse
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.fusesource.jansi.Ansi
 
 val videoId = args.getOrNull(0) ?: throw UsageException("supply videoid")
 
 // https://developers.facebook.com/docs/graph-api/server-sent-events/endpoints/live-comments
-val uri = HttpUrl.parse(
-  "https://streaming-graph.facebook.com/$videoId/live_comments?comment_rate=ten_per_second&fields=message")!!
+val uri =
+  "https://streaming-graph.facebook.com/$videoId/live_comments?comment_rate=ten_per_second&fields=message".toHttpUrl()
 
 data class From(val id: String, val name: String)
 data class Comment(val view_id: Long, val from: From?, val message: String, val id: String)
 
 // https://developers.facebook.com/docs/graph-api/server-sent-events/endpoints/live-reactions
-val uri2 = HttpUrl.parse(
-  "https://streaming-graph.facebook.com/$videoId/live_reactions?fields=reaction_stream")!!
+val uri2 =
+  "https://streaming-graph.facebook.com/$videoId/live_reactions?fields=reaction_stream".toHttpUrl()
 
 data class ReactionCounts(
   val LIKE: Int,
@@ -42,9 +43,11 @@ data class ReactionCounts(
     LIKE != 0 || LOVE != 0 || WOW != 0 || HAHA != 0 || SAD != 0 || ANGRY != 0
 
   override fun toString(): String {
-    return "👍".rep(LIKE) + "❤️".rep(LOVE) + "😲".rep(WOW) + "😂".rep(HAHA) + "😢".rep(SAD) + "😡".rep(ANGRY)
+    return "👍".rep(LIKE) + "❤️".rep(LOVE) + "😲".rep(WOW) + "😂".rep(HAHA) + "😢".rep(
+      SAD) + "😡".rep(ANGRY)
   }
 }
+
 data class ReactionCount(val key: String, val value: Int)
 data class Reactions(val view_id: Long, val reaction_stream: List<ReactionCount>) {
   fun counts(): ReactionCounts {

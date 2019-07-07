@@ -31,6 +31,7 @@ class LocalCredentialsTest {
     val credentialsStore = CredentialFactory.createCredentialsStore()
 
     services.flatMap {
+      @Suppress("UNCHECKED_CAST")
       testsForService(credentialsStore, it as AuthInterceptor<Any>)
     }
   }

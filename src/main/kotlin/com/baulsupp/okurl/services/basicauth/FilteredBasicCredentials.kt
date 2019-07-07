@@ -23,10 +23,10 @@ data class FilteredBasicCredentials(val basicCredentials: BasicCredentials, val 
       if (pattern == "*")
         return true
 
-      if (pattern == url.host())
+      if (pattern == url.host)
         return true
 
-      if (pattern.startsWith("*.") && url.host().endsWith(pattern.substring(1)))
+      if (pattern.startsWith("*.") && url.host.endsWith(pattern.substring(1)))
         return true
 
       return false

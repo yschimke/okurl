@@ -59,7 +59,7 @@ class WebServerTest {
     }
 
     assertEquals(1, output.responses.size)
-    assertEquals(200, output.responses[0].code())
+    assertEquals(200, output.responses[0].code)
   }
 
   @Test
@@ -75,7 +75,7 @@ class WebServerTest {
     }
 
     assertEquals(1, output.responses.size)
-    assertEquals(200, output.responses[0].code())
+    assertEquals(200, output.responses[0].code)
   }
 
   @Test

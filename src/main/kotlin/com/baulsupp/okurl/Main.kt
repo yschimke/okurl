@@ -44,9 +44,11 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import okhttp3.Handshake
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
@@ -254,23 +256,23 @@ class Main : CommandLineClient() {
     val response = wrappedResponse.response
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("OkHttp Platform: ${Platform.get().javaClass.simpleName}")
-      val handshake: Handshake? = response.handshake()
-      logger.fine("Protocol: ${response.protocol()}")
+      val handshake: Handshake? = response.handshake
+      logger.fine("Protocol: ${response.protocol}")
 
       if (handshake != null) {
-        logger.fine("TLS Version: ${handshake.tlsVersion()}")
-        logger.fine("Cipher: ${handshake.cipherSuite()}")
-        logger.fine("Peer Principal: ${handshake.peerPrincipal() ?: "none"}")
-        logger.fine("Local Principal: ${handshake.localPrincipal() ?: "none"}")
+        logger.fine("TLS Version: ${handshake.tlsVersion}")
+        logger.fine("Cipher: ${handshake.cipherSuite}")
+        logger.fine("Peer Principal: ${handshake.peerPrincipal ?: "none"}")
+        logger.fine("Local Principal: ${handshake.localPrincipal ?: "none"}")
         logger.fine("JVM: ${System.getProperty("java.vm.version")}")
       }
     }
 
     if (showHeaders) {
       outputHandler.info(StatusLine.get(response).toString())
-      val headers = response.headers()
+      val headers = response.headers
       var i = 0
-      val size = headers.size()
+      val size = headers.size
       while (i < size) {
         outputHandler.info("${headers.name(i)}: ${headers.value(i)}")
         i++
@@ -280,7 +282,7 @@ class Main : CommandLineClient() {
       outputHandler.showError(StatusLine.get(response).toString(), null)
     }
 
-    if (isEventStream(response.body()?.contentType())) {
+    if (isEventStream(response.body?.contentType())) {
       response.handleSseResponse(SseOutput(outputHandler))
     } else {
       outputHandler.showOutput(response)
@@ -288,13 +290,13 @@ class Main : CommandLineClient() {
   }
 
   private fun isEventStream(contentType: MediaType?): Boolean {
-    return contentType != null && contentType.type() == "text" && contentType.subtype() == "event-stream"
+    return contentType != null && contentType.type == "text" && contentType.subtype == "event-stream"
   }
 
   suspend fun submitRequest(request: Request): PotentialResponse {
     val finalRequest = applyRequestFields(request)
 
-    logger.log(Level.FINE, "url " + finalRequest.url())
+    logger.log(Level.FINE, "url " + finalRequest.url)
     logger.log(Level.FINE, "Request $finalRequest")
 
     return try {
@@ -376,7 +378,7 @@ class Main : CommandLineClient() {
         ?.let { headerMap.remove(it)!! }
         ?: predictContentType(content)
 
-      RequestBody.create(MediaType.get(mimeType), content)
+      content.toRequestBody(mimeType.toMediaType(), 0, content.size)
     } catch (e: IOException) {
       throw UsageException(e.message!!)
     }

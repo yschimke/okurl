@@ -46,8 +46,8 @@ class GdaxAuthInterceptor : AuthInterceptor<GdaxCredentials>() {
     val decodedKey = credentials.apiSecret.decodeBase64()!!
 
     val sink = Buffer()
-    request.body()?.writeTo(sink)
-    val prehash = "" + timestamp + request.method() + request.url().encodedPath() + sink.snapshot().string(UTF_8)
+    request.body?.writeTo(sink)
+    val prehash = "" + timestamp + request.method + request.url.encodedPath + sink.snapshot().string(UTF_8)
     val signature = prehash.encodeUtf8().hmacSha256(decodedKey)
 
     request = request.newBuilder()

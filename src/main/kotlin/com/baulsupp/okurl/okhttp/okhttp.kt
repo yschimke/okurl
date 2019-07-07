@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.okhttp
 
 import okhttp3.CipherSuite
-import okhttp3.CipherSuite.forJavaName
+import okhttp3.CipherSuite.Companion.forJavaName
 import okhttp3.ConnectionSpec
 import okhttp3.TlsVersion
 import okhttp3.tls.HandshakeCertificates
@@ -31,7 +31,7 @@ val TLS13_CIPHER_SUITES = arrayOf(
 )
 
 val MODERN_TLS_13_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-  .cipherSuites(*(TLS13_CIPHER_SUITES.toList() + ConnectionSpec.MODERN_TLS.cipherSuites()!!.toList()).toTypedArray())
+  .cipherSuites(*(TLS13_CIPHER_SUITES.toList() + ConnectionSpec.MODERN_TLS.cipherSuites!!.toList()).toTypedArray())
   .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2, TlsVersion.TLS_1_1, TlsVersion.TLS_1_0)
   .build()
 
@@ -50,12 +50,14 @@ enum class ConnectionSpecOption(vararg val specs: ConnectionSpec) {
   CLEARTEXT(ConnectionSpec.CLEARTEXT);
 }
 
-fun defaultConnectionSpec(): ConnectionSpecOption =
-  if ("11" == System.getProperty("java.specification.version")) {
+fun defaultConnectionSpec(): ConnectionSpecOption {
+  val jdkVersion = System.getProperty("java.specification.version").toIntOrNull() ?: 0
+  return if (jdkVersion >= 11) {
     ConnectionSpecOption.MODERN_TLS_13
   } else {
     ConnectionSpecOption.MODERN_TLS
   }
+}
 
 class CipherSuiteOption(s: String) {
   val suite: CipherSuite = forJavaName(s)
@@ -78,6 +80,6 @@ fun localhost(): HandshakeCertificates {
 
   return HandshakeCertificates.Builder()
     .heldCertificate(heldCertificate)
-    .addTrustedCertificate(heldCertificate.certificate())
+    .addTrustedCertificate(heldCertificate.certificate)
     .build()
 }

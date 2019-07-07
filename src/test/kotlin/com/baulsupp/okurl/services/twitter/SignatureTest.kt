@@ -2,8 +2,10 @@ package com.baulsupp.okurl.services.twitter
 
 import com.baulsupp.okurl.services.twitter.joauth.Signature
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.junit.jupiter.api.Test
 
 import java.time.Clock
@@ -17,8 +19,7 @@ class SignatureTest {
     val clock = Clock.fixed(Instant.ofEpochMilli(1460432867000L), ZoneId.of("UTC"))
     val s = Signature(clock) { 9L }
 
-    val body = RequestBody.create(MediaType.get("application/x-www-form-urlencoded"),
-        "oauth_callback=oob")
+    val body = "oauth_callback=oob".toRequestBody("application/x-www-form-urlencoded".toMediaType())
     val request = Request.Builder().url("https://api.twitter.com/oauth/request_token").post(
         body).build()
 

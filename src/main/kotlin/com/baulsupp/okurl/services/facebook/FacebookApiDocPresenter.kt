@@ -6,6 +6,7 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.Token
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
@@ -22,7 +23,7 @@ class FacebookApiDocPresenter(private val sd: ServiceDefinition<Oauth2Token>) : 
     sd.apiDocs()?.let { outputHandler.info("docs: $it") }
     sd.accountsLink()?.let { outputHandler.info("apps: $it") }
 
-    val parsedUrl = HttpUrl.parse(url)
+    val parsedUrl = url.toHttpUrlOrNull()
 
     if (parsedUrl != null) {
       val md = getMetadata(client, parsedUrl, tokenSet)

@@ -20,6 +20,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.Buffer
 import java.io.File
@@ -60,7 +61,7 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
   private fun repairJsonRequests(request: Request, builder: Request.Builder) {
     if (request.header("Content-Type") == "application/x-www-form-urlencoded") {
       val buffer = Buffer()
-      request.body()!!.writeTo(buffer)
+      request.body!!.writeTo(buffer)
 
       // repair missing header
       if (buffer.size > 0 && (buffer[0] == '['.toByte() || buffer[0] == '{'.toByte())) {
@@ -113,12 +114,12 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
 
     val authResponse = authClient.query<TokenResponse>(request {
       url("https://$pod-api.symphony.com/sessionauth/v1/authenticate")
-      post(RequestBody.create(JSON, "{}"))
+      post("{}".toRequestBody(JSON))
     })
 
     val keyResponse = authClient.query<TokenResponse>(request {
       url("https://$pod-api.symphony.com/keyauth/v1/authenticate")
-      post(RequestBody.create(JSON, "{}"))
+      post("{}".toRequestBody(JSON))
     })
 
     return SymphonyCredentials(pod, keystoreFile, password, authResponse.token, keyResponse.token)
@@ -164,7 +165,7 @@ class SymphonyAuthInterceptor : AuthInterceptor<SymphonyCredentials>() {
   }
 
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean =
-    url.host().endsWith("symphony.com")
+    url.host.endsWith("symphony.com")
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> {
     // TODO make suspend function

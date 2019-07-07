@@ -43,7 +43,7 @@ class ImgurAuthInterceptor : Oauth2AuthInterceptor() {
       )
     )
 
-  override fun canRenew(result: Response): Boolean = result.code() == 403
+  override fun canRenew(result: Response): Boolean = result.code == 403
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("refresh_token", credentials.refreshToken!!)

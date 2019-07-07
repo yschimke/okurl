@@ -26,7 +26,7 @@ class TflAuthInterceptor : AuthInterceptor<TflCredentials>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: TflCredentials): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("app_id", credentials.appId)
+    val signedUrl = request.url.newBuilder().addQueryParameter("app_id", credentials.appId)
       .addQueryParameter("app_key", credentials.apiKey).build()
 
     request = request.newBuilder().url(signedUrl).build()

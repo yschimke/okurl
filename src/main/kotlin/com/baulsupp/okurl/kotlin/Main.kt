@@ -7,6 +7,7 @@ import com.github.rvesse.airline.HelpOption
 import com.github.rvesse.airline.SingleCommand
 import com.github.rvesse.airline.annotations.Command
 import com.github.rvesse.airline.parser.errors.ParseException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import org.conscrypt.OpenSSLProvider
@@ -16,6 +17,7 @@ import java.security.Security
 import javax.inject.Inject
 import javax.script.ScriptException
 import kotlin.reflect.KClass
+import kotlin.system.exitProcess
 
 @Command(name = Main.NAME, description = "Kotlin scripting for APIs")
 class Main : CommandLineClient() {
@@ -68,26 +70,24 @@ class Main : CommandLineClient() {
   }
 }
 
-fun main(args: Array<String>) {
-  runBlocking {
-    DebugProbes.install()
+@ExperimentalCoroutinesApi fun main(args: Array<String>): Unit = runBlocking {
+  DebugProbes.install()
 
-    Security.insertProviderAt(OpenSSLProvider(), 1)
+  Security.insertProviderAt(OpenSSLProvider(), 1)
 
-    try {
-      val command = SingleCommand.singleCommand(Main::class.java).parse(*args)
-      val result = command.run()
-      System.exit(result)
-    } catch (e: Throwable) {
-      when (e) {
-        is ParseException, is UsageException -> {
-          System.err.println("okurl: ${e.message}")
-          System.exit(-1)
-        }
-        else -> {
-          e.printStackTrace()
-          System.exit(-1)
-        }
+  try {
+    val command = SingleCommand.singleCommand(Main::class.java).parse(*args)
+    val result = command.run()
+    exitProcess(result)
+  } catch (e: Throwable) {
+    when (e) {
+      is ParseException, is UsageException -> {
+        System.err.println("okurl: ${e.message}")
+        exitProcess(-1)
+      }
+      else -> {
+        e.printStackTrace()
+        exitProcess(-1)
       }
     }
   }
