@@ -8,10 +8,10 @@ class TwitterCachingInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val originalResponse = chain.proceed(chain.request())
 
-    val host = chain.request().url().host()
+    val host = chain.request().url.host
 
     if (TwitterUtil.TWITTER_API_HOSTS.contains(host)) {
-      if (originalResponse.code() == 200) {
+      if (originalResponse.code == 200) {
         var cacheSeconds = 60
 
         if (permanentHosts.contains(host)) {

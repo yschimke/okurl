@@ -18,7 +18,7 @@ class WeekdoneAuthInterceptor : Oauth2AuthInterceptor() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("token", credentials.accessToken).build()
+    val signedUrl = request.url.newBuilder().addQueryParameter("token", credentials.accessToken).build()
 
     request = request.newBuilder().url(signedUrl).build()
 

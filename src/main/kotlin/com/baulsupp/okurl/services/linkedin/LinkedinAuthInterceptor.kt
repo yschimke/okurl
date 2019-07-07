@@ -26,7 +26,7 @@ class LinkedinAuthInterceptor : Oauth2AuthInterceptor() {
 
     val requestBuilder = request.newBuilder().addHeader("Authorization", "Bearer $token")
 
-    if (request.url().queryParameter("format") == null && request.header("x-li-format") == null) {
+    if (request.url.queryParameter("format") == null && request.header("x-li-format") == null) {
       requestBuilder.addHeader("x-li-format", "json")
     }
 

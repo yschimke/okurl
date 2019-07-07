@@ -27,7 +27,7 @@ abstract class AuthInterceptor<T> {
     get() = 0
 
   open suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean = try {
-    hosts(credentialsStore).contains(url.host())
+    hosts(credentialsStore).contains(url.host)
   } catch (e: IOException) {
     logger.log(Level.WARNING, "failed getting hosts", e)
     false
@@ -54,7 +54,7 @@ abstract class AuthInterceptor<T> {
 
   open suspend fun validate(client: OkHttpClient, credentials: T): ValidatedCredentials = ValidatedCredentials()
 
-  open fun canRenew(result: Response): Boolean = result.code() == 401
+  open fun canRenew(result: Response): Boolean = result.code == 401
 
   open fun canRenew(credentials: T): Boolean = false
 

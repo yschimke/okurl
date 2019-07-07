@@ -21,6 +21,7 @@ import com.baulsupp.okurl.services.google.model.AuthError
 import com.baulsupp.okurl.util.ClientException
 import okhttp3.FormBody
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -49,9 +50,9 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
 
     val response = chain.proceed(request)
 
-    if (isFirebaseHost(request.url().host())) {
+    if (isFirebaseHost(request.url.host)) {
       if (response.isSuccessful) {
-        FirebaseCompleter.registerKnownHost(request.url().host())
+        FirebaseCompleter.registerKnownHost(request.url.host)
       }
     }
 
@@ -63,7 +64,7 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
   }
 
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
-    val host = url.host()
+    val host = url.host
 
     return "api.google.com" == host || host.endsWith(".googleapis.com") || host.endsWith(".firebaseio.com")
   }
@@ -117,7 +118,7 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
       discoveryCompletion(prefix, client)
     }
 
-  private fun isFirebaseUrl(url: String): Boolean = HttpUrl.parse(url)?.host()?.let { isFirebaseHost(it) } ?: false
+  private fun isFirebaseUrl(url: String): Boolean = url.toHttpUrlOrNull()?.host?.let { isFirebaseHost(it) } ?: false
 
   private fun isFirebaseHost(host: String) = host.endsWith(".firebaseio.com")
 
@@ -129,7 +130,7 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
 
   private fun googleDiscoveryHosts(): Set<String> {
     return UrlList.fromResource(name())!!.getUrls("").map {
-      HttpUrl.parse(it)!!.host()
+      it.toHttpUrlOrNull()!!.host
     }.toSet()
   }
 

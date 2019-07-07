@@ -16,7 +16,7 @@
 package com.baulsupp.okurl.network.dnsoverhttps
 
 import okhttp3.Cache
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
 import java.io.File
@@ -45,7 +45,7 @@ object TestDohMain {
 
       println("Bad targets\n***********\n")
 
-      val url = HttpUrl.get("https://dns.cloudflare.com/.not-so-well-known/run-dmc-query")
+      val url = "https://dns.cloudflare.com/.not-so-well-known/run-dmc-query".toHttpUrl()
       val badProviders = listOf(DnsOverHttps.Builder().client(bootstrapClient)
               .url(url)
               .post(true)
@@ -62,9 +62,9 @@ object TestDohMain {
       dnsProviders = DohProviders.providers(bootstrapClient, true)
       runBatch(dnsProviders, names)
     } finally {
-      bootstrapClient.connectionPool().evictAll()
-      bootstrapClient.dispatcher().executorService().shutdownNow()
-      val cache = bootstrapClient.cache()
+      bootstrapClient.connectionPool.evictAll()
+      bootstrapClient.dispatcher.executorService.shutdownNow()
+      val cache = bootstrapClient.cache
       cache?.close()
     }
   }
@@ -73,7 +73,7 @@ object TestDohMain {
     var time = System.currentTimeMillis()
 
     for (dns in dnsProviders) {
-      println("Testing " + dns.url())
+      println("Testing " + dns.url)
 
       for (host in names) {
         print("$host: ")

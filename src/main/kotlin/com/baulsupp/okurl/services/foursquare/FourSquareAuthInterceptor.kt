@@ -26,9 +26,9 @@ class FourSquareAuthInterceptor : Oauth2AuthInterceptor() {
 
     val token = credentials.accessToken
 
-    val urlBuilder = request.url().newBuilder()
+    val urlBuilder = request.url.newBuilder()
     urlBuilder.addQueryParameter("oauth_token", token)
-    if (request.url().queryParameter("v") == null) {
+    if (request.url.queryParameter("v") == null) {
       urlBuilder.addQueryParameter("v", LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE))
     }
 

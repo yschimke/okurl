@@ -23,7 +23,7 @@ class StreamdataAuthInterceptor : AuthInterceptor<String>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: String): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("X-Sd-Token", credentials).build()
+    val signedUrl = request.url.newBuilder().addQueryParameter("X-Sd-Token", credentials).build()
 
     request = request.newBuilder().url(signedUrl).build()
 

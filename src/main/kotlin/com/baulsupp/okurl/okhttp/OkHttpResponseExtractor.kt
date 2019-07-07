@@ -7,21 +7,21 @@ import okio.BufferedSource
 
 class OkHttpResponseExtractor : ResponseExtractor<Response> {
   override fun mimeType(response: Response): String? {
-    val host = response.request().url().host()
+    val host = response.request.url.host
 
-    val mediaType = response.body()?.contentType()
+    val mediaType = response.body?.contentType()
 
     return when {
-      host == "graph.facebook.com" && mediaType?.subtype() == "javascript" -> JSON.toString()
-      host == "dns.google.com" && mediaType?.subtype() == "x-javascript" -> JSON.toString()
+      host == "graph.facebook.com" && mediaType?.subtype == "javascript" -> JSON.toString()
+      host == "dns.google.com" && mediaType?.subtype == "x-javascript" -> JSON.toString()
       else -> mediaType?.toString()
     }
   }
 
-  override fun source(response: Response): BufferedSource = response.body()!!.source()
+  override fun source(response: Response): BufferedSource = response.body!!.source()
 
   override fun filename(response: Response): String {
-    val segments = response.request().url().pathSegments()
+    val segments = response.request.url.pathSegments
 
     return segments[segments.size - 1]
   }

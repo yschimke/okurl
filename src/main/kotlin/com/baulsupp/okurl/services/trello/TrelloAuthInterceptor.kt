@@ -25,7 +25,7 @@ class TrelloAuthInterceptor : AuthInterceptor<TrelloToken>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: TrelloToken): Response {
     var request = chain.request()
 
-    val signedUrl = request.url().newBuilder().addQueryParameter("token", credentials.token)
+    val signedUrl = request.url.newBuilder().addQueryParameter("token", credentials.token)
       .addQueryParameter("key", credentials.apiKey).build()
 
     request = request.newBuilder().url(signedUrl).build()

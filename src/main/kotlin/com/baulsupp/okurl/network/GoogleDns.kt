@@ -5,6 +5,7 @@ import com.baulsupp.okurl.kotlin.request
 import kotlinx.coroutines.runBlocking
 import okhttp3.Dns
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.io.IOException
 import java.net.InetAddress
@@ -53,7 +54,7 @@ class GoogleDns(
     }
 
   companion object {
-    val base = HttpUrl.parse("https://dns.google.com/resolve")!!
+    val base = "https://dns.google.com/resolve".toHttpUrlOrNull()!!
 
     fun build(clientSupplier: () -> OkHttpClient, mode: IPvMode): GoogleDns {
       val hosts =

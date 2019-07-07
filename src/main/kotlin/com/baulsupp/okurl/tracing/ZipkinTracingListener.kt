@@ -37,11 +37,11 @@ class ZipkinTracingListener(
   override fun callStart(call: Call) {
     callSpan = tracer.newTrace().name("http").start()
 
-    callSpan.tag("http.path", call.request().url().encodedPath())
-    callSpan.tag("http.method", call.request().method())
-    callSpan.tag("http.host", call.request().url().host())
-    callSpan.tag("http.url", call.request().url().toString())
-    callSpan.tag("http.route", "${call.request().method().toUpperCase()} ${call.request().url().encodedPath()}")
+    callSpan.tag("http.path", call.request().url.encodedPath)
+    callSpan.tag("http.method", call.request().method)
+    callSpan.tag("http.host", call.request().url.host)
+    callSpan.tag("http.url", call.request().url.toString())
+    callSpan.tag("http.route", "${call.request().method.toUpperCase()} ${call.request().url.encodedPath}")
     callSpan.kind(Span.Kind.CLIENT)
 
     spanInScope = tracer.withSpanInScope(callSpan)
@@ -138,7 +138,7 @@ class ZipkinTracingListener(
       return
     }
 
-    val route = connection.route().socketAddress().toString()
+    val route = connection.route().socketAddress.toString()
     connectionSpan = tracer.newChild(callSpan.context()).start().name("connection $route")
     connectionSpan!!.tag("route", route)
   }
@@ -148,13 +148,13 @@ class ZipkinTracingListener(
       return
     }
 
-    if (connection.route().proxy().type() != Proxy.Type.DIRECT) {
-      connectionSpan!!.tag("proxy", connection.route().proxy().toString())
+    if (connection.route().proxy.type() != Proxy.Type.DIRECT) {
+      connectionSpan!!.tag("proxy", connection.route().proxy.toString())
     }
     if (connection.handshake() != null) {
-      connectionSpan!!.tag("cipher", connection.handshake()!!.cipherSuite().toString())
-      connectionSpan!!.tag("peer", connection.handshake()!!.peerPrincipal()!!.toString())
-      connectionSpan!!.tag("tls", connection.handshake()!!.tlsVersion().toString())
+      connectionSpan!!.tag("cipher", connection.handshake()!!.cipherSuite.toString())
+      connectionSpan!!.tag("peer", connection.handshake()!!.peerPrincipal!!.toString())
+      connectionSpan!!.tag("tls", connection.handshake()!!.tlsVersion.toString())
     }
     connectionSpan!!.tag("protocol", connection.protocol().toString())
 
@@ -190,7 +190,7 @@ class ZipkinTracingListener(
       return
     }
 
-    requestSpan!!.tag("requestHeaderLength", "" + request.headers().byteCount())
+    requestSpan!!.tag("requestHeaderLength", "" + request.headers.byteCount())
   }
 
   override fun requestBodyEnd(call: Call, byteCount: Long) {
@@ -223,8 +223,8 @@ class ZipkinTracingListener(
 
     responseSpan = tracer.newChild(callSpan.context()).start()
       .name("response")
-      .tag("responseHeaderLength", "" + response.headers().byteCount())
-      .tag("http.status_code", response.code().toString())
+      .tag("responseHeaderLength", "" + response.headers.byteCount())
+      .tag("http.status_code", response.code.toString())
   }
 
   override fun responseBodyEnd(call: Call, byteCount: Long) {

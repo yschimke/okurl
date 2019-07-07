@@ -68,17 +68,18 @@ import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
+import okhttp3.Call
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
 import okhttp3.Dispatcher
 import okhttp3.Dns
+import okhttp3.EventListener
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.LoggingEventListener
-import okhttp3.unixdomainsockets.UnixDomainSocketFactory
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.io.Closeable
@@ -87,7 +88,6 @@ import java.io.Flushable
 import java.io.IOException
 import java.net.Proxy
 import java.security.KeyStore
-import java.time.LocalTime
 import java.util.ArrayList
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
@@ -165,9 +165,6 @@ abstract class CommandLineClient : ToolSession {
 
   @Option(name = ["--keystore"], description = "Keystore")
   var keystoreFile: File? = null
-
-  @Option(name = ["--unixSocket"], description = "Unix Socket")
-  var unixSocket: File? = null
 
   @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
   var serverCerts: MutableList<File>? = null
@@ -385,7 +382,7 @@ abstract class CommandLineClient : ToolSession {
 
         failOnError = certificateTransparency == CtMode.FAIL
 
-        logger = object: com.babylon.certificatetransparency.Logger {
+        logger = object : com.babylon.certificatetransparency.Logger {
           override fun log(host: String, result: VerificationResult) {
             runBlocking {
               outputHandler.showError("CT: $host $result")
@@ -446,8 +443,8 @@ abstract class CommandLineClient : ToolSession {
 
     closeables.add(Closeable {
       if (this::client.isInitialized) {
-        client.dispatcher().executorService().shutdown()
-        client.connectionPool().evictAll()
+        client.dispatcher.executorService.shutdown()
+        client.connectionPool.evictAll()
       }
     })
 
@@ -492,8 +489,6 @@ abstract class CommandLineClient : ToolSession {
 
     if (networkInterface != null) {
       builder.socketFactory(getSocketFactory())
-    } else if (unixSocket != null) {
-      builder.socketFactory(UnixDomainSocketFactory(unixSocket))
     }
 
     configureTls(builder)
@@ -570,7 +565,8 @@ abstract class CommandLineClient : ToolSession {
       osProxy -> builder.proxySelector(ProxySearch.getDefaultProxySearch().proxySelector)
       socksProxy != null -> builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
       proxy != null -> builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
-      preferences.osProxy == true -> builder.proxySelector(ProxySearch.getDefaultProxySearch().proxySelector)
+      preferences.osProxy == true -> builder.proxySelector(
+        ProxySearch.getDefaultProxySearch().proxySelector)
       preferences.proxy != null -> builder.proxy(preferences.proxy!!.build())
     }
   }
@@ -588,7 +584,11 @@ abstract class CommandLineClient : ToolSession {
       return
 
     if (tracing == TracingMode.CONSOLE) {
-      val logger = HttpLoggingInterceptor.Logger { message -> println(message) }
+      val logger = object : HttpLoggingInterceptor.Logger {
+        override fun log(message: String) {
+          println(message)
+        }
+      }
       clientBuilder.eventListenerFactory(LoggingEventListener.Factory(logger))
       return
     }
@@ -625,9 +625,11 @@ abstract class CommandLineClient : ToolSession {
       })
     }
 
-    clientBuilder.eventListenerFactory { call ->
-      ZipkinTracingListener(call, tracer, httpTracing, opener, this.tracing == TracingMode.ZIPKIN_TRACING)
-    }
+    clientBuilder.eventListenerFactory(object : EventListener.Factory {
+      override fun create(call: Call): EventListener =
+        ZipkinTracingListener(call, tracer, httpTracing, opener,
+          this@CommandLineClient.tracing == TracingMode.ZIPKIN_TRACING)
+    })
 
     clientBuilder.addNetworkInterceptor(ZipkinTracingInterceptor(tracing))
 

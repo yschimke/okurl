@@ -24,9 +24,9 @@ class RenewingInterceptor(
 
     var response = chain.proceed(request)
 
-    if (!request.isRetry() && response.code() in 400..499) {
+    if (!request.isRetry() && response.code in 400..499) {
       runBlocking {
-        val firstInterceptor = services.find { it.supportsUrl(request.url(), credentialsStore) }
+        val firstInterceptor = services.find { it.supportsUrl(request.url, credentialsStore) }
 
         if (firstInterceptor != null) {
           if (renew(firstInterceptor, chain.token(), response)) {

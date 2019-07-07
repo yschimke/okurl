@@ -36,7 +36,7 @@ class StackExchangeAuthInterceptor : AuthInterceptor<StackExchangeToken>() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: StackExchangeToken): Response {
     var request = chain.request()
 
-    val newUrl = request.url()
+    val newUrl = request.url
       .newBuilder()
       .addQueryParameter("access_token", credentials.accessToken)
       .addQueryParameter("key", credentials.key)

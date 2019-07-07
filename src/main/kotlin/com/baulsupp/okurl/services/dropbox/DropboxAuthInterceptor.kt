@@ -12,8 +12,10 @@ import com.baulsupp.okurl.kotlin.requestBuilder
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
 /**
@@ -32,8 +34,8 @@ class DropboxAuthInterceptor : Oauth2AuthInterceptor() {
 
     val builder = request.newBuilder().addHeader("Authorization", "Bearer $token")
 
-    if (request.method() == "GET") {
-      builder.method("POST", RequestBody.create(MediaType.get("application/json"), "{}"))
+    if (request.method == "GET") {
+      builder.method("POST", "{}".toRequestBody("application/json".toMediaType()))
     }
 
     request = builder.build()
@@ -56,7 +58,7 @@ class DropboxAuthInterceptor : Oauth2AuthInterceptor() {
     client: OkHttpClient,
     credentials: Oauth2Token
   ): ValidatedCredentials {
-    val body = RequestBody.create(MediaType.get("application/json"), "null")
+    val body = "null".toRequestBody("application/json".toMediaType())
     val request = requestBuilder(
       "https://api.dropboxapi.com/2/users/get_current_account",
       TokenValue(credentials)

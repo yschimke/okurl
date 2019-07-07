@@ -28,11 +28,11 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   private fun dedup(candidates: List<String>) = candidates.toSortedSet().toList()
 
   fun thisNode(url: HttpUrl): List<String> {
-    val path = url.encodedPath()
+    val path = url.encodedPath
 
     return if (path.endsWith("/")) {
       listOf("$url.json")
-    } else if (path.endsWith(".json") || url.querySize() > 0) {
+    } else if (path.endsWith(".json") || url.querySize > 0) {
       listOf(url.toString())
     } else if (path.contains('.')) {
       listOf(url.toString().replaceAfterLast(".", "json"))
@@ -42,10 +42,10 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun siblings(url: HttpUrl, tokenSet: Token): List<String> {
-    return if (url.encodedPath() == "/" || url.querySize() > 1 || url.encodedPath().contains(".")) {
+    return if (url.encodedPath == "/" || url.querySize > 1 || url.encodedPath.contains(".")) {
       listOf()
     } else {
-      val parentPath = url.encodedPath().replaceAfterLast("/", "")
+      val parentPath = url.encodedPath.replaceAfterLast("/", "")
 
       val encodedPath = url.newBuilder().encodedPath("$parentPath.json")
       val siblings = keyList(encodedPath, tokenSet)
@@ -60,10 +60,10 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   suspend fun children(url: HttpUrl, tokenSet: Token): List<String> {
-    return if (url.querySize() > 1 || url.encodedPath().contains(".")) {
+    return if (url.querySize > 1 || url.encodedPath.contains(".")) {
       listOf()
     } else {
-      val path = url.encodedPath()
+      val path = url.encodedPath
 
       val encodedPath = url.newBuilder().encodedPath("$path.json")
       val children = keyList(encodedPath, tokenSet)

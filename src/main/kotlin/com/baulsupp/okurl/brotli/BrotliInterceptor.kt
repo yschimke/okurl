@@ -3,6 +3,7 @@ package com.baulsupp.okurl.brotli
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.asResponseBody
 import okio.buffer
 import okio.source
 import org.brotli.dec.BrotliInputStream
@@ -19,11 +20,11 @@ object BrotliInterceptor : Interceptor {
     val response = chain.proceed(request)
 
     if (response.header("Content-Encoding") == "br") {
-      val body = response.body()!!
+      val body = response.body!!
       val decompressedSource = BrotliInputStream(body.source().inputStream()).source().buffer()
       return response.newBuilder()
         .removeHeader("Content-Encoding")
-        .body(ResponseBody.create(body.contentType(), -1, decompressedSource))
+        .body(decompressedSource.asResponseBody(body.contentType(), -1))
         .build()
     }
 

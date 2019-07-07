@@ -40,7 +40,7 @@ class BasicAuthInterceptor : AuthInterceptor<FilteredBasicCredentials>() {
     credentialsStore: CredentialsStore
   ): Response {
     var request = chain.request()
-    val url = chain.call().request().url()
+    val url = chain.call().request().url
 
     val matchingCredentials: FilteredBasicCredentials?
 

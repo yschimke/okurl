@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.Closeable
 import java.io.IOException
 import java.io.PrintWriter
@@ -44,7 +45,7 @@ class SimpleWebServer(
 
   fun processRequest(exchange: HttpExchange, out: PrintWriter) {
     val result = runCatching {
-      val url = HttpUrl.get("http://localhost:$port${exchange.requestURI}")
+      val url = "http://localhost:$port${exchange.requestURI}".toHttpUrl()
 
       val error = url.queryParameter("error")
 

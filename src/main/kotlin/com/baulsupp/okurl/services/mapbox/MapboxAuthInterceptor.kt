@@ -22,7 +22,7 @@ class MapboxAuthInterceptor : Oauth2AuthInterceptor() {
 
     val token = credentials.accessToken
 
-    val newUrl = request.url().newBuilder().addQueryParameter("access_token", token).build()
+    val newUrl = request.url.newBuilder().addQueryParameter("access_token", token).build()
 
     request = request.newBuilder().url(newUrl).build()
 

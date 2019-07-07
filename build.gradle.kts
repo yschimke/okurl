@@ -117,7 +117,6 @@ dependencies {
   implementation("com.squareup.okhttp3:logging-interceptor")
   implementation("com.squareup.okhttp3:okhttp-sse")
   implementation("com.squareup.okhttp3:okhttp-tls")
-  implementation("com.squareup.okhttp3.sample:unixdomainsockets")
   implementation("com.squareup.okio:okio")
   implementation("com.baulsupp:oksocial-output")
   implementation("com.github.markusbernhardt:proxy-vole")

@@ -8,6 +8,7 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.services.datasettes.model.DatasetteIndex2
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
@@ -18,14 +19,14 @@ class DatasettesPresenter : ApiDocPresenter {
     client: OkHttpClient,
     tokenSet: Token
   ) {
-    val urlI = HttpUrl.parse(url)
+    val urlI = url.toHttpUrlOrNull()
       ?: throw UsageException("Unable to parse Url '$url'")
 
-    val datasette = client.queryMap<DatasetteIndex2>("https://${urlI.host()}/-/inspect.json", NoToken)
+    val datasette = client.queryMap<DatasetteIndex2>("https://${urlI.host}/-/inspect.json", NoToken)
 
     outputHandler.info("service: Datasette")
     outputHandler.info("docs: https://github.com/simonw/datasette")
-    outputHandler.info("database: https://${urlI.host()}/")
+    outputHandler.info("database: https://${urlI.host}/")
 
     datasette.forEach { (db, dbi) ->
       outputHandler.info("")

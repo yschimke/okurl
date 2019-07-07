@@ -11,9 +11,11 @@ import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Credentials
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
 /**
@@ -64,11 +66,9 @@ class LyftAuthInterceptor : Oauth2AuthInterceptor() {
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
-    val body = RequestBody.create(
-      MediaType.get("application/json"),
-      "{\"grant_type\": \"refresh_token\", \"refresh_token\": \"" +
-        credentials.refreshToken + "\"}"
-    )
+    val body = ("{\"grant_type\": \"refresh_token\", \"refresh_token\": \"" +
+      credentials.refreshToken + "\"}"
+      ).toRequestBody("application/json".toMediaType())
     val basic = Credentials.basic(credentials.clientId!!, credentials.clientSecret!!)
     val request = Request.Builder().url("https://api.lyft.com/oauth/token")
       .post(body)

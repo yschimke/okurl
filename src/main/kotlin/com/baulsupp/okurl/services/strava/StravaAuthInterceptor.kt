@@ -21,7 +21,7 @@ import java.util.logging.Level
 class StravaAuthInterceptor : Oauth2AuthInterceptor() {
   override suspend fun supportsUrl(url: HttpUrl, credentialsStore: CredentialsStore): Boolean {
     return try {
-      super.hosts(credentialsStore).contains(url.host())
+      super.hosts(credentialsStore).contains(url.host)
     } catch (e: IOException) {
       logger.log(Level.WARNING, "failed getting hosts", e)
       false

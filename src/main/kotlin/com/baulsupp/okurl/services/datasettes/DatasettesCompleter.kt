@@ -13,9 +13,9 @@ import java.nio.charset.StandardCharsets
 
 class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
   override suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList {
-    val host = url.host()
+    val host = url.host
 
-    val path = url.pathSegments()
+    val path = url.pathSegments
 
     return when {
       path.size == 1 -> {

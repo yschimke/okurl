@@ -15,6 +15,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -89,7 +90,7 @@ val terminalWidth: Int by lazy { runBlocking { (okshell.commandLine.outputHandle
 
 fun jsonPostRequest(url: String, body: String): Request =
   requestBuilder(url, DefaultToken).post(
-    RequestBody.create(JSON, body)
+    body.toRequestBody(JSON)
   ).build()
 
 var args: List<String> = listOf()

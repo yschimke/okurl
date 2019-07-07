@@ -5,6 +5,7 @@ import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -30,7 +31,7 @@ object SlackAuthFlow {
 
       val code = s.waitForCode()
 
-      val url = HttpUrl.parse("https://api.slack.com/api/oauth.access")!!
+      val url = "https://api.slack.com/api/oauth.access".toHttpUrlOrNull()!!
         .newBuilder()
         .addQueryParameter("client_id", clientId)
         .addQueryParameter("client_secret", clientSecret)

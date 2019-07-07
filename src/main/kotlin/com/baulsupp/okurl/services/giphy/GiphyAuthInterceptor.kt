@@ -23,7 +23,7 @@ class GiphyAuthInterceptor : Oauth2AuthInterceptor() {
 
     val token = credentials.accessToken
 
-    val newUrl = request.url().newBuilder().addQueryParameter("api_key", token).build()
+    val newUrl = request.url.newBuilder().addQueryParameter("api_key", token).build()
 
     request = request.newBuilder().url(newUrl).build()
 

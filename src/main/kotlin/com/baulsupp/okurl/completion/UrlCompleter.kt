@@ -9,6 +9,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
@@ -67,7 +68,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
   }
 
   private fun parseUrl(prefix: String): HttpUrl? = if (isSingleApi(prefix)) {
-    HttpUrl.parse(prefix)
+    prefix.toHttpUrlOrNull()
   } else {
     null
   }

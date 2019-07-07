@@ -32,8 +32,8 @@ class FacebookAuthInterceptor : Oauth2AuthInterceptor() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val request = chain.request()
 
-    if (supportsUrl(request.url()) && !authenticated(request)) {
-      val builder = request.url().newBuilder().addQueryParameter("access_token", credentials.accessToken)
+    if (supportsUrl(request.url) && !authenticated(request)) {
+      val builder = request.url.newBuilder().addQueryParameter("access_token", credentials.accessToken)
 
       if (credentials.clientSecret != null) {
         val appsecretTime = (System.currentTimeMillis() / 1000).toString()
@@ -53,7 +53,7 @@ class FacebookAuthInterceptor : Oauth2AuthInterceptor() {
   }
 
   private fun authenticated(request: Request): Boolean {
-    return request.url().queryParameter("access_token") != null || request.header("Authorization") != null
+    return request.url.queryParameter("access_token") != null || request.header("Authorization") != null
   }
 
   override suspend fun authorize(
@@ -107,13 +107,13 @@ class FacebookAuthInterceptor : Oauth2AuthInterceptor() {
   fun supportsUrl(url: HttpUrl): Boolean = isGraphApi(url) || isScimApi(url) || isStreamingGraphApi(url)
 
   fun isScimApi(url: HttpUrl) =
-    url.host().startsWith("www.") && url.host().endsWith(".facebook.com") && url.encodedPath().contains("/scim/v1/")
+    url.host.startsWith("www.") && url.host.endsWith(".facebook.com") && url.encodedPath.contains("/scim/v1/")
 
   fun isGraphApi(url: HttpUrl) =
-    url.host().startsWith("graph.") && url.host().endsWith(".facebook.com")
+    url.host.startsWith("graph.") && url.host.endsWith(".facebook.com")
 
   fun isStreamingGraphApi(url: HttpUrl) =
-    url.host().startsWith("streaming-graph.") && url.host().endsWith(".facebook.com")
+    url.host.startsWith("streaming-graph.") && url.host.endsWith(".facebook.com")
 
   override suspend fun apiCompleter(
     prefix: String,

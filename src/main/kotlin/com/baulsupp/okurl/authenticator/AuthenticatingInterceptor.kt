@@ -7,6 +7,7 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.services.ServiceLibrary
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.logging.Logger
@@ -34,7 +35,7 @@ class AuthenticatingInterceptor(
   override fun intercept(chain: Interceptor.Chain): Response {
     return runBlocking {
       val firstInterceptor =
-        services.find { it.supportsUrl(chain.request().url(), credentialsStore) }
+        services.find { it.supportsUrl(chain.request().url, credentialsStore) }
 
       logger.fine { "Matching interceptor: $firstInterceptor" }
 
@@ -62,7 +63,7 @@ class AuthenticatingInterceptor(
     services.firstOrNull { n -> n.name() == authName }
 
   fun getByUrl(url: String): AuthInterceptor<*>? {
-    val httpUrl = HttpUrl.parse(url)
+    val httpUrl = url.toHttpUrlOrNull()
 
     return httpUrl?.run {
       runBlocking {
