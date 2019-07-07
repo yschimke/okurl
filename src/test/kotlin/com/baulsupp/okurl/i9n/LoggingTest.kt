@@ -47,7 +47,7 @@ class LoggingTest {
   fun version() {
     val output = TestOutputHandler<Response>()
 
-    main.version = true
+    main.complete = "protocol"
 
     runBlocking {
       main.run()

@@ -30,14 +30,6 @@ import com.baulsupp.okurl.sse.handleSseResponse
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.FileContent
 import com.baulsupp.okurl.util.HeaderUtil
-import com.github.rvesse.airline.CommandFactory
-import com.github.rvesse.airline.HelpOption
-import com.github.rvesse.airline.SingleCommand
-import com.github.rvesse.airline.annotations.Command
-import com.github.rvesse.airline.annotations.Option
-import com.github.rvesse.airline.model.MetadataLoader
-import com.github.rvesse.airline.model.ParserMetadata
-import com.github.rvesse.airline.parser.errors.ParseException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -46,6 +38,7 @@ import okhttp3.Handshake
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -53,60 +46,62 @@ import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
 import org.conscrypt.Conscrypt
+import picocli.CommandLine
+import picocli.CommandLine.Command
+import picocli.CommandLine.IVersionProvider
+import picocli.CommandLine.Option
 import java.io.File
 import java.io.IOException
 import java.security.Security
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.inject.Inject
+import kotlin.system.exitProcess
 
-@Command(name = NAME, description = "A curl for social apis.")
+@Command(name = NAME, description = ["A curl for social apis."],
+  mixinStandardHelpOptions = true, versionProvider = Main.Companion.VersionProvider::class)
 class Main : CommandLineClient() {
   private val logger = Logger.getLogger(Main::class.java.name)
 
-  @Inject
-  override var help: HelpOption<Main>? = null
-
-  @Option(name = ["-X", "--request"], description = "Specify request command to use")
+  @Option(names = ["-X", "--request"], description = ["Specify request command to use"])
   var method: String? = null
 
-  @Option(name = ["-d", "--data"], description = "HTTP POST data")
+  @Option(names = ["-d", "--data"], description = ["HTTP POST data"])
   var data: String? = null
 
-  @Option(name = ["-H", "--header"], description = "Custom header to pass to server")
+  @Option(names = ["-H", "--header"], description = ["Custom header to pass to server"])
   var headers: MutableList<String>? = null
 
-  @Option(name = ["--noFollow"], description = "Follow redirects")
+  @Option(names = ["--noFollow"], description = ["Follow redirects"])
   var dontFollowRedirects = false
 
-  @Option(name = ["--referer"], description = "Referer URL")
+  @Option(names = ["--referer"], description = ["Referer URL"])
   var referer: String? = null
 
-  @Option(name = ["-o", "--output"], description = "Output file/directory")
+  @Option(names = ["-o", "--output"], description = ["Output file/directory"])
   var outputDirectory: File? = null
 
-  @Option(name = ["--authorize"], description = "Authorize API")
+  @Option(names = ["--authorize"], description = ["Authorize API"])
   var authorize: Boolean = false
 
-  @Option(name = ["--renew"], description = "Renew API Authorization")
+  @Option(names = ["--renew"], description = ["Renew API Authorization"])
   var renew: Boolean = false
 
-  @Option(name = ["--remove"], description = "Remove API Authorization")
+  @Option(names = ["--remove"], description = ["Remove API Authorization"])
   var remove: Boolean = false
 
-  @Option(name = ["--token"], description = "Use existing Token for authorization")
+  @Option(names = ["--token"], description = ["Use existing Token for authorization"])
   var token: String? = null
 
-  @Option(name = ["--showCredentials"], description = "Show Credentials")
+  @Option(names = ["--showCredentials"], description = ["Show Credentials"])
   var showCredentials = false
 
-  @Option(name = ["--complete"], description = "Complete options")
+  @Option(names = ["--complete"], description = ["Complete options"])
   var complete: String? = null
 
-  @Option(name = ["--urlCompletion"], description = "URL Completion")
+  @Option(names = ["--urlCompletion"], description = ["URL Completion"])
   var urlComplete: Boolean = false
 
-  @Option(name = ["--apidoc"], description = "API Documentation")
+  @Option(names = ["--apidoc"], description = ["API Documentation"])
   var apiDoc: Boolean = false
 
   var commandName = command
@@ -405,36 +400,19 @@ class Main : CommandLineClient() {
         // Drop back to JDK
       }
     }
-  }
-}
 
-suspend fun main(args: Array<String>) {
-  try {
-    val parserConfig2 = parserMetadata()
-    val result = SingleCommand.singleCommand(Main::class.java, parserConfig2).parse(*args).run()
-    System.exit(result)
-  } catch (e: Throwable) {
-    when (e) {
-      is ParseException, is UsageException -> {
-        System.err.println("okurl: ${e.message}")
-        System.exit(-1)
-      }
-      else -> {
-        e.printStackTrace()
-        System.exit(-1)
+    class VersionProvider : IVersionProvider {
+      override fun getVersion(): Array<String> {
+        return arrayOf(
+          "${NAME} ${versionString()}",
+          "Protocols: ${Protocol.values().joinToString(", ")}",
+          "Platform: ${Platform.get()::class.java.simpleName}"
+        )
       }
     }
   }
 }
 
-private fun parserMetadata(): ParserMetadata<Main> {
-  val parserConfig = MetadataLoader.loadParser<Main>(Main::class.java)
-  val commandFactory = CommandFactory { Main() }
-  return ParserMetadata(commandFactory, parserConfig.optionParsers, parserConfig.typeConverter,
-    parserConfig.errorHandler, parserConfig.allowsAbbreviatedCommands(),
-    parserConfig.allowsAbbreviatedOptions(),
-    parserConfig.aliases, parserConfig.userAliasesSource, parserConfig.aliasesOverrideBuiltIns(),
-    parserConfig.aliasesMayChain(), parserConfig.aliasForceBuiltInPrefix,
-    parserConfig.argumentsSeparator,
-    parserConfig.flagNegationPrefix)
+fun main(args: Array<String>) {
+  exitProcess(CommandLine(Main()).execute(*args))
 }

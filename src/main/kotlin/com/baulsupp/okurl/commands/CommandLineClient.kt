@@ -59,10 +59,6 @@ import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
 import com.burgstaller.okhttp.DispatchingAuthenticator
 import com.github.markusbernhardt.proxy.ProxySearch
-import com.github.rvesse.airline.HelpOption
-import com.github.rvesse.airline.annotations.Arguments
-import com.github.rvesse.airline.annotations.Option
-import com.github.rvesse.airline.annotations.restrictions.AllowedRawValues
 import com.moczul.ok2curl.CurlInterceptor
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
@@ -80,6 +76,8 @@ import okhttp3.Response
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.LoggingEventListener
+import picocli.CommandLine
+import picocli.CommandLine.Option
 import zipkin2.Span
 import zipkin2.reporter.Reporter
 import java.io.Closeable
@@ -96,131 +94,127 @@ import javax.net.SocketFactory
 import javax.net.ssl.KeyManager
 import javax.net.ssl.X509TrustManager
 
-abstract class CommandLineClient : ToolSession {
-
-  @Option(name = ["--user-agent"], description = "User-Agent to send to server")
+abstract class CommandLineClient : ToolSession, Runnable {
+  @Option(names = ["--user-agent"], description = ["User-Agent to send to server"])
   var userAgent = Main.NAME + "/" + versionString()
 
   @Option(
-    name = ["--connect-timeout"],
-    description = "Maximum time allowed for connection (seconds). (0 = disabled)"
+    names = ["--connect-timeout"],
+    description = ["Maximum time allowed for connection (seconds). (0 = disabled)"]
   )
   var connectTimeout: Int = 5
 
   @Option(
-    name = ["--read-timeout"],
-    description = "Maximum time allowed for reading data (seconds). (0 = disabled)"
+    names = ["--read-timeout"],
+    description = ["Maximum time allowed for reading data (seconds). (0 = disabled)"]
   )
   var readTimeout: Int = 20
 
-  @Option(name = ["--ping-interval"], description = "Interval between pings. (0 = disabled)")
+  @Option(names = ["--ping-interval"], description = ["Interval between pings. (0 = disabled)"])
   var pingInterval: Int = 5
 
-  @Option(name = ["-k", "--insecure"], description = "Allow connections to SSL sites without certs")
+  @Option(names = ["-k", "--insecure"],
+    description = ["Allow connections to SSL sites without certs"])
   var allowInsecure = false
 
-  @Option(name = ["-i", "--include"], description = "Include protocol headers in the output")
+  @Option(names = ["-i", "--include"], description = ["Include protocol headers in the output"])
   var showHeaders = false
 
-  @Option(name = ["--frames"], description = "Log HTTP/2 frames to STDERR")
+  @Option(names = ["--frames"], description = ["Log HTTP/2 frames to STDERR"])
   var showHttp2Frames = false
 
-  @Option(name = ["--debug"], description = "Debug")
+  @Option(names = ["--debug"], description = ["Debug"])
   var debug = false
 
-  @Option(name = ["-V", "--version"], description = "Show version number and quit")
-  var version = false
-
-  @Option(name = ["--cache"], description = "Cache directory")
+  @Option(names = ["--cache"], description = ["Cache directory"])
   var cacheDirectory: File? = null
 
-  @Option(name = ["--protocols"], description = "Protocols")
+  @Option(names = ["--protocols"], description = ["Protocols"])
   var protocols: String? = null
 
-  @Option(name = ["--tracing"], description = "Activate Zipkin Tracing")
+  @Option(names = ["--tracing"], description = ["Activate Zipkin Tracing"])
   var tracing: TracingMode? = null
 
-  @Option(name = ["--ip"], description = "IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)")
-  @AllowedRawValues(allowedValues = ["system", "ipv4", "ipv6", "ipv4only", "ipv6only"])
+  @Option(names = ["--ip"],
+    description = ["IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)"])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(name = ["--dns"], description = "DNS (netty, java, dnsoverhttps)")
-  @AllowedRawValues(allowedValues = ["java", "netty", "dnsoverhttps"])
+  @Option(names = ["--dns"], description = ["DNS (netty, java, dnsoverhttps)"])
   var dnsMode = DnsMode.JAVA
 
-  @Option(name = ["--dnsServers"], description = "Specific DNS Servers (csv, google)")
+  @Option(names = ["--dnsServers"], description = ["Specific DNS Servers (csv, google)"])
   var dnsServers: String? = null
 
-  @Option(name = ["--resolve"], description = "DNS Overrides (HOST:TARGET)")
+  @Option(names = ["--resolve"], description = ["DNS Overrides (HOST:TARGET)"])
   var resolve: List<String>? = null
 
-  @Option(name = ["--certificatePin"], description = "Certificate Pin to define host:pinsha")
+  @Option(names = ["--certificatePin"], description = ["Certificate Pin to define host:pinsha"])
   var certificatePins: List<CertificatePin>? = null
 
-  @Option(name = ["--networkInterface"], description = "Specific Local Network Interface")
+  @Option(names = ["--networkInterface"], description = ["Specific Local Network Interface"])
   var networkInterface: String? = null
 
-  @Option(name = ["--clientauth"], description = "Use Client Authentication (from keystore)")
+  @Option(names = ["--clientauth"], description = ["Use Client Authentication (from keystore)"])
   var clientAuth = false
 
-  @Option(name = ["--keystore"], description = "Keystore")
+  @Option(names = ["--keystore"], description = ["Keystore"])
   var keystoreFile: File? = null
 
-  @Option(name = ["--cert"], description = "Use given server cert (Root CA)")
+  @Option(names = ["--cert"], description = ["Use given server cert (Root CA)"])
   var serverCerts: MutableList<File>? = null
 
   @Option(
-    name = ["--connectionSpec"],
-    description = "Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)"
+    names = ["--connectionSpec"],
+    description = ["Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)"]
   )
   var connectionSpec: ConnectionSpecOption = defaultConnectionSpec()
 
-  @Option(name = ["--cipherSuite"], description = "Cipher Suites")
+  @Option(names = ["--cipherSuite"], description = ["Cipher Suites"])
   var cipherSuites: MutableList<CipherSuiteOption>? = null
 
-  @Option(name = ["--tlsVersions"], description = "TLS Versions")
+  @Option(names = ["--tlsVersions"], description = ["TLS Versions"])
   var tlsVersions: MutableList<TlsVersionOption>? = null
 
-  @Option(name = ["--opensc"], description = "Send OpenSC Client Certificate (slot)")
+  @Option(names = ["--opensc"], description = ["Send OpenSC Client Certificate (slot)"])
   var opensc: Int? = null
 
-  @Option(name = ["--socks"], description = "Use SOCKS proxy")
+  @Option(names = ["--socks"], description = ["Use SOCKS proxy"])
   var socksProxy: InetAddressParam? = null
 
-  @Option(name = ["--proxy"], description = "Use HTTP proxy")
+  @Option(names = ["--proxy"], description = ["Use HTTP proxy"])
   var proxy: InetAddressParam? = null
 
-  @Option(name = ["--os-proxy"], description = "Use OS defined proxy")
+  @Option(names = ["--os-proxy"], description = ["Use OS defined proxy"])
   var osProxy: Boolean = false
 
-  @Option(name = ["-s", "--set"], description = "Token Set e.g. work")
+  @Option(names = ["-s", "--set"], description = ["Token Set e.g. work"])
   var tokenSet: String? = null
 
-  @Option(name = ["--ssldebug"], description = "SSL Debug")
+  @Option(names = ["--ssldebug"], description = ["SSL Debug"])
   var sslDebug: Boolean = false
 
-  @Option(name = ["--user"], description = "user:password for basic auth")
+  @Option(names = ["--user"], description = ["user:password for basic auth"])
   var user: String? = null
 
-  @Option(name = ["--maxrequests"], description = "Concurrency Level")
+  @Option(names = ["--maxrequests"], description = ["Concurrency Level"])
   var maxRequests = 16
 
-  @Option(name = ["--curl"], description = "Show curl commands")
+  @Option(names = ["--curl"], description = ["Show curl commands"])
   var curl = false
 
-  @Option(name = ["-r", "--raw"], description = "Raw Output")
+  @Option(names = ["-r", "--raw"], description = ["Raw Output"])
   var rawOutput = false
 
-  @Option(name = ["--localCerts"], description = "Local Certificates")
+  @Option(names = ["--localCerts"], description = ["Local Certificates"])
   var localCerts: File? = File(System.getenv("INSTALLDIR") ?: ".", "certificates")
 
-  @Option(name = ["--ct"], description = "Certificate Transparency")
+  @Option(names = ["--ct"], description = ["Certificate Transparency"])
   var certificateTransparency = CtMode.OFF
 
-  @Option(name = ["--ctHost"], description = "Certificate Transparency")
+  @Option(names = ["--ctHost"], description = ["Certificate Transparency"])
   var certificateTransparencyHosts: List<String>? = null
 
-  @Arguments(title = ["arguments"], description = "Remote resource URLs")
+  @CommandLine.Parameters(paramLabel = "arguments", description = ["Remote resource URLs"])
   var arguments: MutableList<String> = ArrayList()
 
   lateinit var authenticatingInterceptor: AuthenticatingInterceptor
@@ -267,8 +261,6 @@ abstract class CommandLineClient : ToolSession {
   var eventLoopGroup: NioEventLoopGroup? = null
 
   val closeables = mutableListOf<Closeable>()
-
-  abstract val help: HelpOption<*>?
 
   fun buildDns(builder: OkHttpClient.Builder): Dns {
     val dns = when (dnsMode) {
@@ -393,21 +385,14 @@ abstract class CommandLineClient : ToolSession {
     }
   }
 
-  fun versionString(): String {
-    return this.javaClass.`package`.implementationVersion ?: "dev"
+  override fun run() {
+    runBlocking {
+      exec()
+    }
   }
 
-  suspend fun run(): Int {
-    if (help?.showHelpIfRequested() == true) {
-      return 0
-    }
-
+  suspend fun exec(): Int {
     initialise()
-
-    if (version) {
-      outputHandler.info(name() + " " + versionString())
-      return 0
-    }
 
     return try {
       runCommand(arguments)
@@ -661,5 +646,11 @@ abstract class CommandLineClient : ToolSession {
     return tokenSet?.let {
       TokenSet(it)
     } ?: DefaultToken
+  }
+
+  companion object {
+    fun versionString(): String {
+      return this.javaClass.`package`.implementationVersion ?: "dev"
+    }
   }
 }

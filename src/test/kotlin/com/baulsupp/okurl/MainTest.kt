@@ -1,7 +1,7 @@
 package com.baulsupp.okurl
 
-import com.github.rvesse.airline.SingleCommand
 import org.junit.Test
+import picocli.CommandLine
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -20,9 +20,7 @@ class MainTest {
     assertEquals(mutableListOf(File("a.crt"), File("b.crt"), File("c.crt")), main.serverCerts)
   }
 
-  private fun build(string: String): Main {
-    val args = string.split(" ")
-
-    return SingleCommand.singleCommand(Main::class.java).parse(*args.toTypedArray())
+  fun build(string: String): Main {
+    return CommandLine.populateCommand(Main(), *string.split(" ").toTypedArray())
   }
 }

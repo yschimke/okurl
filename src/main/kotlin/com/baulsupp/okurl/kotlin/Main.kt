@@ -3,27 +3,21 @@ package com.baulsupp.okurl.kotlin
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.util.ClientException
-import com.github.rvesse.airline.HelpOption
-import com.github.rvesse.airline.SingleCommand
-import com.github.rvesse.airline.annotations.Command
-import com.github.rvesse.airline.parser.errors.ParseException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
-import org.conscrypt.OpenSSLProvider
+import okhttp3.Protocol
+import okhttp3.internal.platform.Platform
+import org.conscrypt.Conscrypt
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
+import picocli.CommandLine
 import java.io.File
 import java.security.Security
-import javax.inject.Inject
 import javax.script.ScriptException
 import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
-@Command(name = Main.NAME, description = "Kotlin scripting for APIs")
+@CommandLine.Command(name = Main.NAME, description = ["Kotlin scripting for APIs"],
+  mixinStandardHelpOptions = true, versionProvider = Main.Companion.VersionProvider::class)
 class Main : CommandLineClient() {
-  @Inject
-  override var help: HelpOption<Main>? = null
-
   override fun initialise() {
     super.initialise()
 
@@ -67,28 +61,21 @@ class Main : CommandLineClient() {
 
   companion object {
     const val NAME = "okscript"
-  }
-}
 
-@ExperimentalCoroutinesApi fun main(args: Array<String>): Unit = runBlocking {
-  DebugProbes.install()
-
-  Security.insertProviderAt(OpenSSLProvider(), 1)
-
-  try {
-    val command = SingleCommand.singleCommand(Main::class.java).parse(*args)
-    val result = command.run()
-    exitProcess(result)
-  } catch (e: Throwable) {
-    when (e) {
-      is ParseException, is UsageException -> {
-        System.err.println("okurl: ${e.message}")
-        exitProcess(-1)
-      }
-      else -> {
-        e.printStackTrace()
-        exitProcess(-1)
+    class VersionProvider : CommandLine.IVersionProvider {
+      override fun getVersion(): Array<String> {
+        return arrayOf(
+          "${Main.NAME} ${versionString()}",
+          "Protocols: ${Protocol.values().joinToString(", ")}",
+          "Platform: ${Platform.get()::class.java.simpleName}"
+        )
       }
     }
   }
+}
+
+fun main(args: Array<String>): Unit = runBlocking {
+  Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager(true).build(), 1)
+
+  exitProcess(CommandLine(Main()).execute(*args))
 }
