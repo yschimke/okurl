@@ -9,7 +9,7 @@ $ brew install yschimke/tap/okurl
 
 $ okurl --authorize twitter
 
-$ twitterapi '/1.1/statuses/show.json?id=733545978398040064'
+$ okurl 'https://api.twitter.com/1.1/statuses/show.json?id=733545978398040064'
 ...
 ``` 
 
