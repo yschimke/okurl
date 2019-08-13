@@ -484,7 +484,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
     builder.addInterceptor(renewingInterceptor)
 
     // TODO move behind AuthInterceptor API
-    builder.addNetworkInterceptor(BrotliInterceptor)
+    builder.addInterceptor(BrotliInterceptor)
 
     if (debug) {
       val loggingInterceptor = HttpLoggingInterceptor()

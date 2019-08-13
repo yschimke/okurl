@@ -5,5 +5,5 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("--ct FAIL --ctHost *.twitter.com https://api.twitter.com/robots.txt")
+  runMain("-i -r https://httpbin.org/brotli")
 }
