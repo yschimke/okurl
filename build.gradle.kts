@@ -8,13 +8,13 @@ plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
   distribution
-  id("com.github.ben-manes.versions") version "0.21.0"
+  id("com.github.ben-manes.versions") version "0.22.0"
   id("com.jfrog.bintray") version "1.8.4"
   id("org.jetbrains.dokka") version "0.9.18"
   id("net.nemerosa.versioning") version "2.8.2"
   id("com.palantir.consistent-versions") version "1.9.2"
-  id("com.diffplug.gradle.spotless") version "3.23.0"
-  id("com.palantir.graal") version "0.3.0-37-g77aa98f"
+  id("com.diffplug.gradle.spotless") version "3.24.1"
+  id("com.palantir.graal") version "0.4.0"
   id("com.hpe.kraal") version "0.0.15"
 }
 
@@ -97,6 +97,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi-kotlin")
   implementation("com.squareup.okhttp3:logging-interceptor")
   implementation("com.squareup.okhttp3:okhttp")
+  implementation("com.squareup.okhttp3:okhttp-brotli")
   implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
   implementation("com.squareup.okhttp3:okhttp-sse")
   implementation("com.squareup.okhttp3:okhttp-tls")
@@ -115,7 +116,6 @@ dependencies {
   implementation("javax.activation:activation")
   implementation("org.apache.commons:commons-lang3")
   implementation("org.bouncycastle:bcprov-jdk15on")
-  implementation("org.brotli:dec")
   implementation("org.conscrypt:conscrypt-openjdk-uber")
   implementation("org.fusesource.jansi:jansi")
   implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")

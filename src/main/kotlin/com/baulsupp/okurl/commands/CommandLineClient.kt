@@ -16,7 +16,6 @@ import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.RenewingInterceptor
-import com.baulsupp.okurl.brotli.BrotliInterceptor
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.DefaultToken
@@ -48,7 +47,6 @@ import com.baulsupp.okurl.security.InsecureTrustManager
 import com.baulsupp.okurl.security.KeystoreUtils
 import com.baulsupp.okurl.security.OpenSCUtil
 import com.baulsupp.okurl.services.ServiceLibrary
-import com.baulsupp.okurl.services.twitter.TwitterCachingInterceptor
 import com.baulsupp.okurl.tracing.TracingMode
 import com.baulsupp.okurl.tracing.UriTransportRegistry
 import com.baulsupp.okurl.tracing.ZipkinConfig
@@ -73,6 +71,7 @@ import okhttp3.EventListener
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
+import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.LoggingEventListener
@@ -485,7 +484,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
     builder.addInterceptor(renewingInterceptor)
 
     // TODO move behind AuthInterceptor API
-    builder.addNetworkInterceptor(TwitterCachingInterceptor())
     builder.addNetworkInterceptor(BrotliInterceptor)
 
     if (debug) {
