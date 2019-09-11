@@ -368,12 +368,12 @@ abstract class CommandLineClient : ToolSession, Runnable {
         trustManager { trustManager }
 
         certificateTransparencyHosts?.forEach {
-          addHost(it)
+          includeHost(it)
         }
 
         failOnError = certificateTransparency == CtMode.FAIL
 
-        logger = object : com.babylon.certificatetransparency.Logger {
+        logger = object : com.babylon.certificatetransparency.CTLogger {
           override fun log(host: String, result: VerificationResult) {
             runBlocking {
               outputHandler.showError("CT: $host $result")
@@ -648,7 +648,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   companion object {
     fun versionString(): String {
-      return this.javaClass.`package`.implementationVersion ?: "dev"
+      return this::class.java.`package`.implementationVersion ?: "dev"
     }
   }
 }
