@@ -1,0 +1,16 @@
+https://api.monzo.com/accounts
+https://api.monzo.com/attachment/deregister
+https://api.monzo.com/attachment/register
+https://api.monzo.com/attachment/upload
+https://api.monzo.com/balance
+https://api.monzo.com/feed
+https://api.monzo.com/oauth2/logout
+https://api.monzo.com/oauth2/token
+https://api.monzo.com/ping/whoami
+https://api.monzo.com/pots
+https://api.monzo.com/pots/
+https://api.monzo.com/transaction-receipts
+https://api.monzo.com/transactions
+https://api.monzo.com/transactions/
+https://api.monzo.com/webhooks
+https://api.monzo.com/webhooks/

@@ -6,7 +6,6 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.services.ServiceLibrary
 import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -114,6 +113,7 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.lyft.LyftAuthInterceptor(),
         com.baulsupp.okurl.services.mapbox.MapboxAuthInterceptor(),
         com.baulsupp.okurl.services.microsoft.MicrosoftAuthInterceptor(),
+        com.baulsupp.okurl.services.monzo.MonzoAuthInterceptor(),
         com.baulsupp.okurl.services.opsgenie.OpsGenieAuthInterceptor(),
         com.baulsupp.okurl.services.oxforddictionaries.OxfordDictionariesInterceptor(),
         com.baulsupp.okurl.services.paypal.PaypalAuthInterceptor(),
