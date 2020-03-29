@@ -250,7 +250,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
       try {
         c.close()
       } catch (e: Exception) {
-        Platform.get().log(Platform.INFO, "close failed", e)
+        Platform.get().log("close failed", Platform.INFO, e)
       }
     }
   }
@@ -409,7 +409,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
         try {
           c.close()
         } catch (e: Exception) {
-          Platform.get().log(Platform.INFO, "close failed", e)
+          Platform.get().log("close failed", Platform.INFO, e)
         }
       }
     }
