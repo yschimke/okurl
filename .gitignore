@@ -92,3 +92,4 @@ gradle-app.setting
 # End of https://www.gitignore.io/api/intellij,osx,gradle
 
 src/test/kotlin/commands/local/*
+/local.properties
