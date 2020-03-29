@@ -35,6 +35,7 @@ class LoggingUtil {
           getLogger("org.zeroturnaround.exec").level = Level.INFO
           getLogger("io.netty").level = Level.INFO
           getLogger("io.netty.resolver.dns").level = Level.FINE
+          getLogger("jdk.event.security").level = Level.INFO
         } else if (showHttp2Frames) {
           val activeLogger = getLogger(Http2::class.java.name)
           activeLogger.level = Level.FINE
