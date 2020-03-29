@@ -23,13 +23,14 @@ repositories {
   mavenCentral()
   maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
   maven(url = "https://jitpack.io")
-  maven(url = "http://repo.maven.apache.org/maven2")
+  maven(url = "https://repo.maven.apache.org/maven2")
   maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/")
   maven(url = "https://dl.bintray.com/kotlin/kotlin-dev/")
   maven(url = "https://repo.spring.io/milestone/")
   maven(url = "https://dl.bintray.com/reactivesocket/RSocket/")
   maven(url = "https://oss.sonatype.org/content/repositories/releases/")
   maven(url = "https://dl.bintray.com/yschimke/baulsupp.com/")
+  maven(url = "https://packages.atlassian.com/maven-public")
 }
 
 group = "com.baulsupp"
@@ -76,7 +77,10 @@ tasks.named<DokkaTask>("dokka") {
 dependencies {
   implementation("com.babylon.certificatetransparency:certificatetransparency:0.2.0")
   implementation("com.baulsupp:okhttp-digest:0.4.0")
-  implementation("com.baulsupp:oksocial-output:4.32.0")
+  implementation("com.baulsupp:oksocial-output:4.32.0") {
+    exclude(module = "svg-salamander")
+    exclude(module = "jfreesvg")
+  }
   implementation("com.fasterxml.jackson.core:jackson-databind:2.9.9.1")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.9.9")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9")
@@ -127,6 +131,8 @@ dependencies {
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("org.zeroturnaround:zt-exec:1.11")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
+  implementation("com.formdev:svgSalamander:1.1.2.1")
+  implementation("org.jfree:jfreesvg:3.4")
 
   implementation("org.jetbrains.kotlin:kotlin-script-util:1.3.70") {
     exclude(module = "kotlin-compiler")
