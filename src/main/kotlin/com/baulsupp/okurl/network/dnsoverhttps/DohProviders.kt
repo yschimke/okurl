@@ -31,15 +31,15 @@ import java.util.ArrayList
 object DohProviders {
   fun buildGoogle(bootstrapClient: OkHttpClient): DnsOverHttps {
     return DnsOverHttps.Builder().client(bootstrapClient)
-      .url(parseUrl("https://dns.google.com/experimental"))
-      .bootstrapDnsHosts(getByIp("216.58.204.78"), getByIp("2a00:1450:4009:814:0:0:0:200e"))
+      .url(parseUrl("https://dns.google/dns-query"))
+      .bootstrapDnsHosts(getByIp("8.8.4.4"), getByIp("8.8.8.8"))
       .build()
   }
 
   fun buildGooglePost(bootstrapClient: OkHttpClient): DnsOverHttps {
     return DnsOverHttps.Builder().client(bootstrapClient)
-      .url(parseUrl("https://dns.google.com/experimental"))
-      .bootstrapDnsHosts(getByIp("216.58.204.78"), getByIp("2a00:1450:4009:814:0:0:0:200e"))
+      .url(parseUrl("https://dns.google/dns-query"))
+      .bootstrapDnsHosts(getByIp("8.8.4.4"), getByIp("8.8.8.8"))
       .post(true)
       .build()
   }

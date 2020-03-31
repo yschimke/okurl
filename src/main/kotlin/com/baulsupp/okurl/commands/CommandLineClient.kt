@@ -538,7 +538,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
       builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
     }
 
-//    builder.dns(buildDns(builder))
+    builder.dns(buildDns(builder))
 
     return builder
   }
