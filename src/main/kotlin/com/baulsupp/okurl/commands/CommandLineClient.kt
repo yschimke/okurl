@@ -265,7 +265,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
     val dns = when (dnsMode) {
       DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers ?: "8.8.8.8")
       DnsMode.GOOGLE -> DnsSelector(ipMode, GoogleDns.build({ client }, ipMode))
-      DnsMode.DNSOVERHTTPS -> DnsSelector(ipMode, DohProviders.buildGoogle(builder.build()))
+      DnsMode.DNSOVERHTTPS -> DnsSelector(ipMode, DohProviders.buildCloudflare(builder.build()))
       DnsMode.JAVA -> {
         if (dnsServers != null) {
           throw UsageException("unable to set dns servers with java DNS")

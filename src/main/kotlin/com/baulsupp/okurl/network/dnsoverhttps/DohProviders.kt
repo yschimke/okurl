@@ -46,11 +46,8 @@ object DohProviders {
 
   fun buildCloudflare(bootstrapClient: OkHttpClient): DnsOverHttps {
     return DnsOverHttps.Builder().client(bootstrapClient)
-      .url(parseUrl("https://cloudflare-dns.com/dns-query?ct=application/dns-udpwireformat"))
-      .bootstrapDnsHosts(
-        getByIp("104.16.111.25"), getByIp("104.16.112.25"),
-        getByIp("2400:cb00:2048:1:0:0:6810:7019"), getByIp("2400:cb00:2048:1:0:0:6810:6f19")
-      )
+      .url(parseUrl("https://1.1.1.1/dns-query?ct=application/dns-udpwireformat"))
+      .bootstrapDnsHosts(getByIp("1.1.1.1"), getByIp("1.0.0.1"))
       .includeIPv6(false)
       .build()
   }
