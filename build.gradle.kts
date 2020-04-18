@@ -8,12 +8,12 @@ plugins {
   kotlin("jvm") version Versions.kotlin
   `maven-publish`
   distribution
-  id("com.github.ben-manes.versions") version "0.25.0"
-  id("com.jfrog.bintray") version "1.8.4"
-  id("org.jetbrains.dokka") version "0.9.18"
-  id("net.nemerosa.versioning") version "2.8.2"
-  id("com.diffplug.gradle.spotless") version "3.24.2"
-  id("com.palantir.graal") version "0.4.0"
+  id("com.github.ben-manes.versions") version "0.28.0"
+  id("com.jfrog.bintray") version "1.8.5"
+  id("org.jetbrains.dokka") version "0.10.1"
+  id("net.nemerosa.versioning") version "2.12.1"
+  id("com.diffplug.gradle.spotless") version "3.28.1"
+  id("com.palantir.graal") version "0.6.0-120-g853647c"
   id("com.hpe.kraal") version "0.0.15"
 }
 
@@ -77,7 +77,7 @@ tasks.named<DokkaTask>("dokka") {
 dependencies {
   implementation("com.babylon.certificatetransparency:certificatetransparency:0.2.0")
   implementation("com.baulsupp:okhttp-digest:0.4.0")
-  implementation("com.baulsupp:oksocial-output:4.32.0") {
+  implementation("com.baulsupp:oksocial-output:4.34.0") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
@@ -98,19 +98,19 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.8.0")
   implementation("com.squareup.moshi:moshi-adapters:1.8.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
-  implementation("com.squareup.okhttp3:logging-interceptor:4.5.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp:4.5.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.5.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.5.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-sse:4.5.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-tls:4.5.0-RC1")
-  implementation("com.squareup.okio:okio:2.5.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
+  implementation("com.squareup.okhttp3:okhttp:4.5.0")
+  implementation("com.squareup.okhttp3:okhttp-brotli:4.5.0")
+  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.5.0")
+  implementation("com.squareup.okhttp3:okhttp-sse:4.5.0")
+  implementation("com.squareup.okhttp3:okhttp-tls:4.5.0")
+  implementation("com.squareup.okio:okio:2.4.3")
   implementation("commons-io:commons-io:2.6")
   implementation("info.picocli:picocli:4.2.0")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
   implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.10.6")
-  implementation("io.netty:netty-resolver-dns:4.1.37.Final")
+  implementation("io.netty:netty-resolver-dns:4.1.48.Final")
   implementation("io.zipkin.brave:brave:5.7.0")
   implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.6.10")
   implementation("io.zipkin.brave:brave-okhttp:4.13.6")
@@ -118,7 +118,7 @@ dependencies {
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2")
   implementation("javax.activation:activation:1.1.1")
   implementation("org.apache.commons:commons-lang3:3.9")
-  implementation("org.bouncycastle:bcprov-jdk15on:1.62")
+  implementation("org.bouncycastle:bcprov-jdk15on:1.65")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
   implementation("org.fusesource.jansi:jansi:1.18")
   implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.70")
@@ -138,13 +138,13 @@ dependencies {
     exclude(module = "kotlin-compiler")
   }
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
   testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.70")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.3.70")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.5.0-RC1")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.5.0")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
 
-  testRuntime("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+  testRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
   testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
 }
 
@@ -296,7 +296,7 @@ dependencyUpdates.resolutionStrategy {
 }
 
 graal {
-  graalVersion("1.0.0-rc16")
+  graalVersion("20.0.0")
   mainClass("com.baulsupp.okurl.MainKt")
   outputName("okurl")
   option("--configurations-path")
