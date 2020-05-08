@@ -22,9 +22,15 @@ suspend fun main() {
       it.await().failedTests
     }
 
-    for ((testName, count) in failedTests.groupingBy { it.classname + "." + it.name }.eachCount().toSortedMap()) {
-      println("$count\t$testName")
+    val failed = failedTests.filter { it.classname == "okhttp3.logging.LoggingEventListenerTest" }
+    failed.forEach {
+      println(it.message)
     }
+
+//    for ((testName, count) in failedTests.groupingBy { it.classname + "." + it.name }
+//      .eachCount().toSortedMap()) {
+//      println("$count\t$testName")
+//    }
   }
 }
 
