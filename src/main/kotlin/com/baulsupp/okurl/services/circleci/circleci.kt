@@ -56,7 +56,13 @@ data class Build(
   val vcs_revision: String? = null,
   val vcs_tag: Any? = null,
   val vcs_url: String? = null,
-  val why: String? = null
+  val why: String? = null,
+  val workflows: Workflows? = null
+)
+
+data class Workflows(
+  val job_name: String? = null,
+  val workflow_name: String? = null
 )
 
 data class Test(
