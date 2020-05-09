@@ -15,13 +15,13 @@ class LoggingUtil {
     private val activeLoggers = mutableListOf<Logger>()
 
     fun configureLogging(debug: Boolean, showHttp2Frames: Boolean, sslDebug: Boolean) {
-      if (sslDebug) {
-        System.setProperty("javax.net.debug", "ssl,handshake")
-      }
-
       InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
 
-      if (debug || showHttp2Frames) {
+      if (debug || showHttp2Frames || sslDebug) {
+        if (sslDebug) {
+          System.setProperty("javax.net.debug", "")
+        }
+
         LogManager.getLogManager().reset()
         val handler = ConsoleHandler()
 
@@ -37,23 +37,28 @@ class LoggingUtil {
           getLogger("io.netty.resolver.dns").level = Level.FINE
           getLogger("jdk.event.security").level = Level.INFO
           getLogger("org.conscrypt").level = Level.INFO
-        } else if (showHttp2Frames) {
-          val activeLogger = getLogger(Http2::class.java.name)
-          activeLogger.level = Level.FINE
-          handler.level = Level.FINE
-          handler.formatter = object : SimpleFormatter() {
-            override fun format(record: LogRecord): String {
-              return String.format("%s%n", record.message)
-            }
+        } else {
+          if (showHttp2Frames) {
+            val activeLogger = getLogger(Http2::class.java.name)
+            activeLogger.level = Level.FINE
+            handler.level = Level.FINE
+            handler.formatter = MessageFormatter
+            activeLogger.addHandler(handler)
           }
-          activeLogger.addHandler(handler)
-          getLogger("io.netty.resolver.dns.DnsServerAddresses").level = Level.SEVERE
-          getLogger("com.launchdarkly.eventsource").level = Level.SEVERE
+
+          if (sslDebug) {
+            val activeLogger = getLogger("javax.net.ssl")
+
+            activeLogger.level = Level.FINEST
+            handler.level = Level.FINEST
+            handler.formatter = MessageFormatter
+            activeLogger.addHandler(handler)
+          }
         }
-      } else {
-        getLogger("io.netty.resolver.dns.DnsServerAddresses").level = Level.SEVERE
-        getLogger("com.launchdarkly.eventsource").level = Level.SEVERE
       }
+
+      getLogger("io.netty.resolver.dns.DnsServerAddresses").level = Level.SEVERE
+      getLogger("com.launchdarkly.eventsource").level = Level.SEVERE
     }
 
     fun getLogger(name: String): Logger {
