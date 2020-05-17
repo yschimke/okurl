@@ -10,5 +10,5 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("--ssldebug -i -r https://httpbin.org/brotli")
+  runMain("--ssldebug --insecure=httpbin.org -r https://httpbin.org/brotli")
 }

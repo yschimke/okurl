@@ -302,7 +302,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
     // TODO readd OpenSC and client auth, root CA files
 
     for (host in insecureHost.orEmpty()) {
-      println(host)
       handshakeCertificatesBuilder.addInsecureHost(host)
     }
 
