@@ -23,7 +23,16 @@ class LoggingUtil {
         }
 
         LogManager.getLogManager().reset()
-        val handler = ConsoleHandler()
+        val handler = object : ConsoleHandler() {
+          override fun publish(record: LogRecord) {
+            super.publish(record)
+
+            val parameters = record.parameters
+            if (sslDebug && record.loggerName == "javax.net.ssl" && parameters != null) {
+              System.err.println(parameters[0])
+            }
+          }
+        }
 
         if (debug) {
           handler.level = Level.ALL

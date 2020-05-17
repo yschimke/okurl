@@ -52,7 +52,7 @@ class WebServerTest {
     server.enqueue(MockResponse().setBody("Isla Sorna"))
 
     main.arguments = mutableListOf(server.url("/").toString())
-    main.allowInsecure = true
+    main.insecureHost = listOf(server.hostName)
 
     runBlocking {
       main.run()
@@ -86,7 +86,7 @@ class WebServerTest {
     main.arguments = mutableListOf(server.url("/").toString())
     main.certificatePins = listOf(CertificatePin(server.hostName + ":" +
       "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18="))
-    main.allowInsecure = true
+    main.insecureHost = listOf(server.hostName)
 
     runBlocking {
       main.run()

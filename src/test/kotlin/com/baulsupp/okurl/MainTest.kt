@@ -13,13 +13,6 @@ class MainTest {
     assertEquals(mutableListOf("a:A", "b:B"), main.headers)
   }
 
-  @Test
-  fun testCerts() {
-    val main: Main = build("--cert a.crt --cert b.crt --cert c.crt")
-
-    assertEquals(mutableListOf(File("a.crt"), File("b.crt"), File("c.crt")), main.serverCerts)
-  }
-
   fun build(string: String): Main {
     return CommandLine.populateCommand(Main(), *string.split(" ").toTypedArray())
   }

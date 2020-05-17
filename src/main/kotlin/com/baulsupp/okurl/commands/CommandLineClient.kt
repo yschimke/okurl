@@ -39,13 +39,8 @@ import com.baulsupp.okurl.okhttp.defaultConnectionSpec
 import com.baulsupp.okurl.preferences.Preferences
 import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
-import com.baulsupp.okurl.security.CertificateUtils
 import com.baulsupp.okurl.security.ConsoleCallbackHandler
 import com.baulsupp.okurl.security.CtMode
-import com.baulsupp.okurl.security.InsecureHostnameVerifier
-import com.baulsupp.okurl.security.InsecureTrustManager
-import com.baulsupp.okurl.security.KeystoreUtils
-import com.baulsupp.okurl.security.OpenSCUtil
 import com.baulsupp.okurl.services.ServiceLibrary
 import com.baulsupp.okurl.tracing.TracingMode
 import com.baulsupp.okurl.tracing.UriTransportRegistry
@@ -75,6 +70,7 @@ import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.LoggingEventListener
+import okhttp3.tls.HandshakeCertificates
 import picocli.CommandLine
 import picocli.CommandLine.Option
 import zipkin2.Span
@@ -84,14 +80,11 @@ import java.io.File
 import java.io.Flushable
 import java.io.IOException
 import java.net.Proxy
-import java.security.KeyStore
 import java.util.ArrayList
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.net.SocketFactory
-import javax.net.ssl.KeyManager
-import javax.net.ssl.X509TrustManager
 
 abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--user-agent"], description = ["User-Agent to send to server"])
@@ -114,7 +107,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   @Option(names = ["-k", "--insecure"],
     description = ["Allow connections to SSL sites without certs"])
-  var allowInsecure = false
+  var insecureHost: List<String>? = null
 
   @Option(names = ["-i", "--include"], description = ["Include protocol headers in the output"])
   var showHeaders = false
@@ -153,15 +146,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--networkInterface"], description = ["Specific Local Network Interface"])
   var networkInterface: String? = null
 
-  @Option(names = ["--clientauth"], description = ["Use Client Authentication (from keystore)"])
-  var clientAuth = false
-
-  @Option(names = ["--keystore"], description = ["Keystore"])
-  var keystoreFile: File? = null
-
-  @Option(names = ["--cert"], description = ["Use given server cert (Root CA)"])
-  var serverCerts: MutableList<File>? = null
-
   @Option(
     names = ["--connectionSpec"],
     description = ["Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)"]
@@ -173,9 +157,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   @Option(names = ["--tlsVersions"], description = ["TLS Versions"])
   var tlsVersions: MutableList<TlsVersionOption>? = null
-
-  @Option(names = ["--opensc"], description = ["Send OpenSC Client Certificate (slot)"])
-  var opensc: Int? = null
 
   @Option(names = ["--socks"], description = ["Use SOCKS proxy"])
   var socksProxy: InetAddressParam? = null
@@ -298,13 +279,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
   fun configureTls(builder: OkHttpClient.Builder) {
     val callbackHandler = ConsoleCallbackHandler()
 
-    // possibly null
-    var keystore: KeyStore? = null
-
-    if (keystoreFile != null) {
-      keystore = KeystoreUtils.getKeyStore(keystoreFile)
-    }
-
     if (cipherSuites != null || tlsVersions != null) {
       val specBuilder = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
 
@@ -321,42 +295,22 @@ abstract class CommandLineClient : ToolSession, Runnable {
       builder.connectionSpecs(connectionSpec.specs.asList() + ConnectionSpec.CLEARTEXT)
     }
 
-    val keyManagers = mutableListOf<KeyManager>()
+    // possibly null
+    val handshakeCertificatesBuilder = HandshakeCertificates.Builder()
+      .addPlatformTrustedCertificates()
 
-    if (opensc != null) {
-      keyManagers.addAll(OpenSCUtil.getKeyManagers(callbackHandler, opensc!!).asIterable())
-    } else if (clientAuth) {
-      if (keystore == null) {
-        throw UsageException("--clientauth specified without --keystore")
-      }
+    // TODO readd OpenSC and client auth, root CA files
 
-      keyManagers.add(KeystoreUtils.createKeyManager(keystore, callbackHandler))
+    for (host in insecureHost.orEmpty()) {
+      println(host)
+      handshakeCertificatesBuilder.addInsecureHost(host)
     }
 
-    val trustManager: X509TrustManager
-    if (allowInsecure) {
-      trustManager = InsecureTrustManager
-      builder.hostnameVerifier(InsecureHostnameVerifier)
-    } else {
-      val trustManagers = mutableListOf<X509TrustManager>()
-
-      if (keystore != null) {
-        trustManagers.add(CertificateUtils.trustManagerForKeyStore(keystore))
-      }
-
-      if (serverCerts != null) {
-        trustManagers.add(CertificateUtils.load(serverCerts!!.toList()))
-      }
-
-      trustManager = CertificateUtils.combineTrustManagers(trustManagers, includedDir = localCerts)
-    }
+    val handshakeCertificates = handshakeCertificatesBuilder.build()
 
     builder.sslSocketFactory(
-      KeystoreUtils.createSslSocketFactory(
-        KeystoreUtils.keyManagerArray(keyManagers),
-        trustManager
-      ),
-      trustManager
+      handshakeCertificates.sslSocketFactory(),
+      handshakeCertificates.trustManager
     )
 
     if (certificatePins != null) {
@@ -365,7 +319,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     if (certificateTransparency != CtMode.OFF) {
       builder.networkInterceptors() += certificateTransparencyInterceptor {
-        trustManager { trustManager }
+        trustManager { handshakeCertificates.trustManager }
 
         certificateTransparencyHosts?.forEach {
           includeHost(it)

@@ -33,7 +33,7 @@ class LoggingTest {
     server.useHttps(sslClient.sslSocketFactory(), false)
     server.run { server.protocols = listOf(Protocol.HTTP_2, Protocol.HTTP_1_1) }
     server.enqueue(MockResponse().setBody("Isla Sorna"))
-    main.allowInsecure = true
+    main.insecureHost = listOf(server.hostName)
 
     main.arguments = mutableListOf(server.url("/").toString())
     main.debug = true
