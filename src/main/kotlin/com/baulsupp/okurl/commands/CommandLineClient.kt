@@ -63,6 +63,7 @@ import okhttp3.ConnectionSpec
 import okhttp3.Dispatcher
 import okhttp3.Dns
 import okhttp3.EventListener
+import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
@@ -88,7 +89,7 @@ import javax.net.SocketFactory
 
 abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--user-agent"], description = ["User-Agent to send to server"])
-  var userAgent = Main.NAME + "/" + versionString()
+  var userAgent = "${Main.NAME}/${versionString()} OkHttp/${OkHttp.VERSION}"
 
   @Option(
     names = ["--connect-timeout"],
