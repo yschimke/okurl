@@ -1,12 +1,18 @@
 #compdef okurl
 
 _okurl_urls() {
-  compadd $( okurl --urlCompletion https )
+  local context state state_descr line
+
+  #echo "bbb $context : $line : $CURRENT : $words : $words[$CURRENT]" >> /tmp/a.log
+
+  compadd $( okurl --urlCompletion $words[$CURRENT] )
 }
 
 _okurl() {
   local context state state_descr line
   typeset -A opt_args
+
+  #echo "aaa $context : $line : $CURRENT : $words" >> /tmp/a.log
 
   _arguments -C -S \
     --user-agent='[User-Agent to send to server]' \
