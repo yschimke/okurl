@@ -3,9 +3,20 @@
 _okurl_urls() {
   local context state state_descr line
 
-  #echo "bbb $context : $line : $CURRENT : $words : $words[$CURRENT]" >> /tmp/a.log
-
-  compadd $( okurl --urlCompletion $words[$CURRENT] )
+  if [[ "$words[CURRENT]" =~ ^https://([^/]*)/.*$ ]]; then
+      host=$match[1]
+      if _cache_invalid okurl-complete-$host || ! _retrieve_cache okurl-complete-$host; then
+          urls=($(okurl --urlCompletion "https://$host/"))
+          _store_cache _okurl-complete-$host urls
+      fi
+      compadd $urls
+  else
+      if _cache_invalid okurl-complete || ! _retrieve_cache okurl-complete; then
+          urls=($(okurl --urlCompletion https))
+          _store_cache _okurl-complete urls
+      fi
+      compadd $urls
+  fi
 }
 
 _okurl() {
