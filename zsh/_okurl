@@ -1,17 +1,23 @@
 #compdef okurl
+#autoload
+
+_okurl_caching_policy() {
+    # rebuild if cache is more than a day old
+    local -a oldp
+    oldp=( "$1"(mm+5) )
+    (( $#oldp ))
+}
 
 _okurl_urls() {
-  local context state state_descr line
-
   if [[ "$words[CURRENT]" =~ ^https://([^/]*)/.*$ ]]; then
       host=$match[1]
-      if _cache_invalid okurl-complete-$host || ! _retrieve_cache okurl-complete-$host; then
+      if _cache_invalid _okurl-complete-$host || ! _retrieve_cache _okurl-complete-$host; then
           urls=($(okurl --urlCompletion "https://$host/"))
           _store_cache _okurl-complete-$host urls
       fi
       compadd $urls
   else
-      if _cache_invalid okurl-complete || ! _retrieve_cache okurl-complete; then
+      if _cache_invalid _okurl-complete || ! _retrieve_cache _okurl-complete; then
           urls=($(okurl --urlCompletion https))
           _store_cache _okurl-complete urls
       fi
@@ -20,10 +26,11 @@ _okurl_urls() {
 }
 
 _okurl() {
-  local context state state_descr line
+  local curcontext="$curcontext" state state_descr line expl
   typeset -A opt_args
 
-  #echo "aaa $context : $line : $CURRENT : $words" >> /tmp/a.log
+  zstyle -s ":completion:$curcontext:" cache-policy _okurl_caching_policy
+  #zstyle -s ":completion:$curcontext:" use-cache true
 
   _arguments -C -S \
     --user-agent='[User-Agent to send to server]' \
