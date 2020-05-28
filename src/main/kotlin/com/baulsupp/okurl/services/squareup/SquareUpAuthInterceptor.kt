@@ -65,10 +65,30 @@ class SquareUpAuthInterceptor : Oauth2AuthInterceptor() {
     )
     val scopes = Secrets.promptArray(
       "Scopes", "squareup.scopes", listOf(
+        "BANK_ACCOUNTS_READ",
+        "CASH_DRAWER_READ",
+        "CUSTOMERS_READ",
+        "CUSTOMERS_WRITE",
+        "DEVICE_CREDENTIAL_MANAGEMENT",
+        "EMPLOYEES_READ",
+        "INVENTORY_WRITE",
+        "ITEMS_READ",
+        "ITEMS_WRITE",
+        "LOYALTY_READ",
+        "LOYALTY_WRITE",
         "MERCHANT_PROFILE_READ",
+        "MERCHANT_PROFILE_WRITE",
+        "ORDERS_READ",
+        "ORDERS_WRITE",
         "PAYMENTS_READ",
+        "PAYMENTS_WRITE",
+        "PAYMENTS_WRITE_ADDITIONAL_RECIPIENTS",
+        "PAYMENTS_WRITE_IN_PERSON",
         "SETTLEMENTS_READ",
-        "BANK_ACCOUNTS_READ"
+        "TIMECARDS_READ",
+        "TIMECARDS_SETTINGS_READ",
+        "TIMECARDS_SETTINGS_WRITE",
+        "TIMECARDS_WRITE"
       )
     )
 

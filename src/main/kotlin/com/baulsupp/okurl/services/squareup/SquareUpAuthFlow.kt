@@ -33,7 +33,7 @@ object SquareUpAuthFlow {
       val code = s.waitForCode()
 
       val response = client.query<Oauth2TokenResponse>(request("https://connect.squareup.com/oauth2/token", NoToken) {
-        postJsonBody(AuthDetails(clientId, clientSecret, code, s.redirectUri))
+        postJsonBody(AuthDetails(clientId, clientSecret, code, s.redirectUri, "authorization_code"))
       })
 
       return Oauth2Token(response.access_token)
