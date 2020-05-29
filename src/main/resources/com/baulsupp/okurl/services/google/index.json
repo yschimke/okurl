@@ -6,6 +6,14 @@
     "https://acceleratedmobilepageurl.googleapis.com/": [
       "https://acceleratedmobilepageurl.googleapis.com/$discovery/rest?version=v1"
     ],
+    "https://accessapproval.googleapis.com/": [
+      "https://accessapproval.googleapis.com/$discovery/rest?version=v1",
+      "https://accessapproval.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
+    "https://accesscontextmanager.googleapis.com/": [
+      "https://accesscontextmanager.googleapis.com/$discovery/rest?version=v1beta",
+      "https://accesscontextmanager.googleapis.com/$discovery/rest?version=v1"
+    ],
     "https://www.googleapis.com/adexchangebuyer/v1.2/": [
       "https://www.googleapis.com/discovery/v1/apis/adexchangebuyer/v1.2/rest"
     ],
@@ -14,15 +22,6 @@
     ],
     "https://www.googleapis.com/adexchangebuyer/v1.4/": [
       "https://www.googleapis.com/discovery/v1/apis/adexchangebuyer/v1.4/rest"
-    ],
-    "https://www.googleapis.com/adexchangeseller/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/adexchangeseller/v1/rest"
-    ],
-    "https://www.googleapis.com/adexchangeseller/v1.1/": [
-      "https://www.googleapis.com/discovery/v1/apis/adexchangeseller/v1.1/rest"
-    ],
-    "https://www.googleapis.com/adexchangeseller/v2.0/": [
-      "https://www.googleapis.com/discovery/v1/apis/adexchangeseller/v2.0/rest"
     ],
     "https://adexperiencereport.googleapis.com/": [
       "https://adexperiencereport.googleapis.com/$discovery/rest?version=v1"
@@ -36,14 +35,17 @@
     "https://www.googleapis.com/admin/reports/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/admin/reports_v1/rest"
     ],
+    "https://admob.googleapis.com/": [
+      "https://admob.googleapis.com/$discovery/rest?version=v1"
+    ],
     "https://www.googleapis.com/adsense/v1.4/": [
       "https://www.googleapis.com/discovery/v1/apis/adsense/v1.4/rest"
     ],
     "https://www.googleapis.com/adsensehost/v4.1/": [
       "https://www.googleapis.com/discovery/v1/apis/adsensehost/v4.1/rest"
     ],
-    "https://www.googleapis.com/analytics/v2.4/": [
-      "https://www.googleapis.com/discovery/v1/apis/analytics/v2.4/rest"
+    "https://alertcenter.googleapis.com/": [
+      "https://alertcenter.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://www.googleapis.com/analytics/v3/": [
       "https://www.googleapis.com/discovery/v1/apis/analytics/v3/rest"
@@ -57,8 +59,15 @@
     "https://androidmanagement.googleapis.com/": [
       "https://androidmanagement.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://www.googleapis.com/androidpublisher/v1/applications/": [
-      "https://www.googleapis.com/discovery/v1/apis/androidpublisher/v1/rest"
+    "https://www.googleapis.com/": [
+      "https://www.googleapis.com/discovery/v1/apis/androidpublisher/v1/rest",
+      "https://www.googleapis.com/discovery/v1/apis/fitness/v1/rest",
+      "https://www.googleapis.com/discovery/v1/apis/gamesConfiguration/v1configuration/rest",
+      "https://www.googleapis.com/discovery/v1/apis/gamesManagement/v1management/rest",
+      "https://www.googleapis.com/discovery/v1/apis/oauth2/v2/rest",
+      "https://www.googleapis.com/discovery/v1/apis/tagmanager/v1/rest",
+      "https://www.googleapis.com/discovery/v1/apis/tagmanager/v2/rest",
+      "https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest"
     ],
     "https://www.googleapis.com/androidpublisher/v1.1/applications/": [
       "https://www.googleapis.com/discovery/v1/apis/androidpublisher/v1.1/rest"
@@ -69,30 +78,44 @@
     "https://www.googleapis.com/androidpublisher/v3/applications/": [
       "https://www.googleapis.com/discovery/v1/apis/androidpublisher/v3/rest"
     ],
+    "https://apigee.googleapis.com/": [
+      "https://apigee.googleapis.com/$discovery/rest?version=v1"
+    ],
     "https://appengine.googleapis.com/": [
       "https://appengine.googleapis.com/$discovery/rest?version=v1alpha",
       "https://appengine.googleapis.com/$discovery/rest?version=v1beta",
-      "https://appengine.googleapis.com/$discovery/rest?version=v1",
-      "https://appengine.googleapis.com/$discovery/rest?version=v1beta4",
-      "https://appengine.googleapis.com/$discovery/rest?version=v1beta5"
+      "https://appengine.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://www.googleapis.com/appsactivity/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/appsactivity/v1/rest"
     ],
-    "https://www.googleapis.com/appstate/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/appstate/v1/rest"
+    "https://artifactregistry.googleapis.com/": [
+      "https://artifactregistry.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/bigquery/v2/": [
+    "https://bigquery.googleapis.com/bigquery/v2/": [
       "https://www.googleapis.com/discovery/v1/apis/bigquery/v2/rest"
+    ],
+    "https://bigqueryconnection.googleapis.com/": [
+      "https://bigqueryconnection.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://bigquerydatatransfer.googleapis.com/": [
       "https://bigquerydatatransfer.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://www.googleapis.com/blogger/v2/": [
-      "https://www.googleapis.com/discovery/v1/apis/blogger/v2/rest"
+    "https://bigqueryreservation.googleapis.com/": [
+      "https://bigqueryreservation.googleapis.com/$discovery/rest?version=v1alpha2",
+      "https://bigqueryreservation.googleapis.com/$discovery/rest?version=v1",
+      "https://bigqueryreservation.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/blogger/v3/": [
-      "https://www.googleapis.com/discovery/v1/apis/blogger/v3/rest"
+    "https://bigtableadmin.googleapis.com/": [
+      "https://bigtableadmin.googleapis.com/$discovery/rest?version=v1",
+      "https://bigtableadmin.googleapis.com/$discovery/rest?version=v2"
+    ],
+    "https://billingbudgets.googleapis.com/": [
+      "https://billingbudgets.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
+    "https://blogger.googleapis.com/": [
+      "https://blogger.googleapis.com/$discovery/rest?version=v2",
+      "https://blogger.googleapis.com/$discovery/rest?version=v3"
     ],
     "https://www.googleapis.com/books/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/books/v1/rest"
@@ -102,6 +125,9 @@
     ],
     "https://chat.googleapis.com/": [
       "https://chat.googleapis.com/$discovery/rest?version=v1"
+    ],
+    "https://chromeuxreport.googleapis.com/": [
+      "https://chromeuxreport.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://www.googleapis.com/civicinfo/v2/": [
       "https://www.googleapis.com/discovery/v1/apis/civicinfo/v2/rest"
@@ -113,6 +139,8 @@
       "https://cloudbilling.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://cloudbuild.googleapis.com/": [
+      "https://cloudbuild.googleapis.com/$discovery/rest?version=v1alpha1",
+      "https://cloudbuild.googleapis.com/$discovery/rest?version=v1alpha2",
       "https://cloudbuild.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://clouddebugger.googleapis.com/": [
@@ -125,11 +153,15 @@
       "https://cloudfunctions.googleapis.com/$discovery/rest?version=v1",
       "https://cloudfunctions.googleapis.com/$discovery/rest?version=v1beta2"
     ],
+    "https://cloudidentity.googleapis.com/": [
+      "https://cloudidentity.googleapis.com/$discovery/rest?version=v1",
+      "https://cloudidentity.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
     "https://cloudiot.googleapis.com/": [
       "https://cloudiot.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://cloudkms.googleapis.com/": [
-      "https://cloudkms.googleapis.com/$discovery/rest?version=v1"
+    "https://cloudprofiler.googleapis.com/": [
+      "https://cloudprofiler.googleapis.com/$discovery/rest?version=v2"
     ],
     "https://cloudresourcemanager.googleapis.com/": [
       "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v1",
@@ -137,44 +169,58 @@
       "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v2",
       "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v2beta1"
     ],
+    "https://cloudscheduler.googleapis.com/": [
+      "https://cloudscheduler.googleapis.com/$discovery/rest?version=v1",
+      "https://cloudscheduler.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
+    "https://cloudsearch.googleapis.com/": [
+      "https://cloudsearch.googleapis.com/$discovery/rest?version=v1"
+    ],
     "https://cloudshell.googleapis.com/": [
       "https://cloudshell.googleapis.com/$discovery/rest?version=v1alpha1",
       "https://cloudshell.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://cloudtasks.googleapis.com/": [
-      "https://cloudtasks.googleapis.com/$discovery/rest?version=v2beta2"
+      "https://cloudtasks.googleapis.com/$discovery/rest?version=v2",
+      "https://cloudtasks.googleapis.com/$discovery/rest?version=v2beta2",
+      "https://cloudtasks.googleapis.com/$discovery/rest?version=v2beta3"
     ],
     "https://cloudtrace.googleapis.com/": [
       "https://cloudtrace.googleapis.com/$discovery/rest?version=v1",
-      "https://cloudtrace.googleapis.com/$discovery/rest?version=v2"
+      "https://cloudtrace.googleapis.com/$discovery/rest?version=v2",
+      "https://cloudtrace.googleapis.com/$discovery/rest?version=v2beta1"
     ],
     "https://composer.googleapis.com/": [
+      "https://composer.googleapis.com/$discovery/rest?version=v1",
       "https://composer.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/compute/alpha/projects/": [
+    "https://compute.googleapis.com/compute/alpha/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/compute/alpha/rest"
     ],
-    "https://www.googleapis.com/compute/beta/projects/": [
+    "https://compute.googleapis.com/compute/beta/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/compute/beta/rest"
     ],
-    "https://www.googleapis.com/compute/v1/projects/": [
+    "https://compute.googleapis.com/compute/v1/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
     ],
     "https://container.googleapis.com/": [
       "https://container.googleapis.com/$discovery/rest?version=v1",
       "https://container.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/content/v2sandbox/": [
-      "https://www.googleapis.com/discovery/v1/apis/content/v2sandbox/rest"
-    ],
     "https://www.googleapis.com/content/v2/": [
       "https://www.googleapis.com/discovery/v1/apis/content/v2/rest"
     ],
-    "https://www.googleapis.com/customsearch/": [
+    "https://www.googleapis.com/content/v2.1/": [
+      "https://www.googleapis.com/discovery/v1/apis/content/v2.1/rest"
+    ],
+    "https://customsearch.googleapis.com/": [
       "https://www.googleapis.com/discovery/v1/apis/customsearch/v1/rest"
     ],
     "https://dataflow.googleapis.com/": [
       "https://dataflow.googleapis.com/$discovery/rest?version=v1b3"
+    ],
+    "https://datafusion.googleapis.com/": [
+      "https://datafusion.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://dataproc.googleapis.com/": [
       "https://dataproc.googleapis.com/$discovery/rest?version=v1",
@@ -194,13 +240,14 @@
     "https://www.googleapis.com/deploymentmanager/v2/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/deploymentmanager/v2/rest"
     ],
-    "https://www.googleapis.com/dfareporting/v2.8/": [
-      "https://www.googleapis.com/discovery/v1/apis/dfareporting/v2.8/rest"
+    "https://www.googleapis.com/dfareporting/v3.3/": [
+      "https://www.googleapis.com/discovery/v1/apis/dfareporting/v3.3/rest"
     ],
-    "https://www.googleapis.com/dfareporting/v3.0/": [
-      "https://www.googleapis.com/discovery/v1/apis/dfareporting/v3.0/rest"
+    "https://www.googleapis.com/dfareporting/v3.4/": [
+      "https://www.googleapis.com/discovery/v1/apis/dfareporting/v3.4/rest"
     ],
     "https://dialogflow.googleapis.com/": [
+      "https://dialogflow.googleapis.com/$discovery/rest?version=v3alpha1",
       "https://dialogflow.googleapis.com/$discovery/rest?version=v2",
       "https://dialogflow.googleapis.com/$discovery/rest?version=v2beta1"
     ],
@@ -210,20 +257,32 @@
     "https://www.googleapis.com/discovery/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/discovery/v1/rest"
     ],
+    "https://displayvideo.googleapis.com/": [
+      "https://displayvideo.googleapis.com/$discovery/rest?version=v1"
+    ],
     "https://dlp.googleapis.com/": [
       "https://dlp.googleapis.com/$discovery/rest?version=v2"
     ],
-    "https://www.googleapis.com/dns/v1/projects/": [
+    "https://dns.googleapis.com/dns/v1/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/dns/v1/rest"
     ],
-    "https://www.googleapis.com/dns/v1beta2/projects/": [
+    "https://dns.googleapis.com/dns/v1beta2/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/dns/v1beta2/rest"
     ],
-    "https://www.googleapis.com/dns/v2beta1/projects/": [
+    "https://dns.googleapis.com/dns/v2beta1/projects/": [
       "https://www.googleapis.com/discovery/v1/apis/dns/v2beta1/rest"
+    ],
+    "https://docs.googleapis.com/": [
+      "https://docs.googleapis.com/$discovery/rest?version=v1"
+    ],
+    "https://domainsrdap.googleapis.com/": [
+      "https://domainsrdap.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://www.googleapis.com/doubleclickbidmanager/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/doubleclickbidmanager/v1/rest"
+    ],
+    "https://www.googleapis.com/doubleclickbidmanager/v1.1/": [
+      "https://www.googleapis.com/discovery/v1/apis/doubleclickbidmanager/v1.1/rest"
     ],
     "https://www.googleapis.com/doubleclicksearch/v2/": [
       "https://www.googleapis.com/discovery/v1/apis/doubleclicksearch/v2/rest"
@@ -234,26 +293,34 @@
     "https://www.googleapis.com/drive/v3/": [
       "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
     ],
+    "https://driveactivity.googleapis.com/": [
+      "https://driveactivity.googleapis.com/$discovery/rest?version=v2"
+    ],
+    "https://fcm.googleapis.com/": [
+      "https://fcm.googleapis.com/$discovery/rest?version=v1"
+    ],
+    "https://file.googleapis.com/": [
+      "https://file.googleapis.com/$discovery/rest?version=v1",
+      "https://file.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
+    "https://firebase.googleapis.com/": [
+      "https://firebase.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
     "https://firebasedynamiclinks.googleapis.com/": [
       "https://firebasedynamiclinks.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://www.googleapis.com/fitness/v1/users/": [
-      "https://www.googleapis.com/discovery/v1/apis/fitness/v1/rest"
+    "https://firebasehosting.googleapis.com/": [
+      "https://firebasehosting.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/fusiontables/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/fusiontables/v1/rest"
-    ],
-    "https://www.googleapis.com/fusiontables/v2/": [
-      "https://www.googleapis.com/discovery/v1/apis/fusiontables/v2/rest"
+    "https://firebaseml.googleapis.com/": [
+      "https://firebaseml.googleapis.com/$discovery/rest?version=v1",
+      "https://firebaseml.googleapis.com/$discovery/rest?version=v1beta2"
     ],
     "https://www.googleapis.com/games/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/games/v1/rest"
     ],
-    "https://www.googleapis.com/games/v1configuration/": [
-      "https://www.googleapis.com/discovery/v1/apis/gamesConfiguration/v1configuration/rest"
-    ],
-    "https://www.googleapis.com/games/v1management/": [
-      "https://www.googleapis.com/discovery/v1/apis/gamesManagement/v1management/rest"
+    "https://gameservices.googleapis.com/": [
+      "https://gameservices.googleapis.com/$discovery/rest?version=v1beta"
     ],
     "https://genomics.googleapis.com/": [
       "https://genomics.googleapis.com/$discovery/rest?version=v1alpha2",
@@ -267,60 +334,69 @@
       "https://www.googleapis.com/discovery/v1/apis/groupsmigration/v1/rest",
       "https://www.googleapis.com/discovery/v1/apis/groupssettings/v1/rest"
     ],
+    "https://healthcare.googleapis.com/": [
+      "https://healthcare.googleapis.com/$discovery/rest?version=v1",
+      "https://healthcare.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
+    "https://homegraph.googleapis.com/": [
+      "https://homegraph.googleapis.com/$discovery/rest?version=v1"
+    ],
     "https://iam.googleapis.com/": [
       "https://iam.googleapis.com/$discovery/rest?version=v1"
     ],
+    "https://iamcredentials.googleapis.com/": [
+      "https://iamcredentials.googleapis.com/$discovery/rest?version=v1"
+    ],
+    "https://iap.googleapis.com/": [
+      "https://iap.googleapis.com/$discovery/rest?version=v1",
+      "https://iap.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
     "https://www.googleapis.com/identitytoolkit/v3/relyingparty/": [
-      "https://www.googleapis.com/discovery/v1/apis/identitytoolkit/v3/rest"
+      "https://identitytoolkit.googleapis.com/$discovery/rest?version=v3"
     ],
     "https://kgsearch.googleapis.com/": [
       "https://kgsearch.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://language.googleapis.com/": [
-      "https://language.googleapis.com/$discovery/rest?version=v1",
-      "https://language.googleapis.com/$discovery/rest?version=v1beta1",
-      "https://language.googleapis.com/$discovery/rest?version=v1beta2"
+    "https://libraryagent.googleapis.com/": [
+      "https://libraryagent.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://www.googleapis.com/apps/licensing/v1/product/": [
       "https://www.googleapis.com/discovery/v1/apis/licensing/v1/rest"
     ],
+    "https://lifesciences.googleapis.com/": [
+      "https://lifesciences.googleapis.com/$discovery/rest?version=v2beta"
+    ],
     "https://logging.googleapis.com/": [
-      "https://logging.googleapis.com/$discovery/rest?version=v2",
-      "https://logging.googleapis.com/$discovery/rest?version=v2beta1"
+      "https://logging.googleapis.com/$discovery/rest?version=v2"
+    ],
+    "https://managedidentities.googleapis.com/": [
+      "https://managedidentities.googleapis.com/$discovery/rest?version=v1alpha1",
+      "https://managedidentities.googleapis.com/$discovery/rest?version=v1",
+      "https://managedidentities.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://manufacturers.googleapis.com/": [
       "https://manufacturers.googleapis.com/$discovery/rest?version=v1"
-    ],
-    "https://www.googleapis.com/mirror/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/mirror/v1/rest"
     ],
     "https://ml.googleapis.com/": [
       "https://ml.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://monitoring.googleapis.com/": [
+      "https://monitoring.googleapis.com/$discovery/rest?version=v1",
       "https://monitoring.googleapis.com/$discovery/rest?version=v3"
     ],
-    "https://www.googleapis.com/": [
-      "https://www.googleapis.com/discovery/v1/apis/oauth2/v1/rest",
-      "https://www.googleapis.com/discovery/v1/apis/oauth2/v2/rest"
+    "https://networkmanagement.googleapis.com/": [
+      "https://networkmanagement.googleapis.com/$discovery/rest?version=v1",
+      "https://networkmanagement.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/pagespeedonline/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/pagespeedonline/v1/rest"
+    "https://osconfig.googleapis.com/": [
+      "https://osconfig.googleapis.com/$discovery/rest?version=v1beta",
+      "https://osconfig.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://www.googleapis.com/pagespeedonline/v2/": [
-      "https://www.googleapis.com/discovery/v1/apis/pagespeedonline/v2/rest"
-    ],
-    "https://www.googleapis.com/pagespeedonline/v4/": [
-      "https://www.googleapis.com/discovery/v1/apis/pagespeedonline/v4/rest"
-    ],
-    "https://partners.googleapis.com/": [
-      "https://partners.googleapis.com/$discovery/rest?version=v2"
+    "https://pagespeedonline.googleapis.com/": [
+      "https://www.googleapis.com/discovery/v1/apis/pagespeedonline/v5/rest"
     ],
     "https://people.googleapis.com/": [
       "https://people.googleapis.com/$discovery/rest?version=v1"
-    ],
-    "https://photoslibrary.googleapis.com/": [
-      "https://photoslibrary.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://www.googleapis.com/playcustomapp/v1/accounts/": [
       "https://www.googleapis.com/discovery/v1/apis/playcustomapp/v1/rest"
@@ -328,37 +404,38 @@
     "https://www.googleapis.com/plus/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/plus/v1/rest"
     ],
-    "https://www.googleapis.com/plusDomains/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/plusDomains/v1/rest"
+    "https://policytroubleshooter.googleapis.com/": [
+      "https://policytroubleshooter.googleapis.com/$discovery/rest?version=v1beta",
+      "https://policytroubleshooter.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://poly.googleapis.com/": [
       "https://poly.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://proximitybeacon.googleapis.com/": [
-      "https://proximitybeacon.googleapis.com/$discovery/rest?version=v1beta1"
+    "https://prod-tt-sasportal.googleapis.com/": [
+      "https://prod-tt-sasportal.googleapis.com/$discovery/rest?version=v1alpha1"
     ],
     "https://pubsub.googleapis.com/": [
       "https://pubsub.googleapis.com/$discovery/rest?version=v1beta1a",
       "https://pubsub.googleapis.com/$discovery/rest?version=v1",
       "https://pubsub.googleapis.com/$discovery/rest?version=v1beta2"
     ],
-    "https://www.googleapis.com/replicapool/v1beta1/projects/": [
-      "https://www.googleapis.com/discovery/v1/apis/replicapool/v1beta1/rest"
+    "https://recommender.googleapis.com/": [
+      "https://recommender.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/replicapool/v1beta2/projects/": [
-      "https://www.googleapis.com/discovery/v1/apis/replicapool/v1beta2/rest"
+    "https://admin-remotebuildexecution.googleapis.com/": [
+      "https://remotebuildexecution.googleapis.com/$discovery/rest?version=v1alpha"
     ],
-    "https://www.googleapis.com/replicapoolupdater/v1beta1/projects/": [
-      "https://www.googleapis.com/discovery/v1/apis/replicapoolupdater/v1beta1/rest"
+    "https://remotebuildexecution.googleapis.com/": [
+      "https://remotebuildexecution.googleapis.com/$discovery/rest?version=v1",
+      "https://remotebuildexecution.googleapis.com/$discovery/rest?version=v2"
     ],
     "https://www.googleapis.com/apps/reseller/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/reseller/v1/rest"
     ],
-    "https://www.googleapis.com/resourceviews/v1beta1/projects/": [
-      "https://www.googleapis.com/discovery/v1/apis/resourceviews/v1beta1/rest"
-    ],
-    "https://www.googleapis.com/resourceviews/v1beta2/projects/": [
-      "https://www.googleapis.com/discovery/v1/apis/resourceviews/v1beta2/rest"
+    "https://run.googleapis.com/": [
+      "https://run.googleapis.com/$discovery/rest?version=v1alpha1",
+      "https://run.googleapis.com/$discovery/rest?version=v1",
+      "https://run.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://runtimeconfig.googleapis.com/": [
       "https://runtimeconfig.googleapis.com/$discovery/rest?version=v1",
@@ -367,19 +444,25 @@
     "https://safebrowsing.googleapis.com/": [
       "https://safebrowsing.googleapis.com/$discovery/rest?version=v4"
     ],
-    "https://script.googleapis.com/": [
-      "https://script.googleapis.com/$discovery/rest?version=v1"
+    "https://sasportal.googleapis.com/": [
+      "https://sasportal.googleapis.com/$discovery/rest?version=v1alpha1"
     ],
     "https://searchconsole.googleapis.com/": [
       "https://searchconsole.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://servicebroker.googleapis.com/": [
-      "https://servicebroker.googleapis.com/$discovery/rest?version=v1alpha1",
-      "https://servicebroker.googleapis.com/$discovery/rest?version=v1",
-      "https://servicebroker.googleapis.com/$discovery/rest?version=v1beta1"
+    "https://secretmanager.googleapis.com/": [
+      "https://secretmanager.googleapis.com/$discovery/rest?version=v1",
+      "https://secretmanager.googleapis.com/$discovery/rest?version=v1beta1"
+    ],
+    "https://securitycenter.googleapis.com/": [
+      "https://securitycenter.googleapis.com/$discovery/rest?version=v1p1alpha1",
+      "https://securitycenter.googleapis.com/$discovery/rest?version=v1p1beta1",
+      "https://securitycenter.googleapis.com/$discovery/rest?version=v1",
+      "https://securitycenter.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://serviceconsumermanagement.googleapis.com/": [
-      "https://serviceconsumermanagement.googleapis.com/$discovery/rest?version=v1"
+      "https://serviceconsumermanagement.googleapis.com/$discovery/rest?version=v1",
+      "https://serviceconsumermanagement.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://servicecontrol.googleapis.com/": [
       "https://servicecontrol.googleapis.com/$discovery/rest?version=v1"
@@ -387,11 +470,13 @@
     "https://servicemanagement.googleapis.com/": [
       "https://servicemanagement.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://serviceusage.googleapis.com/": [
-      "https://serviceusage.googleapis.com/$discovery/rest?version=v1beta1"
+    "https://servicenetworking.googleapis.com/": [
+      "https://servicenetworking.googleapis.com/$discovery/rest?version=v1beta",
+      "https://servicenetworking.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://serviceuser.googleapis.com/": [
-      "https://serviceuser.googleapis.com/$discovery/rest?version=v1"
+    "https://serviceusage.googleapis.com/": [
+      "https://serviceusage.googleapis.com/$discovery/rest?version=v1",
+      "https://serviceusage.googleapis.com/$discovery/rest?version=v1beta1"
     ],
     "https://sheets.googleapis.com/": [
       "https://sheets.googleapis.com/$discovery/rest?version=v4"
@@ -408,26 +493,19 @@
     "https://spanner.googleapis.com/": [
       "https://spanner.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://www.googleapis.com/spectrum/v1explorer/paws/": [
-      "https://www.googleapis.com/discovery/v1/apis/spectrum/v1explorer/rest"
-    ],
     "https://speech.googleapis.com/": [
+      "https://speech.googleapis.com/$discovery/rest?version=v1p1beta1",
       "https://speech.googleapis.com/$discovery/rest?version=v1",
-      "https://speech.googleapis.com/$discovery/rest?version=v1beta1"
+      "https://speech.googleapis.com/$discovery/rest?version=v2beta1"
     ],
-    "https://www.googleapis.com/sql/v1beta3/": [
-      "https://www.googleapis.com/discovery/v1/apis/sqladmin/v1beta3/rest"
-    ],
-    "https://www.googleapis.com/sql/v1beta4/": [
+    "https://sqladmin.googleapis.com/": [
+      "https://sqladmin.googleapis.com/$discovery/rest?version=v1beta4",
       "https://www.googleapis.com/discovery/v1/apis/sqladmin/v1beta4/rest"
     ],
-    "https://www.googleapis.com/storage/v1/": [
+    "https://storage.googleapis.com/storage/v1/": [
       "https://www.googleapis.com/discovery/v1/apis/storage/v1/rest"
     ],
-    "https://www.googleapis.com/storage/v1beta1/": [
-      "https://www.googleapis.com/discovery/v1/apis/storage/v1beta1/rest"
-    ],
-    "https://www.googleapis.com/storage/v1beta2/": [
+    "https://storage.googleapis.com/storage/v1beta2/": [
       "https://www.googleapis.com/discovery/v1/apis/storage/v1beta2/rest"
     ],
     "https://storagetransfer.googleapis.com/": [
@@ -436,40 +514,19 @@
     "https://streetviewpublish.googleapis.com/": [
       "https://streetviewpublish.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://www.googleapis.com/surveys/v2/": [
-      "https://www.googleapis.com/discovery/v1/apis/surveys/v2/rest"
-    ],
-    "https://www.googleapis.com/tagmanager/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/tagmanager/v1/rest"
-    ],
-    "https://www.googleapis.com/tagmanager/v2/": [
-      "https://www.googleapis.com/discovery/v1/apis/tagmanager/v2/rest"
-    ],
-    "https://www.googleapis.com/tasks/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/tasks/v1/rest"
-    ],
     "https://texttospeech.googleapis.com/": [
+      "https://texttospeech.googleapis.com/$discovery/rest?version=v1",
       "https://texttospeech.googleapis.com/$discovery/rest?version=v1beta1"
     ],
-    "https://www.googleapis.com/toolresults/v1beta3/projects/": [
-      "https://www.googleapis.com/discovery/v1/apis/toolresults/v1beta3/rest"
-    ],
     "https://tpu.googleapis.com/": [
-      "https://tpu.googleapis.com/$discovery/rest?version=v1alpha1"
-    ],
-    "https://translation.googleapis.com/language/translate/": [
-      "https://translation.googleapis.com/$discovery/rest?version=v2"
-    ],
-    "https://www.googleapis.com/urlshortener/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/urlshortener/v1/rest"
+      "https://tpu.googleapis.com/$discovery/rest?version=v1alpha1",
+      "https://tpu.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://vault.googleapis.com/": [
       "https://vault.googleapis.com/$discovery/rest?version=v1"
     ],
-    "https://videointelligence.googleapis.com/": [
-      "https://videointelligence.googleapis.com/$discovery/rest?version=v1",
-      "https://videointelligence.googleapis.com/$discovery/rest?version=v1beta1",
-      "https://videointelligence.googleapis.com/$discovery/rest?version=v1beta2"
+    "https://verifiedaccess.googleapis.com/": [
+      "https://verifiedaccess.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://vision.googleapis.com/": [
       "https://vision.googleapis.com/$discovery/rest?version=v1p1beta1",
@@ -483,18 +540,15 @@
       "https://www.googleapis.com/discovery/v1/apis/webmasters/v3/rest"
     ],
     "https://websecurityscanner.googleapis.com/": [
-      "https://websecurityscanner.googleapis.com/$discovery/rest?version=v1alpha"
+      "https://websecurityscanner.googleapis.com/$discovery/rest?version=v1alpha",
+      "https://websecurityscanner.googleapis.com/$discovery/rest?version=v1beta",
+      "https://websecurityscanner.googleapis.com/$discovery/rest?version=v1"
     ],
     "https://www.googleapis.com/youtube/v3/": [
       "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"
     ],
-    "https://www.googleapis.com/youtube/analytics/v1/": [
-      "https://www.googleapis.com/discovery/v1/apis/youtubeAnalytics/v1/rest"
-    ],
-    "https://www.googleapis.com/youtube/analytics/v1beta1/": [
-      "https://www.googleapis.com/discovery/v1/apis/youtubeAnalytics/v1beta1/rest"
-    ],
     "https://youtubeanalytics.googleapis.com/": [
+      "https://youtubeanalytics.googleapis.com/$discovery/rest?version=v1",
       "https://youtubeanalytics.googleapis.com/$discovery/rest?version=v2"
     ],
     "https://youtubereporting.googleapis.com/": [

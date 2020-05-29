@@ -6,9 +6,9 @@ import java.util.logging.LogRecord
 import java.util.logging.Logger
 
 private fun runMain(s: String) {
-  com.baulsupp.okurl.main(s.split(" ").toTypedArray())
+  com.baulsupp.okurl.kotlin.main(s.split(" ").toTypedArray())
 }
 
 fun main() {
-  runMain("--debug --urlCompletion https://www.googleapis.com/youtube/")
+  runMain("./src/test/kotlin/commands/UpdateIndexes.kts")
 }

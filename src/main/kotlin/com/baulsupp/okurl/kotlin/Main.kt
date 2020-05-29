@@ -75,7 +75,5 @@ class Main : CommandLineClient() {
 }
 
 fun main(args: Array<String>): Unit = runBlocking<Unit> {
-  Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager(true).build(), 1)
-
   exitProcess(CommandLine(Main()).execute(*args))
 }
