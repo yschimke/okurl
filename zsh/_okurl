@@ -38,6 +38,7 @@ _okurl() {
     --read-timeout='[Maximum time allowed for reading data (seconds). (0 = disabled)]' \
     --ping-interval='[Interval between pings. (0 = disabled)]' \
     --frames'[Log HTTP/2 frames to STDERR]' \
+    --wireshark'[Wireshark Frames]' \
     --debug'[Debug]' \
     --cache='[Cache directory]' \
     --protocols='[Protocols]' \

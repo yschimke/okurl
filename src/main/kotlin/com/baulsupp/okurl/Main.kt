@@ -25,6 +25,7 @@ import com.baulsupp.okurl.okhttp.FailedResponse
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.PotentialResponse
 import com.baulsupp.okurl.okhttp.SuccessfulResponse
+import com.baulsupp.okurl.okhttp.WireSharkListenerFactory
 import com.baulsupp.okurl.sse.SseOutput
 import com.baulsupp.okurl.sse.handleSseResponse
 import com.baulsupp.okurl.util.ClientException
@@ -414,5 +415,7 @@ class Main : CommandLineClient() {
 }
 
 fun main(args: Array<String>) {
+  WireSharkListenerFactory.register()
+
   exitProcess(CommandLine(Main()).execute(*args))
 }

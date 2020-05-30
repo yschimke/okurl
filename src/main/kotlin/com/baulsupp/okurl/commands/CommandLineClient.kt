@@ -35,6 +35,8 @@ import com.baulsupp.okurl.okhttp.CipherSuiteOption
 import com.baulsupp.okurl.okhttp.ConnectionSpecOption
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.TlsVersionOption
+import com.baulsupp.okurl.okhttp.WireSharkListenerFactory
+import com.baulsupp.okurl.okhttp.WireSharkListenerFactory.WireSharkKeyLoggerListener.Launch
 import com.baulsupp.okurl.okhttp.defaultConnectionSpec
 import com.baulsupp.okurl.preferences.Preferences
 import com.baulsupp.okurl.security.BasicPromptAuthenticator
@@ -67,6 +69,7 @@ import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
+import okhttp3.TlsVersion
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
@@ -146,6 +149,9 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   @Option(names = ["--networkInterface"], description = ["Specific Local Network Interface"])
   var networkInterface: String? = null
+
+  @Option(names = ["--wireshark"], description = ["Activate Wireshark"])
+  var wireshark: Boolean = false
 
   @Option(
     names = ["--connectionSpec"],
@@ -278,8 +284,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
       ?: throw UsageException("networkInterface '$networkInterface' not found")
 
   fun configureTls(builder: OkHttpClient.Builder) {
-    val callbackHandler = ConsoleCallbackHandler()
-
     if (cipherSuites != null || tlsVersions != null) {
       val specBuilder = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
 
@@ -429,6 +433,21 @@ abstract class CommandLineClient : ToolSession, Runnable {
       builder.socketFactory(getSocketFactory())
     }
 
+    if (wireshark) {
+      if (tlsVersions == null) {
+        tlsVersions = mutableListOf(TlsVersionOption("TLSv1.2"))
+      }
+
+      val wiresharkListener = WireSharkListenerFactory(
+        logFile = File("/tmp/key.log"), launch = Launch.CommandLine)
+      builder.eventListenerFactory(wiresharkListener)
+
+      val process = wiresharkListener.launchWireShark()
+      closeables.add(Closeable { process?.destroyForcibly() })
+    } else {
+      applyTracing(builder)
+    }
+
     configureTls(builder)
 
     if (cacheDirectory != null) {
@@ -483,8 +502,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     val connectionPool = ConnectionPool()
     builder.connectionPool(connectionPool)
-
-    applyTracing(builder)
 
     builder.addNetworkInterceptor(authenticatingInterceptor)
 

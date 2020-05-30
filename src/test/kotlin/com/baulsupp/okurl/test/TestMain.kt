@@ -10,5 +10,7 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("--debug --urlCompletion https://www.googleapis.com/youtube/")
+  runMain("--wireshark https://api.twitter.com/robots.txt")
+
+  Thread.sleep(5000)
 }
