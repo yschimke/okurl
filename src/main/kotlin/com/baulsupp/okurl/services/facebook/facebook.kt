@@ -23,7 +23,7 @@ suspend inline fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQue
   val fields = fbFieldNames(I::class)
 
   val stringResult = this.queryForString(
-    "https://graph.facebook.com/v2.11$path?fields=${fields.joinToString(",")}", tokenSet
+    "https://graph.facebook.com/v7.0$path?fields=${fields.joinToString(",")}", tokenSet
   )
   return moshi.adapter<T>(T::class.java).fromJson(stringResult)!!
 }
@@ -32,7 +32,7 @@ suspend inline fun <reified T> OkHttpClient.fbQuery(path: String, tokenSet: Toke
   val fields = fbFieldNames(T::class)
 
   return this.query(
-    "https://graph.facebook.com/v2.11$path?fields=${fields.joinToString(",")}",
+    "https://graph.facebook.com/v7.0$path?fields=${fields.joinToString(",")}",
     tokenSet
   )
 }
@@ -60,4 +60,4 @@ suspend fun getMetadata(client: OkHttpClient, requestUrl: HttpUrl, tokenSet: Tok
   }
 }
 
-const val VERSION = "v3.0"
+const val VERSION = "v7.0"

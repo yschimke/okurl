@@ -17,11 +17,17 @@ _okurl_services() {
 }
 
 _okurl_urls() {
-  if [[ "$words[CURRENT]" =~ ^https://([^/]*)/.*$ ]]; then
+  local host urlpath
+  
+  if [[ "$words[CURRENT]" =~ ^https://([^/]*)(/.*)$ ]]; then
       host=$match[1]
-      if _cache_invalid _okurl-complete-$host || ! _retrieve_cache _okurl-complete-$host; then
-          urls=($(okurl --urlCompletion "https://$host/"))
-          _store_cache _okurl-complete-$host urls
+      urlpath=$match[2]
+
+      if [[ "$host" == "graph.facebook.com" ]]; then
+        urls=($(okurl --urlCompletion "https://graph.facebook.com$urlpath"))
+      elif _cache_invalid _okurl-complete-$host || ! _retrieve_cache _okurl-complete-$host; then
+        urls=($(okurl --urlCompletion "https://$host/"))
+        _store_cache _okurl-complete-$host urls
       fi
       compadd $urls
   else
