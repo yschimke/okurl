@@ -18,7 +18,7 @@ _okurl_services() {
 
 _okurl_urls() {
   local host urlpath
-  
+
   if [[ "$words[CURRENT]" =~ ^https://([^/]*)(/.*)$ ]]; then
       host=$match[1]
       urlpath=$match[2]
