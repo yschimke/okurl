@@ -127,6 +127,7 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.squareup.SquareUpAuthInterceptor(),
         com.baulsupp.okurl.services.stackexchange.StackExchangeAuthInterceptor(),
         com.baulsupp.okurl.services.strava.StravaAuthInterceptor(),
+        com.baulsupp.okurl.services.stripe.StripeAuthInterceptor(),
         com.baulsupp.okurl.services.streamdata.StreamdataAuthInterceptor(),
         com.baulsupp.okurl.services.surveymonkey.SurveyMonkeyAuthInterceptor(),
         com.baulsupp.okurl.services.symphony.SymphonyAuthInterceptor(),
