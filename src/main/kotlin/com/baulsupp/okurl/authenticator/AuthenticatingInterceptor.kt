@@ -73,8 +73,7 @@ class AuthenticatingInterceptor(
     }
   }
 
-  override fun findAuthInterceptor(name: String): AuthInterceptor<*>? = getByName(name) ?: getByUrl(
-    name)
+  override fun findAuthInterceptor(name: String): AuthInterceptor<*>? = getByName(name)
 
   fun names(): List<String> = services.map { it.name() }
 

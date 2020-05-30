@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.twitter
 
 import com.baulsupp.okurl.i9n.TestCredentialsStore
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertTrue
 
 class TwitterAuthInterceptorTest {

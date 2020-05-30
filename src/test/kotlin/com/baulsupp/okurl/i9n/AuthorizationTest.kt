@@ -2,68 +2,55 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.credentials.DefaultToken
+import com.baulsupp.okurl.services.test.TestAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class AuthorizationTest {
-  private val main = Main()
   private val output = TestOutputHandler<Response>()
-  private val credentialsStore = TestCredentialsStore()
-
-  init {
-    main.outputHandler = output
-    main.credentialsStore = credentialsStore
+  private val store = TestCredentialsStore()
+  private val main = Main().apply {
+    outputHandler = output
+    credentialsStore = store
+    authenticatingInterceptor = AuthenticatingInterceptor(credentialsStore, mutableListOf(TestAuthInterceptor()))
   }
 
   @Test
   fun setToken() {
-    main.authorize = true
+    main.authorize = "test"
     main.token = "abc"
-    main.arguments = mutableListOf("test")
 
     runBlocking {
       main.run()
     }
 
-    assertEquals("abc", credentialsStore.tokens[Pair("test", DefaultToken.name)])
+    assertEquals("abc", store.tokens[Pair("test", DefaultToken.name)])
   }
 
   @Test
   fun authorize() {
-    main.authorize = true
-    main.arguments = mutableListOf("test")
+    main.authorize = "test"
 
     runBlocking {
       main.run()
     }
 
-    assertEquals("testToken", credentialsStore.tokens[Pair("test", DefaultToken.name)])
-  }
-
-  @Test
-  fun authorizeByHost() {
-    main.authorize = true
-    main.arguments = mutableListOf("https://test.com/test")
-
-    runBlocking {
-      main.run()
-    }
-
-    assertEquals("testToken", credentialsStore.tokens[Pair("test", DefaultToken.name)])
+    assertEquals("testToken", store.tokens[Pair("test", DefaultToken.name)])
   }
 
   @Test
   fun authorizeWithArgs() {
-    main.authorize = true
-    main.arguments = mutableListOf("test", "TOKENARG")
+    main.authorize = "test"
+    main.arguments = mutableListOf("TOKENARG")
 
     runBlocking {
       main.run()
     }
 
-    assertEquals("TOKENARG", credentialsStore.tokens[Pair("test", DefaultToken.name)])
+    assertEquals("TOKENARG", store.tokens[Pair("test", DefaultToken.name)])
   }
 }

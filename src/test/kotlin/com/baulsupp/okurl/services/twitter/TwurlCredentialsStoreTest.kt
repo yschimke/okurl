@@ -1,14 +1,13 @@
 package com.baulsupp.okurl.services.twitter
 
 import com.baulsupp.okurl.services.twitter.twurlrc.TwurlCredentialsStore
-import org.junit.jupiter.api.Test
+import org.junit.Test
 
 import java.io.File
 import kotlin.test.assertEquals
 
 class TwurlCredentialsStoreTest {
   @Test
-
   fun testReadDefaultCredentials() {
     val file = File(TwurlCredentialsStoreTest::class.java.getResource("/single_twurlrc.yaml").file)
     val store = TwurlCredentialsStore(file)

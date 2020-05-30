@@ -122,13 +122,11 @@ dependencies {
     exclude(module = "kotlin-compiler")
   }
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
   testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.70")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.3.70")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.7.0")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
 
-  testRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
   testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
 }
 

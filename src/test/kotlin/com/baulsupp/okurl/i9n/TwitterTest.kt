@@ -6,7 +6,7 @@ import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.util.TestUtil.projectFile
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class TwitterTest {
@@ -22,9 +22,8 @@ class TwitterTest {
 
   @Test
   fun setToken() {
-    main.authorize = true
+    main.authorize = "twitter"
     main.token = "PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET"
-    main.arguments = mutableListOf("twitter")
 
     runBlocking {
       main.run()
@@ -40,8 +39,8 @@ class TwitterTest {
 
   @Test
   fun importFromTwurl() {
-    main.authorize = true
-    main.arguments = mutableListOf("twitter", "--twurlrc",
+    main.authorize = "twitter"
+    main.arguments = mutableListOf("--twurlrc",
         projectFile("src/test/resources/single_twurlrc.yaml").absolutePath)
 
     runBlocking {

@@ -2,30 +2,33 @@ package com.baulsupp.okurl.i9n
 
 import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
+import com.baulsupp.okurl.services.test.TestAuthInterceptor
+import com.baulsupp.okurl.services.twitter.TwitterAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CompletionTest {
-  private val main = Main()
   private val output = TestOutputHandler<Response>()
-  private val credentialsStore = TestCredentialsStore()
-  private val completionCache = TestCompletionVariableCache()
-
-  @BeforeEach
-  fun setup() {
-    main.debug = true
-    main.outputHandler = output
-    main.credentialsStore = credentialsStore
-    main.completionVariableCache = completionCache
-    main.completionFile = File.createTempFile("okurltest", ".txt")
-    main.urlComplete = true
-
-    main.completionFile!!.deleteOnExit()
+  private val store = TestCredentialsStore()
+  private val cache = TestCompletionVariableCache()
+  private val main = Main().apply {
+    debug = true
+    outputHandler = output
+    credentialsStore = store
+    completionVariableCache = cache
+    completionFile = File.createTempFile("okurltest", ".txt").apply {
+      deleteOnExit()
+    }
+    authenticatingInterceptor = AuthenticatingInterceptor(store, listOf(
+      TestAuthInterceptor(),
+      TwitterAuthInterceptor()
+    ))
+    urlComplete = true
   }
 
   @Test

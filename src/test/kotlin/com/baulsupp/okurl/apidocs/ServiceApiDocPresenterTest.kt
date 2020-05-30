@@ -4,18 +4,20 @@ import com.baulsupp.oksocial.output.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.credentials.NoToken
+import com.baulsupp.okurl.i9n.TestCredentialsStore
+import com.baulsupp.okurl.services.test.TestAuthInterceptor
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class ServiceApiDocPresenterTest {
-  private val main = Main()
-
+  private val store = TestCredentialsStore()
   private val testOutputHandler = TestOutputHandler<Any>()
 
-  init {
-    main.outputHandler = testOutputHandler
-    main.initialise()
+  private val main = Main().apply {
+    outputHandler = testOutputHandler
+    authenticatingInterceptor = AuthenticatingInterceptor(store, listOf(TestAuthInterceptor()))
+    initialise()
   }
 
   val presenter =

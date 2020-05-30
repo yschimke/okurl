@@ -7,7 +7,7 @@ import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.services.squareup.SquareUpAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

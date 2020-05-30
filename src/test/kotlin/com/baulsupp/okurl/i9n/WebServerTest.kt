@@ -8,9 +8,9 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.Ignore
 import org.junit.Rule
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
 import kotlin.test.assertEquals
@@ -63,7 +63,7 @@ class WebServerTest {
   }
 
   @Test
-  @Disabled
+  @Ignore
   fun httpsRequestSecure() {
     server.useHttps(sslClient.sslSocketFactory(), false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))

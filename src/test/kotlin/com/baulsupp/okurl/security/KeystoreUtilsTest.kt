@@ -2,7 +2,7 @@ package com.baulsupp.okurl.security
 
 import com.baulsupp.okurl.security.KeystoreUtils.createKeyManager
 import com.baulsupp.okurl.security.KeystoreUtils.getKeyStore
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream

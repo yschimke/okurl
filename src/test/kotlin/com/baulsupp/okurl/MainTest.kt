@@ -2,7 +2,6 @@ package com.baulsupp.okurl
 
 import org.junit.Test
 import picocli.CommandLine
-import java.io.File
 import kotlin.test.assertEquals
 
 class MainTest {

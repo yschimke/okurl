@@ -5,7 +5,7 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.DefaultToken
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class ImgurTest {
@@ -20,9 +20,8 @@ class ImgurTest {
 
   @Test
   fun setToken() {
-    main.authorize = true
+    main.authorize = "imgur"
     main.token = "abc"
-    main.arguments = mutableListOf("imgur")
 
     runBlocking {
       main.run()

@@ -82,7 +82,7 @@ class Main : CommandLineClient() {
   var outputDirectory: File? = null
 
   @Option(names = ["--authorize"], description = ["Authorize API"])
-  var authorize: Boolean = false
+  var authorize: String? = null
 
   @Option(names = ["--renew"], description = ["Renew API Authorization"])
   var renew: Boolean = false
@@ -120,7 +120,7 @@ class Main : CommandLineClient() {
         complete != null -> completeOption()
         urlComplete -> CompletionCommand(this@Main).complete()
         apiDoc -> showApiDocs()
-        authorize -> authorize()
+        authorize != null -> authorize()
         renew -> renew()
         remove -> remove()
         else -> executeRequests(outputHandler)
@@ -192,7 +192,7 @@ class Main : CommandLineClient() {
   }
 
   override fun initialise() {
-    if (token != null && !authorize) {
+    if (token != null && authorize == null) {
       credentialsStore = FixedTokenCredentialsStore(token!!)
     }
 
@@ -321,7 +321,7 @@ class Main : CommandLineClient() {
   }
 
   suspend fun authorize() {
-    authorisation.authorize(findAuthInterceptor(), token, arguments, tokenSet ?: DefaultToken.name)
+    authorisation.authorize(findAuthInterceptor(), authorize!!, token, arguments, tokenSet ?: DefaultToken.name)
   }
 
   suspend fun renew() {
@@ -340,9 +340,9 @@ class Main : CommandLineClient() {
 
     if (authenticator != null) {
       auth = authenticatingInterceptor.getByName(authenticator)
-    }
-
-    if (auth == null && arguments.isNotEmpty()) {
+    } else if (authorize != null) {
+      auth = authenticatingInterceptor.getByName(authorize!!)
+    } else if (auth == null && arguments.isNotEmpty()) {
       val name = arguments.removeAt(0)
 
       auth = authenticatingInterceptor.findAuthInterceptor(name)

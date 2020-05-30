@@ -8,7 +8,7 @@ import com.baulsupp.okurl.services.twilio.TwilioAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.Ignore
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

@@ -3,17 +3,17 @@ package com.baulsupp.okurl.completion
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.credentials.DefaultToken
+import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.services.test.TestAuthInterceptor
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class UrlCompleterTest {
-  private val main = Main()
-
-  init {
-    main.authenticatingInterceptor = AuthenticatingInterceptor(main.credentialsStore, listOf(TestAuthInterceptor()))
-    main.initialise()
+  private val main = Main().apply {
+    credentialsStore = TestCredentialsStore()
+    authenticatingInterceptor = AuthenticatingInterceptor(credentialsStore, mutableListOf(TestAuthInterceptor()))
+    initialise()
   }
 
   private val completer = UrlCompleter(main)

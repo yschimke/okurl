@@ -4,7 +4,7 @@ import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.ServiceDefinition
-import org.junit.jupiter.api.Assumptions
+import org.junit.Assume.assumeTrue
 import java.io.File
 import java.net.InetAddress
 import java.net.UnknownHostException
@@ -18,7 +18,7 @@ object TestUtil {
   fun assumeHasNetwork() {
     initialise()
 
-    Assumptions.assumeTrue(cachedException == null)
+    assumeTrue(cachedException == null)
   }
 
   private fun initialise() {
@@ -46,7 +46,7 @@ object TestUtil {
     val token = credentialsStore.get(serviceDefinition,
       DefaultToken)
 
-    Assumptions.assumeTrue(token != null)
+    assumeTrue(token != null)
   }
 
   fun projectFile(s: String): File {

@@ -8,6 +8,14 @@ _okurl_caching_policy() {
     (( $#oldp ))
 }
 
+_okurl_services() {
+    if _cache_invalid _okurl-complete-services || ! _retrieve_cache _okurl-complete-services; then
+        services=($(okurl --complete service))
+        _store_cache _okurl-complete-services services
+    fi
+    compadd $services
+}
+
 _okurl_urls() {
   if [[ "$words[CURRENT]" =~ ^https://([^/]*)/.*$ ]]; then
       host=$match[1]
@@ -60,7 +68,7 @@ _okurl() {
     --curl'[Show curl commands]' \
     --noFollow'[Follow redirects]' \
     --referer='[Referer URL]' \
-    --authorize'[Authorize API]' \
+    --authorize='[Authorize API]: :_okurl_services' \
     --renew'[Renew API Authorization]' \
     --remove'[Remove API Authorization]' \
     --token='[Use existing Token for authorization]' \
@@ -78,14 +86,8 @@ _okurl() {
     {-H,--header}='[Custom header to pass to server]' \
     {-h,--help}'[Show this help message and exit.]' \
     {-V,--version}'[Print version information and exit.]' \
-    '*:URLs:->urls' \
+    '*:URLs:_okurl_urls' \
     && ret=0
-
-   case $state in
-     urls)
-        _okurl_urls
-        ;;
-   esac
 }
 
 _okurl "$@"
