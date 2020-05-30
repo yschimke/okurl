@@ -443,7 +443,10 @@ abstract class CommandLineClient : ToolSession, Runnable {
       builder.eventListenerFactory(wiresharkListener)
 
       val process = wiresharkListener.launchWireShark()
-      closeables.add(Closeable { process?.destroyForcibly() })
+      closeables.add(Closeable {
+        Thread.sleep(250)
+        process?.destroyForcibly()
+      })
     } else {
       applyTracing(builder)
     }

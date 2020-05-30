@@ -74,7 +74,10 @@ class WireSharkListenerFactory(
           .redirectInput(File("/dev/null"))
           .redirectOutput(Redirect.INHERIT)
           .redirectError(Redirect.INHERIT)
-          .start()
+          .start().also {
+            // Give it time to start collecting
+            Thread.sleep(200)
+          }
       }
       Gui -> {
         return ProcessBuilder(
