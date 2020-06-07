@@ -1,50 +1,31 @@
 package com.baulsupp.okurl.security
 
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.nio.charset.StandardCharsets
 import java.security.KeyStore
-import java.security.Provider
 import java.security.Security
-import javax.net.ssl.KeyManager
+import java.util.Arrays
 import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.KeyStoreBuilderParameters
+import javax.net.ssl.X509ExtendedKeyManager
+import javax.security.auth.callback.CallbackHandler
 
 object OpenSCUtil {
+  fun getKeyManager(
+    callbackHandler: CallbackHandler,
+    slot: Int = 0
+  ): X509ExtendedKeyManager {
+    val config = "--name=OpenSC\nlibrary=/Library/OpenSC/lib/opensc-pkcs11.so\nslot=$slot\n"
 
-  fun getKeyManagers(password: ConsoleCallbackHandler, slot: Int): Array<KeyManager> {
-    val config = "name=OpenSC\nlibrary=/Library/OpenSC/lib/opensc-pkcs11.so\nslot=$slot\n"
+    // May fail with ProviderException with root cause like
+    // sun.security.pkcs11.wrapper.PKCS11Exception: CKR_SLOT_ID_INVALID
+    val pkcs11 = Security.getProvider("SunPKCS11").configure(config)
+    Security.addProvider(pkcs11)
 
-    var pkcs11: Provider
+    val builderList: List<KeyStore.Builder> = Arrays.asList(
+      KeyStore.Builder.newInstance("PKCS11", null, KeyStore.CallbackHandlerProtection(callbackHandler))
+    )
 
-    val keystore: KeyStore
-    if (isJava9) {
-      pkcs11 = Security.getProvider("SunPKCS11")
-
-      pkcs11 = Provider::class.java.getMethod("configure", String::class.java)
-        .invoke(pkcs11, "--$config") as Provider
-
-      Security.addProvider(pkcs11)
-
-      keystore = KeyStore.getInstance("PKCS11", pkcs11)
-    } else {
-      val ctor = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(InputStream::class.java)
-      pkcs11 = ctor.newInstance(
-        ByteArrayInputStream(config.toByteArray(StandardCharsets.UTF_8))
-      ) as Provider
-
-      Security.addProvider(pkcs11)
-
-      keystore = KeyStore.getInstance("PKCS11", pkcs11)
-    }
-
-    keystore.load { KeyStore.CallbackHandlerProtection(password) }
-
-    val kmf = KeyManagerFactory.getInstance("NewSunX509")
-    kmf.init(keystore, null)
-
-    return kmf.keyManagers
+    val keyManagerFactory = KeyManagerFactory.getInstance("NewSunX509")
+    keyManagerFactory.init(KeyStoreBuilderParameters(builderList))
+    return keyManagerFactory.keyManagers[0] as X509ExtendedKeyManager
   }
-
-  private val isJava9: Boolean
-    get() = "9" == System.getProperty("java.specification.version")
 }

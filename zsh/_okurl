@@ -54,6 +54,7 @@ _okurl() {
     --frames'[Log HTTP/2 frames to STDERR]' \
     --wireshark'[Wireshark Frames]' \
     --debug'[Debug]' \
+    --opensc'[Use OpenSC key manager]' \
     --cache='[Cache directory]' \
     --protocols='[Protocols]' \
     --tracing='[Activate Zipkin Tracing]' \

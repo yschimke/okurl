@@ -43,6 +43,7 @@ import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
 import com.baulsupp.okurl.security.ConsoleCallbackHandler
 import com.baulsupp.okurl.security.CtMode
+import com.baulsupp.okurl.security.OpenSCUtil
 import com.baulsupp.okurl.services.ServiceLibrary
 import com.baulsupp.okurl.tracing.TracingMode
 import com.baulsupp.okurl.tracing.UriTransportRegistry
@@ -69,7 +70,6 @@ import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
-import okhttp3.TlsVersion
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
@@ -84,11 +84,13 @@ import java.io.File
 import java.io.Flushable
 import java.io.IOException
 import java.net.Proxy
+import java.security.SecureRandom
 import java.util.ArrayList
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.net.SocketFactory
+import javax.net.ssl.SSLContext
 
 abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--user-agent"], description = ["User-Agent to send to server"])
@@ -201,6 +203,9 @@ abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--ctHost"], description = ["Certificate Transparency"])
   var certificateTransparencyHosts: List<String>? = null
 
+  @Option(names = ["--opensc"], description = ["Use OpenSC key manager"])
+  var opensc = false
+
   @CommandLine.Parameters(paramLabel = "arguments", description = ["Remote resource URLs"])
   var arguments: MutableList<String> = ArrayList()
 
@@ -304,16 +309,26 @@ abstract class CommandLineClient : ToolSession, Runnable {
     val handshakeCertificatesBuilder = HandshakeCertificates.Builder()
       .addPlatformTrustedCertificates()
 
-    // TODO readd OpenSC and client auth, root CA files
-
     for (host in insecureHost.orEmpty()) {
       handshakeCertificatesBuilder.addInsecureHost(host)
     }
 
+    // TODO local key and root CA files
     val handshakeCertificates = handshakeCertificatesBuilder.build()
 
+    val sslSocketFactory = if (opensc) {
+      val keyManager = OpenSCUtil.getKeyManager(ConsoleCallbackHandler)
+
+      val sslContext = SSLContext.getInstance("TLS")
+      sslContext.init(arrayOf(keyManager), arrayOf(handshakeCertificates.trustManager), SecureRandom())
+
+      sslContext.socketFactory
+    } else {
+      handshakeCertificates.sslSocketFactory()
+    }
+
     builder.sslSocketFactory(
-      handshakeCertificates.sslSocketFactory(),
+      sslSocketFactory,
       handshakeCertificates.trustManager
     )
 
