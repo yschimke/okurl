@@ -16,6 +16,9 @@ import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.RenewingInterceptor
+import com.baulsupp.okurl.commands.converters.CipherSuiteConverter
+import com.baulsupp.okurl.commands.converters.DnsConverter
+import com.baulsupp.okurl.commands.converters.IPvModeConverter
 import com.baulsupp.okurl.commands.converters.TlsVersionConverter
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
@@ -32,12 +35,11 @@ import com.baulsupp.okurl.network.IPvMode
 import com.baulsupp.okurl.network.InterfaceSocketFactory
 import com.baulsupp.okurl.network.NettyDns
 import com.baulsupp.okurl.network.dnsoverhttps.DohProviders
-import com.baulsupp.okurl.okhttp.CipherSuiteOption
 import com.baulsupp.okurl.okhttp.ConnectionSpecOption
+import com.baulsupp.okurl.okhttp.ConnectionSpecOption.MODERN_TLS_13
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory.WireSharkKeyLoggerListener.Launch
-import com.baulsupp.okurl.okhttp.defaultConnectionSpec
 import com.baulsupp.okurl.preferences.Preferences
 import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
@@ -61,6 +63,7 @@ import io.netty.util.concurrent.DefaultThreadFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.Call
+import okhttp3.CipherSuite
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
 import okhttp3.Dispatcher
@@ -135,10 +138,10 @@ abstract class CommandLineClient : ToolSession, Runnable {
   var tracing: TracingMode? = null
 
   @Option(names = ["--ip"],
-    description = ["IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)"])
+    description = ["IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)"], converter = [IPvModeConverter::class], completionCandidates = IPvModeConverter::class)
   var ipMode = IPvMode.SYSTEM
 
-  @Option(names = ["--dns"], description = ["DNS (netty, java, dnsoverhttps)"])
+  @Option(names = ["--dns"], description = ["DNS (netty, java, dnsoverhttps)"], converter = [DnsConverter::class], completionCandidates = DnsConverter::class)
   var dnsMode = DnsMode.JAVA
 
   @Option(names = ["--dnsServers"], description = ["Specific DNS Servers (csv, google)"])
@@ -160,12 +163,12 @@ abstract class CommandLineClient : ToolSession, Runnable {
     names = ["--connectionSpec"],
     description = ["Connection Spec (RESTRICTED_TLS, MODERN_TLS, COMPATIBLE_TLS)"]
   )
-  var connectionSpec: ConnectionSpecOption = defaultConnectionSpec()
+  var connectionSpec: ConnectionSpecOption = MODERN_TLS_13
 
-  @Option(names = ["--cipherSuite"], description = ["Cipher Suites"])
-  var cipherSuites: MutableList<CipherSuiteOption>? = null
+  @Option(names = ["--cipherSuite"], description = ["Cipher Suites"], converter = [CipherSuiteConverter::class], completionCandidates = CipherSuiteConverter::class)
+  var cipherSuites: MutableList<CipherSuite>? = null
 
-  @Option(names = ["--tlsVersions"], description = ["TLS Versions"], converter = [TlsVersionConverter::class])
+  @Option(names = ["--tlsVersions"], description = ["TLS Versions"], converter = [TlsVersionConverter::class], completionCandidates = TlsVersionConverter::class)
   var tlsVersions: MutableList<TlsVersion>? = null
 
   @Option(names = ["--socks"], description = ["Use SOCKS proxy"])
@@ -274,7 +277,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
     return dns
   }
 
-  fun createEventLoopGroup(): NioEventLoopGroup {
+  private fun createEventLoopGroup(): NioEventLoopGroup {
     if (eventLoopGroup == null) {
       val threadFactory: ThreadFactory = DefaultThreadFactory("netty", true)
       eventLoopGroup = NioEventLoopGroup(5, threadFactory)
@@ -291,16 +294,15 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   fun configureTls(builder: OkHttpClient.Builder) {
     if (cipherSuites != null || tlsVersions != null) {
-      val specBuilder = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+      val specBuilder = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS).apply {
+        if (cipherSuites != null) {
+          cipherSuites(*(cipherSuites!!.toTypedArray()))
+        }
 
-      if (cipherSuites != null) {
-        specBuilder.cipherSuites(*(cipherSuites!!.map { it.suite }.toTypedArray()))
+        if (tlsVersions != null) {
+          tlsVersions(*(tlsVersions!!.toTypedArray()))
+        }
       }
-
-      if (tlsVersions != null) {
-        specBuilder.tlsVersions(*(tlsVersions!!.toTypedArray()))
-      }
-
       builder.connectionSpecs(listOf(specBuilder.build(), ConnectionSpec.CLEARTEXT))
     } else {
       builder.connectionSpecs(connectionSpec.specs.asList() + ConnectionSpec.CLEARTEXT)

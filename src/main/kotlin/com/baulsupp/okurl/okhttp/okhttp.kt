@@ -50,19 +50,6 @@ enum class ConnectionSpecOption(vararg val specs: ConnectionSpec) {
   CLEARTEXT(ConnectionSpec.CLEARTEXT);
 }
 
-fun defaultConnectionSpec(): ConnectionSpecOption {
-  val jdkVersion = System.getProperty("java.specification.version").toIntOrNull() ?: 0
-  return if (jdkVersion >= 11) {
-    ConnectionSpecOption.MODERN_TLS_13
-  } else {
-    ConnectionSpecOption.MODERN_TLS
-  }
-}
-
-class CipherSuiteOption(s: String) {
-  val suite: CipherSuite = forJavaName(s)
-}
-
 fun cipherSuites(): List<CipherSuite> =
   CipherSuite::class.staticProperties.filter { it.isFinal && it.returnType.javaType == CipherSuite::class.java }.map { it.get() as CipherSuite }
 
