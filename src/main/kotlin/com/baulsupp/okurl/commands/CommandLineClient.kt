@@ -16,6 +16,7 @@ import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.RenewingInterceptor
+import com.baulsupp.okurl.commands.converters.TlsVersionConverter
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.DefaultToken
@@ -34,7 +35,6 @@ import com.baulsupp.okurl.network.dnsoverhttps.DohProviders
 import com.baulsupp.okurl.okhttp.CipherSuiteOption
 import com.baulsupp.okurl.okhttp.ConnectionSpecOption
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
-import com.baulsupp.okurl.okhttp.TlsVersionOption
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory.WireSharkKeyLoggerListener.Launch
 import com.baulsupp.okurl.okhttp.defaultConnectionSpec
@@ -70,6 +70,7 @@ import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
+import okhttp3.TlsVersion
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
@@ -164,8 +165,8 @@ abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--cipherSuite"], description = ["Cipher Suites"])
   var cipherSuites: MutableList<CipherSuiteOption>? = null
 
-  @Option(names = ["--tlsVersions"], description = ["TLS Versions"])
-  var tlsVersions: MutableList<TlsVersionOption>? = null
+  @Option(names = ["--tlsVersions"], description = ["TLS Versions"], converter = [TlsVersionConverter::class])
+  var tlsVersions: MutableList<TlsVersion>? = null
 
   @Option(names = ["--socks"], description = ["Use SOCKS proxy"])
   var socksProxy: InetAddressParam? = null
@@ -297,7 +298,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
       }
 
       if (tlsVersions != null) {
-        specBuilder.tlsVersions(*(tlsVersions!!.map { it.version }.toTypedArray()))
+        specBuilder.tlsVersions(*(tlsVersions!!.toTypedArray()))
       }
 
       builder.connectionSpecs(listOf(specBuilder.build(), ConnectionSpec.CLEARTEXT))
@@ -450,7 +451,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     if (wireshark) {
       if (tlsVersions == null) {
-        tlsVersions = mutableListOf(TlsVersionOption("TLSv1.2"))
+        tlsVersions = mutableListOf(TlsVersion.TLS_1_2)
       }
 
       val wiresharkListener = WireSharkListenerFactory(

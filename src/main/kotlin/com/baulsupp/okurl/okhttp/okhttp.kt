@@ -63,10 +63,6 @@ class CipherSuiteOption(s: String) {
   val suite: CipherSuite = forJavaName(s)
 }
 
-class TlsVersionOption(s: String) {
-  val version: TlsVersion = TlsVersion.forJavaName(s)
-}
-
 fun cipherSuites(): List<CipherSuite> =
   CipherSuite::class.staticProperties.filter { it.isFinal && it.returnType.javaType == CipherSuite::class.java }.map { it.get() as CipherSuite }
 

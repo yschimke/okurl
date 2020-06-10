@@ -89,7 +89,7 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp-tls:4.7.2")
   implementation("com.squareup.okio:okio:2.4.3")
   implementation("commons-io:commons-io:2.6")
-  implementation("info.picocli:picocli:4.2.0")
+  implementation("info.picocli:picocli:4.3.2")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
   implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.10.6")
