@@ -2,39 +2,30 @@ package com.baulsupp.okurl.location
 
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.output.isOSX
 import com.baulsupp.oksocial.output.process.exec
 import com.baulsupp.oksocial.output.stdErrLogging
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import okhttp3.Response
-import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-const val LOCATION_APP = "/usr/local/bin/CoreLocationCLI"
+const val LOCATION_APP = "location"
 
 /**
- * https://github.com/fulldecent/corelocationcli
+ * https://github.com/kiliankoe/location
  */
 class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSource {
   private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
   override suspend fun read(): Location? {
-    if (isOSX) {
-      if (!File(LOCATION_APP).exists()) {
-        throw UsageException("Missing $LOCATION_APP")
-      }
-
-      return try {
-        val process = exec(
-          listOf(
-            LOCATION_APP, "-format",
-            "%latitude,%longitude", "-once", "yes"
-          )
-        ) {
+    return if (isOSX) {
+      try {
+        val process = exec(listOf(LOCATION_APP)) {
           timeout(5, TimeUnit.SECONDS)
           readOutput(true)
           redirectError(stdErrLogging)
@@ -47,30 +38,21 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
           return null
         }
 
-        println("'$line'")
-        println("'${line.trim()}'")
-
-        val parts = line.trim { it <= ' ' }.split(
-          ",".toRegex()
-        ).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-        Location(parts[0].toDouble(), parts[1].toDouble())
+        val moshi = Moshi.Builder().build()
+        val adapter: JsonAdapter<Location> = moshi.adapter(Location::class.java)
+        adapter.fromJson(line)
       } catch (e: TimeoutException) {
         logger.log(Level.FINE, "failed to get location", e)
         outputHandler.showError(
           "Timeout fetching location, consider populating ~/.okurl-location.json"
         )
-        return null
+        null
       } catch (e: Exception) {
-        logger.log(Level.WARNING, "failed to get location", e)
+        logger.log(Level.WARNING, "failed to get location, install from https://github.com/kiliankoe/location", e)
         null
       }
     } else {
-      return null
+      null
     }
   }
-}
-
-fun main() {
-  CoreLocationCLI(ConsoleHandler.instance(OkHttpResponseExtractor()))
 }
