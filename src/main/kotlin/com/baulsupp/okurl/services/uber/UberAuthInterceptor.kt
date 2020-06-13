@@ -19,6 +19,7 @@ import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import java.util.Arrays.asList
 
 class UberAuthInterceptor : Oauth2AuthInterceptor() {
   override val serviceDefinition =
@@ -36,8 +37,9 @@ class UberAuthInterceptor : Oauth2AuthInterceptor() {
 
     val clientId = Secrets.prompt("Uber Client Id", "uber.clientId", "", false)
     val clientSecret = Secrets.prompt("Uber Client Secret", "uber.clientSecret", "", true)
+    val scopes = Secrets.promptArray("Uber Scopes", "uber.scopes", asList("profile", "history", "offline_access", "places"))
 
-    return UberAuthFlow.login(client, outputHandler, clientId, clientSecret)
+    return UberAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
   override suspend fun apiCompleter(

@@ -35,6 +35,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import okhttp3.Handshake
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -203,7 +204,7 @@ class Main : CommandLineClient() {
     }
   }
 
-  suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int = coroutineScope {
+  suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int = supervisorScope {
     val command = getShellCommand()
 
     val requests = command.buildRequests(client, arguments)

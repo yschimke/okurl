@@ -5,11 +5,13 @@ import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.Token
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.SECONDS
 
 class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresenter {
 
@@ -18,12 +20,12 @@ class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresente
     outputHandler: OutputHandler<Response>,
     client: OkHttpClient,
     tokenSet: Token
-  ) = coroutineScope {
+  ) = supervisorScope {
     val discoveryPaths = DiscoveryIndex.instance.getDiscoveryUrlForPrefix(url)
 
     val docs = discoveryPaths.map { p ->
       async {
-        withTimeout(TimeUnit.SECONDS.toMillis(5)) { registry.load(p, tokenSet) }
+        withTimeout(SECONDS.toMillis(5)) { registry.load(p, tokenSet) }
       }
     }.mapNotNull {
       try {

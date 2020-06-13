@@ -5,11 +5,13 @@ import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.TokenSet
+import com.baulsupp.okurl.services.google.GoogleAuthInterceptor
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import okhttp3.Response
 import java.io.IOException
@@ -120,7 +122,7 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
   suspend fun validate(
     services: Iterable<AuthInterceptor<*>>,
     names: List<TokenSet>
-  ): Map<Key, Deferred<ValidatedCredentials>> = coroutineScope {
+  ): Map<Key, Deferred<ValidatedCredentials>> = supervisorScope {
     services.flatMap { sv ->
       names.mapNotNull { name ->
         val credentials = try {

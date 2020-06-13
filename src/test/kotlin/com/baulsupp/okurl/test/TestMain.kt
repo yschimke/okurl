@@ -5,7 +5,7 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("--authorize twitter")
+  runMain("--showCredentials")
 
   Thread.sleep(5000)
 }

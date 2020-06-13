@@ -1,18 +1,21 @@
 package com.baulsupp.okurl.completion
 
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.completion.UrlList.Match.HOSTS
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.SECONDS
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -42,10 +45,10 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     return UrlList.None
   }
 
-  private suspend fun hostCompletion(tokenSet: Token): UrlList = coroutineScope {
+  private suspend fun hostCompletion(tokenSet: Token): UrlList = supervisorScope {
     val futures = main.authenticatingInterceptor.services.map {
       async {
-        withTimeout(TimeUnit.SECONDS.toMillis(2)) {
+        withTimeout(SECONDS.toMillis(2)) {
           it.apiCompleter("", client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
         }
       }
@@ -64,7 +67,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       }
     }
 
-    UrlList(UrlList.Match.HOSTS, results)
+    UrlList(HOSTS, results)
   }
 
   private fun parseUrl(prefix: String): HttpUrl? = if (isSingleApi(prefix)) {
