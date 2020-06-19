@@ -60,7 +60,7 @@ tasks {
 dependencies {
   implementation("com.babylon.certificatetransparency:certificatetransparency:0.2.0")
   implementation("com.baulsupp:okhttp-digest:0.4.0")
-  implementation("com.baulsupp:oksocial-output:4.34.0") {
+  implementation("com.github.yschimke:oksocial-output:5.1") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
