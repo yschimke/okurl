@@ -16,7 +16,7 @@ data class Athlete(
   val updated_at: String,
   val badge_type_id: Int,
   val friend: Any? = null,
-  val id: Int,
+  val id: Long,
   val state: Any? = null,
   val email: String?,
   val username: String
@@ -47,7 +47,7 @@ data class ActivitySummary(
   val elapsed_time: Int,
   val heartrate_opt_out: Boolean,
   val display_hide_heartrate_option: Boolean,
-  val id: Int,
+  val id: Long,
   val kudos_count: Int,
   val map: Map,
   val average_speed: Double,
@@ -74,7 +74,7 @@ data class ActivitySummary(
 
 data class AthleteLink(
   val resource_state: Int,
-  val id: Int
+  val id: Long
 )
 
 data class Map(
