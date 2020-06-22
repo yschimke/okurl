@@ -30,7 +30,7 @@ class DnsOverride(private val dns: Dns) : Dns {
       val dnsOverride = DnsOverride(dns)
 
       for (resolveString in resolveStrings) {
-        val parts = resolveString.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val parts = resolveString.trim().split(":", limit=2)
 
         if (parts.size != 2) {
           throw UsageException("Invalid resolve string '$resolveString'")
