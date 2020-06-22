@@ -6,6 +6,7 @@ import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryList
 import com.baulsupp.okurl.kotlin.show
 import com.baulsupp.okurl.kotlin.warmup
+import com.baulsupp.okurl.services.mapbox.StaticMapBuilder
 import com.baulsupp.okurl.services.mapbox.staticMap
 import com.baulsupp.okurl.services.strava.model.ActivitySummary
 import kotlinx.coroutines.runBlocking
@@ -25,6 +26,7 @@ runBlocking {
   val lastActivity = client.query<ActivitySummary>("https://www.strava.com/api/v3/activities/${activities.first().id}")
 
   show(staticMap {
+    style = StaticMapBuilder.Satellite
     route(lastActivity.map.polyline)
   })
 
