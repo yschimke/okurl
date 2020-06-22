@@ -8,7 +8,6 @@ plugins {
   id("com.github.ben-manes.versions") version "0.28.0"
   id("net.nemerosa.versioning") version "2.12.1"
   id("com.diffplug.gradle.spotless") version "3.28.1"
-  id("com.palantir.graal") version "0.6.0-120-g853647c"
 }
 
 repositories {
@@ -202,14 +201,6 @@ dependencyUpdates.resolutionStrategy {
       }
     }
   }
-}
-
-graal {
-  graalVersion("20.0.0")
-  mainClass("com.baulsupp.okurl.MainKt")
-  outputName("okurl")
-  option("--configurations-path")
-  option("graal.config")
 }
 
 spotless {
