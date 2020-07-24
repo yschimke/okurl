@@ -1,8 +1,14 @@
 package com.baulsupp.okurl.services.symphony.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class TokenResponse(val name: String, val token: String)
 
+@JsonClass(generateAdapter = true)
 data class AvatarsItem(val size: String, val url: String)
+
+@JsonClass(generateAdapter = true)
 data class SessionInfo(
   val emailAddress: String,
   val displayName: String,
@@ -13,13 +19,19 @@ data class SessionInfo(
   val avatars: List<AvatarsItem>
 )
 
+@JsonClass(generateAdapter = true)
 data class StreamListRequest(val streamTypes: List<StreamType>) {
   constructor(vararg streamTypes: StreamType) : this(streamTypes.toList())
   constructor(vararg streamTypes: String) : this(streamTypes.map(::StreamType))
 }
 
+@JsonClass(generateAdapter = true)
 data class StreamType(val type: String)
+
+@JsonClass(generateAdapter = true)
 data class StreamAttributes(val members: List<Long>)
+
+@JsonClass(generateAdapter = true)
 data class Stream(
   val id: String,
   val crossPod: Boolean,
@@ -28,6 +40,7 @@ data class Stream(
   val streamAttributes: StreamAttributes?
 )
 
+@JsonClass(generateAdapter = true)
 data class MessageUser(
   val firstName: String?,
   val lastName: String?,
@@ -37,7 +50,10 @@ data class MessageUser(
   val username: String
 )
 
+@JsonClass(generateAdapter = true)
 data class StreamMessageStream(val streamType: String, val streamId: String)
+
+@JsonClass(generateAdapter = true)
 data class StreamMessage(
   val data: String,
   val stream: StreamMessageStream,
@@ -49,6 +65,7 @@ data class StreamMessage(
   val timestamp: Long
 )
 
+@JsonClass(generateAdapter = true)
 data class Signal(
   val name: String,
   val query: String,
@@ -58,10 +75,19 @@ data class Signal(
   val timestamp: Long
 )
 
+@JsonClass(generateAdapter = true)
 data class MessageSent(val message: StreamMessage)
+
+@JsonClass(generateAdapter = true)
 data class DatafeedInitiator(val user: MessageUser)
+
+@JsonClass(generateAdapter = true)
 data class DatafeedStream(val streamType: String, val streamId: String)
+
+@JsonClass(generateAdapter = true)
 data class DatafeedPayload(val messageSent: MessageSent)
+
+@JsonClass(generateAdapter = true)
 data class DatafeedMessage(
   val payload: DatafeedPayload,
   val initiator: DatafeedInitiator,

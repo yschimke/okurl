@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.twilio.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class AccountsItem(
   val subresource_uris: Map<String, String>,
   val friendly_name: String,
@@ -13,6 +16,7 @@ data class AccountsItem(
   val sid: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Accounts(
   val first_page_uri: String? = null,
   val start: Int,

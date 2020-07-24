@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.stackexchange.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Question(
   val tags: List<String>,
   val title: String,
@@ -8,10 +11,13 @@ data class Question(
   val creation_date: Long
 )
 
+@JsonClass(generateAdapter = true)
 data class Questions(val items: List<Question>, val has_more: Boolean, val quota_max: Int, val quota_remaining: Int)
 
+@JsonClass(generateAdapter = true)
 data class MeResponse(val items: List<User>, val quota_max: Int, val quota_remaining: Int, val has_more: Boolean)
 
+@JsonClass(generateAdapter = true)
 data class User(
   val reputation_change_quarter: Int,
   val link: String,
@@ -36,4 +42,5 @@ data class User(
   val reputation_change_month: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class BadgeCounts(val gold: Int = 0, val silver: Int = 0, val bronze: Int = 0)

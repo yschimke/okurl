@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.sse
 
-import com.baulsupp.okurl.kotlin.moshi
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.kotlin.statusMessage
 import okhttp3.HttpUrl
@@ -18,7 +18,7 @@ inline fun <reified T> messageHandler(crossinline handler: (T) -> Unit): EventSo
       type: String?,
       data: String
     ) {
-      val m = moshi.adapter(T::class.java).fromJson(data) as T
+      val m = Main.moshi.adapter(T::class.java).fromJson(data) as T
       handler.invoke(m)
     }
 

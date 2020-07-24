@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.google
 
-import com.baulsupp.okurl.kotlin.moshi
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.services.google.model.DiscoveryIndexMap
 
 /*
@@ -29,7 +29,8 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
     }
 
     fun parse(definition: String): DiscoveryIndex {
-      return DiscoveryIndex(moshi.adapter(DiscoveryIndexMap::class.java).fromJson(definition)!!.index)
+      return DiscoveryIndex(
+        Main.moshi.adapter(DiscoveryIndexMap::class.java).fromJson(definition)!!.index)
     }
   }
 }

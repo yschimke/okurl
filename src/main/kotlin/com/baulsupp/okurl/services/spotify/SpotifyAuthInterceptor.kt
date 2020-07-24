@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.spotify
 
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
@@ -12,7 +13,6 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
-import com.baulsupp.okurl.kotlin.moshi
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
@@ -90,7 +90,7 @@ class SpotifyAuthInterceptor : Oauth2AuthInterceptor() {
       try {
         val message = ce.responseMessage
 
-        return moshi.adapter(ErrorResponse::class.java).fromJson(message)!!.error.message
+        return Main.moshi.adapter(ErrorResponse::class.java).fromJson(message)!!.error.message
       } catch (e: Exception) {
         // ignore
       }

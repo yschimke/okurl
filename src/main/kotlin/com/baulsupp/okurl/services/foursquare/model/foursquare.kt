@@ -1,12 +1,17 @@
 package com.baulsupp.okurl.services.foursquare.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Meta(
   val code: Int,
   val requestId: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Todo(val count: Int)
 
+@JsonClass(generateAdapter = true)
 data class User(
   val birthday: Int,
   val lastName: String,
@@ -34,11 +39,13 @@ data class User(
   val checkins: Checkins
 )
 
+@JsonClass(generateAdapter = true)
 data class Friends(
   val count: Int,
   val groups: List<GroupsItem>?
 )
 
+@JsonClass(generateAdapter = true)
 data class CategoriesItem(
   val pluralName: String,
   val name: String,
@@ -48,6 +55,7 @@ data class CategoriesItem(
   val primary: Boolean
 )
 
+@JsonClass(generateAdapter = true)
 data class ItemsItem(
   val venue: Venue,
   val private: Boolean,
@@ -65,46 +73,57 @@ data class ItemsItem(
   val likes: Likes
 )
 
+@JsonClass(generateAdapter = true)
 data class Photo(
   val prefix: String,
   val suffix: String
 )
 
+@JsonClass(generateAdapter = true)
 data class SelfResponse(
   val meta: Meta,
   val response: Response,
   val notifications: List<NotificationsItem>?
 )
 
+@JsonClass(generateAdapter = true)
 data class Requests(val count: Int)
 
+@JsonClass(generateAdapter = true)
 data class Source(
   val name: String,
   val url: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Photos(val count: Int)
 
+@JsonClass(generateAdapter = true)
 data class Item(val unreadCount: Int)
 
+@JsonClass(generateAdapter = true)
 data class Lists(
   val count: Int,
   val groups: List<GroupsItem>?
 )
 
+@JsonClass(generateAdapter = true)
 data class LabeledLatLngsItem(
   val lng: Double,
   val label: String,
   val lat: Double
 )
 
+@JsonClass(generateAdapter = true)
 data class Mayorships(val count: Int)
 
+@JsonClass(generateAdapter = true)
 data class NotificationsItem(
   val item: Item,
   val type: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Venue(
   val stats: Stats,
   val like: Boolean,
@@ -119,35 +138,43 @@ data class Venue(
   val beenHere: BeenHere
 )
 
+@JsonClass(generateAdapter = true)
 data class Comments(val count: Int)
 
+@JsonClass(generateAdapter = true)
 data class Posts(
   val count: Int,
   val textCount: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class GroupsItem(
   val count: Int,
   val type: String
 )
 
+@JsonClass(generateAdapter = true)
 data class BeenHere(
   val lastCheckinExpiredAt: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Response(val user: User)
 
+@JsonClass(generateAdapter = true)
 data class Checkins(
   val count: Int,
   val items: List<ItemsItem>?
 )
 
+@JsonClass(generateAdapter = true)
 data class Stats(
   val checkinsCount: Int,
   val usersCount: Int,
   val tipCount: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Tip(
   val todo: Todo,
   val createdAt: Int,
@@ -162,13 +189,16 @@ data class Tip(
   val likes: Likes
 )
 
+@JsonClass(generateAdapter = true)
 data class Icon(
   val prefix: String,
   val suffix: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Likes(val count: Int)
 
+@JsonClass(generateAdapter = true)
 data class Location(
   val cc: String,
   val country: String,
@@ -181,4 +211,5 @@ data class Location(
   val lat: Double
 )
 
+@JsonClass(generateAdapter = true)
 data class Tips(val count: Int)

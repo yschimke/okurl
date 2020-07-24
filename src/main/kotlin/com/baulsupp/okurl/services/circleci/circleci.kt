@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.circleci
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class User(
   val selected_email: String,
   val name: String,
@@ -8,6 +11,7 @@ data class User(
   val login: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Project(
   val vcs_url: String,
   val language: String?,
@@ -16,6 +20,7 @@ data class Project(
   val reponame: String
 )
 
+@JsonClass(generateAdapter = true)
 data class BuildUser(
   val avatarUrl: String? = null,
   val id: Int? = null,
@@ -25,6 +30,7 @@ data class BuildUser(
   val vcsType: String? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class Build(
   val author_date: String? = null,
   val author_email: String? = null,
@@ -60,11 +66,13 @@ data class Build(
   val workflows: Workflows? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class Workflows(
   val job_name: String? = null,
   val workflow_name: String? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class Test(
   val classname: String? = null,
   val `file`: Any? = null,
@@ -76,6 +84,7 @@ data class Test(
   val source_type: String? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class TestMetaData(
   val exceptions: List<Any>? = null,
   val tests: List<Test>) {

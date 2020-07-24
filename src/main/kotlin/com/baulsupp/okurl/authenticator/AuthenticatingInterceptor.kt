@@ -5,7 +5,9 @@ import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.services.ServiceLibrary
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -41,7 +43,9 @@ class AuthenticatingInterceptor(
       if (firstInterceptor != null) {
         intercept(firstInterceptor, chain)
       } else {
-        chain.proceed(chain.request())
+        withContext(Dispatchers.IO) {
+          chain.proceed(chain.request())
+        }
       }
     }
   }

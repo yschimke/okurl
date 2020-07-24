@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.quip.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class User(
   val name: String,
   val id: String,

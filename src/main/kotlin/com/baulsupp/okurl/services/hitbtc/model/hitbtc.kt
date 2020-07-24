@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.hitbtc.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Currency(
   val id: String,
   val fullName: String,
@@ -12,12 +15,14 @@ data class Currency(
   val transferEnabled: Boolean
 )
 
+@JsonClass(generateAdapter = true)
 data class Balance(
   val currency: String,
   val available: String,
   val reserved: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Ticker(
   val symbol: String,
   val ask: String,
@@ -31,6 +36,7 @@ data class Ticker(
   val timestamp: String
 )
 
+@JsonClass(generateAdapter = true)
 data class PublicTrade(
   val id: Int,
   val price: String,
@@ -39,22 +45,26 @@ data class PublicTrade(
   val timestamp: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Depth(
   val price: String,
   val size: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Orderbook(
   val ask: List<Depth>,
   val bid: List<Depth>,
   val timestamp: String
 )
 
+@JsonClass(generateAdapter = true)
 data class TradingFee(
   val takeLiquidityRate: String,
   val provideLiquidityRate: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Symbol(
   val id: String,
   val baseCurrency: String,
@@ -66,6 +76,7 @@ data class Symbol(
   val feeCurrency: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Order(
   val id: Int,
   val clientOrderId: String,
@@ -84,6 +95,7 @@ data class Order(
   val tradesReport: Map<String, Any>
 )
 
+@JsonClass(generateAdapter = true)
 data class Trade(
   val id: Int,
   val clientOrderId: String,
@@ -96,6 +108,7 @@ data class Trade(
   val timestamp: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Transaction(
   val id: String,
   val index: String,
@@ -112,15 +125,18 @@ data class Transaction(
   val updatedAt: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Address(
   val address: String,
   val paymentId: String
 )
 
+@JsonClass(generateAdapter = true)
 data class WithdrawConfirm(
   val result: Boolean
 )
 
+@JsonClass(generateAdapter = true)
 data class Candle(
   val timestamp: String,
   val open: String,

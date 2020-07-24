@@ -6,21 +6,6 @@ import java.util.logging.Logger
 
 class CompletionCommand(val main: Main) {
   suspend fun urlCompletionList(): String {
-    val command = main.getShellCommand()
-
-    val commandCompletor = command.completer()
-    if (commandCompletor != null) {
-      val urls = commandCompletion(commandCompletor, main.arguments)
-
-      val prefix = main.arguments.last()
-
-      if (main.completionFile != null) {
-        urls.toFile(main.completionFile!!, 0, prefix)
-      }
-
-      return urls.getUrls(prefix).joinToString("\n")
-    }
-
     val completer = UrlCompleter(main)
 
     val fullCompletionUrl = main.getFullCompletionUrl()
@@ -59,10 +44,6 @@ class CompletionCommand(val main: Main) {
     } catch (e: Exception) {
       logger.log(Level.FINE, "failure during url completion", e)
     }
-  }
-
-  suspend fun commandCompletion(urlCompleter: ArgumentCompleter, arguments: List<String>): UrlList {
-    return urlCompleter.urlList(arguments[arguments.size - 1], main.token())
   }
 
   companion object {

@@ -12,6 +12,8 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -39,7 +41,9 @@ abstract class AuthInterceptor<T> {
     return if (credentials != null) {
       return intercept(chain, credentials)
     } else {
-      chain.proceed(chain.request())
+      withContext(Dispatchers.IO) {
+        chain.proceed(chain.request())
+      }
     }
   }
 
@@ -84,8 +88,8 @@ abstract class AuthInterceptor<T> {
       ) {
         val sd = serviceDefinition
 
-        outputHandler.info("service: " + sd.shortName())
-        outputHandler.info("name: " + sd.serviceName())
+        outputHandler.info("service: ${sd.shortName()}")
+        outputHandler.info("name: ${sd.serviceName()}")
         sd.apiDocs()?.let { outputHandler.info("docs: $it") }
         sd.accountsLink()?.let { outputHandler.info("apps: $it") }
       }

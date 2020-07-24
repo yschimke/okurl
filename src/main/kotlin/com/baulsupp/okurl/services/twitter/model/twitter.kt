@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.twitter.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class User(
   val id_str: String,
   val name: String,
@@ -8,6 +11,7 @@ data class User(
   val description: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Media(
   val id_str: String,
   val media_url_https: String,
@@ -17,6 +21,7 @@ data class Media(
   val sizes: Map<String, Any> = mapOf()
 )
 
+@JsonClass(generateAdapter = true)
 data class Entities(
   val hashtags: List<Any> = listOf(),
   val symbols: List<Any> = listOf(),
@@ -25,6 +30,8 @@ data class Entities(
   val media: List<Media> = listOf()
 )
 
+@JsonClass(generateAdapter = true)
 data class Tweet(val id_str: String, val full_text: String, val user: User, val entities: Entities? = null)
 
+@JsonClass(generateAdapter = true)
 data class SearchResults(val statuses: List<Tweet>)

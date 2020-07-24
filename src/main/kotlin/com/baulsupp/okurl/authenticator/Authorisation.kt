@@ -2,7 +2,6 @@ package com.baulsupp.okurl.authenticator
 
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.commands.ToolSession
-import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.secrets.Secrets
 
 class Authorisation(val main: ToolSession) {
@@ -35,7 +34,7 @@ class Authorisation(val main: ToolSession) {
   suspend fun <T> authRequest(auth: AuthInterceptor<T>, service: String, tokenSet: String, arguments: List<String> = listOf()) {
     auth.serviceDefinition.accountsLink()?.let { main.outputHandler.info("Accounts: $it") }
 
-    val credentials = auth.authorize(client, main.outputHandler, arguments)
+    val credentials = auth.authorize(main.client, main.outputHandler, arguments)
 
     main.credentialsStore.set(auth.serviceDefinition, tokenSet, credentials)
 
@@ -60,7 +59,7 @@ class Authorisation(val main: ToolSession) {
       throw UsageException("credentials not renewable")
     }
 
-    val newCredentials = auth.renew(client, credentials) ?: throw UsageException("failed to renew")
+    val newCredentials = auth.renew(main.client, credentials) ?: throw UsageException("failed to renew")
 
     main.credentialsStore.set(serviceDefinition, tokenSet, newCredentials)
   }

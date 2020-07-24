@@ -8,10 +8,6 @@ import com.baulsupp.okurl.apidocs.ServiceApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.PrintCredentials
 import com.baulsupp.okurl.commands.CommandLineClient
-import com.baulsupp.okurl.commands.CommandRegistry
-import com.baulsupp.okurl.commands.MainAware
-import com.baulsupp.okurl.commands.OkurlCommand
-import com.baulsupp.okurl.commands.ShellCommand
 import com.baulsupp.okurl.commands.listOptions
 import com.baulsupp.okurl.completion.CompletionCommand
 import com.baulsupp.okurl.completion.CompletionVariableCache
@@ -21,19 +17,24 @@ import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.FixedTokenCredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.execute
+import com.baulsupp.okurl.kotlin.request
+import com.baulsupp.okurl.location.Location
+import com.baulsupp.okurl.moshi.Rfc3339InstantJsonAdapter
 import com.baulsupp.okurl.okhttp.FailedResponse
 import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.PotentialResponse
 import com.baulsupp.okurl.okhttp.SuccessfulResponse
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory
+import com.baulsupp.okurl.services.mapbox.model.MapboxLatLongAdapter
 import com.baulsupp.okurl.sse.SseOutput
 import com.baulsupp.okurl.sse.handleSseResponse
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.FileContent
 import com.baulsupp.okurl.util.HeaderUtil
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 import okhttp3.Handshake
@@ -55,12 +56,16 @@ import picocli.CommandLine.Option
 import java.io.File
 import java.io.IOException
 import java.security.Security
+import java.time.Instant
+import java.util.Date
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.system.exitProcess
 
-@Command(name = NAME, description = ["A curl for social apis."],
-  mixinStandardHelpOptions = true, versionProvider = Main.Companion.VersionProvider::class)
+@Command(
+  name = NAME, description = ["A curl for social apis."],
+  mixinStandardHelpOptions = true, versionProvider = Main.Companion.VersionProvider::class
+)
 class Main : CommandLineClient() {
   private val logger = Logger.getLogger(Main::class.java.name)
 
@@ -108,9 +113,8 @@ class Main : CommandLineClient() {
 
   var commandName = command
 
-  var completionFile: File? = System.getenv("COMPLETION_FILE")?.let { File(it) }
-
-  var commandRegistry = CommandRegistry()
+  var completionFile: File? = System.getenv("COMPLETION_FILE")
+    ?.let { File(it) }
 
   lateinit var completionVariableCache: CompletionVariableCache
 
@@ -132,7 +136,10 @@ class Main : CommandLineClient() {
   }
 
   private suspend fun completeOption() {
-    return outputHandler.info(listOptions(complete!!).toSortedSet().joinToString(" "))
+    return outputHandler.info(
+      listOptions(complete!!).toSortedSet()
+        .joinToString(" ")
+    )
   }
 
   override fun createClientBuilder(): OkHttpClient.Builder {
@@ -146,15 +153,18 @@ class Main : CommandLineClient() {
 
   suspend fun showApiDocs() {
     getFullCompletionUrl()?.let { u ->
-      ServiceApiDocPresenter(authenticatingInterceptor).explainApi(u, outputHandler, client,
-        token())
+      ServiceApiDocPresenter(authenticatingInterceptor).explainApi(
+        u, outputHandler, client,
+        token()
+      )
     }
   }
 
   suspend fun applyRequestFields(request: Request): Request {
     val requestBuilder = request.newBuilder()
 
-    val headerMap = HeaderUtil.headerMap(headers?.toList()).toMutableMap()
+    val headerMap = HeaderUtil.headerMap(headers?.toList())
+      .toMutableMap()
 
     requestBuilder.method(getRequestMethod(), getRequestBody(headerMap))
 
@@ -205,21 +215,15 @@ class Main : CommandLineClient() {
   }
 
   suspend fun executeRequests(outputHandler: OutputHandler<Response>): Int = supervisorScope {
-    val command = getShellCommand()
+    val requests = buildRequests(arguments)
 
-    val requests = command.buildRequests(client, arguments)
-
-    if (!command.handlesRequests()) {
-      if (requests.isEmpty()) {
-        throw UsageException("no urls specified")
-      }
-
-      val responses = requests.map { async { submitRequest(it) } }
-      val failed = processResponses(outputHandler, responses)
-      if (failed) -5 else 0
-    } else {
-      0
+    if (requests.isEmpty()) {
+      throw UsageException("no urls specified")
     }
+
+    val responses = requests.map { async { submitRequest(it) } }
+    val failed = processResponses(outputHandler, responses)
+    if (failed) -5 else 0
   }
 
   private suspend fun processResponses(
@@ -266,7 +270,10 @@ class Main : CommandLineClient() {
     }
 
     if (showHeaders) {
-      outputHandler.info(StatusLine.get(response).toString())
+      outputHandler.info(
+        StatusLine.get(response)
+          .toString()
+      )
       val headers = response.headers
       var i = 0
       val size = headers.size
@@ -276,7 +283,10 @@ class Main : CommandLineClient() {
       }
       outputHandler.info("")
     } else if (!response.isSuccessful) {
-      outputHandler.showError(StatusLine.get(response).toString(), null)
+      outputHandler.showError(
+        StatusLine.get(response)
+          .toString(), null
+      )
     }
 
     if (isEventStream(response.body?.contentType())) {
@@ -304,25 +314,20 @@ class Main : CommandLineClient() {
     }
   }
 
-  fun getShellCommand(): ShellCommand = when (commandName) {
-    "okurl" -> OkurlCommand()
-    else -> {
-      var shellCommand = commandRegistry.getCommandByName(commandName)
-
-      if (shellCommand == null) {
-        shellCommand = OkurlCommand()
-      }
-
-      shellCommand
-    }
-  }.apply {
-    if (this is MainAware) {
-      (this as MainAware).setMain(this@Main)
+  fun buildRequests(
+    arguments: List<String>
+  ): List<Request> {
+    return try {
+      arguments.map { u -> request(u) }
+    } catch (iae: IllegalArgumentException) {
+      throw UsageException(iae.message.orEmpty())
     }
   }
 
   suspend fun authorize() {
-    authorisation.authorize(findAuthInterceptor(), authorize!!, token, arguments, tokenSet ?: DefaultToken.name)
+    authorisation.authorize(
+      findAuthInterceptor(), authorize!!, token, arguments, tokenSet ?: DefaultToken.name
+    )
   }
 
   suspend fun renew() {
@@ -334,14 +339,9 @@ class Main : CommandLineClient() {
   }
 
   private fun findAuthInterceptor(): AuthInterceptor<*>? {
-    val command = getShellCommand()
-
-    val authenticator = command.authenticator()
     var auth: AuthInterceptor<*>? = null
 
-    if (authenticator != null) {
-      auth = authenticatingInterceptor.getByName(authenticator)
-    } else if (authorize != null) {
+    if (authorize != null) {
       auth = authenticatingInterceptor.getByName(authorize!!)
     } else if (auth == null && arguments.isNotEmpty()) {
       val name = arguments.removeAt(0)
@@ -381,23 +381,31 @@ class Main : CommandLineClient() {
     }
   }
 
-  private fun predictContentType(content: ByteArray): String = if (content.isNotEmpty() && content[0] == '{'.toByte()) {
-    "application/json"
-  } else {
-    "application/x-www-form-urlencoded"
-  }
+  private fun predictContentType(content: ByteArray): String =
+    if (content.isNotEmpty() && content[0] == '{'.toByte()) {
+      "application/json"
+    } else {
+      "application/x-www-form-urlencoded"
+    }
 
   override fun name(): String = NAME
 
   companion object {
+    lateinit var moshi: Moshi
+    lateinit var client: OkHttpClient
+
     const val NAME = "okurl"
     val command = System.getProperty("command.name", "okurl")!!
 
     fun setupProvider() {
       // Prefer Conscrypt over JDK 11
       try {
-        Security.insertProviderAt(Conscrypt.newProviderBuilder().provideTrustManager(true).build(),
-          1)
+        Security.insertProviderAt(
+          Conscrypt.newProviderBuilder()
+            .provideTrustManager(true)
+            .build(),
+          1
+        )
       } catch (e: NoClassDefFoundError) {
         // Drop back to JDK
       }
@@ -407,7 +415,10 @@ class Main : CommandLineClient() {
       override fun getVersion(): Array<String> {
         return arrayOf(
           "${NAME} ${versionString()}",
-          "Protocols: ${Protocol.values().joinToString(", ")}",
+          "Protocols: ${
+            Protocol.values()
+              .joinToString(", ")
+          }",
           "Platform: ${Platform.get()::class.java.simpleName}"
         )
       }
@@ -418,5 +429,10 @@ class Main : CommandLineClient() {
 fun main(args: Array<String>) {
   WireSharkListenerFactory.register()
 
+//  val factory = object: IFactory {
+//    override fun <K : Any?> create(cls: Class<K>): K {
+//      return cls.getDeclaredConstructor().newInstance()
+//    }
+//  }
   exitProcess(CommandLine(Main()).execute(*args))
 }

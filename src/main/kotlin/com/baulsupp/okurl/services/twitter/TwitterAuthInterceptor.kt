@@ -9,7 +9,6 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.twitter.joauth.Signature
-import com.baulsupp.okurl.services.twitter.twurlrc.TwurlrcImport
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -32,11 +31,6 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
   ): TwitterCredentials {
-
-    if (authArguments.isNotEmpty() && authArguments[0] == "--twurlrc") {
-      return TwurlrcImport.authorize(authArguments)
-    }
-
     if (authArguments == listOf("--pin")) {
       val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
       val consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true)

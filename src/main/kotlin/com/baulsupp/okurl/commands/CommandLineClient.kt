@@ -4,8 +4,6 @@ import brave.Tracing
 import brave.http.HttpTracing
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
-import com.babylon.certificatetransparency.VerificationResult
-import com.babylon.certificatetransparency.certificateTransparencyInterceptor
 import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.DownloadHandler
 import com.baulsupp.oksocial.output.OutputHandler
@@ -26,14 +24,15 @@ import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.location.BestLocation
+import com.baulsupp.okurl.location.Location
 import com.baulsupp.okurl.location.LocationSource
+import com.baulsupp.okurl.moshi.Rfc3339InstantJsonAdapter
 import com.baulsupp.okurl.network.DnsMode
 import com.baulsupp.okurl.network.DnsOverride
 import com.baulsupp.okurl.network.DnsSelector
 import com.baulsupp.okurl.network.GoogleDns
 import com.baulsupp.okurl.network.IPvMode
 import com.baulsupp.okurl.network.InterfaceSocketFactory
-import com.baulsupp.okurl.network.NettyDns
 import com.baulsupp.okurl.network.dnsoverhttps.DohProviders
 import com.baulsupp.okurl.okhttp.ConnectionSpecOption
 import com.baulsupp.okurl.okhttp.ConnectionSpecOption.MODERN_TLS_13
@@ -44,9 +43,9 @@ import com.baulsupp.okurl.preferences.Preferences
 import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
 import com.baulsupp.okurl.security.ConsoleCallbackHandler
-import com.baulsupp.okurl.security.CtMode
 import com.baulsupp.okurl.security.OpenSCUtil
 import com.baulsupp.okurl.services.ServiceLibrary
+import com.baulsupp.okurl.services.mapbox.model.MapboxLatLongAdapter
 import com.baulsupp.okurl.tracing.TracingMode
 import com.baulsupp.okurl.tracing.UriTransportRegistry
 import com.baulsupp.okurl.tracing.ZipkinConfig
@@ -56,10 +55,8 @@ import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
 import com.burgstaller.okhttp.DispatchingAuthenticator
-import com.github.markusbernhardt.proxy.ProxySearch
-import com.moczul.ok2curl.CurlInterceptor
-import io.netty.channel.nio.NioEventLoopGroup
-import io.netty.util.concurrent.DefaultThreadFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.Call
@@ -89,8 +86,9 @@ import java.io.Flushable
 import java.io.IOException
 import java.net.Proxy
 import java.security.SecureRandom
+import java.time.Instant
 import java.util.ArrayList
-import java.util.concurrent.ThreadFactory
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.net.SocketFactory
@@ -138,10 +136,10 @@ abstract class CommandLineClient : ToolSession, Runnable {
   var tracing: TracingMode? = null
 
   @Option(names = ["--ip"],
-    description = ["IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)"], converter = [IPvModeConverter::class], completionCandidates = IPvModeConverter::class)
+    description = ["IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)"], converter = [IPvModeConverter::class])
   var ipMode = IPvMode.SYSTEM
 
-  @Option(names = ["--dns"], description = ["DNS (netty, java, dnsoverhttps)"], converter = [DnsConverter::class], completionCandidates = DnsConverter::class)
+  @Option(names = ["--dns"], description = ["DNS (netty, java, dnsoverhttps)"], converter = [DnsConverter::class])
   var dnsMode = DnsMode.JAVA
 
   @Option(names = ["--dnsServers"], description = ["Specific DNS Servers (csv, google)"])
@@ -165,10 +163,10 @@ abstract class CommandLineClient : ToolSession, Runnable {
   )
   var connectionSpec: ConnectionSpecOption = MODERN_TLS_13
 
-  @Option(names = ["--cipherSuite"], description = ["Cipher Suites"], converter = [CipherSuiteConverter::class], completionCandidates = CipherSuiteConverter::class)
+  @Option(names = ["--cipherSuite"], description = ["Cipher Suites"], converter = [CipherSuiteConverter::class])
   var cipherSuites: MutableList<CipherSuite>? = null
 
-  @Option(names = ["--tlsVersions"], description = ["TLS Versions"], converter = [TlsVersionConverter::class], completionCandidates = TlsVersionConverter::class)
+  @Option(names = ["--tlsVersions"], description = ["TLS Versions"], converter = [TlsVersionConverter::class])
   var tlsVersions: MutableList<TlsVersion>? = null
 
   @Option(names = ["--socks"], description = ["Use SOCKS proxy"])
@@ -176,9 +174,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   @Option(names = ["--proxy"], description = ["Use HTTP proxy"])
   var proxy: InetAddressParam? = null
-
-  @Option(names = ["--os-proxy"], description = ["Use OS defined proxy"])
-  var osProxy: Boolean = false
 
   @Option(names = ["-s", "--set"], description = ["Token Set e.g. work"])
   var tokenSet: String? = null
@@ -192,20 +187,11 @@ abstract class CommandLineClient : ToolSession, Runnable {
   @Option(names = ["--maxrequests"], description = ["Concurrency Level"])
   var maxRequests = 16
 
-  @Option(names = ["--curl"], description = ["Show curl commands"])
-  var curl = false
-
   @Option(names = ["-r", "--raw"], description = ["Raw Output"])
   var rawOutput = false
 
   @Option(names = ["--localCerts"], description = ["Local Certificates"])
   var localCerts: File? = File(System.getenv("INSTALLDIR") ?: ".", "certificates")
-
-  @Option(names = ["--ct"], description = ["Certificate Transparency"])
-  var certificateTransparency = CtMode.OFF
-
-  @Option(names = ["--ctHost"], description = ["Certificate Transparency"])
-  var certificateTransparencyHosts: List<String>? = null
 
   @Option(names = ["--opensc"], description = ["Use OpenSC key manager"])
   var opensc = false
@@ -254,13 +240,10 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   lateinit var preferences: Preferences
 
-  var eventLoopGroup: NioEventLoopGroup? = null
-
   val closeables = mutableListOf<Closeable>()
 
   fun buildDns(builder: OkHttpClient.Builder): Dns {
     val dns = when (dnsMode) {
-      DnsMode.NETTY -> NettyDns.byName(ipMode, createEventLoopGroup(), this.dnsServers ?: "8.8.8.8")
       DnsMode.GOOGLE -> DnsSelector(ipMode, GoogleDns.build({ client }, ipMode))
       DnsMode.DNSOVERHTTPS -> DnsSelector(ipMode, DohProviders.buildCloudflare(builder.build()))
       DnsMode.JAVA -> {
@@ -275,17 +258,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
       return DnsOverride.build(dns, resolve!!)
     }
     return dns
-  }
-
-  private fun createEventLoopGroup(): NioEventLoopGroup {
-    if (eventLoopGroup == null) {
-      val threadFactory: ThreadFactory = DefaultThreadFactory("netty", true)
-      eventLoopGroup = NioEventLoopGroup(5, threadFactory)
-
-      closeables.add(Closeable { eventLoopGroup!!.shutdownGracefully(0, 0, TimeUnit.SECONDS) })
-    }
-
-    return eventLoopGroup!!
   }
 
   fun getSocketFactory(): SocketFactory =
@@ -337,26 +309,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     if (certificatePins != null) {
       builder.certificatePinner(CertificatePin.buildFromCommandLine(certificatePins!!.toList()))
-    }
-
-    if (certificateTransparency != CtMode.OFF) {
-      builder.networkInterceptors() += certificateTransparencyInterceptor {
-        trustManager { handshakeCertificates.trustManager }
-
-        certificateTransparencyHosts?.forEach {
-          includeHost(it)
-        }
-
-        failOnError = certificateTransparency == CtMode.FAIL
-
-        logger = object : com.babylon.certificatetransparency.CTLogger {
-          override fun log(host: String, result: VerificationResult) {
-            runBlocking {
-              outputHandler.showError("CT: $host $result")
-            }
-          }
-        }
-      }
     }
   }
 
@@ -439,6 +391,13 @@ abstract class CommandLineClient : ToolSession, Runnable {
     val clientBuilder = createClientBuilder()
 
     client = clientBuilder.build()
+
+    Main.client = client
+    Main.moshi = Moshi.Builder()
+      .add(Location::class.java, MapboxLatLongAdapter().nullSafe())
+      .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+      .add(Instant::class.java, Rfc3339InstantJsonAdapter.nullSafe())
+      .build()!!
   }
 
   open fun createClientBuilder(): OkHttpClient.Builder {
@@ -526,10 +485,6 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     builder.addNetworkInterceptor(authenticatingInterceptor)
 
-    if (curl) {
-      builder.addNetworkInterceptor(CurlInterceptor(System.err::println))
-    }
-
     builder.dns(buildDns(builder))
 
     return builder
@@ -537,11 +492,8 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   private fun applyProxy(builder: OkHttpClient.Builder) {
     when {
-      osProxy -> builder.proxySelector(ProxySearch.getDefaultProxySearch().proxySelector)
       socksProxy != null -> builder.proxy(Proxy(Proxy.Type.SOCKS, socksProxy!!.address))
       proxy != null -> builder.proxy(Proxy(Proxy.Type.HTTP, proxy!!.address))
-      preferences.osProxy == true -> builder.proxySelector(
-        ProxySearch.getDefaultProxySearch().proxySelector)
       preferences.proxy != null -> builder.proxy(preferences.proxy!!.build())
     }
   }
@@ -627,9 +579,11 @@ abstract class CommandLineClient : ToolSession, Runnable {
     }
   }
 
-  open fun buildHandler(): OutputHandler<Response> = when {
-    rawOutput -> DownloadHandler(OkHttpResponseExtractor(), File("-"))
-    else -> ConsoleHandler.instance(OkHttpResponseExtractor())
+  open fun buildHandler(): OutputHandler<Response> {
+    return when {
+      rawOutput -> DownloadHandler(OkHttpResponseExtractor(), File("-"))
+      else -> ConsoleHandler.instance(OkHttpResponseExtractor())
+    }
   }
 
   fun token(): Token {

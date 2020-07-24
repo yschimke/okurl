@@ -5,7 +5,7 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("--showCredentials")
+  runMain("https://www.googleapis.com/gmail/v1/users/me/history --apidoc")
 
   Thread.sleep(5000)
 }

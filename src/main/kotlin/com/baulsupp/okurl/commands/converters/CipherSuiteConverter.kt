@@ -4,7 +4,7 @@ import okhttp3.CipherSuite
 import picocli.CommandLine.ITypeConverter
 import kotlin.reflect.full.memberProperties
 
-object CipherSuiteConverter : ITypeConverter<CipherSuite>, Iterable<String> {
+class CipherSuiteConverter : ITypeConverter<CipherSuite>, Iterable<String> {
   override fun convert(value: String): CipherSuite = CipherSuite.forJavaName(value)
 
   override fun iterator(): Iterator<String> =

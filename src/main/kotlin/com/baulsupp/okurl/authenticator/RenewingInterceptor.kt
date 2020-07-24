@@ -1,8 +1,8 @@
 package com.baulsupp.okurl.authenticator
 
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
-import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.kotlin.edit
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -52,7 +52,7 @@ class RenewingInterceptor(
       val tokenSetName = tokenSet.name()
       if (tokenSetName != null) {
         if (interceptor.canRenew(response) && interceptor.canRenew(credentials)) {
-          val newCredentials = interceptor.renew(client, credentials)
+          val newCredentials = interceptor.renew(Main.client, credentials)
 
           if (newCredentials != null) {
             logger.fine("Setting renewed credentials")

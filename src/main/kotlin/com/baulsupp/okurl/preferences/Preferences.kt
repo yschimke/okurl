@@ -3,6 +3,7 @@ package com.baulsupp.okurl.preferences
 import com.baulsupp.okurl.network.DnsMode
 import com.baulsupp.okurl.network.IPvMode
 import com.baulsupp.okurl.tracing.TracingMode
+import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import okio.buffer
 import okio.source
@@ -11,6 +12,7 @@ import java.net.InetSocketAddress
 import java.util.logging.Level
 import java.util.logging.Logger
 
+@JsonClass(generateAdapter = true)
 data class Proxy(
   val host: String,
   val port: Int,
@@ -24,8 +26,8 @@ data class Proxy(
   }
 }
 
+@JsonClass(generateAdapter = true)
 data class Preferences(
-  val osProxy: Boolean? = null,
   val proxy: Proxy? = null,
   val dnsMode: DnsMode? = null,
   val ipMode: IPvMode? = null,

@@ -11,6 +11,7 @@ import com.baulsupp.okurl.kotlin.form
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.services.strava.model.Athlete
+import com.baulsupp.okurl.services.strava.model.AuthResponse
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
