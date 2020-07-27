@@ -11,10 +11,8 @@ import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.kotlin.requestBuilder
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Interceptor
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 

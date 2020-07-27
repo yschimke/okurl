@@ -10,12 +10,9 @@ import com.baulsupp.okurl.kotlin.tokenSet
 import com.baulsupp.okurl.services.facebook.model.Metadata
 import com.baulsupp.okurl.services.facebook.model.MetadataResult
 import com.baulsupp.okurl.services.facebook.model.PageableResult
-import com.baulsupp.okurl.services.facebook.model.UserOrPage
 import com.baulsupp.okurl.util.ClientException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
 
 suspend inline fun <reified I, reified T : PageableResult<I>> OkHttpClient.fbQueryList(
   path: String,

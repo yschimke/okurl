@@ -20,7 +20,6 @@ import com.baulsupp.okurl.services.travisci.model.User
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {

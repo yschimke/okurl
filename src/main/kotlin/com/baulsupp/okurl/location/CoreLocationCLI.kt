@@ -1,11 +1,9 @@
 package com.baulsupp.okurl.location
 
-import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.isOSX
 import com.baulsupp.oksocial.output.process.exec
 import com.baulsupp.oksocial.output.stdErrLogging
-import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import okhttp3.Response

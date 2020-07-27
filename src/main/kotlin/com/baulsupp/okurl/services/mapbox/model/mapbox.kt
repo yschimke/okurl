@@ -1,14 +1,11 @@
 package com.baulsupp.okurl.services.mapbox.model
 
 import com.baulsupp.okurl.location.Location
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import java.time.Instant
 
 @JsonClass(generateAdapter = true)
 data class MapboxProperties(

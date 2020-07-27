@@ -3,11 +3,9 @@ package com.baulsupp.okurl.services.lyft
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.queryMap
 import okhttp3.Credentials
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
 object LyftClientAuthFlow {

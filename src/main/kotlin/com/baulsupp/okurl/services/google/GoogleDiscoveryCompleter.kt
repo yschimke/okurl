@@ -8,7 +8,6 @@ import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import okhttp3.HttpUrl
 import java.util.logging.Level

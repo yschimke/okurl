@@ -4,7 +4,6 @@ import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
 import kotlinx.coroutines.runBlocking
 import okhttp3.Dns
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.io.IOException
