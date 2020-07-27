@@ -11,15 +11,7 @@ import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.kotlin.form
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
-
-data class AuthResponse(
-  val token_type: String,
-  val access_token: String,
-  val athlete: Map<String, Any>?,
-  val refresh_token: String,
-  val expires_at: Long,
-  val state: String? = null
-)
+import com.baulsupp.okurl.services.strava.model.AuthResponse
 
 class StravaAuthFlow(override val serviceDefinition: ServiceDefinition<Oauth2Token>) : Oauth2Flow<Oauth2Token>(
   serviceDefinition) {

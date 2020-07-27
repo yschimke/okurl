@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.kotlin
 
 import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.Token
@@ -55,7 +56,7 @@ suspend inline fun <reified T> OkHttpClient.query(url: String, tokenSet: Token =
 suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
   val stringResult = this.queryForString(request)
 
-  return moshi.adapter(T::class.java).fromJson(stringResult)!!
+  return Main.moshi.adapter(T::class.java).fromJson(stringResult)!!
 }
 
 suspend inline fun <reified T> OkHttpClient.queryPages(
@@ -91,7 +92,7 @@ suspend inline fun <reified T> OkHttpClient.queryPages(
 suspend inline fun <reified V> OkHttpClient.queryMap(request: Request): Map<String, V> {
   val stringResult = this.queryForString(request)
 
-  return moshi.mapAdapter<V>().fromJson(stringResult)!!
+  return Main.moshi.mapAdapter<V>().fromJson(stringResult)!!
 }
 
 suspend inline fun <reified V> OkHttpClient.queryMap(
@@ -103,7 +104,7 @@ suspend inline fun <reified V> OkHttpClient.queryMap(
 suspend inline fun <reified V> OkHttpClient.queryList(request: Request): List<V> {
   val stringResult = this.queryForString(request)
 
-  return moshi.listAdapter<V>().fromJson(stringResult)!!
+  return Main.moshi.listAdapter<V>().fromJson(stringResult)!!
 }
 
 sealed class Pagination
@@ -123,7 +124,7 @@ suspend inline fun <reified V> OkHttpClient.queryList(
 suspend inline fun <reified V> OkHttpClient.queryOptionalMap(request: Request): Map<String, V>? {
   val stringResult = this.queryForString(request)
 
-  return moshi.mapAdapter<V>().fromJson(stringResult)
+  return Main.moshi.mapAdapter<V>().fromJson(stringResult)
 }
 
 suspend inline fun <reified V> OkHttpClient.queryOptionalMap(
@@ -226,7 +227,7 @@ fun requestBuilder(
 fun Request.Builder.tokenSet(tokenSet: Token): Request.Builder = tag(Token::class.java, tokenSet)
 
 fun Request.Builder.postJsonBody(body: Any) {
-  val content = moshi.adapter(body.javaClass).toJson(body)!!
+  val content = Main.moshi.adapter(body.javaClass).toJson(body)!!
   post(content.toRequestBody(JSON))
 }
 
@@ -274,8 +275,4 @@ suspend fun Call.await(): Response {
       }
     })
   }
-}
-
-fun usage(msg: String): Nothing {
-  throw UsageException(msg)
 }

@@ -1,19 +1,23 @@
 package com.baulsupp.okurl.services.cronhub
 
-import com.baulsupp.okurl.kotlin.client
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.kotlin.query
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class MonitorsResponse(
   val success: Boolean,
   val response: List<ResponseItem>
 )
 
+@JsonClass(generateAdapter = true)
 data class EventTime(
   val date: String,
   val timezone: String,
   val timezone_type: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class ResponseItem(
   val schedule: String,
   val code: String,
@@ -27,6 +31,7 @@ data class ResponseItem(
   val status: String
 )
 
+@JsonClass(generateAdapter = true)
 data class MonitorStatus(
   val success: Boolean,
   val monitor_status: String,
@@ -34,15 +39,15 @@ data class MonitorStatus(
 )
 
 suspend fun monitor(uuid: String, block: () -> Unit) {
-  client.query<MonitorStatus>("https://cronhub.io/start/$uuid")
+  Main.client.query<MonitorStatus>("https://cronhub.io/start/$uuid")
 
   try {
     block()
   } finally {
-    client.query<MonitorStatus>("https://cronhub.io/finish/$uuid")
+    Main.client.query<MonitorStatus>("https://cronhub.io/finish/$uuid")
   }
 }
 
 suspend fun ping(uuid: String): MonitorStatus {
-  return client.query("https://cronhub.io/ping/$uuid")
+  return Main.client.query("https://cronhub.io/ping/$uuid")
 }

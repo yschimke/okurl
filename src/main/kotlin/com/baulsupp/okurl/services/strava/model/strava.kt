@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.strava.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Athlete(
   val country: Any? = null,
   val profile_medium: String? = null,
@@ -22,6 +25,7 @@ data class Athlete(
   val username: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Lap(
   val activity: ActivityLink? = null,
   val athlete: AthleteLink? = null,
@@ -46,6 +50,7 @@ data class Lap(
   val total_elevation_gain: Double? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class ActivitySummary(
   val achievement_count: Int? = null,
   val athlete: AthleteLink? = null,
@@ -115,6 +120,7 @@ data class ActivitySummary(
   val workout_type: Any? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class ActivityMap(
   val id: String? = null,
   val polyline: String? = null,
@@ -122,6 +128,7 @@ data class ActivityMap(
   val summary_polyline: String? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class SegmentEffort(
   val achievements: List<Any>? = null,
   val activity: ActivityLink? = null,
@@ -146,6 +153,7 @@ data class SegmentEffort(
   val start_index: Int? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class Segment(
   val activity_type: String? = null,
   val average_grade: Double? = null,
@@ -171,6 +179,7 @@ data class Segment(
   val state: String? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class Splits(
   val average_grade_adjusted_speed: Any? = null,
   val average_heartrate: Double? = null,
@@ -183,12 +192,24 @@ data class Splits(
   val split: Int? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class ActivityLink(
   val id: Long? = null,
   val resource_state: Int? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class AthleteLink(
   val id: Int? = null,
   val resource_state: Int? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class AuthResponse(
+  val token_type: String,
+  val access_token: String,
+  val athlete: Map<String, Any>?,
+  val refresh_token: String,
+  val expires_at: Long,
+  val state: String? = null
 )

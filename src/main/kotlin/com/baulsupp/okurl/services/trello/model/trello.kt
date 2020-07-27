@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.trello.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class TokenResponse(
   val identifier: String,
   val dateCreated: String,
@@ -9,6 +12,7 @@ data class TokenResponse(
   val id: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Permission(
   val read: Boolean,
   val modelType: String,
@@ -16,6 +20,7 @@ data class Permission(
   val write: Boolean
 )
 
+@JsonClass(generateAdapter = true)
 data class MemberResponse(
   val bio: String?,
   val avatarSource: String?,
@@ -43,26 +48,32 @@ data class MemberResponse(
   val username: String
 )
 
+@JsonClass(generateAdapter = true)
 data class MarketingOptIn(
   val date: String,
   val optedIn: Boolean
 )
 
+@JsonClass(generateAdapter = true)
 data class Limits(
   val boards: Boards?,
   val orgs: Orgs?
 )
 
+@JsonClass(generateAdapter = true)
 data class Boards(val totalPerMember: TotalPerMember?)
 
+@JsonClass(generateAdapter = true)
 data class Orgs(val totalPerMember: TotalPerMember?)
 
+@JsonClass(generateAdapter = true)
 data class TotalPerMember(
   val warnAt: Int,
   val disableAt: Int,
   val status: String
 )
 
+@JsonClass(generateAdapter = true)
 data class BoardResponse(
   val descData: Any?,
   val pinned: Any?,

@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.gdax.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Account(
   val id: String,
   val currency: String,
@@ -9,6 +12,7 @@ data class Account(
   val profile_id: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Product(
   val id: String,
   val base_currency: String,

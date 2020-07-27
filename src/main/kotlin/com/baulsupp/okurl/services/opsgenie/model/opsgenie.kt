@@ -1,10 +1,14 @@
 package com.baulsupp.okurl.services.opsgenie.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Role(
   val name: String,
   val id: String
 )
 
+@JsonClass(generateAdapter = true)
 data class User(
   val userAddress: UserAddress,
   val createdAt: String?,
@@ -18,12 +22,14 @@ data class User(
   val username: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Paging(
   val last: String?,
   val first: String?,
   val next: String?
 )
 
+@JsonClass(generateAdapter = true)
 data class UserAddress(
   val country: String?,
   val zipCode: String?,
@@ -32,6 +38,7 @@ data class UserAddress(
   val state: String?
 )
 
+@JsonClass(generateAdapter = true)
 data class UsersResponse(
   val took: Double,
   val data: List<User>,
@@ -40,28 +47,34 @@ data class UsersResponse(
   val totalCount: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Account(
   val userCount: Int,
   val name: String,
   val plan: Plan?
 )
 
+@JsonClass(generateAdapter = true)
 data class AccountResponse(
   val took: Double,
   val data: Account,
   val requestId: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Plan(
   val isYearly: Boolean,
   val name: String,
   val maxUserCount: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Team(val name: String?, val description: String?, val id: String)
 
+@JsonClass(generateAdapter = true)
 data class TeamsResponse(val took: Double, val data: List<Team>, val requestId: String)
 
+@JsonClass(generateAdapter = true)
 data class Schedule(
   val timezone: String,
   val name: String,
@@ -71,6 +84,7 @@ data class Schedule(
   val enabled: Boolean
 )
 
+@JsonClass(generateAdapter = true)
 data class SchedulesResponse(
   val took: Double,
   val data: List<Schedule>,
@@ -78,12 +92,14 @@ data class SchedulesResponse(
   val requestId: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Integration(
   val name: String,
   val id: String,
   val type: String
 )
 
+@JsonClass(generateAdapter = true)
 data class AlertsResponse(
   val took: Double,
   val data: List<Alert>,
@@ -91,18 +107,21 @@ data class AlertsResponse(
   val paging: Paging
 )
 
+@JsonClass(generateAdapter = true)
 data class AlertResponse(
   val took: Double,
   val data: Alert,
   val requestId: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Report(
   val closedBy: String?,
   val ackTime: Int?,
   val closeTime: Int?
 )
 
+@JsonClass(generateAdapter = true)
 data class Alert(
   val owner: String?,
   val acknowledged: Boolean?,
@@ -127,6 +146,7 @@ data class Alert(
   val updatedAt: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Responder(
   val id: String
 )

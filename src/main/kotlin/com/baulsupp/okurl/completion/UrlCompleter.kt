@@ -3,18 +3,15 @@ package com.baulsupp.okurl.completion
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.completion.UrlList.Match.HOSTS
 import com.baulsupp.okurl.credentials.Token
-import com.baulsupp.okurl.kotlin.client
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.SECONDS
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -35,7 +32,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       .filter { it.supportsUrl(fullUrl, main.credentialsStore) }
 
     authInterceptors.forEach {
-      val apiCompleter = it.apiCompleter(prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet)
+      val apiCompleter = it.apiCompleter(prefix, Main.client, main.credentialsStore, main.completionVariableCache, tokenSet)
       val results = apiCompleter.siteUrls(fullUrl, tokenSet)
 
       if (results.urls.isNotEmpty())
@@ -49,7 +46,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     val futures = main.authenticatingInterceptor.services.map {
       async {
         withTimeout(SECONDS.toMillis(2)) {
-          it.apiCompleter("", client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
+          it.apiCompleter("", Main.client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
         }
       }
     }

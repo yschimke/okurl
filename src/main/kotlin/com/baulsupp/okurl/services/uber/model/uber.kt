@@ -1,7 +1,9 @@
 package com.baulsupp.okurl.services.uber.model
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class UberPriceEstimate(
   @Json(name = "localized_display_name") val localizedDisplayName: String,
   val distance: Double,
@@ -14,6 +16,7 @@ data class UberPriceEstimate(
   @Json(name = "currency_code") val currencyCode: String?
 )
 
+@JsonClass(generateAdapter = true)
 data class UberTimeEstimate(
   @Json(name = "localized_display_name") val localizedDisplayName: String,
   val estimate: Int,
@@ -21,6 +24,8 @@ data class UberTimeEstimate(
   @Json(name = "product_id") val productId: String
 )
 
+@JsonClass(generateAdapter = true)
 data class UberPriceEstimates(val prices: List<UberPriceEstimate>)
 
+@JsonClass(generateAdapter = true)
 data class UberTimeEstimates(val times: List<UberTimeEstimate>)

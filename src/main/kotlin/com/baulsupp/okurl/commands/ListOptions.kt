@@ -10,7 +10,6 @@ import okhttp3.TlsVersion
 suspend fun Main.listOptions(option: String): Collection<String> {
   return when (option) {
     "service" -> authenticatingInterceptor.names()
-    "alias" -> commandRegistry.names()
     "tokenset" -> credentialsStore.names()
     "ipmode" -> IPvMode.values().map { it.code }
     "dnsmode" -> DnsMode.values().map { it.name.toLowerCase() }

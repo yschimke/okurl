@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.google
 
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -13,7 +14,6 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
-import com.baulsupp.okurl.kotlin.moshi
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.services.google.firebase.FirebaseCompleter
@@ -151,7 +151,7 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
       try {
         val message = ce.responseMessage
 
-        return moshi.adapter(AuthError::class.java).fromJson(message)!!.error_description
+        return Main.moshi.adapter(AuthError::class.java).fromJson(message)!!.error_description
       } catch (e: Exception) {
         // ignore
       }

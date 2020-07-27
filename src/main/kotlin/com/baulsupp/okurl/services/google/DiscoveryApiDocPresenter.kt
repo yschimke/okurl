@@ -3,17 +3,19 @@ package com.baulsupp.okurl.services.google
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.util.ClientException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import java.util.concurrent.CancellationException
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.SECONDS
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresenter {
+  private val logger = Logger.getLogger(DiscoveryApiDocPresenter::class.java.name)
 
   override suspend fun explainApi(
     url: String,
@@ -30,8 +32,11 @@ class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresente
     }.mapNotNull {
       try {
         it.await()
+      } catch (ce: ClientException) {
+        logger.log(Level.FINE, "Failed to fetch discovery document", ce)
+        null
       } catch (ce: CancellationException) {
-        // TODO log
+        logger.log(Level.FINE, "Failed to fetch discovery document in timeout")
         null
       }
     }
@@ -43,9 +48,10 @@ class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresente
     } else {
       // requested url may be a substring of longest baseUrl
       // assume that this means that single unique service owns this base url
-      val best = docs.filter { service ->
+      val filtered = docs.filter { service ->
         url.startsWith(service.baseUrl)
-      }.maxBy { dd -> dd.baseUrl.length }
+      }
+      val best = filtered.maxBy { dd -> dd.baseUrl.length }
 
       if (best != null) {
         best

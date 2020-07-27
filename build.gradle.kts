@@ -2,13 +2,21 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version Versions.kotlin
+  kotlin("jvm") version "1.3.72"
+  kotlin("kapt") version "1.3.72"
   `maven-publish`
-  distribution
+  application
   id("com.github.ben-manes.versions") version "0.28.0"
   id("net.nemerosa.versioning") version "2.12.1"
   id("com.diffplug.gradle.spotless") version "3.28.1"
+  id("com.github.johnrengelman.shadow") version "6.0.0"
 }
+
+application {
+  mainClassName = "com.baulsupp.okurl.MainKt"
+}
+
+val generateConfig by configurations.creating
 
 repositories {
   mavenLocal()
@@ -56,55 +64,52 @@ tasks {
   }
 }
 
+tasks {
+  withType(Tar::class) {
+    compression = Compression.NONE
+  }
+}
+
 dependencies {
-  implementation("com.babylon.certificatetransparency:certificatetransparency:0.2.0")
-  implementation("com.baulsupp:okhttp-digest:0.4.0")
   implementation("com.github.yschimke:oksocial-output:5.1") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.9.9.1")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.9.9")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.9")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9")
-  implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.9")
-  implementation("com.github.jnr:jffi:1.2.20")
-  implementation("com.github.jnr:jnr-unixsocket:0.23")
-  implementation("com.github.markusbernhardt:proxy-vole:1.0.5")
-  implementation("com.github.mrmike:ok2curl:0.5.0")
-  implementation("com.google.code.findbugs:jsr305:3.0.2")
-  implementation("com.google.crypto.tink:tink:1.2.2")
+  implementation("com.baulsupp:okhttp-digest:0.4.0") {
+    exclude(group = "com.squareup.okhttp3")
+  }
   implementation("com.jakewharton.byteunits:byteunits:0.9.1")
-  implementation("com.squareup.moshi:moshi:1.8.0")
-  implementation("com.squareup.moshi:moshi-adapters:1.8.0")
-  implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
-  implementation("com.squareup.okhttp3:logging-interceptor:4.7.2")
-  implementation("com.squareup.okhttp3:okhttp:4.7.2")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.7.2")
-  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.7.2")
-  implementation("com.squareup.okhttp3:okhttp-sse:4.7.2")
-  implementation("com.squareup.okhttp3:okhttp-tls:4.7.2")
+  implementation("com.squareup.moshi:moshi:1.9.3")
+  implementation("com.squareup.moshi:moshi-adapters:1.9.3")
+  implementation("com.squareup.moshi:moshi-kotlin:1.9.3")
+  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+//  implementation("com.squareup.okhttp3:logging-interceptor:4.8.0")
+//  implementation("com.squareup.okhttp3:okhttp:4.8.0")
+//  implementation("com.squareup.okhttp3:okhttp-brotli:4.8.0")
+//  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.8.0")
+//  implementation("com.squareup.okhttp3:okhttp-sse:4.8.0")
+//  implementation("com.squareup.okhttp3:okhttp-tls:4.8.0")
   implementation("com.squareup.okio:okio:2.4.3")
   implementation("commons-io:commons-io:2.6")
-  implementation("info.picocli:picocli:4.3.2")
+  implementation("info.picocli:picocli:4.4.0")
+  implementation("org.fusesource.jansi:jansi:1.18")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
   implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.10.6")
-  implementation("io.netty:netty-resolver-dns:4.1.48.Final")
   implementation("io.zipkin.brave:brave:5.7.0")
-  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.6.10")
-  implementation("io.zipkin.brave:brave-okhttp:4.13.6")
+  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.6.10") {
+    exclude(group = "com.squareup.okhttp3")
+  }
+  implementation("io.zipkin.brave:brave-okhttp:4.13.6") {
+    exclude(group = "com.squareup.okhttp3")
+  }
   implementation("io.zipkin.java:zipkin:2.10.1")
-  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2")
+  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2") {
+    exclude(group = "com.squareup.okhttp3")
+  }
   implementation("javax.activation:activation:1.1.1")
   implementation("org.apache.commons:commons-lang3:3.9")
-  implementation("org.bouncycastle:bcprov-jdk15on:1.65")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
-  implementation("org.fusesource.jansi:jansi:1.18")
-  implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.3.72")
-  implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.72")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6")
@@ -116,17 +121,26 @@ dependencies {
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
   implementation("com.formdev:svgSalamander:1.1.2.1")
   implementation("org.jfree:jfreesvg:3.4")
-
-  implementation("org.jetbrains.kotlin:kotlin-script-util:1.3.70") {
-    exclude(module = "kotlin-compiler")
-  }
+  implementation("org.brotli:dec:0.1.2")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.70")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.3.70")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.7.0")
+//  testImplementation("com.squareup.okhttp3:mockwebserver:4.7.0")
+  implementation(fileTree(mapOf("dir" to "testLibs", "include" to listOf("*.jar"))))
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
 
+  compileOnly("org.graalvm.nativeimage:svm:20.1.0")
+  kapt("info.picocli:picocli-codegen:4.4.0")
+  generateConfig("info.picocli:picocli-codegen:4.4.0")
+
+  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3")
+  implementation("io.github.classgraph:classgraph:4.8.87")
+
   testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
+}
+
+tasks.named("assemble") {
+  dependsOn(":installShadowDist")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -151,43 +165,6 @@ publishing {
       from(components["java"])
       artifact(sourcesJar)
       artifact(tasks.distTar.get())
-    }
-  }
-}
-
-distributions {
-  getByName("main") {
-    contents {
-      from("${rootProject.projectDir}") {
-        include("README.md", "LICENSE")
-      }
-      from("${rootProject.projectDir}/src/main/scripts") {
-        fileMode = Integer.parseUnsignedInt("755", 8)
-        into("bin")
-      }
-      from("${rootProject.projectDir}/certificates") {
-        into("certificates")
-      }
-      from("${rootProject.projectDir}/src/test/kotlin/commands") {
-        fileMode = Integer.parseUnsignedInt("755", 8)
-        exclude("local")
-        into("bin")
-      }
-      from("${rootProject.projectDir}/bash") {
-        into("bash")
-      }
-      from("${rootProject.projectDir}/zsh") {
-        into("zsh")
-      }
-      from("${rootProject.projectDir}/src/main/resources") {
-        into("scripts")
-      }
-      into("lib") {
-        from(jar)
-      }
-      into("lib") {
-        from(configurations.runtimeClasspath)
-      }
     }
   }
 }

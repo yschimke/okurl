@@ -59,7 +59,7 @@ _okurl() {
     --protocols='[Protocols]' \
     --tracing='[Activate Zipkin Tracing]' \
     '--ip=[IP Preferences (system, ipv4, ipv6, ipv4only, ipv6only)]: :(system ipv4 ipv6 ipv4only ipv6only)' \
-    '--dns=[DNS (netty, java, dnsoverhttps)]: :(netty java dnsoverhttps)' \
+    '--dns=[DNS (java, dnsoverhttps)]: :(netty java dnsoverhttps)' \
     '--dnsServers=[Specific DNS Servers (csv, google)]: :(csv google)' \
     --resolve='[DNS Overrides (HOST:TARGET)]' \
     --certificatePin='[Certificate Pin to define host:pinsha]' \
@@ -68,7 +68,6 @@ _okurl() {
     --cipherSuite='[Cipher Suites]' \
     --tlsVersions='[TLS Versions]'\
     --proxy='[Use HTTP proxy]' \
-    --os-proxy'[Use OS defined proxy]' \
     --ssldebug'[SSL Debug]' \
     --user='[user:password for basic auth]' \
     --maxrequests='[Concurrency Level]' \

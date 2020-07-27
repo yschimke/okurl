@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.atlassian.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class AccessibleResource(
   val avatarUrl: String,
   val name: String,
@@ -7,6 +10,7 @@ data class AccessibleResource(
   val scopes: List<String>
 )
 
+@JsonClass(generateAdapter = true)
 data class ServerInfo(
   val baseUrl: String,
   val deploymentType: String,
@@ -19,6 +23,7 @@ data class ServerInfo(
   val versionNumbers: List<Int>?
 )
 
+@JsonClass(generateAdapter = true)
 data class Myself(
   val avatarUrls: Map<String, String>,
   val displayName: String,

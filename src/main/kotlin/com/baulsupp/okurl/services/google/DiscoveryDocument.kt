@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.google
 
-import com.baulsupp.okurl.kotlin.moshi
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.services.google.model.DiscoveryDoc
 import com.baulsupp.okurl.services.google.model.Resource
 
@@ -38,6 +38,7 @@ class DiscoveryDocument(map: DiscoveryDoc) {
 
   companion object {
     fun parse(definition: String): DiscoveryDocument =
-      DiscoveryDocument(moshi.adapter(DiscoveryDoc::class.java).fromJson(definition)!!)
+      DiscoveryDocument(
+        Main.moshi.adapter(DiscoveryDoc::class.java).fromJson(definition)!!)
   }
 }

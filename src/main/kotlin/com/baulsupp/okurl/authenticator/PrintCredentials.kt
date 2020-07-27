@@ -5,11 +5,9 @@ import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.TokenSet
-import com.baulsupp.okurl.services.google.GoogleAuthInterceptor
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
@@ -32,9 +30,13 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
 
   private val started: ZonedDateTime = ZonedDateTime.now()
 
-  private fun printKnownCredentials(future: Deferred<ValidatedCredentials>, key: Key) {
+  private fun printKnownCredentials(
+    future: Deferred<ValidatedCredentials?>,
+    key: Key
+  ) {
     try {
-      val left = 2000L - ZonedDateTime.now().until(started, ChronoUnit.MILLIS)
+      val left = 2000L - ZonedDateTime.now()
+        .until(started, ChronoUnit.MILLIS)
       val validated = runBlocking {
         withTimeout(TimeUnit.MILLISECONDS.toMillis(left)) {
           future.await()
@@ -47,7 +49,10 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     }
   }
 
-  private fun printSuccess(key: Key, validated: ValidatedCredentials?) {
+  private fun printSuccess(
+    key: Key,
+    validated: ValidatedCredentials?
+  ) {
     val sd = key.auth.serviceDefinition
     outputHandler.info(
       "%-40s\t%-20s\t%-20s\t%-20s".format(
@@ -59,7 +64,10 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
 
   fun displayName(sd: ServiceDefinition<*>) = sd.serviceName() + " (" + sd.shortName() + ")"
 
-  private fun printFailed(key: Key, e: Throwable) {
+  private fun printFailed(
+    key: Key,
+    e: Throwable
+  ) {
     val sd = key.auth.serviceDefinition
 
     when (e) {
@@ -84,15 +92,20 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
           key.auth.errorMessage(e)
         )
       )
-      is IOException -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString()))
-      else -> outputHandler.info("%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString()))
+      is IOException -> outputHandler.info(
+        "%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString())
+      )
+      else -> outputHandler.info(
+        "%-40s\t%-20s	%s".format(displayName(sd), key.tokenSet.name, e.toString())
+      )
     }
   }
 
   suspend fun showCredentials(arguments: List<String>) {
     var services: Iterable<AuthInterceptor<*>> = commandLineClient.serviceLibrary.services
     val names = commandLineClient.defaultTokenSet?.let { listOf(it) }
-      ?: commandLineClient.credentialsStore.names().map { TokenSet(it) }
+      ?: commandLineClient.credentialsStore.names()
+        .map { TokenSet(it) }
 
     val full = arguments.isNotEmpty()
 
@@ -110,11 +123,15 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     }
   }
 
-  data class Key(val auth: AuthInterceptor<*>, val tokenSet: TokenSet)
+  data class Key(
+    val auth: AuthInterceptor<*>,
+    val tokenSet: TokenSet
+  )
 
   private suspend fun printCredentials(key: Key) {
     val sd: ServiceDefinition<*> = key.auth.serviceDefinition
-    val credentialsString = credentialsStore.get(sd, key.tokenSet)?.let { s(sd, it) }
+    val credentialsString = credentialsStore.get(sd, key.tokenSet)
+      ?.let { sd.format(it) }
       ?: "-"
     outputHandler.info(credentialsString)
   }
@@ -122,29 +139,34 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
   suspend fun validate(
     services: Iterable<AuthInterceptor<*>>,
     names: List<TokenSet>
-  ): Map<Key, Deferred<ValidatedCredentials>> = supervisorScope {
-    services.flatMap { sv ->
-      names.mapNotNull { name ->
-        val credentials = try {
-          credentialsStore.get(sv.serviceDefinition, name)
-        } catch (e: Exception) {
-          logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
-          null
-        }
-
-        credentials?.let {
-          val x = async {
-            v(sv, credentials)
-          }
-          Pair(Key(sv, name), x)
+  ): Map<Key, Deferred<ValidatedCredentials?>> =
+    supervisorScope {
+      services.flatMap { sv ->
+        names.mapNotNull { name ->
+          val credentials = readCredentials(sv, name) ?: return@mapNotNull null
+          Pair(Key(sv, name), async { sv.validate(credentials) })
         }
       }
-    }.toMap()
+        .toMap()
+    }
+
+  private suspend fun readCredentials(
+    sv: AuthInterceptor<*>,
+    name: TokenSet
+  ): Any? {
+    return try {
+      credentialsStore.get(sv.serviceDefinition, name)
+    } catch (e: Exception) {
+      logger.log(Level.WARNING, "failed to read credentials for " + sv.name(), e)
+      null
+    }
   }
 
-  suspend fun <T> v(sv: AuthInterceptor<T>, credentials: Any) =
-    sv.validate(commandLineClient.client, sv.serviceDefinition.castToken(credentials))
+  suspend fun <T> AuthInterceptor<T>.validate(
+    credentials: Any
+  ) = validate(commandLineClient.client, serviceDefinition.castToken(credentials))
 
-  fun <T> s(sd: ServiceDefinition<T>, credentials: Any) =
-    sd.formatCredentialsString(sd.castToken(credentials))
+  fun <T> ServiceDefinition<T>.format(
+    credentials: Any
+  ) = formatCredentialsString(castToken(credentials))
 }

@@ -1,5 +1,8 @@
 package com.baulsupp.okurl.services.datasettes.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class DatasetteIndex2(
   val file: String,
   val hash: String,
@@ -7,6 +10,7 @@ data class DatasetteIndex2(
   val views: List<String>
 )
 
+@JsonClass(generateAdapter = true)
 data class DatasetteTable2(
   val name: String,
   val columns: List<String>,
@@ -18,8 +22,10 @@ data class DatasetteTable2(
   val primary_keys: List<String>
 )
 
+@JsonClass(generateAdapter = true)
 data class DatasetteForeignKeys(val incoming: List<Any>, val outgoing: List<Any>)
 
+@JsonClass(generateAdapter = true)
 data class DatasetteResultSet(
   val database: String,
   val rows: List<List<Any>>,

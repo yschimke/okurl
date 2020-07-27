@@ -1,22 +1,17 @@
 package com.baulsupp.okurl.util
 
-import io.netty.util.internal.logging.InternalLoggerFactory
-import io.netty.util.internal.logging.JdkLoggerFactory
 import okhttp3.internal.http2.Http2
 import java.util.logging.ConsoleHandler
 import java.util.logging.Level
 import java.util.logging.LogManager
 import java.util.logging.LogRecord
 import java.util.logging.Logger
-import java.util.logging.SimpleFormatter
 
 class LoggingUtil {
   companion object {
     private val activeLoggers = mutableListOf<Logger>()
 
     fun configureLogging(debug: Boolean, showHttp2Frames: Boolean, sslDebug: Boolean) {
-      InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
-
       if (debug || showHttp2Frames || sslDebug) {
         if (sslDebug) {
           System.setProperty("javax.net.debug", "")
