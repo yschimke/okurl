@@ -90,6 +90,9 @@ class Main : CommandLineClient() {
   @Option(names = ["--remove"], description = ["Remove API Authorization"])
   var remove: Boolean = false
 
+  @Option(names = ["--conscrypt"], description = ["Use Conscrypt"])
+  var conscrypt: Boolean = false
+
   @Option(names = ["--token"], description = ["Use existing Token for authorization"])
   var token: String? = null
 
@@ -197,6 +200,10 @@ class Main : CommandLineClient() {
   }
 
   override fun initialise() {
+    if (conscrypt) {
+      setupProvider()
+    }
+
     if (token != null && authorize == null) {
       credentialsStore = FixedTokenCredentialsStore(token!!)
     }
@@ -423,10 +430,5 @@ class Main : CommandLineClient() {
 fun main(args: Array<String>) {
   WireSharkListenerFactory.register()
 
-//  val factory = object: IFactory {
-//    override fun <K : Any?> create(cls: Class<K>): K {
-//      return cls.getDeclaredConstructor().newInstance()
-//    }
-//  }
   exitProcess(CommandLine(Main()).execute(*args))
 }
