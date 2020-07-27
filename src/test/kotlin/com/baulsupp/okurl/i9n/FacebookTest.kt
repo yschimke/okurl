@@ -34,9 +34,13 @@ class FacebookTest {
       main.run()
     }
 
-    val es = listOf("service: facebook", "name: Facebook API",
-        "docs: https://developers.facebook.com/docs/graph-api",
-        "apps: https://developers.facebook.com/apps/")
+    val es = listOf(
+      "service: facebook", "name: Facebook API",
+      "docs: https://developers.facebook.com/docs/graph-api",
+      "apps: https://developers.facebook.com/apps/",
+      "",
+      "No metadata available"
+    )
 
     assertEquals(es, output.stdout)
   }

@@ -36,22 +36,4 @@ class TwitterTest {
     assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
         credentialsStore.tokens[Pair("twitter", DefaultToken.name)])
   }
-
-  @Test
-  fun importFromTwurl() {
-    main.authorize = "twitter"
-    main.arguments = mutableListOf("--twurlrc",
-        projectFile("src/test/resources/single_twurlrc.yaml").absolutePath)
-
-    runBlocking {
-      main.run()
-    }
-
-    if (output.failures.isNotEmpty()) {
-      throw output.failures[0]
-    }
-
-    assertEquals("PROFILE,CONSUMER_KEY,CONSUMER_SECRET,1234-TOKEN,SECRET",
-        credentialsStore.tokens[Pair("twitter", DefaultToken.name)])
-  }
 }
