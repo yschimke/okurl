@@ -54,7 +54,7 @@ suspend fun getMetadata(client: OkHttpClient, requestUrl: HttpUrl, tokenSet: Tok
     val response = client.query<MetadataResult>(request)
     response.metadata
   } catch (ce: ClientException) {
-    if (ce.code != 404) {
+    if (ce.code != 404 && ce.code != 400) {
       throw ce
     }
     null
