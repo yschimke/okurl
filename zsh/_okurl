@@ -9,7 +9,7 @@ _okurl_services() {
 _okurl_urls() {
   local host urlpath
 
-  urls=($(okurl --urlCompletion https))
+  urls=($(okurl --urlCompletion "$words[CURRENT]"))
   compadd $urls
 }
 
