@@ -12,6 +12,7 @@ import com.baulsupp.okurl.credentials.SimpleCredentialsStore
 import com.oracle.svm.core.annotate.Delete
 import com.oracle.svm.core.annotate.Substitute
 import com.oracle.svm.core.annotate.TargetClass
+import io.swagger.v3.parser.util.OpenAPIDeserializer
 import okhttp3.internal.platform.Android10Platform
 import okhttp3.internal.platform.AndroidPlatform
 import okhttp3.internal.platform.BouncyCastlePlatform
@@ -20,6 +21,7 @@ import okhttp3.internal.platform.Jdk8WithJettyBootPlatform
 import okhttp3.internal.platform.Jdk9Platform
 import okhttp3.internal.platform.OpenJSSEPlatform
 import okhttp3.internal.platform.Platform
+import java.util.Date
 
 @TargetClass(ConsoleHandler::class)
 class TargetConsoleHandler {
@@ -91,5 +93,18 @@ class TargetPlatform {
   @Substitute
   fun findPlatform(): Platform {
     return Jdk9Platform.buildIfSupported()!!
+  }
+}
+
+@TargetClass(className = "java.util.JapaneseImperialCalendar")
+@Delete()
+class TargetJapaneseImperialCalendar {
+}
+
+@TargetClass(OpenAPIDeserializer::class)
+class TargetOpenAPIDeserializer {
+  @Substitute
+  fun toDate(dateString: String): Date {
+    return Date()
   }
 }

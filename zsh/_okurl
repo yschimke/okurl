@@ -1,50 +1,21 @@
 #compdef okurl
 #autoload
 
-_okurl_caching_policy() {
-    # rebuild if cache is more than a day old
-    local -a oldp
-    oldp=( "$1"(mm+5) )
-    (( $#oldp ))
-}
-
 _okurl_services() {
-    if _cache_invalid _okurl-complete-services || ! _retrieve_cache _okurl-complete-services; then
-        services=($(okurl --complete service))
-        _store_cache _okurl-complete-services services
-    fi
+    services=($(okurl --complete service))
     compadd $services
 }
 
 _okurl_urls() {
   local host urlpath
 
-  if [[ "$words[CURRENT]" =~ ^https://([^/]*)(/.*)$ ]]; then
-      host=$match[1]
-      urlpath=$match[2]
-
-      if [[ "$host" == "graph.facebook.com" ]]; then
-        urls=($(okurl --urlCompletion "https://graph.facebook.com$urlpath"))
-      elif _cache_invalid _okurl-complete-$host || ! _retrieve_cache _okurl-complete-$host; then
-        urls=($(okurl --urlCompletion "https://$host/"))
-        _store_cache _okurl-complete-$host urls
-      fi
-      compadd $urls
-  else
-      if _cache_invalid _okurl-complete || ! _retrieve_cache _okurl-complete; then
-          urls=($(okurl --urlCompletion https))
-          _store_cache _okurl-complete urls
-      fi
-      compadd $urls
-  fi
+  urls=($(okurl --urlCompletion https))
+  compadd $urls
 }
 
 _okurl() {
   local curcontext="$curcontext" state state_descr line expl
   typeset -A opt_args
-
-  zstyle -s ":completion:$curcontext:" cache-policy _okurl_caching_policy
-  #zstyle -s ":completion:$curcontext:" use-cache true
 
   _arguments -C -S \
     --user-agent='[User-Agent to send to server]' \

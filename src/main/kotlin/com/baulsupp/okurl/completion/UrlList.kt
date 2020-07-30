@@ -87,5 +87,13 @@ data class UrlList(val match: Match, val urls: List<String>) {
         UrlList(Match.SITE, readText)
       }
     }
+
+    fun hosts(vararg hosts: String): UrlList {
+      return UrlList(Match.HOSTS, hosts.map { "https://$it/" })
+    }
+
+    fun hosts(hosts: Iterable<String>): UrlList {
+      return UrlList(Match.HOSTS, hosts.map { "https://$it/" })
+    }
   }
 }
