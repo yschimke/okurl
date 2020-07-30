@@ -4,12 +4,15 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.completion.UrlList.Match.HOSTS
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
+import com.baulsupp.okurl.util.FileUtil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
+import okhttp3.Cache
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.io.File
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit.SECONDS
@@ -17,7 +20,10 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class UrlCompleter(val main: Main) : ArgumentCompleter {
-  override suspend fun urlList(prefix: String, tokenSet: Token): UrlList {
+  override suspend fun urlList(
+    prefix: String,
+    tokenSet: Token
+  ): UrlList {
     val fullUrl = parseUrl(prefix)
 
     return if (fullUrl != null) {
@@ -27,12 +33,22 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     }
   }
 
-  private suspend fun pathCompletion(fullUrl: HttpUrl, prefix: String, tokenSet: Token): UrlList {
+  private suspend fun pathCompletion(
+    fullUrl: HttpUrl,
+    prefix: String,
+    tokenSet: Token
+  ): UrlList {
     val authInterceptors = main.authenticatingInterceptor.services
       .filter { it.supportsUrl(fullUrl, main.credentialsStore) }
 
+    val client = Main.client.newBuilder()
+      .cache(Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256 * 1024 * 1024))
+      .build()
+
     authInterceptors.forEach {
-      val apiCompleter = it.apiCompleter(prefix, Main.client, main.credentialsStore, main.completionVariableCache, tokenSet)
+      val apiCompleter = it.apiCompleter(
+        prefix, client, main.credentialsStore, main.completionVariableCache, tokenSet
+      )
       val results = apiCompleter.siteUrls(fullUrl, tokenSet)
 
       if (results.urls.isNotEmpty())
@@ -46,7 +62,10 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     val futures = main.authenticatingInterceptor.services.map {
       async {
         withTimeout(SECONDS.toMillis(2)) {
-          it.apiCompleter("", Main.client, main.credentialsStore, main.completionVariableCache, tokenSet).prefixUrls()
+          it.apiCompleter(
+            "", Main.client, main.credentialsStore, main.completionVariableCache, tokenSet
+          )
+            .prefixUrls()
         }
       }
     }
@@ -54,7 +73,10 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     val results = mutableListOf<String>()
     for (f in futures) {
       try {
-        results.addAll(f.await().getUrls(""))
+        results.addAll(
+          f.await()
+            .getUrls("")
+        )
       } catch (e: ClientException) {
         logger.log(Level.WARNING, "http error during url completion", e)
       } catch (e: CancellationException) {
@@ -79,7 +101,10 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     val NullCompleter = object : ApiCompleter {
       override suspend fun prefixUrls() = UrlList.None
 
-      override suspend fun siteUrls(url: HttpUrl, tokenSet: Token) = UrlList.None
+      override suspend fun siteUrls(
+        url: HttpUrl,
+        tokenSet: Token
+      ) = UrlList.None
     }
 
     private val logger = Logger.getLogger(UrlCompleter::class.java.name)

@@ -4,7 +4,10 @@ import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
+import com.baulsupp.okurl.completion.ApiCompleter
+import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import okhttp3.Interceptor
@@ -29,6 +32,14 @@ class GithubAuthInterceptor : Oauth2AuthInterceptor() {
 
     return chain.proceed(request)
   }
+
+  override suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter = GithubApiCompleter(client)
 
   override fun authFlow() = GithubAuthFlow(serviceDefinition)
 

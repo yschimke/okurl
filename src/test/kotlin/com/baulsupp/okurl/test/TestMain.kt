@@ -5,7 +5,5 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("https://www.googleapis.com/gmail/v1/users/me/history --apidoc")
-
-  Thread.sleep(5000)
+  runMain("https://api.twitter.com/ --urlCompletion --debug")
 }

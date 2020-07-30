@@ -136,6 +136,8 @@ dependencies {
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3")
   implementation("io.github.classgraph:classgraph:4.8.87")
 
+  implementation("io.swagger.parser.v3:swagger-parser:2.0.21")
+
   testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
 }
 

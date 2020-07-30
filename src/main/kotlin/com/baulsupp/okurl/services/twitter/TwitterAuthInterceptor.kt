@@ -4,7 +4,10 @@ import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.completion.ApiCompleter
+import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.credentials.CredentialsStore
+import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.secrets.Secrets
@@ -62,4 +65,12 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = TwitterUtil.TWITTER_API_HOSTS
+
+  override suspend fun apiCompleter(
+    prefix: String,
+    client: OkHttpClient,
+    credentialsStore: CredentialsStore,
+    completionVariableCache: CompletionVariableCache,
+    tokenSet: Token
+  ): ApiCompleter = TwitterApiCompleter(client, credentialsStore, completionVariableCache)
 }
