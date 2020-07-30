@@ -9,8 +9,11 @@ _okurl_services() {
 _okurl_urls() {
   local host urlpath
 
-  urls=($(okurl --urlCompletion "$words[CURRENT]"))
-  compadd $urls
+  if ! [[ "$words[CURRENT]" =~ '^-.*$' ]]
+  then
+    urls=($(okurl --urlCompletion "$words[CURRENT]"))
+    compadd $urls
+  fi
 }
 
 _okurl() {
