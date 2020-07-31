@@ -5,12 +5,16 @@ import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.kotlin.request
+import io.swagger.parser.OpenAPIParser
 import io.swagger.v3.oas.models.OpenAPI
-import io.swagger.v3.parser.OpenAPIV3Parser
+import io.swagger.v3.parser.core.models.ParseOptions
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 
-class OpenApiCompleter(val apiDesc: HttpUrl, val client: OkHttpClient): ApiCompleter {
+class OpenApiCompleter(
+  val apiDesc: HttpUrl,
+  val client: OkHttpClient
+): ApiCompleter {
   override suspend fun prefixUrls(): UrlList {
     val openAPI = openAPI()
 
@@ -21,7 +25,11 @@ class OpenApiCompleter(val apiDesc: HttpUrl, val client: OkHttpClient): ApiCompl
 
   private suspend fun openAPI(): OpenAPI? {
     val yaml = client.queryForString(apiDesc.request())
-    return OpenAPIV3Parser().readContents(yaml).openAPI
+    val options = ParseOptions().apply {
+      isResolve = true
+    }
+    val readContents = OpenAPIParser().readContents(yaml, null, options)
+    return readContents.openAPI
   }
 
   override suspend fun siteUrls(
@@ -30,7 +38,7 @@ class OpenApiCompleter(val apiDesc: HttpUrl, val client: OkHttpClient): ApiCompl
   ): UrlList {
     val openAPI = openAPI()
     val urls = openAPI?.servers?.flatMap { server ->
-      openAPI.paths.map {url ->
+      openAPI.paths.map { url ->
         server.url + "" + url.key
       }
     }.orEmpty()
