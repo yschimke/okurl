@@ -74,11 +74,3 @@ class TwitterApiCompleter(
     }
   }
 }
-
-suspend fun main() {
-  val client = OkHttpClient()
-  val completer = OpenApiCompleter(
-    "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/twitter.com/legacy/1.1/swagger.yaml".toHttpUrl(),
-    client)
-  println(completer.siteUrls("https://api.twitter.com/".toHttpUrl(), DefaultToken))
-}
