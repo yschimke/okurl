@@ -8,3 +8,14 @@ https://stream.twitter.com/1.1/statuses/filter.json
 https://stream.twitter.com/1.1/statuses/firehose.json
 https://stream.twitter.com/1.1/statuses/sample.json
 https://userstream.twitter.com/1.1/user.json
+https://api.twitter.com/1.1/account/verify_credentials.json
+https://api.twitter.com/1.1/collections/list.json
+https://api.twitter.com/1.1/collections/show.json
+https://api.twitter.com/1.1/collections/create.json
+https://api.twitter.com/1.1/collections/destroy.json
+https://api.twitter.com/1.1/collections/update.json
+https://api.twitter.com/1.1/collections/entries.json
+https://api.twitter.com/1.1/collections/entries/add.json
+https://api.twitter.com/1.1/collections/entries/remove.json
+https://api.twitter.com/1.1/collections/entries/move.json
+https://api.twitter.com/1.1/collections/entries/curate.json
