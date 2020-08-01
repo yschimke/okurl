@@ -1,5 +1,5 @@
-#!/bin/sh
+#!/bin/sh -e
 
-./build-native.sh
+./gradlew nativeImage
 tar cf ./build/okurl.tar build/graal/okurl zsh/_okurl
 brew reinstall ./okurl.rb

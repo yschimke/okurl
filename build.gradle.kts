@@ -160,6 +160,7 @@ val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
 val shadowJar = tasks["shadowJar"] as com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 tasks.register<Exec>("nativeImage") {
+  mkdir("$buildDir/graal")
   commandLine(
     "/Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.1.0/Contents/Home/bin/native-image",
     "-jar",

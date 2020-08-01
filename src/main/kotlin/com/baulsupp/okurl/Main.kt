@@ -110,9 +110,6 @@ class Main : CommandLineClient() {
 
   var commandName = command
 
-  var completionFile: File? = System.getenv("COMPLETION_FILE")
-    ?.let { File(it) }
-
   lateinit var completionVariableCache: CompletionVariableCache
 
   override fun runCommand(runArguments: List<String>): Int {

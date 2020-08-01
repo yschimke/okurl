@@ -21,9 +21,6 @@ class CompletionTest {
     outputHandler = output
     credentialsStore = store
     completionVariableCache = cache
-    completionFile = File.createTempFile("okurltest", ".txt").apply {
-      deleteOnExit()
-    }
     authenticatingInterceptor = AuthenticatingInterceptor(store, listOf(
       TestAuthInterceptor(),
       TwitterAuthInterceptor()
@@ -41,9 +38,6 @@ class CompletionTest {
 
     assertEquals(1, output.stdout.size)
     assertTrue(output.stdout[0].contains("https://api1.test.com/"))
-
-    val cacheFileContent = readCompletionFile()
-    assertEquals("[^/]*:?/?/?[^/]*", cacheFileContent[0])
   }
 
   @Test
@@ -57,9 +51,6 @@ class CompletionTest {
     assertEquals(listOf(
       "https://api1.test.com\nhttps://api1.test.com/"),
       output.stdout)
-
-    val cacheFileContent = readCompletionFile()
-    assertEquals("[^/]*:?/?/?[^/]*", cacheFileContent[0])
   }
 
   @Test
@@ -72,11 +63,5 @@ class CompletionTest {
 
     assertEquals(1, output.stdout.size)
     assertTrue(output.stdout[0].contains("\nhttps://api.twitter.com/1.1/geo/places.json\n"))
-
-    val cacheFileContent = readCompletionFile()
-    assertEquals("https://api.twitter.com/.*", cacheFileContent[0])
-    assertTrue(cacheFileContent.contains("https://api.twitter.com/1.1/geo/places.json"))
   }
-
-  private fun readCompletionFile(): List<String> = main.completionFile!!.readLines()
 }

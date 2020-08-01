@@ -26,7 +26,6 @@ import java.security.Security
 import java.util.Arrays
 
 object TestDohMain {
-  @Throws(IOException::class)
   @JvmStatic
   fun main(args: Array<String>) {
     Security.insertProviderAt(org.conscrypt.OpenSSLProvider(), 1)

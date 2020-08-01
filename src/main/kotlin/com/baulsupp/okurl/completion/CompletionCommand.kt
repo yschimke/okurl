@@ -22,16 +22,6 @@ class CompletionCommand(val main: Main) {
         0
       }
 
-      main.completionFile?.let {
-        it.delete()
-
-        if (urls.match == UrlList.Match.HOSTS && urls.urls.isEmpty()) {
-          main.outputHandler.showError("Unable to complete hosts")
-        }
-
-        urls.toFile(it, strip, originalCompletionUrl)
-      }
-
       return urls.getUrls(fullCompletionUrl).joinToString("\n") { it.substring(strip) }
     } else {
       return ""
