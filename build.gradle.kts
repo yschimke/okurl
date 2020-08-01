@@ -158,7 +158,7 @@ val javadocJar by tasks.creating(Jar::class) {
 val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
 val shadowJar = tasks["shadowJar"] as com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-tasks.register<Exec>("nativeImage") {
+val nativeImage = tasks.register<Exec>("nativeImage") {
   mkdir("$buildDir/graal")
   commandLine(
     "/Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.1.0/Contents/Home/bin/native-image",
@@ -172,6 +172,8 @@ tasks.register<Exec>("nativeImage") {
   )
 
   dependsOn(shadowJar)
+
+  outputs.file("$buildDir/graal/okurl")
 }
 
 publishing {
@@ -204,5 +206,21 @@ spotless {
     ktlint("0.31.0").userData(mutableMapOf("indent_size" to "2", "continuation_indent_size" to "2"))
     trimTrailingWhitespace()
     endWithNewline()
+  }
+}
+
+distributions {
+  getByName("main") {
+    contents {
+      from("${rootProject.projectDir}") {
+        include("README.md", "LICENSE")
+      }
+      from("${rootProject.projectDir}/zsh") {
+        into("zsh")
+      }
+      into("bin") {
+        from(nativeImage)
+      }
+    }
   }
 }
