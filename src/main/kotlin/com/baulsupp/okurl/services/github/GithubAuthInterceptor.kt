@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.github
 
+import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
@@ -10,6 +11,8 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
+import com.baulsupp.okurl.openapi.OpenApiDocPresenter
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -40,6 +43,13 @@ class GithubAuthInterceptor : Oauth2AuthInterceptor() {
     completionVariableCache: CompletionVariableCache,
     tokenSet: Token
   ): ApiCompleter = GithubApiCompleter(client)
+
+  override fun apiDocPresenter(
+    url: String,
+    client: OkHttpClient
+  ): ApiDocPresenter = OpenApiDocPresenter(
+    "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/twitter.com/legacy/1.1/swagger.yaml".toHttpUrl()
+  )
 
   override fun authFlow() = GithubAuthFlow(serviceDefinition)
 

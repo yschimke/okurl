@@ -15,34 +15,28 @@ import okhttp3.OkHttpClient
 class OpenApiCompleter(
   val apiDesc: HttpUrl,
   val client: OkHttpClient
-): ApiCompleter {
+) : ApiCompleter {
   override suspend fun prefixUrls(): UrlList {
-    val openAPI = openAPI()
+    val openAPI = readOpenAPI(client, apiDesc)
 
-    val urls = openAPI?.servers?.map { it.url }.orEmpty()
+    val urls = openAPI?.servers?.map { it.url }
+      .orEmpty()
 
     return UrlList(UrlList.Match.HOSTS, urls)
-  }
-
-  private suspend fun openAPI(): OpenAPI? {
-    val yaml = client.queryForString(apiDesc.request())
-    val options = ParseOptions().apply {
-      isResolve = true
-    }
-    val readContents = OpenAPIParser().readContents(yaml, null, options)
-    return readContents.openAPI
   }
 
   override suspend fun siteUrls(
     url: HttpUrl,
     tokenSet: Token
   ): UrlList {
-    val openAPI = openAPI()
+    val openAPI = readOpenAPI(client, apiDesc)
+
     val urls = openAPI?.servers?.flatMapMe { server ->
       openAPI.paths.map { url ->
         server.url + "" + url.key
       }
-    }.orEmpty()
+    }
+      .orEmpty()
     return UrlList(UrlList.Match.HOSTS, urls)
   }
 }

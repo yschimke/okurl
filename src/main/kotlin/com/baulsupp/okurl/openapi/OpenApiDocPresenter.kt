@@ -1,0 +1,69 @@
+package com.baulsupp.okurl.openapi
+
+import com.baulsupp.oksocial.output.ConsoleHandler
+import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.apidocs.ApiDocPresenter
+import com.baulsupp.okurl.credentials.DefaultToken
+import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.queryForString
+import com.baulsupp.okurl.kotlin.request
+import io.swagger.parser.OpenAPIParser
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.parser.core.models.ParseOptions
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Response
+
+suspend fun readOpenAPI(
+  client: OkHttpClient,
+  apiDesc: HttpUrl
+): OpenAPI? {
+  val yaml = client.queryForString(apiDesc.request())
+  val options = ParseOptions().apply {
+    isResolve = true
+  }
+  val readContents = OpenAPIParser().readContents(yaml, null, options)
+  return readContents.openAPI
+}
+
+class OpenApiDocPresenter(
+  val apiDesc: HttpUrl
+) : ApiDocPresenter {
+  override suspend fun explainApi(
+    url: String,
+    outputHandler: OutputHandler<Response>,
+    client: OkHttpClient,
+    tokenSet: Token
+  ) {
+    val openAPI = readOpenAPI(client, apiDesc)
+
+    if (openAPI != null) {
+      val server = openAPI.servers.find { url.startsWith(it.url) }
+
+      if (server != null) {
+        val paths = openAPI.paths
+        val urlPath = url.drop(server.url.length)
+
+        // TODO improve search
+        val path = paths?.get(urlPath)?.get
+
+        if (path != null) {
+          outputHandler.info("Description: " + path.description)
+          outputHandler.info("Docs: " + path.externalDocs.url)
+
+          if (path.parameters.isNotEmpty()) {
+            outputHandler.info("")
+
+            outputHandler.info("Parameters")
+            path.parameters.forEach {
+              outputHandler.info(it.name + " " + it.description)
+              outputHandler.info("")
+            }
+          }
+          return
+        }
+      }
+    }
+  }
+}

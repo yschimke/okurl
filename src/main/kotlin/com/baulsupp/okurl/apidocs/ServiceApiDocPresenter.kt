@@ -1,10 +1,14 @@
 package com.baulsupp.okurl.apidocs
 
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.util.FileUtil
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import java.io.File
 
 class ServiceApiDocPresenter(private val services: AuthenticatingInterceptor) : ApiDocPresenter {
   override suspend fun explainApi(
@@ -13,6 +17,10 @@ class ServiceApiDocPresenter(private val services: AuthenticatingInterceptor) : 
     client: OkHttpClient,
     tokenSet: Token
   ) {
+    val client = client.newBuilder()
+      .cache(Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256 * 1024 * 1024))
+      .build()
+
     val presenter = services.getByUrl(url)?.apiDocPresenter(url, client)
 
     if (presenter != null) {
