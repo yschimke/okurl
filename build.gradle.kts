@@ -209,17 +209,19 @@ spotless {
   }
 }
 
-distributions {
-  create("graal") {
-    contents {
-      from("${rootProject.projectDir}") {
-        include("README.md", "LICENSE")
-      }
-      from("${rootProject.projectDir}/zsh") {
-        into("zsh")
-      }
-      into("bin") {
-        from(nativeImage)
+if (properties.containsKey("graal")) {
+  distributions {
+    val graal = create("graal") {
+      contents {
+        from("${rootProject.projectDir}") {
+          include("README.md", "LICENSE")
+        }
+        from("${rootProject.projectDir}/zsh") {
+          into("zsh")
+        }
+        into("bin") {
+          from(nativeImage)
+        }
       }
     }
   }
