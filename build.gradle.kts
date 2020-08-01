@@ -210,7 +210,7 @@ spotless {
 }
 
 distributions {
-  getByName("main") {
+  create("graal") {
     contents {
       from("${rootProject.projectDir}") {
         include("README.md", "LICENSE")
