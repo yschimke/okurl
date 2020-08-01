@@ -1,8 +1,8 @@
 class Okurl < Formula
   desc "Okurl"
   homepage "https://github.com/yschimke/okurl"
-  version "0.1"
-  url "file://#{Dir.pwd}/build/okurl.tar"
+  version "dev"
+  url "file://#{Dir.pwd}/build/distributions/okurl-master.tar"
 
   depends_on :java
 
