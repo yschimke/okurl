@@ -2,6 +2,7 @@ package com.baulsupp.okurl.services.postman
 
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.services.postman.model.CollectionResult
 import com.baulsupp.okurl.services.postman.model.CollectionsResult
@@ -20,7 +21,7 @@ suspend fun postmanCollectionUrls(tokenSet: Token): List<String> = coroutineScop
     }
   }
 
-  jobs.flatMap {
-    it.await().collection.item.flatMap { it.item.map { it.request?.urlString() } }.filterNotNull()
+  jobs.flatMapMe {
+    it.await().collection.item.flatMapMe { it.item.map { it.request?.urlString() } }.filterNotNull()
   }
 }

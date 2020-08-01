@@ -4,6 +4,7 @@ import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.queryMap
 import com.baulsupp.okurl.services.datasettes.model.DatasetteIndex2
 import okhttp3.HttpUrl
@@ -31,7 +32,7 @@ class DatasettesCompleter(private val client: OkHttpClient) : ApiCompleter {
   }
 
   private fun databaseInPath(datasette: Map<String, DatasetteIndex2>, host: String): UrlList {
-    val paths = datasette.keys.flatMap { listOf("$it.json", "$it/") } + ".json"
+    val paths = datasette.keys.flatMapMe { listOf("$it.json", "$it/") } + ".json"
     return UrlList(UrlList.Match.EXACT, paths.map { "https://$host/$it" })
   }
 

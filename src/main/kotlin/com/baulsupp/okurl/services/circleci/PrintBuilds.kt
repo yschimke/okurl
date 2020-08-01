@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.circleci
 
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryList
 import kotlinx.coroutines.async
@@ -18,7 +19,7 @@ suspend fun main() {
       async {
         testMetaData(org, project, buildNum)
       }
-    }.flatMap {
+    }.flatMapMe {
       it.await().failedTests
     }
 

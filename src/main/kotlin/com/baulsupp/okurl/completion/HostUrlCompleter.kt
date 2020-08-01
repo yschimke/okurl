@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.completion
 
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.flatMapMe
 import okhttp3.HttpUrl
 
 open class HostUrlCompleter(private val hosts: Iterable<String>) : ApiCompleter {
@@ -13,7 +14,7 @@ open class HostUrlCompleter(private val hosts: Iterable<String>) : ApiCompleter 
 
   companion object {
     fun hostUrls(h: Iterable<String>, siteOnly: Boolean): List<String> {
-      return h.flatMap {
+      return h.flatMapMe {
         if (siteOnly) {
           listOf("https://$it/")
         } else {

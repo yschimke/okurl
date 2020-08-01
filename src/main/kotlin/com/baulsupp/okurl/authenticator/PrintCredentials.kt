@@ -1,10 +1,12 @@
 package com.baulsupp.okurl.authenticator
 
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.okurl.authenticator.PrintCredentials.Key
 import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.credentials.TokenSet
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.util.ClientException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.experimental.ExperimentalTypeInference
 
 class PrintCredentials(private val commandLineClient: ToolSession) {
   private val logger = Logger.getLogger(PrintCredentials::class.java.name)
@@ -141,10 +144,12 @@ class PrintCredentials(private val commandLineClient: ToolSession) {
     names: List<TokenSet>
   ): Map<Key, Deferred<ValidatedCredentials?>> =
     supervisorScope {
-      services.flatMap { sv ->
+      services.flatMapMe { sv ->
         names.mapNotNull { name ->
           val credentials = readCredentials(sv, name) ?: return@mapNotNull null
-          Pair(Key(sv, name), async { sv.validate(credentials) })
+          Pair(Key(sv, name), async {
+            sv.validate(credentials)
+          })
         }
       }
         .toMap()

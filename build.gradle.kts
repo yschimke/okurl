@@ -50,8 +50,8 @@ java {
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.3"
-    kotlinOptions.languageVersion = "1.3"
+    kotlinOptions.apiVersion = "1.4"
+    kotlinOptions.languageVersion = "1.4"
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
@@ -110,11 +110,11 @@ dependencies {
   implementation("javax.activation:activation:1.1.1")
   implementation("org.apache.commons:commons-lang3:3.9")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.6")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.6")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0-rc")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0-rc")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-1.4.0-rc")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.8-1.4.0-rc")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8-1.4.0-rc")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("org.zeroturnaround:zt-exec:1.11")
@@ -123,8 +123,8 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.70")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.3.70")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.0-rc")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.0-rc")
 //  testImplementation("com.squareup.okhttp3:mockwebserver:4.7.0")
   implementation(fileTree(mapOf("dir" to "testLibs", "include" to listOf("*.jar"))))
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
@@ -143,6 +143,7 @@ dependencies {
 
 tasks.named("assemble") {
   dependsOn(":installShadowDist")
+  dependsOn(":nativeImage")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -156,6 +157,22 @@ val javadocJar by tasks.creating(Jar::class) {
 }
 
 val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
+val shadowJar = tasks["shadowJar"] as com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+tasks.register<Exec>("nativeImage") {
+  commandLine(
+    "/Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.1.0/Contents/Home/bin/native-image",
+    "-jar",
+    shadowJar.archiveFile.get(),
+    "--no-fallback",
+    "-H:ResourceConfigurationFiles=resources.config",
+    "-H:ReflectionConfigurationFiles=reflect.config,./build/tmp/kapt3/classes/main/META-INF/native-image/picocli-generated/reflect-config.json",
+    "--enable-https",
+    "build/graal/okurl"
+  )
+
+  dependsOn(shadowJar)
+}
 
 publishing {
   repositories {

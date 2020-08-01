@@ -31,6 +31,10 @@ import java.time.OffsetDateTime
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+inline fun <T, R> Iterable<T>.flatMapMe(function: (T) -> Iterable<R>): List<R> {
+  return this.map { function(it) }.flatten()
+}
+
 @Suppress("UNCHECKED_CAST")
 inline fun <reified V> Moshi.mapAdapter() =
   this.adapter<Any>(

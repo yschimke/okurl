@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.completion
 
+import com.baulsupp.okurl.kotlin.flatMapMe
 import java.io.File
 
 data class UrlList(val match: Match, val urls: List<String>) {
@@ -39,7 +40,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
       replacementList = replacements
     }
 
-    val newUrls = urls.flatMap { url ->
+    val newUrls = urls.flatMapMe { url ->
       if (url.contains(literalToken))
         replacementList.map { s -> url.replace(literalToken, s) } else listOf(url)
     }
@@ -89,13 +90,13 @@ data class UrlList(val match: Match, val urls: List<String>) {
     }
 
     fun hosts(vararg hosts: String): UrlList {
-      return UrlList(Match.HOSTS, hosts.flatMap {
+      return UrlList(Match.HOSTS, hosts.asIterable().flatMapMe {
         listOf("https://$it", "https://$it/")
       })
     }
 
     fun hosts(hosts: Iterable<String>): UrlList {
-      return UrlList(Match.HOSTS, hosts.flatMap {
+      return UrlList(Match.HOSTS, hosts.flatMapMe {
         listOf("https://$it", "https://$it/")
       })
     }

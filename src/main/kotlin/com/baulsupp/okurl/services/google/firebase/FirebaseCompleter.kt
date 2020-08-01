@@ -5,6 +5,7 @@ import com.baulsupp.okurl.completion.DirCompletionVariableCache
 import com.baulsupp.okurl.completion.HostUrlCompleter
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.queryOptionalMap
 import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.util.FileUtil
@@ -50,7 +51,7 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
       val encodedPath = url.newBuilder().encodedPath("$parentPath.json")
       val siblings = keyList(encodedPath, tokenSet)
 
-      siblings.toList().flatMap { listOf("$parentPath$it", "$parentPath$it.json") }
+      siblings.toList().flatMapMe { listOf("$parentPath$it", "$parentPath$it.json") }
     }
   }
 
@@ -70,7 +71,7 @@ class FirebaseCompleter(private val client: OkHttpClient) : ApiCompleter {
 
       val prefixPath = if (path.endsWith("/")) path else "$path/"
 
-      children.toList().flatMap { listOf("$prefixPath$it/", "$prefixPath$it.json") }
+      children.toList().flatMapMe { listOf("$prefixPath$it/", "$prefixPath$it.json") }
     }
   }
 

@@ -3,6 +3,7 @@ package com.baulsupp.okurl.services.travisci
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.kotlin.Rest
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.queryPages
 import com.baulsupp.okurl.services.travisci.model.Build
 import com.baulsupp.okurl.services.travisci.model.BuildList
@@ -20,5 +21,5 @@ suspend fun queryAllBuilds(
   return Main.client.queryPages<BuildList>(url, {
     Rest(pagination.limit.rangeTo(pagination.count).step(pagination.limit).map { "$url&offset=$it" })
   }, DefaultToken, pageLimit = (limit / 100) + 1)
-    .flatMap { it.builds }.filter { branch == null || it.branch?.name == branch }.take(limit)
+    .flatMapMe { it.builds }.filter { branch == null || it.branch?.name == branch }.take(limit)
 }

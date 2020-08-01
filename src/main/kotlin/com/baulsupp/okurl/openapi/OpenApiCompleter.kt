@@ -3,6 +3,7 @@ package com.baulsupp.okurl.openapi
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.kotlin.request
 import io.swagger.parser.OpenAPIParser
@@ -37,7 +38,7 @@ class OpenApiCompleter(
     tokenSet: Token
   ): UrlList {
     val openAPI = openAPI()
-    val urls = openAPI?.servers?.flatMap { server ->
+    val urls = openAPI?.servers?.flatMapMe { server ->
       openAPI.paths.map { url ->
         server.url + "" + url.key
       }

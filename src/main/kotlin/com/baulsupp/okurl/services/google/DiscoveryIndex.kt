@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.google
 
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.services.google.model.DiscoveryIndexMap
 
 /*
@@ -18,7 +19,7 @@ class DiscoveryIndex(private val map: Map<String, List<String>>) {
    */
   fun getDiscoveryUrlForPrefix(prefix: String): List<String> = map.entries
     .filter { s1 -> match(prefix, s1.key) }
-    .flatMap { s -> s.value }
+    .flatMapMe { s -> s.value }
 
   internal fun match(prefix: String, indexKey: String): Boolean =
     indexKey.startsWith(prefix) || prefix.startsWith(indexKey)

@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.google
 
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.services.google.model.DiscoveryDoc
 import com.baulsupp.okurl.services.google.model.Resource
 
@@ -19,7 +20,7 @@ class DiscoveryDocument(map: DiscoveryDoc) {
       return listOf()
     }
 
-    return resources.values.flatMap { r ->
+    return resources.values.flatMapMe { r ->
       r.methods.orEmpty().values.map { m ->
         DiscoveryEndpoint(baseUrl, m)
       } + expandEndpoints(r.resources)

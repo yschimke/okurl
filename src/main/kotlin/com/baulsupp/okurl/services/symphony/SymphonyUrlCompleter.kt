@@ -5,6 +5,7 @@ import com.baulsupp.okurl.completion.CompletionMappings
 import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.completion.UrlList
 import com.baulsupp.okurl.credentials.Token
+import com.baulsupp.okurl.kotlin.flatMapMe
 import com.baulsupp.okurl.kotlin.postJsonBody
 import com.baulsupp.okurl.kotlin.queryList
 import com.baulsupp.okurl.kotlin.request
@@ -20,7 +21,7 @@ class SymphonyUrlCompleter(
   val client: OkHttpClient
 ) : ApiCompleter {
   override suspend fun prefixUrls(): UrlList {
-    val urls = podsToHosts(pods).flatMap { listOf("https://$it", "https://$it/") }
+    val urls = podsToHosts(pods).flatMapMe { listOf("https://$it", "https://$it/") }
     return UrlList(UrlList.Match.HOSTS, urls)
   }
 
@@ -45,7 +46,7 @@ class SymphonyUrlCompleter(
       client.queryList<Stream>(request {
         url("https://$pod.symphony.com/pod/v1/streams/list")
         postJsonBody(StreamListRequest("IM", "MIM", "ROOM", "POST"))
-      }).flatMap { it.streamAttributes?.members?.map(Long::toString).orEmpty() }
+      }).flatMapMe { it.streamAttributes?.members?.map(Long::toString).orEmpty() }
     }
     mappings.withVariable("sigid") {
       client.queryList<Signal>(request {
@@ -63,6 +64,6 @@ class SymphonyUrlCompleter(
 
   companion object {
     fun podsToHosts(pods: Iterable<String>): Set<String> =
-      pods.flatMap { setOf("$it.symphony.com", "$it-api.symphony.com") }.toSet()
+      pods.flatMapMe { setOf("$it.symphony.com", "$it-api.symphony.com") }.toSet()
   }
 }
