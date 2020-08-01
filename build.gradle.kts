@@ -50,8 +50,8 @@ java {
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.4"
-    kotlinOptions.languageVersion = "1.4"
+    kotlinOptions.apiVersion = "1.3"
+    kotlinOptions.languageVersion = "1.3"
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
@@ -110,11 +110,11 @@ dependencies {
   implementation("javax.activation:activation:1.1.1")
   implementation("org.apache.commons:commons-lang3:3.9")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0-rc")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0-rc")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-1.4.0-rc")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.8-1.4.0-rc")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8-1.4.0-rc")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.8")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("org.zeroturnaround:zt-exec:1.11")
@@ -123,9 +123,9 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.0-rc")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.0-rc")
-//  testImplementation("com.squareup.okhttp3:mockwebserver:4.7.0")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.72")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.3.72")
+//  testImplementation("com.squareup.okhttp3:mockwebserver:4.8.0")
   implementation(fileTree(mapOf("dir" to "testLibs", "include" to listOf("*.jar"))))
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
 
