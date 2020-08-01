@@ -143,7 +143,6 @@ dependencies {
 
 tasks.named("assemble") {
   dependsOn(":installShadowDist")
-  dependsOn(":nativeImage")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
