@@ -1,9 +1,9 @@
 package com.baulsupp.okurl.location
 
+import com.baulsupp.oksocial.output.ConsoleHandler
 import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.exec
 import com.baulsupp.oksocial.output.isOSX
-import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.stdErrLogging
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import okhttp3.Response
@@ -23,15 +23,9 @@ class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSour
   override suspend fun read(): Location? {
     return if (isOSX) {
       try {
-        val process = exec(listOf(LOCATION_APP)) {
-          timeout(5, TimeUnit.SECONDS)
-          readOutput(true)
-          redirectError(stdErrLogging)
-        }
+        val line = exec(LOCATION_APP, outputMode = ConsoleHandler.Companion.OutputMode.Return)
 
-        val line = process.outputString
-
-        if (!process.success) {
+        if (line == null) {
           logger.log(Level.INFO, "failed to get location $line")
           return null
         }

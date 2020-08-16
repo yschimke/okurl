@@ -71,7 +71,7 @@ tasks {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:5.1") {
+  implementation("com.github.yschimke:oksocial-output:5.6") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
@@ -89,9 +89,8 @@ dependencies {
 //  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.8.0")
 //  implementation("com.squareup.okhttp3:okhttp-sse:4.8.0")
 //  implementation("com.squareup.okhttp3:okhttp-tls:4.8.0")
-  implementation("com.squareup.okio:okio:2.4.3")
-  implementation("commons-io:commons-io:2.6")
-  implementation("info.picocli:picocli:4.4.0")
+  implementation("com.squareup.okio:okio:2.7.0")
+  implementation("info.picocli:picocli:4.5.0")
   implementation("org.fusesource.jansi:jansi:1.18")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
   implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
@@ -107,8 +106,6 @@ dependencies {
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2") {
     exclude(group = "com.squareup.okhttp3")
   }
-  implementation("javax.activation:activation:1.1.1")
-  implementation("org.apache.commons:commons-lang3:3.9")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
@@ -117,7 +114,6 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
-  implementation("org.zeroturnaround:zt-exec:1.11")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
   implementation("com.formdev:svgSalamander:1.1.2.1")
   implementation("org.jfree:jfreesvg:3.4")

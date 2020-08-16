@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.credentials
 
-import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.stdErrLogging
+import com.baulsupp.oksocial.output.ConsoleHandler
+import com.baulsupp.oksocial.output.exec
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
 import java.util.logging.Level
@@ -55,10 +55,7 @@ class OSXCredentialsStore : CredentialsStore {
   }
 
   override suspend fun names(): Set<String> {
-    val output = exec(listOf("security", "dump-keychain")) {
-      redirectError(stdErrLogging)
-      readOutput(true)
-    }.outputString
+    val output = exec("security", "dump-keychain", outputMode = ConsoleHandler.Companion.OutputMode.Return)!!
 
     val names = output.lines().filter {
       it.matches(".*\"acct\".*\"oauth\\..*\".*".toRegex())

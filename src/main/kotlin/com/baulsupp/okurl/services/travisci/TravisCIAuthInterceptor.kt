@@ -1,9 +1,6 @@
 package com.baulsupp.okurl.services.travisci
 
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.output.process.exec
-import com.baulsupp.oksocial.output.stdErrLogging
+import com.baulsupp.oksocial.output.*
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -73,19 +70,13 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return TravisToken(token)
   }
 
-  private suspend fun isTravisInstalled(): Boolean = exec("which", "travis").success
+  private suspend fun isTravisInstalled(): Boolean = execResult("which", "travis") == 0
 
   private suspend fun travisToken(pro: Boolean): String {
-    val result = exec(listOf("travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org")) {
-      readOutput(true)
-      redirectError(stdErrLogging)
-    }
+    val result = exec("travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org", outputMode = ConsoleHandler.Companion.OutputMode.Return)
+            ?: throw UsageException("Use 'travis login --org' or 'travis login --pro'")
 
-    if (!result.success) {
-      throw UsageException("Use 'travis login --org' or 'travis login --pro'")
-    }
-
-    return result.outputString.trim()
+    return result.trim()
   }
 
   override suspend fun validate(
