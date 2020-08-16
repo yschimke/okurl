@@ -1,4 +1,3 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -6,17 +5,14 @@ plugins {
   kotlin("kapt") version "1.3.72"
   `maven-publish`
   application
-  id("com.github.ben-manes.versions") version "0.28.0"
   id("net.nemerosa.versioning") version "2.12.1"
   id("com.diffplug.gradle.spotless") version "3.28.1"
-  id("com.github.johnrengelman.shadow") version "6.0.0"
+  id("com.palantir.graal") version "0.7.1"
 }
 
 application {
   mainClassName = "com.baulsupp.okurl.MainKt"
 }
-
-val generateConfig by configurations.creating
 
 repositories {
   mavenLocal()
@@ -68,6 +64,24 @@ tasks {
   withType(Tar::class) {
     compression = Compression.NONE
   }
+}
+
+graal {
+  mainClass("com.baulsupp.okurl.MainKt")
+  outputName("okurl")
+  graalVersion("20.1.0")
+  javaVersion("11")
+
+  option("--enable-https")
+  option("--no-fallback")
+  option("--allow-incomplete-classpath")
+
+//  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+//    // May be possible without, but autodetection is problematic on Windows 10
+//    // see https://github.com/palantir/gradle-graal
+//    // see https://www.graalvm.org/docs/reference-manual/native-image/#prerequisites
+//    windowsVsVarsPath('C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat')
+//  }
 }
 
 dependencies {
@@ -126,8 +140,7 @@ dependencies {
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
 
   compileOnly("org.graalvm.nativeimage:svm:20.1.0")
-  kapt("info.picocli:picocli-codegen:4.4.0")
-  generateConfig("info.picocli:picocli-codegen:4.4.0")
+  kapt("info.picocli:picocli-codegen:4.5.0")
 
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3")
   implementation("io.github.classgraph:classgraph:4.8.87")
@@ -135,10 +148,6 @@ dependencies {
   implementation("io.swagger.parser.v3:swagger-parser:2.0.21")
 
   testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
-}
-
-tasks.named("assemble") {
-  dependsOn(":installShadowDist")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -152,25 +161,6 @@ val javadocJar by tasks.creating(Jar::class) {
 }
 
 val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
-val shadowJar = tasks["shadowJar"] as com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-val nativeImage = tasks.register<Exec>("nativeImage") {
-  mkdir("$buildDir/graal")
-  commandLine(
-    "/Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.1.0/Contents/Home/bin/native-image",
-    "-jar",
-    shadowJar.archiveFile.get(),
-    "--no-fallback",
-    "-H:ResourceConfigurationFiles=resources.config",
-    "-H:ReflectionConfigurationFiles=reflect.config,./build/tmp/kapt3/classes/main/META-INF/native-image/picocli-generated/reflect-config.json",
-    "--enable-https",
-    "build/graal/okurl"
-  )
-
-  dependsOn(shadowJar)
-
-  outputs.file("$buildDir/graal/okurl")
-}
 
 publishing {
   repositories {
@@ -186,17 +176,6 @@ publishing {
   }
 }
 
-val dependencyUpdates = tasks["dependencyUpdates"] as DependencyUpdatesTask
-dependencyUpdates.resolutionStrategy {
-  componentSelection {
-    all {
-      if (candidate.group == "io.netty" && candidate.version.startsWith("5.")) {
-        reject("Alpha")
-      }
-    }
-  }
-}
-
 spotless {
   kotlinGradle {
     ktlint("0.31.0").userData(mutableMapOf("indent_size" to "2", "continuation_indent_size" to "2"))
@@ -206,6 +185,8 @@ spotless {
 }
 
 if (properties.containsKey("graal")) {
+  val nativeImage = tasks["nativeImage"]
+
   distributions {
     val graal = create("graal") {
       contents {
