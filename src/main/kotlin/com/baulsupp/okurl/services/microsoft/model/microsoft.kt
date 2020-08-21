@@ -28,7 +28,7 @@ data class Token(
 )
 
 @JsonClass(generateAdapter = true)
-data class LastModifiedBy(val application: Application, val user: User)
+data class LastModifiedBy(val application: Application?, val user: User)
 
 @JsonClass(generateAdapter = true)
 data class ParentReference(val path: String, val driveId: String, val driveType: String, val id: String)
