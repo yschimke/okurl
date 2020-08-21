@@ -58,7 +58,7 @@ data class DriveItem(
   val createdDateTime: String,
   val parentReference: ParentReference?,
   val folder: Folder?,
-  val size: Int,
+  val size: Long,
   val createdBy: CreatedBy,
   val webUrl: String,
   val name: String,
