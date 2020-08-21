@@ -7,7 +7,7 @@ plugins {
   application
   id("net.nemerosa.versioning") version "2.12.1"
   id("com.diffplug.gradle.spotless") version "3.28.1"
-  id("com.palantir.graal") version "0.7.1"
+  id("com.palantir.graal") version "0.7.1-13-gd190241"
 }
 
 application {
@@ -69,7 +69,7 @@ tasks {
 graal {
   mainClass("com.baulsupp.okurl.MainKt")
   outputName("okurl")
-  graalVersion("20.1.0")
+  graalVersion("20.2.0")
   javaVersion("11")
 
   option("--enable-https")
