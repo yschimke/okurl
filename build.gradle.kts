@@ -65,7 +65,7 @@ tasks {
   }
 }
 
-if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graal")) {
+if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
   graal {
     mainClass("com.baulsupp.okurl.MainKt")
     outputName("okurl")
@@ -183,7 +183,7 @@ publishing {
   }
 }
 
-if (properties.containsKey("graal")) {
+if (properties.containsKey("graalbuild")) {
   val nativeImage = tasks["nativeImage"]
 
   distributions {
