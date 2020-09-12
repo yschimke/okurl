@@ -3,6 +3,7 @@ package com.baulsupp.okurl.preferences
 import com.baulsupp.okurl.network.DnsMode
 import com.baulsupp.okurl.network.IPvMode
 import com.baulsupp.okurl.tracing.TracingMode
+import com.baulsupp.okurl.util.FileUtil
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import okio.buffer
@@ -39,7 +40,7 @@ data class Preferences(
     private val logger = Logger.getLogger(Preferences::class.java.name)
 
     val local: Preferences by lazy {
-      val prefFile = File(System.getenv("HOME"), ".okurl/prefs.json")
+      val prefFile = File(FileUtil.okurlSettingsDir, "prefs.json")
 
       if (prefFile.exists()) {
         try {

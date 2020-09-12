@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.credentials
 
 import com.baulsupp.okurl.kotlin.listAdapter
+import com.baulsupp.okurl.util.FileUtil
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ data class StoredToken(
 )
 
 object SimpleCredentialsStore : CredentialsStore {
-  val file = File(System.getenv("HOME"), ".okurl/tokens.json")
+  val file = File(FileUtil.okurlSettingsDir, "tokens.json")
   val mutex = Mutex()
 
   val moshi by lazy {

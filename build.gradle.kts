@@ -1,13 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  kotlin("jvm") version "1.3.72"
-  kotlin("kapt") version "1.3.72"
+  kotlin("jvm") version "1.4.0"
+  kotlin("kapt") version "1.4.0"
   `maven-publish`
   application
-  id("net.nemerosa.versioning") version "2.12.1"
-  id("com.diffplug.gradle.spotless") version "3.28.1"
-  id("com.palantir.graal") version "0.7.1"
+  id("net.nemerosa.versioning") version "2.13.1"
+  id("com.diffplug.spotless") version "5.1.0"
+  id("com.palantir.graal") version "0.7.1-13-gd190241"
 }
 
 application {
@@ -46,8 +47,6 @@ java {
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.3"
-    kotlinOptions.languageVersion = "1.3"
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
@@ -66,15 +65,16 @@ tasks {
   }
 }
 
-graal {
-  mainClass("com.baulsupp.okurl.MainKt")
-  outputName("okurl")
-  graalVersion("20.1.0")
-  javaVersion("11")
+if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
+  graal {
+    mainClass("com.baulsupp.okurl.MainKt")
+    outputName("okurl")
+    graalVersion("20.2.0")
+    javaVersion("11")
 
-  option("--enable-https")
-  option("--no-fallback")
-  option("--allow-incomplete-classpath")
+    option("--enable-https")
+    option("--no-fallback")
+    option("--allow-incomplete-classpath")
 
 //  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
 //    // May be possible without, but autodetection is problematic on Windows 10
@@ -82,6 +82,7 @@ graal {
 //    // see https://www.graalvm.org/docs/reference-manual/native-image/#prerequisites
 //    windowsVsVarsPath('C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat')
 //  }
+  }
 }
 
 dependencies {
@@ -119,12 +120,12 @@ dependencies {
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2") {
     exclude(group = "com.squareup.okhttp3")
   }
-  implementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.8")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8")
+  implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.9")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.9")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
@@ -132,12 +133,19 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.72")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.3.72")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.0")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.0")
+//  testImplementation("com.squareup.okhttp3:mockwebserver:4.8.0")
+  implementation(fileTree(mapOf("dir" to "testLibs", "include" to listOf("*.jar"))))
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
 
-  compileOnly("org.graalvm.nativeimage:svm:20.1.0")
+  compileOnly("org.graalvm.nativeimage:svm:20.2.0") {
+    // https://youtrack.jetbrains.com/issue/KT-29513
+    exclude(group= "org.graalvm.nativeimage")
+    exclude(group= "org.graalvm.truffle")
+//    exclude(group= "org.graalvm.sdk")
+    exclude(group= "org.graalvm.compiler")
+  }
   kapt("info.picocli:picocli-codegen:4.5.0")
 
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3")
@@ -174,15 +182,7 @@ publishing {
   }
 }
 
-spotless {
-  kotlinGradle {
-    ktlint("0.31.0").userData(mutableMapOf("indent_size" to "2", "continuation_indent_size" to "2"))
-    trimTrailingWhitespace()
-    endWithNewline()
-  }
-}
-
-if (properties.containsKey("graal")) {
+if (properties.containsKey("graalbuild")) {
   val nativeImage = tasks["nativeImage"]
 
   distributions {

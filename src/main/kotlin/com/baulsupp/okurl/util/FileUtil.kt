@@ -4,7 +4,9 @@ import com.baulsupp.oksocial.output.UsageException
 import java.io.File
 
 object FileUtil {
-  val okurlSettingsDir = File(System.getenv("HOME"), ".okurl")
+  val okurlSettingsDir = File(System.getProperty("user.home"), ".okurl").also {
+    it.mkdirs()
+  }
 
   fun expectedFile(name: String): File {
     val file = File(normalize(name))

@@ -28,13 +28,13 @@ data class Token(
 )
 
 @JsonClass(generateAdapter = true)
-data class LastModifiedBy(val application: Application, val user: User)
+data class LastModifiedBy(val application: Application?, val user: User)
 
 @JsonClass(generateAdapter = true)
 data class ParentReference(val path: String, val driveId: String, val driveType: String, val id: String)
 
 @JsonClass(generateAdapter = true)
-data class CreatedBy(val application: Application, val user: User)
+data class CreatedBy(val application: Application?, val user: User)
 
 @JsonClass(generateAdapter = true)
 data class FileSystemInfo(val lastModifiedDateTime: String, val createdDateTime: String)
@@ -58,7 +58,7 @@ data class DriveItem(
   val createdDateTime: String,
   val parentReference: ParentReference?,
   val folder: Folder?,
-  val size: Int,
+  val size: Long,
   val createdBy: CreatedBy,
   val webUrl: String,
   val name: String,
