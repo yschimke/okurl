@@ -135,9 +135,8 @@ dependencies {
 
   testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.0")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.0")
-//  testImplementation("com.squareup.okhttp3:mockwebserver:4.8.0")
-  implementation(fileTree(mapOf("dir" to "testLibs", "include" to listOf("*.jar"))))
-  testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.4.0")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
+  testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 
   compileOnly("org.graalvm.nativeimage:svm:20.2.0") {
     // https://youtrack.jetbrains.com/issue/KT-29513
