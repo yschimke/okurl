@@ -394,9 +394,9 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     Main.client = client
     Main.moshi = Moshi.Builder()
-      .add(Location::class.java, MapboxLatLongAdapter().nullSafe())
+      .add(MapboxLatLongAdapter())
       .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-      .add(Instant::class.java, Rfc3339InstantJsonAdapter.nullSafe())
+      .add(Rfc3339InstantJsonAdapter())
       .build()!!
   }
 

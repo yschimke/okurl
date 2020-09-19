@@ -22,7 +22,7 @@ class Authorisation(val main: ToolSession) {
     if (token != null) {
       storeCredentials(auth, token, tokenSet)
     } else {
-      authRequest(auth, service, tokenSet, authArguments)
+      authRequest(auth, tokenSet, authArguments)
     }
   }
 
@@ -31,7 +31,11 @@ class Authorisation(val main: ToolSession) {
     main.credentialsStore.set(auth.serviceDefinition, tokenSet, credentials)
   }
 
-  suspend fun <T> authRequest(auth: AuthInterceptor<T>, service: String, tokenSet: String, arguments: List<String> = listOf()) {
+  suspend fun <T> authRequest(
+    auth: AuthInterceptor<T>,
+    tokenSet: String,
+    arguments: List<String> = listOf()
+  ) {
     auth.serviceDefinition.accountsLink()?.let { main.outputHandler.info("Accounts: $it") }
 
     val credentials = auth.authorize(main.client, main.outputHandler, arguments)

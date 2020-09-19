@@ -17,14 +17,14 @@ class ServiceApiDocPresenter(private val services: AuthenticatingInterceptor) : 
     client: OkHttpClient,
     tokenSet: Token
   ) {
-    val client = client.newBuilder()
+    val cachedClient = client.newBuilder()
       .cache(Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256 * 1024 * 1024))
       .build()
 
-    val presenter = services.getByUrl(url)?.apiDocPresenter(url, client)
+    val presenter = services.getByUrl(url)?.apiDocPresenter(url, cachedClient)
 
     if (presenter != null) {
-      presenter.explainApi(url, outputHandler, client, tokenSet)
+      presenter.explainApi(url, outputHandler, cachedClient, tokenSet)
     } else {
       outputHandler.info("No documentation for: $url")
     }

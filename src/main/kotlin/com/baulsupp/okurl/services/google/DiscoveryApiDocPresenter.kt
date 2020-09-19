@@ -51,7 +51,7 @@ class DiscoveryApiDocPresenter(val registry: DiscoveryRegistry) : ApiDocPresente
       val filtered = docs.filter { service ->
         url.startsWith(service.baseUrl)
       }
-      val best = filtered.maxBy { dd -> dd.baseUrl.length }
+      val best = filtered.maxByOrNull { dd -> dd.baseUrl.length }
 
       if (best != null) {
         best

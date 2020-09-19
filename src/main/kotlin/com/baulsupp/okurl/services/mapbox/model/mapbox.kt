@@ -1,11 +1,13 @@
 package com.baulsupp.okurl.services.mapbox.model
 
 import com.baulsupp.okurl.location.Location
+import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.ToJson
 
 @JsonClass(generateAdapter = true)
 data class MapboxProperties(
@@ -45,19 +47,7 @@ data class MapboxRoute(val geometry: String)
 @JsonClass(generateAdapter = true)
 data class MapboxDrivingResults(val routes: List<MapboxRoute>)
 
-class MapboxLatLongAdapter: JsonAdapter<Location>() {
-  override fun toJson(
-    writer: JsonWriter,
-    value: Location?
-  ) {
-      writer.beginArray()
-      writer.value(value!!.longitude)
-      writer.value(value.latitude)
-      writer.endArray()
-  }
-
-  override fun fromJson(reader: JsonReader): Location? {
-    val v = reader.readJsonValue() as DoubleArray
-    return Location(v[0], v[1])
-  }
+class MapboxLatLongAdapter {
+  @ToJson fun toJson(value: Location): DoubleArray = doubleArrayOf(value.longitude, value.latitude)
+  @FromJson fun fromJson(value: DoubleArray): Location = Location(value[0], value[1])
 }

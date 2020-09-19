@@ -2,13 +2,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  kotlin("jvm") version "1.4.0"
-  kotlin("kapt") version "1.4.0"
+  kotlin("jvm") version "1.4.10"
+  kotlin("kapt") version "1.4.10"
   `maven-publish`
   application
   id("net.nemerosa.versioning") version "2.13.1"
   id("com.diffplug.spotless") version "5.1.0"
-  id("com.palantir.graal") version "0.7.1-13-gd190241"
+  id("com.palantir.graal") version "0.7.1-20-g113a84d"
 }
 
 application {
@@ -94,9 +94,9 @@ dependencies {
     exclude(group = "com.squareup.okhttp3")
   }
   implementation("com.jakewharton.byteunits:byteunits:0.9.1")
-  implementation("com.squareup.moshi:moshi:1.9.3")
-  implementation("com.squareup.moshi:moshi-adapters:1.9.3")
-  implementation("com.squareup.moshi:moshi-kotlin:1.9.3")
+  implementation("com.squareup.moshi:moshi:1.10.0")
+  implementation("com.squareup.moshi:moshi-adapters:1.10.0")
+  implementation("com.squareup.moshi:moshi-kotlin:1.10.0")
   implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
   implementation("com.squareup.okhttp3:okhttp:4.9.0")
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.0")
@@ -121,8 +121,8 @@ dependencies {
     exclude(group = "com.squareup.okhttp3")
   }
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.0")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.9")
@@ -133,8 +133,8 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.0")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.0")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.10")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.10")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 
@@ -147,7 +147,7 @@ dependencies {
   }
   kapt("info.picocli:picocli-codegen:4.5.0")
 
-  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3")
+  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.10.0")
   implementation("io.github.classgraph:classgraph:4.8.87")
 
   implementation("io.swagger.parser.v3:swagger-parser:2.0.21")
