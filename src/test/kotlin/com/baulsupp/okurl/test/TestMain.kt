@@ -5,5 +5,5 @@ private fun runMain(s: String) {
 }
 
 fun main() {
-  runMain("https://api.twitter.com/ --urlCompletion --debug")
+  runMain("https://www.strava.com/api/v3/athlete/activities?page=1&per_page=1")
 }
