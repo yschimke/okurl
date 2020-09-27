@@ -87,7 +87,9 @@ class Secrets(
           System.console().readString(prompt)
         }
       } else {
-        System.err.println("using default value for $key")
+        System.err.print(prompt)
+        System.err.flush()
+        value = System.`in`.bufferedReader().readLine()
       }
 
       if (value.isEmpty()) {

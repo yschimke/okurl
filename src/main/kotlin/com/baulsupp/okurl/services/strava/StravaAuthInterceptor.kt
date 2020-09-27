@@ -54,11 +54,7 @@ class StravaAuthInterceptor : Oauth2AuthInterceptor() {
     )
 
   override fun canRenew(result: Response): Boolean {
-    // Not working
-    // {"message":"Authorization Error","errors":[{"resource":"AccessToken","field":"activity:read_permission","code":"missing"}]}
-    // {"message":"Authorization Error","errors":[{"resource":"Athlete","field":"access_token","code":"invalid"}]}
-//    return result.code() == 401 && result.body()?.source()?.peek()?.readUtf8()?.contains("\"field\":\"access_token\",\"code\":\"invalid\"") ?: false
-    return false
+    return true
   }
 
   override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {

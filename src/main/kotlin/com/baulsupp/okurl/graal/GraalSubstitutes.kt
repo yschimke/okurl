@@ -1,9 +1,5 @@
 package com.baulsupp.okurl.graal
 
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.output.execResult
-import com.baulsupp.oksocial.output.isOSX
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
@@ -21,22 +17,6 @@ import okhttp3.internal.platform.Jdk9Platform
 import okhttp3.internal.platform.OpenJSSEPlatform
 import okhttp3.internal.platform.Platform
 import java.util.Date
-
-@TargetClass(ConsoleHandler::class)
-class TargetConsoleHandler {
-  @Substitute
-  suspend fun openLink(url: String) {
-    if (isOSX) {
-      val result = execResult("open", url, outputMode = ConsoleHandler.Companion.OutputMode.Hide)
-
-      if (result != 0) {
-        throw UsageException("open url failed: $url")
-      }
-    } else {
-      System.err.println(url)
-    }
-  }
-}
 
 @TargetClass(CredentialFactory::class)
 class TargetCredentialFactory {
