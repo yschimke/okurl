@@ -49,7 +49,7 @@ tasks {
     kotlinOptions.jvmTarget = "1.8"
 
     kotlinOptions.allWarningsAsErrors = false
-    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
+    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable", "-Xopt-in=kotlin.ExperimentalStdlibApi")
   }
 }
 
@@ -97,6 +97,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.10.0")
   implementation("com.squareup.moshi:moshi-adapters:1.10.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.10.0")
+  implementation("dev.zacsweers.moshix:moshi-ktx:0.3.0")
   implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
   implementation("com.squareup.okhttp3:okhttp:4.9.0")
   implementation("com.squareup.okhttp3:okhttp-brotli:4.9.0")

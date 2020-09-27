@@ -8,6 +8,7 @@ import com.baulsupp.okurl.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import dev.zacsweers.moshix.adapter
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -36,19 +37,10 @@ inline fun <T, R> Iterable<T>.flatMapMe(function: (T) -> Iterable<R>): List<R> {
 }
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified V> Moshi.mapAdapter() =
-  this.adapter<Any>(
-    Types.newParameterizedType(
-      Map::class.java, String::class.java,
-      V::class.java
-    )
-  ) as JsonAdapter<Map<String, V>>
+inline fun <reified V> Moshi.mapAdapter() = adapter<Map<String, V>>()
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified V> Moshi.listAdapter() =
-  this.adapter<Any>(
-    Types.newParameterizedType(List::class.java, V::class.java)
-  ) as JsonAdapter<List<V>>
+inline fun <reified V> Moshi.listAdapter() = adapter<List<V>>()
 
 suspend inline fun <reified T> OkHttpClient.query(url: String, tokenSet: Token = DefaultToken): T {
   return this.query(request(url, tokenSet))
@@ -57,7 +49,7 @@ suspend inline fun <reified T> OkHttpClient.query(url: String, tokenSet: Token =
 suspend inline fun <reified T> OkHttpClient.query(request: Request): T {
   val stringResult = this.queryForString(request)
 
-  return Main.moshi.adapter(T::class.java).fromJson(stringResult)!!
+  return Main.moshi.adapter<T>().fromJson(stringResult)!!
 }
 
 suspend inline fun <reified T> OkHttpClient.queryPages(
