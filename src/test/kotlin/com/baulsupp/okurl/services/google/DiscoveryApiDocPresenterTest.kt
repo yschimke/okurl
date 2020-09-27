@@ -11,6 +11,7 @@ import org.junit.Test
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
+@Ignore
 class DiscoveryApiDocPresenterTest {
   private val outputHandler = TestOutputHandler<Response>()
   private val client = OkHttpClient()
@@ -68,14 +69,12 @@ class DiscoveryApiDocPresenterTest {
   }
 
   @Test
-  @Ignore
   fun testExplainsExpandedWWWBeforeSiteUrls() {
     assertMatch("https://www.googleapis.com/tasks/v1/",
       "https://developers.google.com/google-apps/tasks/firstapp", "docs")
   }
 
   @Test
-  @Ignore
   fun testExplainsExpandedWWWAfterSiteUrls() {
     assertMatch("https://www.googleapis.com/tasks/v1/users/@me/lists",
       "https://developers.google.com/google-apps/tasks/firstapp", "docs")
