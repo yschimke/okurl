@@ -86,7 +86,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:5.6") {
+  implementation("com.github.yschimke:oksocial-output:5.8") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
