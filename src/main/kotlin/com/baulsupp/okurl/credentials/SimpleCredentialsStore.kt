@@ -73,12 +73,16 @@ object SimpleCredentialsStore : CredentialsStore {
       cachedCredentials!!.removeIf { it.service == serviceDefinition.shortName() && it.tokenSet == tokenSet }
       cachedCredentials!!.add(StoredToken(serviceDefinition.shortName(), tokenSet, token))
 
-      file.sink()
-        .buffer()
-        .use {
-          moshi.listAdapter<StoredToken>().toJson(it, cachedCredentials)
-        }
+      writeTokens()
     }
+  }
+
+  fun writeTokens() {
+    file.sink()
+      .buffer()
+      .use {
+        moshi.listAdapter<StoredToken>().indent("  ").toJson(it, cachedCredentials)
+      }
   }
 
   override suspend fun <T> remove(
@@ -90,11 +94,7 @@ object SimpleCredentialsStore : CredentialsStore {
 
       cachedCredentials!!.removeIf { it.service == serviceDefinition.shortName() && it.tokenSet == tokenSet }
 
-      file.sink()
-        .buffer()
-        .use {
-          moshi.listAdapter<StoredToken>().toJson(it, cachedCredentials)
-        }
+      writeTokens()
     }
   }
 }
