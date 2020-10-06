@@ -8,9 +8,11 @@ import com.baulsupp.okurl.util.ClientException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -20,6 +22,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import okhttp3.ResponseBody
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.Ansi.Color.GREEN
 import org.fusesource.jansi.Ansi.Color.MAGENTA
@@ -156,10 +159,13 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 // TODO
 fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
-suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body!!.string()
+suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body!!.readString()
 
 suspend fun OkHttpClient.queryForString(url: String, tokenSet: Token = DefaultToken): String =
   this.queryForString(request(url, tokenSet))
+
+
+suspend fun ResponseBody.readString() = withContext(Dispatchers.IO) { string() }
 
 suspend fun OkHttpClient.execute(request: Request): Response {
   val call = this.newCall(request)
@@ -167,12 +173,12 @@ suspend fun OkHttpClient.execute(request: Request): Response {
   val response = call.await()
 
   if (!response.isSuccessful) {
-    val responseString = response.body!!.string()
+    val responseString = response.body?.readString()
 
-    val msg: String = if (responseString.isNotEmpty()) {
-      responseString
-    } else {
+    val msg: String = if (responseString.isNullOrEmpty()) {
       response.statusMessage()
+    } else {
+      responseString
     }
 
     throw ClientException(msg, response.code)
