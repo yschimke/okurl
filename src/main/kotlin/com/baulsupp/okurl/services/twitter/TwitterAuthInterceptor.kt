@@ -1,7 +1,6 @@
 package com.baulsupp.okurl.services.twitter
 
 import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
@@ -37,19 +36,6 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
   ): TwitterCredentials {
-    if (authArguments == listOf("--pin")) {
-      val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
-      val consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true)
-
-      return PinAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
-    }
-
-    if (authArguments.isNotEmpty()) {
-      throw UsageException(
-        "unexpected arguments to --authorize twitter: " + authArguments.joinToString(" ")
-      )
-    }
-
     val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
     val consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true)
 
