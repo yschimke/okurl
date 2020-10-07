@@ -98,12 +98,12 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.11.0")
   implementation("com.squareup.moshi:moshi-adapters:1.11.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.11.0")
-  implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
-  implementation("com.squareup.okhttp3:okhttp:4.9.0")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.0")
-  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.9.0")
-  implementation("com.squareup.okhttp3:okhttp-sse:4.9.0")
-  implementation("com.squareup.okhttp3:okhttp-tls:4.9.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:4.10.0-RC1")
+  implementation("com.squareup.okhttp3:okhttp:4.10.0-RC1")
+  implementation("com.squareup.okhttp3:okhttp-brotli:4.10.0-RC1")
+  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0-RC1")
+  implementation("com.squareup.okhttp3:okhttp-sse:4.10.0-RC1")
+  implementation("com.squareup.okhttp3:okhttp-tls:4.10.0-RC1")
   implementation("com.squareup.okio:okio:2.9.0")
   implementation("info.picocli:picocli:4.5.0")
   implementation("org.fusesource.jansi:jansi:1.18")
@@ -136,7 +136,7 @@ dependencies {
 
   testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.10")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.10")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0-RC1")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 
   compileOnly("org.graalvm.nativeimage:svm:20.2.0") {
