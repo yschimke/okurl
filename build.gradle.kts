@@ -87,7 +87,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:5.8") {
+  implementation("com.github.yschimke:oksocial-output:5.10") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
@@ -105,7 +105,7 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp-sse:4.10.0-RC1")
   implementation("com.squareup.okhttp3:okhttp-tls:4.10.0-RC1")
   implementation("com.squareup.okio:okio:2.9.0")
-  implementation("info.picocli:picocli:4.5.0")
+  implementation("info.picocli:picocli:4.5.2")
   implementation("org.fusesource.jansi:jansi:1.18")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
   implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
@@ -146,7 +146,7 @@ dependencies {
 //    exclude(group= "org.graalvm.sdk")
     exclude(group= "org.graalvm.compiler")
   }
-  kapt("info.picocli:picocli-codegen:4.5.1")
+  kapt("info.picocli:picocli-codegen:4.5.2")
 
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
   implementation("io.github.classgraph:classgraph:4.8.87")
