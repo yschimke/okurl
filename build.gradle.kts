@@ -2,13 +2,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  kotlin("jvm") version "1.4.10"
-  kotlin("kapt") version "1.4.10"
+  kotlin("jvm") version "1.4.20"
+  kotlin("kapt") version "1.4.20"
   `maven-publish`
   application
   id("net.nemerosa.versioning") version "2.13.1"
   id("com.diffplug.spotless") version "5.1.0"
-  id("com.palantir.graal") version "0.7.1"
+  id("com.palantir.graal") version "0.7.2"
   id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
@@ -70,7 +70,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
   graal {
     mainClass("com.baulsupp.okurl.MainKt")
     outputName("okurl")
-    graalVersion("20.2.0")
+    graalVersion("20.3.0")
     javaVersion("11")
 
     option("--enable-https")
@@ -122,11 +122,11 @@ dependencies {
     exclude(group = "com.squareup.okhttp3")
   }
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.3.9")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.9")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.20")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.20")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.4.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
@@ -134,12 +134,12 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.10")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.10")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.20")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.20")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0-RC1")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 
-  compileOnly("org.graalvm.nativeimage:svm:20.2.0") {
+  compileOnly("org.graalvm.nativeimage:svm:20.3.0") {
     // https://youtrack.jetbrains.com/issue/KT-29513
     exclude(group= "org.graalvm.nativeimage")
     exclude(group= "org.graalvm.truffle")
