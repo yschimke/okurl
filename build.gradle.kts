@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  kotlin("jvm") version "1.4.20"
-  kotlin("kapt") version "1.4.20"
+  kotlin("jvm") version "1.4.21"
+  kotlin("kapt") version "1.4.21"
   `maven-publish`
   application
   id("net.nemerosa.versioning") version "2.13.1"
@@ -87,7 +87,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:5.10") {
+  implementation("com.github.yschimke:oksocial-output:5.13") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
@@ -122,8 +122,8 @@ dependencies {
     exclude(group = "com.squareup.okhttp3")
   }
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.20")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.20")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.4.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
@@ -134,8 +134,8 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.20")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.20")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.21")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.21")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0-RC1")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 

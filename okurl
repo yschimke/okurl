@@ -2,7 +2,6 @@
 
 CMD=$(basename "$0")
 
-JAVA_HOME=$(/usr/libexec/java_home -v 14 2>/dev/null)
 VMOPTS="--add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/sun.security.x509=ALL-UNNAMED  --add-opens=java.base/sun.security.ssl=ALL-UNNAMED"
 
 if [ "$INTELLIJ_BUILD" != "true" -o ! -d "build/install/okurl/lib" ]; then
@@ -11,7 +10,5 @@ if [ "$INTELLIJ_BUILD" != "true" -o ! -d "build/install/okurl/lib" ]; then
 else
   MAIN_JAR=build/classes/kotlin/main:build/resources/main
 fi
-
-JAVA_CMD="$JAVA_HOME/bin/java"
 
 ${JAVA_HOME}/bin/java ${VMOPTS} -classpath ${MAIN_JAR}:build/install/okurl/lib/\* -Dcommand.name="$CMD" com.baulsupp.okurl.MainKt "$@"
