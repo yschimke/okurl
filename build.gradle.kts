@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  kotlin("jvm") version "1.4.21"
-  kotlin("kapt") version "1.4.21"
+  kotlin("jvm") version Versions.kotlin
+  kotlin("kapt") version Versions.kotlin
   `maven-publish`
   application
   id("net.nemerosa.versioning") version "2.13.1"
@@ -48,6 +48,8 @@ java {
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.apiVersion = "1.4"
+    kotlinOptions.languageVersion = "1.4"
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
@@ -70,7 +72,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
   graal {
     mainClass("com.baulsupp.okurl.MainKt")
     outputName("okurl")
-    graalVersion("20.3.0")
+    graalVersion("21.0.0")
     javaVersion("11")
 
     option("--enable-https")
@@ -87,7 +89,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:5.13") {
+  implementation("com.github.yschimke:oksocial-output:5.17") {
     exclude(module = "svg-salamander")
     exclude(module = "jfreesvg")
   }
@@ -98,35 +100,30 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.11.0")
   implementation("com.squareup.moshi:moshi-adapters:1.11.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.11.0")
-  implementation("com.squareup.okhttp3:logging-interceptor:4.10.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp:4.10.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.10.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-sse:4.10.0-RC1")
-  implementation("com.squareup.okhttp3:okhttp-tls:4.10.0-RC1")
-  implementation("com.squareup.okio:okio:2.9.0")
+  implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.2"))
+  implementation("com.squareup.okhttp3:logging-interceptor")
+  implementation("com.squareup.okhttp3:okhttp")
+  implementation("com.squareup.okhttp3:okhttp-brotli")
+  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
+  implementation("com.squareup.okhttp3:okhttp-sse")
+  implementation("com.squareup.okhttp3:okhttp-tls")
+  implementation("com.squareup.okio:okio:3.0.0-alpha.1")
   implementation("info.picocli:picocli:4.5.2")
   implementation("org.fusesource.jansi:jansi:1.18")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
   implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.10.6")
   implementation("io.zipkin.brave:brave:5.7.0")
-  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.6.10") {
-    exclude(group = "com.squareup.okhttp3")
-  }
-  implementation("io.zipkin.brave:brave-okhttp:4.13.6") {
-    exclude(group = "com.squareup.okhttp3")
-  }
+  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.6.10")
+  implementation("io.zipkin.brave:brave-okhttp:4.13.6")
   implementation("io.zipkin.java:zipkin:2.10.1")
-  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2") {
-    exclude(group = "com.squareup.okhttp3")
-  }
+  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.4.1")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.4.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
@@ -134,12 +131,12 @@ dependencies {
   implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.4.21")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.21")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0-RC1")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
+  testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 
-  compileOnly("org.graalvm.nativeimage:svm:20.3.0") {
+  compileOnly("org.graalvm.nativeimage:svm:21.0.0") {
     // https://youtrack.jetbrains.com/issue/KT-29513
     exclude(group= "org.graalvm.nativeimage")
     exclude(group= "org.graalvm.truffle")
