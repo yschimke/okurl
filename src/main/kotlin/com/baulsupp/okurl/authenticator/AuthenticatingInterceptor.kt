@@ -95,6 +95,7 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.citymapper.CitymapperAuthInterceptor(),
         com.baulsupp.okurl.services.coinbase.CoinbaseAuthInterceptor(),
         com.baulsupp.okurl.services.coinbin.CoinBinAuthInterceptor(),
+        com.baulsupp.okurl.services.coingecko.CoinGeckoAuthInterceptor(),
         com.baulsupp.okurl.services.companieshouse.CompaniesHouseAuthInterceptor(),
         com.baulsupp.okurl.services.cooee.CooeeAuthInterceptor(),
         com.baulsupp.okurl.services.cronhub.CronhubAuthInterceptor(),
