@@ -8,7 +8,6 @@ import com.baulsupp.okurl.services.twitter.TwitterAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.Test
-import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
