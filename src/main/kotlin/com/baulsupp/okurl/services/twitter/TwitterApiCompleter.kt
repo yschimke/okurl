@@ -54,14 +54,6 @@ class TwitterApiCompleter(
         completer.siteUrls(url, DefaultToken).urls
       }
 
-      val lab1 = async {
-        val completer = OpenApiCompleter(
-          "https://api.twitter.com/labs/1/openapi.json".toHttpUrl(),
-          client
-        )
-        completer.siteUrls(url, DefaultToken).urls
-      }
-
       val lab2 = async {
         val completer = OpenApiCompleter(
           "https://api.twitter.com/labs/2/openapi.json".toHttpUrl(),
@@ -70,7 +62,7 @@ class TwitterApiCompleter(
         completer.siteUrls(url, DefaultToken).urls
       }
 
-      UrlList(EXACT, defined.await() + api1_1.await() + lab1.await() + lab2.await())
+      UrlList(EXACT, defined.await() + api1_1.await() + lab2.await())
     }
   }
 }

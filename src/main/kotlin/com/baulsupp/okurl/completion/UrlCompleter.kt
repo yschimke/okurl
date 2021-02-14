@@ -4,15 +4,12 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.completion.UrlList.Match.HOSTS
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.ClientException
-import com.baulsupp.okurl.util.FileUtil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
-import okhttp3.Cache
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.io.File
 import java.lang.Math.min
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit.SECONDS
@@ -52,7 +49,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       val results = apiCompleter.siteUrls(fullUrl, tokenSet)
 
       if (results.urls.isNotEmpty())
-        return results
+        return limitResults(fullUrl, results)
     }
 
     return UrlList.None
@@ -112,5 +109,25 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     fun isPossibleAddress(urlCompletion: String): Boolean {
       return urlCompletion.startsWith("https://".substring(0, min(urlCompletion.length, 8)))
     }
+  }
+
+  private fun limitResults(fullUrl: HttpUrl, results: UrlList): UrlList {
+    if (results.urls.size < 40) {
+      return results
+    }
+
+    val prefix = fullUrl.toString().length
+
+    val urls = results.urls.flatMap {
+      val slash = it.indexOf('/', startIndex = prefix + 3)
+
+      if (slash != -1) {
+        listOf(it.substring(0, slash), it.substring(0, slash + 1))
+      } else {
+        listOf(it)
+      }
+    }.distinct()
+
+    return UrlList(results.match, urls)
   }
 }
