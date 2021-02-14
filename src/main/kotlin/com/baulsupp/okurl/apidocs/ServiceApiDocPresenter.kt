@@ -3,6 +3,7 @@ package com.baulsupp.okurl.apidocs
 import com.baulsupp.oksocial.output.OutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
+import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.util.FileUtil
 import okhttp3.Cache
@@ -18,7 +19,7 @@ class ServiceApiDocPresenter(private val services: AuthenticatingInterceptor) : 
     tokenSet: Token
   ) {
     val cachedClient = client.newBuilder()
-      .cache(Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256 * 1024 * 1024))
+      .cache(ApiCompleter.cache)
       .build()
 
     val presenter = services.getByUrl(url)?.apiDocPresenter(url, cachedClient)

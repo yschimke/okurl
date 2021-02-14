@@ -1,6 +1,9 @@
 package com.baulsupp.okurl.test
 
 fun main() {
+  // com.baulsupp.okurl.main(
+  //   "--urlCompletion https://api.github.com/repos/yschimke/".split(" ").toTypedArray())
+
   com.baulsupp.okurl.main(
-    "--debug --urlCompletion https://api.coingecko.com/api/v3/".split(" ").toTypedArray())
+    "https://api.github.com/repos/yschimke/okurl/license --apidoc".split(" ").toTypedArray())
 }

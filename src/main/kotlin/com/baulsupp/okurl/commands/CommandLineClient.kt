@@ -18,6 +18,7 @@ import com.baulsupp.okurl.commands.converters.CipherSuiteConverter
 import com.baulsupp.okurl.commands.converters.DnsConverter
 import com.baulsupp.okurl.commands.converters.IPvModeConverter
 import com.baulsupp.okurl.commands.converters.TlsVersionConverter
+import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.credentials.CredentialFactory
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.DefaultToken
@@ -431,7 +432,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
     configureTls(builder)
 
     if (cacheDirectory != null) {
-      builder.cache(Cache(cacheDirectory!!, (64 * 1024 * 1024).toLong()))
+      builder.cache(ApiCompleter.cache)
     }
 
     builder.addInterceptor(renewingInterceptor)

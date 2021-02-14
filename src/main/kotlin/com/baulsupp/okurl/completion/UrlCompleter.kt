@@ -42,7 +42,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       .filter { it.supportsUrl(fullUrl, main.credentialsStore) }
 
     val client = main.client.newBuilder()
-      .cache(Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256 * 1024 * 1024))
+      .cache(ApiCompleter.cache)
       .build()
 
     authInterceptors.forEach {

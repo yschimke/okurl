@@ -11,10 +11,11 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.queryMapValue
-import com.baulsupp.okurl.openapi.OpenApiDocPresenter
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 
 /**
@@ -26,12 +27,64 @@ class GithubAuthInterceptor : Oauth2AuthInterceptor() {
     "https://developer.github.com/v3/", "https://github.com/settings/developers"
   )
 
-  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
-    var request = chain.request()
+  override suspend fun intercept(
+    chain: Interceptor.Chain,
+    credentials: Oauth2Token?,
+    credentialsStore: CredentialsStore
+  ): Response {
+    return if (credentials != null) {
+      return intercept(chain, credentials)
+    } else {
+      withContext(Dispatchers.IO) {
+        chain.proceed(addPreviewHeader(chain.request()))
+      }
+    }
+  }
 
+  private fun addPreviewHeader(request: Request): Request {
+    // https://github.com/octokit/octokit.rb/blob/master/lib/octokit/preview.rb
+
+    val previews = listOf(
+      "application/vnd.github.doctor-strange-preview+json",
+      "application/vnd.github.luke-cage-preview+json",
+      "application/vnd.github.antiope-preview+json",
+      "application/vnd.github.cloak-preview+json",
+      "application/vnd.github.groot-preview+json",
+      "application/vnd.github.groot-preview+json",
+      "application/vnd.github.wyandotte-preview+json",
+      "application/vnd.github.drax-preview+json",
+      "application/vnd.github.barred-rock-preview",
+      "application/vnd.github.squirrel-girl-preview",
+      "application/vnd.github.nightshade-preview+json",
+      "application/vnd.github.mockingbird-preview+json",
+      "application/vnd.github.hellcat-preview+json",
+      "application/vnd.github.mister-fantastic-preview+json",
+      "application/vnd.github.inertia-preview+json",
+      "application/vnd.github.spiderman-preview",
+      "application/vnd.github.mercy-preview+json",
+      "application/vnd.github.black-panther-preview+json",
+      "application/vnd.github.speedy-preview+json",
+      "application/vnd.github.shadow-cat-preview",
+      "application/vnd.github.baptiste-preview+json",
+      "application/vnd.github.gambit-preview+json",
+      "application/vnd.github.starfox-preview+json",
+      "application/vnd.github.dorian-preview+json",
+    )
+
+    return request.newBuilder()
+      .apply {
+        previews.forEach {
+          addHeader("Accept", it)
+        }
+      }
+      .build()
+  }
+
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     val token = credentials.accessToken
 
-    request = request.newBuilder().addHeader("Authorization", "token $token").build()
+    val request = addPreviewHeader(chain.request())
+      .newBuilder().addHeader("Authorization", "token $token").build()
 
     return chain.proceed(request)
   }
@@ -42,14 +95,12 @@ class GithubAuthInterceptor : Oauth2AuthInterceptor() {
     credentialsStore: CredentialsStore,
     completionVariableCache: CompletionVariableCache,
     tokenSet: Token
-  ): ApiCompleter = GithubApiCompleter(client)
+  ): ApiCompleter = GithubApiCompleter(client, this, credentialsStore)
 
   override fun apiDocPresenter(
     url: String,
     client: OkHttpClient
-  ): ApiDocPresenter = OpenApiDocPresenter(
-    "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/twitter.com/legacy/1.1/swagger.yaml".toHttpUrl()
-  )
+  ): ApiDocPresenter = GithubApiDocPresenter()
 
   override fun authFlow() = GithubAuthFlow(serviceDefinition)
 

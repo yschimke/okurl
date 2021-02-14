@@ -20,6 +20,7 @@ suspend fun readOpenAPI(
   apiDesc: HttpUrl
 ): OpenAPI? {
   val yaml = client.queryForString(apiDesc.request())
+
   val options = ParseOptions().apply {
     isResolve = true
   }

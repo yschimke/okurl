@@ -34,8 +34,8 @@ class OpenApiCompleter(
       openAPI.paths.map { url ->
         server.url + "" + url.key
       }
-    }
-      .orEmpty()
+    }.orEmpty()
+
     return UrlList(UrlList.Match.HOSTS, urls)
   }
 }
