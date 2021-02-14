@@ -67,6 +67,7 @@ class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
     url: String,
     client: OkHttpClient
   ): ApiDocPresenter = OpenApiDocPresenter(
-    "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/twitter.com/legacy/1.1/swagger.yaml".toHttpUrl()
+    "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/twitter.com/legacy/1.1/swagger.yaml".toHttpUrl(),
+    client
   )
 }

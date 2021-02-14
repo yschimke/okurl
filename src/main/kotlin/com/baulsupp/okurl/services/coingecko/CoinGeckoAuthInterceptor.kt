@@ -1,5 +1,6 @@
 package com.baulsupp.okurl.services.coingecko
 
+import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.CompletionOnlyAuthInterceptor
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.CompletionVariableCache
@@ -7,6 +8,7 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.okio.ClasspathFilesystem
 import com.baulsupp.okurl.openapi.OpenApiCompleter
+import com.baulsupp.okurl.openapi.OpenApiDocPresenter
 import com.baulsupp.okurl.openapi.readOpenAPI
 import okhttp3.OkHttpClient
 import okio.ExperimentalFileSystem
@@ -32,5 +34,13 @@ class CoinGeckoAuthInterceptor : CompletionOnlyAuthInterceptor(
     readOpenAPI(
       "/com/baulsupp/okurl/services/coingecko/swagger.json".toPath(), ClasspathFilesystem()
     )
+  }
+
+  override fun apiDocPresenter(url: String, client: OkHttpClient): ApiDocPresenter {
+    return OpenApiDocPresenter {
+      readOpenAPI(
+        "/com/baulsupp/okurl/services/coingecko/swagger.json".toPath(), ClasspathFilesystem()
+      )
+    }
   }
 }

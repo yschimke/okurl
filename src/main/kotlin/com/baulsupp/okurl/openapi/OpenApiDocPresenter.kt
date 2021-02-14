@@ -43,15 +43,19 @@ suspend fun readOpenAPI(
 }
 
 class OpenApiDocPresenter(
-  val apiDesc: HttpUrl
+  val loader: suspend () -> OpenAPI?
 ) : ApiDocPresenter {
+  constructor(
+    apiDesc: HttpUrl,
+    client: OkHttpClient): this({ readOpenAPI(client, apiDesc) })
+
   override suspend fun explainApi(
     url: String,
     outputHandler: OutputHandler<Response>,
     client: OkHttpClient,
     tokenSet: Token
   ) {
-    val openAPI = readOpenAPI(client, apiDesc)
+    val openAPI = loader()
 
     if (openAPI != null) {
       val server = openAPI.servers.find { url.startsWith(it.url) }
@@ -65,9 +69,9 @@ class OpenApiDocPresenter(
 
         if (path != null) {
           outputHandler.info("Description: " + path.description)
-          outputHandler.info("Docs: " + path.externalDocs.url)
+          outputHandler.info("Docs: " + path.externalDocs?.url)
 
-          if (path.parameters.isNotEmpty()) {
+          if (!path.parameters.isNullOrEmpty()) {
             outputHandler.info("")
 
             outputHandler.info("Parameters")

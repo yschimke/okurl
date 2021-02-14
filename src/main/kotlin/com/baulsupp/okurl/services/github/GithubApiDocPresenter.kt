@@ -9,9 +9,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class GithubApiDocPresenter: ApiDocPresenter {
+class GithubApiDocPresenter(client: OkHttpClient): ApiDocPresenter {
   val openApiDocPresenter = OpenApiDocPresenter(
-    "https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.yaml?raw=true".toHttpUrl()
+    "https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.yaml?raw=true".toHttpUrl(),
+    client
   )
 
   override suspend fun explainApi(

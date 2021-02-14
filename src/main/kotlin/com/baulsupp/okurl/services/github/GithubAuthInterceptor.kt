@@ -100,7 +100,7 @@ class GithubAuthInterceptor : Oauth2AuthInterceptor() {
   override fun apiDocPresenter(
     url: String,
     client: OkHttpClient
-  ): ApiDocPresenter = GithubApiDocPresenter()
+  ): ApiDocPresenter = GithubApiDocPresenter(client)
 
   override fun authFlow() = GithubAuthFlow(serviceDefinition)
 
