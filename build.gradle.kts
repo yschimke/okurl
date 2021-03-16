@@ -136,7 +136,7 @@ dependencies {
   testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
 
-  compileOnly("org.graalvm.nativeimage:svm:21.0.0") {
+  compileOnly("org.graalvm.nativeimage:svm:21.0.0.2") {
     // https://youtrack.jetbrains.com/issue/KT-29513
     exclude(group= "org.graalvm.nativeimage")
     exclude(group= "org.graalvm.truffle")

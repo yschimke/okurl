@@ -26,11 +26,6 @@ class TargetMain {
   }
 }
 
-@TargetClass(className = "java.util.JapaneseImperialCalendar")
-@Delete()
-class TargetJapaneseImperialCalendar {
-}
-
 @TargetClass(OpenAPIDeserializer::class)
 class TargetOpenAPIDeserializer {
   @Substitute
