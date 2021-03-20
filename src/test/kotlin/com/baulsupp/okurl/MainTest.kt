@@ -1,6 +1,6 @@
 package com.baulsupp.okurl
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import picocli.CommandLine
 import kotlin.test.assertEquals
 

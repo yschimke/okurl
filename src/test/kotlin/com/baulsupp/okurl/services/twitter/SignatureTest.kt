@@ -4,7 +4,7 @@ import com.baulsupp.okurl.services.twitter.joauth.Signature
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId

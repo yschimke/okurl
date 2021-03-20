@@ -1,13 +1,13 @@
 package com.baulsupp.okurl.apidocs
 
-import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.output.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.services.test.TestAuthInterceptor
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ServiceApiDocPresenterTest {

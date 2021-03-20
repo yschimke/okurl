@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.travisci
 
-import com.baulsupp.oksocial.output.*
+import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
 import com.baulsupp.okurl.completion.ApiCompleter
@@ -14,6 +15,8 @@ import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import com.baulsupp.okurl.services.travisci.model.RepositoryList
 import com.baulsupp.okurl.services.travisci.model.User
+import com.github.pgreze.process.Redirect.CAPTURE
+import com.github.pgreze.process.process
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -70,13 +73,17 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return TravisToken(token)
   }
 
-  private suspend fun isTravisInstalled(): Boolean = execResult("which", "travis") == 0
+  private suspend fun isTravisInstalled(): Boolean = process("which", "travis").resultCode == 0
 
   private suspend fun travisToken(pro: Boolean): String {
-    val result = exec("travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org", outputMode = ConsoleHandler.Companion.OutputMode.Return)
-            ?: throw UsageException("Use 'travis login --org' or 'travis login --pro'")
+    val result = process(
+      "travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org",
+      stdout = CAPTURE
+    ).apply {
+      if (this.resultCode != 0) throw UsageException("Use 'travis login --org' or 'travis login --pro'")
+    }
 
-    return result.trim()
+    return result.output.firstOrNull()?.trim() ?: throw UsageException("no travis token")
   }
 
   override suspend fun validate(

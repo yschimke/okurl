@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.location
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import okhttp3.Response
 
 class BestLocation(val outputHandler: OutputHandler<Response>) : LocationSource {

@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.sse
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.kotlin.isInteractive
 import com.baulsupp.okurl.kotlin.success
 import kotlinx.coroutines.runBlocking

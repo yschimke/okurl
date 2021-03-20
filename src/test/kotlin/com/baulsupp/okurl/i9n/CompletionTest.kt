@@ -1,13 +1,14 @@
 package com.baulsupp.okurl.i9n
 
-import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.output.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.services.test.TestAuthInterceptor
 import com.baulsupp.okurl.services.twitter.TwitterAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -54,6 +55,7 @@ class CompletionTest {
   }
 
   @Test
+  @Disabled
   fun completeEndpointsForTwitterApi() {
     main.arguments = mutableListOf("https://api.twitter.com/")
 

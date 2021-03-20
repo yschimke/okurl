@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.stackexchange
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.kotlin.queryForString

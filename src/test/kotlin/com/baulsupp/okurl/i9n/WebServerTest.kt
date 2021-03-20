@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.i9n
 
-import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.output.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.okhttp.localhost
 import com.baulsupp.okurl.security.CertificatePin
@@ -8,16 +8,15 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Ignore
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Disabled
 class WebServerTest {
-  @Rule
   @JvmField
   var server = MockWebServer()
 
@@ -63,7 +62,7 @@ class WebServerTest {
   }
 
   @Test
-  @Ignore
+  @Disabled
   fun httpsRequestSecure() {
     server.useHttps(sslClient.sslSocketFactory(), false)
     server.enqueue(MockResponse().setBody("Isla Sorna"))

@@ -1,13 +1,14 @@
 package com.baulsupp.okurl.i9n
 
-import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.output.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.services.surveymonkey.SurveyMonkeyAuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -25,6 +26,7 @@ class SurveyMonkeyTest {
   }
 
   @Test
+  @Disabled
   fun completeEndpointWithReplacements() {
     main.arguments = mutableListOf("https://api.surveymonkey.net/")
     main.urlComplete = true

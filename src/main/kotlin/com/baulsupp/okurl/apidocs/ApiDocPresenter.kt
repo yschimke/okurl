@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.apidocs
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.credentials.Token
 import okhttp3.OkHttpClient
 import okhttp3.Response

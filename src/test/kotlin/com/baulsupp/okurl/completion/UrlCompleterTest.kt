@@ -6,7 +6,7 @@ import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.services.test.TestAuthInterceptor
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class UrlCompleterTest {

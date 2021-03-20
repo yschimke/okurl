@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.github
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.openapi.OpenApiDocPresenter

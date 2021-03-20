@@ -1,7 +1,7 @@
 package com.baulsupp.okurl
 
-import com.baulsupp.oksocial.output.DownloadHandler
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.DownloadHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main.Companion.NAME
 import com.baulsupp.okurl.apidocs.ServiceApiDocPresenter

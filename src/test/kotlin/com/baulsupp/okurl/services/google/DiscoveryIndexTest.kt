@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.services.google
 
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -8,7 +9,7 @@ import kotlin.test.assertTrue
 
 class DiscoveryIndexTest {
   @Test
-  @Ignore
+  @Disabled
   fun loadStatic() {
     val r = DiscoveryIndex.instance
 
@@ -28,6 +29,7 @@ class DiscoveryIndexTest {
   }
 
   @Test
+  @Disabled
   fun mergesAllResultsForLongPrefix() {
     val r = DiscoveryIndex.instance
 
@@ -40,6 +42,7 @@ class DiscoveryIndexTest {
   }
 
   @Test
+  @Disabled
   fun mergesAllResults() {
     val r = DiscoveryIndex.instance
 

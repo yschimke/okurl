@@ -16,6 +16,10 @@ application {
   mainClassName = "com.baulsupp.okurl.MainKt"
 }
 
+tasks.test {
+  useJUnitPlatform()
+}
+
 repositories {
   mavenLocal()
   jcenter()
@@ -52,7 +56,7 @@ tasks {
     kotlinOptions.languageVersion = "1.4"
 
     kotlinOptions.allWarningsAsErrors = false
-    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable")
+    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable", "-Xopt-in=kotlin.RequiresOptIn")
   }
 }
 
@@ -89,10 +93,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:5.17") {
-    exclude(module = "svg-salamander")
-    exclude(module = "jfreesvg")
-  }
+  implementation("com.github.yschimke:oksocial-output:6.0")
   implementation("com.baulsupp:okhttp-digest:0.4.0") {
     exclude(group = "com.squareup.okhttp3")
   }
@@ -127,14 +128,16 @@ dependencies {
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
-  implementation("com.formdev:svgSalamander:1.1.2.1")
-  implementation("org.jfree:jfreesvg:3.4")
   implementation("org.brotli:dec:0.1.2")
+  implementation("com.github.pgreze:kotlin-process:1.2")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
   testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
+
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
   compileOnly("org.graalvm.nativeimage:svm:21.0.0.2") {
     // https://youtrack.jetbrains.com/issue/KT-29513
