@@ -1,13 +1,14 @@
 package com.baulsupp.okurl.services.google
 
-import com.baulsupp.oksocial.output.TestOutputHandler
+import com.baulsupp.oksocial.output.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -52,7 +53,7 @@ class GoogleCompletionTest {
   }
 
   @Test
-  @Ignore
+  @Disabled
   fun completeGmailUserId() {
     assumeHasNetwork()
 
@@ -70,7 +71,7 @@ class GoogleCompletionTest {
 
   // Nested example
   @Test
-  @Ignore
+  @Disabled
   fun completeGmailMessages() {
     assumeHasNetwork()
 

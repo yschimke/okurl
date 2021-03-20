@@ -16,6 +16,10 @@ application {
   mainClassName = "com.baulsupp.okurl.MainKt"
 }
 
+tasks.test {
+  useJUnitPlatform()
+}
+
 repositories {
   mavenLocal()
   jcenter()
@@ -131,6 +135,9 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
   testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
+
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
   compileOnly("org.graalvm.nativeimage:svm:21.0.0.2") {
     // https://youtrack.jetbrains.com/issue/KT-29513

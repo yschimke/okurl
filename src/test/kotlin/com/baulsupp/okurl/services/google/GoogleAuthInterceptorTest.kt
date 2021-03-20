@@ -9,7 +9,8 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -63,7 +64,7 @@ class GoogleAuthInterceptorTest {
 
   // hits the com.baulsupp.okurl.network
   @Test
-  @Ignore
+  @Disabled
   fun completesSitePaths() {
     runBlocking {
       assumeHasNetwork()
@@ -86,7 +87,7 @@ class GoogleAuthInterceptorTest {
 
   // hits the com.baulsupp.okurl.network
   @Test
-  @Ignore
+  @Disabled
   fun completesSitePathsForDuplicates() {
     runBlocking {
       assumeHasNetwork()
