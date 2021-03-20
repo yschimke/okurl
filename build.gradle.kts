@@ -93,7 +93,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:6.0")
+  implementation("com.github.yschimke:oksocial-output:6.1")
   implementation("com.baulsupp:okhttp-digest:0.4.0") {
     exclude(group = "com.squareup.okhttp3")
   }
