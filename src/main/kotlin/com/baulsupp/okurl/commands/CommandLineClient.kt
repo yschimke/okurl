@@ -4,9 +4,9 @@ import brave.Tracing
 import brave.http.HttpTracing
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.DownloadHandler
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.ConsoleHandler
+import com.baulsupp.oksocial.output.handler.DownloadHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthInterceptor

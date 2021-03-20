@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.authflow.AuthFlow
 import com.baulsupp.okurl.completion.ApiCompleter

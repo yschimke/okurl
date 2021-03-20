@@ -1,13 +1,14 @@
 package com.baulsupp.okurl.location
 
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.OutputHandler
-import com.baulsupp.oksocial.output.exec
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.oksocial.output.isOSX
+import com.github.pgreze.process.Redirect.CAPTURE
+import com.github.pgreze.process.process
+import com.github.pgreze.process.unwrap
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Response
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -20,10 +21,12 @@ const val LOCATION_APP = "location"
 class CoreLocationCLI(val outputHandler: OutputHandler<Response>) : LocationSource {
   private val logger = Logger.getLogger(CoreLocationCLI::class.java.name)
 
+  @Suppress("BlockingMethodInNonBlockingContext")
+  @OptIn(ExperimentalCoroutinesApi::class)
   override suspend fun read(): Location? {
     return if (isOSX) {
       try {
-        val line = exec(LOCATION_APP, outputMode = ConsoleHandler.Companion.OutputMode.Return)
+        val line = process(LOCATION_APP, stdout = CAPTURE).unwrap().firstOrNull()
 
         if (line == null) {
           logger.log(Level.INFO, "failed to get location $line")

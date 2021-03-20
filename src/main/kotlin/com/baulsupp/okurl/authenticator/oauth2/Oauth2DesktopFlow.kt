@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator.oauth2
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import com.baulsupp.okurl.authenticator.authflow.Callback
 import com.baulsupp.okurl.authenticator.authflow.Prompt

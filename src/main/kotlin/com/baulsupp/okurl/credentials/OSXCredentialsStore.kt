@@ -1,7 +1,9 @@
 package com.baulsupp.okurl.credentials
 
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.exec
+import com.github.pgreze.process.Redirect.CAPTURE
+import com.github.pgreze.process.process
+import com.github.pgreze.process.unwrap
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import pt.davidafsilva.apple.OSXKeychain
 import pt.davidafsilva.apple.OSXKeychainException
 import java.util.logging.Level
@@ -54,10 +56,11 @@ class OSXCredentialsStore : CredentialsStore {
     }
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   override suspend fun names(): Set<String> {
-    val output = exec("security", "dump-keychain", outputMode = ConsoleHandler.Companion.OutputMode.Return)!!
+    val output = process("security", "dump-keychain", stdout = CAPTURE).unwrap()
 
-    val names = output.lines().filter {
+    val names = output.filter {
       it.matches(".*\"acct\".*\"oauth\\..*\".*".toRegex())
     }.map { it.replace(".*oauth\\.(\\w+).*".toRegex(), "$1") }
 

@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.services.AbstractServiceDefinition
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

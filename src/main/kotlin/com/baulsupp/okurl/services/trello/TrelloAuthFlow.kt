@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.trello
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.Response
 import java.net.URLEncoder

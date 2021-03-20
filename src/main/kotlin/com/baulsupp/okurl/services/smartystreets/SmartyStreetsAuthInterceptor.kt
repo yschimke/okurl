@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.smartystreets
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.services.AbstractServiceDefinition

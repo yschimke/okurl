@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.oksocial.output.OutputHandler
+import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2DesktopFlow
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Flow

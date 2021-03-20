@@ -1,16 +1,5 @@
 package com.baulsupp.okurl.credentials
 
-private inline fun <K, V : Any> Iterable<K>.keysToMapExceptNulls(value: (K) -> V?): Map<K, V> {
-  val map = LinkedHashMap<K, V>()
-  for (k in this) {
-    val v = value(k)
-    if (v != null) {
-      map[k] = v
-    }
-  }
-  return map
-}
-
 interface CredentialsStore {
   suspend fun <T> get(serviceDefinition: ServiceDefinition<T>, tokenSet: Token): T? {
     return tokenSet.name()?.let { get(serviceDefinition, it) }
@@ -38,6 +27,17 @@ interface CredentialsStore {
       override suspend fun <T> set(serviceDefinition: ServiceDefinition<T>, tokenSet: String, credentials: T) {}
 
       override suspend fun <T> remove(serviceDefinition: ServiceDefinition<T>, tokenSet: String) {}
+    }
+
+    private inline fun <K, V : Any> Iterable<K>.keysToMapExceptNulls(value: (K) -> V?): Map<K, V> {
+      val map = LinkedHashMap<K, V>()
+      for (k in this) {
+        val v = value(k)
+        if (v != null) {
+          map[k] = v
+        }
+      }
+      return map
     }
   }
 }

@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.google.indexer
 
-import com.baulsupp.oksocial.output.ConsoleHandler
-import com.baulsupp.oksocial.output.SimpleResponseExtractor
+import com.baulsupp.oksocial.output.handler.ConsoleHandler
+import com.baulsupp.oksocial.output.responses.SimpleResponseExtractor
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.kotlin.query
