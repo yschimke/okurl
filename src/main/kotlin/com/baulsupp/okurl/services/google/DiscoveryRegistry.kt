@@ -5,7 +5,6 @@ import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.services.google.model.DiscoveryDoc
 import com.baulsupp.okurl.util.FileUtil
-import com.jakewharton.byteunits.BinaryByteUnit.MEBIBYTES
 import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
@@ -14,7 +13,9 @@ import java.util.concurrent.TimeUnit
 
 class DiscoveryRegistry(private val client: OkHttpClient) {
   val newClient: OkHttpClient by lazy {
-    client.newBuilder().cache(Cache(File(FileUtil.okurlSettingsDir, "google-cache"), MEBIBYTES.toBytes(20))).build()
+    client.newBuilder()
+      .cache(Cache(File(FileUtil.okurlSettingsDir, "google-cache"), 32 * 1024 * 1024))
+      .build()
   }
 
   suspend fun load(discoveryDocPath: String, tokenSet: Token): DiscoveryDocument {

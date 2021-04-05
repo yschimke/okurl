@@ -93,22 +93,18 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  implementation("com.github.yschimke:oksocial-output:6.1")
-  implementation("com.baulsupp:okhttp-digest:0.4.0") {
-    exclude(group = "com.squareup.okhttp3")
-  }
-  implementation("com.jakewharton.byteunits:byteunits:0.9.1")
-  implementation("com.squareup.moshi:moshi:1.11.0")
-  implementation("com.squareup.moshi:moshi-adapters:1.11.0")
-  implementation("com.squareup.moshi:moshi-kotlin:1.11.0")
+  api("com.github.yschimke:oksocial-output:6.2")
+  api("com.squareup.moshi:moshi:1.11.0")
+  api("com.squareup.moshi:moshi-adapters:1.11.0")
+  api("com.squareup.moshi:moshi-kotlin:1.11.0")
   implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.2"))
-  implementation("com.squareup.okhttp3:logging-interceptor")
-  implementation("com.squareup.okhttp3:okhttp")
-  implementation("com.squareup.okhttp3:okhttp-brotli")
+  api("com.squareup.okhttp3:logging-interceptor")
+  api("com.squareup.okhttp3:okhttp")
+  api("com.squareup.okhttp3:okhttp-brotli")
   implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
   implementation("com.squareup.okhttp3:okhttp-sse")
-  implementation("com.squareup.okhttp3:okhttp-tls")
-  implementation("com.squareup.okio:okio:3.0.0-alpha.1")
+  api("com.squareup.okhttp3:okhttp-tls")
+  api("com.squareup.okio:okio:3.0.0-alpha.1")
   implementation("info.picocli:picocli:4.5.2")
   implementation("org.fusesource.jansi:jansi:1.18")
   implementation("io.jsonwebtoken:jjwt-api:0.10.6")
@@ -119,22 +115,20 @@ dependencies {
   implementation("io.zipkin.brave:brave-okhttp:4.13.6")
   implementation("io.zipkin.java:zipkin:2.10.1")
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2")
-  implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
+  implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
   implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.4.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
+  api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
+  api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+  api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
-  implementation("org.brotli:dec:0.1.2")
-  implementation("com.github.pgreze:kotlin-process:1.2")
+  api("com.github.pgreze:kotlin-process:1.2")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
   testImplementation("com.squareup.okhttp3:mockwebserver")
-  testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.1")
+  testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.1")
@@ -152,6 +146,8 @@ dependencies {
   implementation("io.github.classgraph:classgraph:4.8.87")
 
   implementation("io.swagger.parser.v3:swagger-parser:2.0.21")
+
+  implementation("io.github.rburgst:okhttp-digest:2.5")
 
   testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
 }

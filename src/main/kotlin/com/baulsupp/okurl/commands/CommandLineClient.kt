@@ -4,15 +4,14 @@ import brave.Tracing
 import brave.http.HttpTracing
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
+import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.oksocial.output.handler.ConsoleHandler
 import com.baulsupp.oksocial.output.handler.DownloadHandler
 import com.baulsupp.oksocial.output.handler.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
-import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.RenewingInterceptor
 import com.baulsupp.okurl.commands.converters.CipherSuiteConverter
 import com.baulsupp.okurl.commands.converters.DnsConverter
@@ -25,7 +24,6 @@ import com.baulsupp.okurl.credentials.DefaultToken
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.location.BestLocation
-import com.baulsupp.okurl.location.Location
 import com.baulsupp.okurl.location.LocationSource
 import com.baulsupp.okurl.moshi.Rfc3339InstantJsonAdapter
 import com.baulsupp.okurl.network.DnsMode
@@ -41,7 +39,6 @@ import com.baulsupp.okurl.okhttp.OkHttpResponseExtractor
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory
 import com.baulsupp.okurl.okhttp.WireSharkListenerFactory.WireSharkKeyLoggerListener.Launch
 import com.baulsupp.okurl.preferences.Preferences
-import com.baulsupp.okurl.security.BasicPromptAuthenticator
 import com.baulsupp.okurl.security.CertificatePin
 import com.baulsupp.okurl.security.ConsoleCallbackHandler
 import com.baulsupp.okurl.security.OpenSCUtil
@@ -55,11 +52,16 @@ import com.baulsupp.okurl.tracing.ZipkinTracingListener
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
+import com.burgstaller.okhttp.AuthenticationCacheInterceptor
+import com.burgstaller.okhttp.CachingAuthenticatorDecorator
 import com.burgstaller.okhttp.DispatchingAuthenticator
+import com.burgstaller.okhttp.basic.BasicAuthenticator
+import com.burgstaller.okhttp.digest.CachingAuthenticator
+import com.burgstaller.okhttp.digest.Credentials
+import com.burgstaller.okhttp.digest.DigestAuthenticator
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.runBlocking
-import okhttp3.Cache
 import okhttp3.Call
 import okhttp3.CipherSuite
 import okhttp3.ConnectionPool
@@ -87,9 +89,9 @@ import java.io.Flushable
 import java.io.IOException
 import java.net.Proxy
 import java.security.SecureRandom
-import java.time.Instant
 import java.util.ArrayList
 import java.util.Date
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.net.SocketFactory
@@ -448,24 +450,29 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
     applyProxy(builder)
 
-    val authenticatorBuilder = DispatchingAuthenticator.Builder()
-
     if (user != null) {
       val userParts = user!!.split(":".toRegex(), 2)
       if (userParts.size < 2) {
         throw UsageException("--user should have user:password")
       }
 
-      val credentials = BasicCredentials(userParts[0], userParts[1])
-      authenticatorBuilder.with("basic", BasicPromptAuthenticator(credentials))
-    } else {
-      authenticatorBuilder.with("basic", BasicPromptAuthenticator())
+      val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
+
+      val credentials = Credentials(userParts[0], userParts[1])
+      val basicAuthenticator = BasicAuthenticator(credentials)
+      val digestAuthenticator = DigestAuthenticator(credentials)
+
+      val authenticator: DispatchingAuthenticator = DispatchingAuthenticator.Builder()
+        .with("digest", digestAuthenticator)
+        .with("basic", basicAuthenticator)
+        .build()
+
+      val cachingAuthenticator = CachingAuthenticatorDecorator(authenticator, authCache)
+
+      builder.authenticator(cachingAuthenticator)
+      builder.addInterceptor(AuthenticationCacheInterceptor(authCache))
+      builder.proxyAuthenticator(cachingAuthenticator)
     }
-
-    val authenticator = authenticatorBuilder.build()
-
-    builder.authenticator(authenticator)
-    builder.proxyAuthenticator(authenticator)
 
     // TODO add caching
 //    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
