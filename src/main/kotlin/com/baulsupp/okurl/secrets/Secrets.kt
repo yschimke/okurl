@@ -3,6 +3,8 @@ package com.baulsupp.okurl.secrets
 import com.baulsupp.oksocial.output.readPasswordString
 import com.baulsupp.oksocial.output.readString
 import com.baulsupp.okurl.util.FileUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -74,31 +76,33 @@ class Secrets(
     }
 
     suspend fun prompt(name: String, key: String, defaultValue: String, password: Boolean): String {
-      val defaulted = instance[key] ?: defaultValue
+      return withContext(Dispatchers.IO) {
+        val defaulted = instance[key] ?: defaultValue
 
-      val prompt = name + defaultDisplay(defaulted, password) + ": "
+        val prompt = name + defaultDisplay(defaulted, password) + ": "
 
-      var value = ""
+        var value: String
 
-      if (System.console() != null) {
-        value = if (password) {
-          System.console().readPasswordString(prompt)
+        if (System.console() != null) {
+          value = if (password) {
+            System.console().readPasswordString(prompt)
+          } else {
+            System.console().readString(prompt)
+          }
         } else {
-          System.console().readString(prompt)
+          System.err.print(prompt)
+          System.err.flush()
+          value = System.`in`.bufferedReader().readLine()
         }
-      } else {
-        System.err.print(prompt)
-        System.err.flush()
-        value = System.`in`.bufferedReader().readLine()
-      }
 
-      if (value.isEmpty()) {
-        value = defaulted
-      } else {
-        instance.put(key, value)
-      }
+        if (value.isEmpty()) {
+          value = defaulted
+        } else {
+          instance.put(key, value)
+        }
 
-      return value
+        value
+      }
     }
 
     suspend fun promptArray(name: String, key: String, defaults: Iterable<String>): List<String> {

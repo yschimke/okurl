@@ -52,8 +52,8 @@ object UrlCodec {
       val byteArray = s.substring(startingIndex).toByteArray(UTF_8_CHARSET)
       for (i in byteArray.indices) {
         val bite = byteArray[i]
-        if (isUnreserved(bite.toChar())) {
-          sb.append(bite.toChar())
+        if (isUnreserved(bite.toInt().toChar())) {
+          sb.append(bite.toInt().toChar())
         } else {
           // turn the Byte into an int into the hex string, but be sure to mask out the unneeded bits
           // to avoid nastiness with converting to a negative int

@@ -1,6 +1,7 @@
 package com.baulsupp.okurl.network
 
 import com.baulsupp.oksocial.output.UsageException
+import java.util.*
 
 enum class DnsMode {
   JAVA,
@@ -10,7 +11,7 @@ enum class DnsMode {
   companion object {
     @JvmStatic
     fun fromString(dnsMode: String): DnsMode =
-      values().find { it.name.toLowerCase() == dnsMode } ?: throw UsageException(
+      values().find { it.name.lowercase(Locale.getDefault()) == dnsMode } ?: throw UsageException(
         "unknown dns mode '$dnsMode'"
       )
   }

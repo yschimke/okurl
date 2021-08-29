@@ -1,5 +1,7 @@
 package com.baulsupp.okurl.services.twitter.joauth
 
+import java.util.*
+
 /**
  * the standard implementation of the Normalizer trait. Though stateless and threadsafe,
  * this is a class rather than an object to allow easy access from Java. Scala codebases
@@ -37,9 +39,9 @@ object StandardNormalizer {
     }
 
     val requestUrlBuilder = StringBuilder(512)
-    requestUrlBuilder.append(scheme!!.toLowerCase())
+    requestUrlBuilder.append(scheme!!.lowercase(Locale.getDefault()))
     requestUrlBuilder.append("://")
-    requestUrlBuilder.append(host!!.toLowerCase())
+    requestUrlBuilder.append(host!!.lowercase(Locale.getDefault()))
     if (includePortString(port, scheme)) {
       requestUrlBuilder.append(":").append(port)
     }
@@ -47,7 +49,7 @@ object StandardNormalizer {
 
     val normalizedBuilder = StringBuilder(512)
 
-    normalizedBuilder.append(verb!!.toUpperCase())
+    normalizedBuilder.append(verb!!.uppercase(Locale.getDefault()))
     normalizedBuilder.append('&').append(UrlCodec.encode(requestUrlBuilder.toString()))
     normalizedBuilder.append('&').append(UrlCodec.encode(paramsBuilder.toString()))
 

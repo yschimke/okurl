@@ -60,7 +60,7 @@ class SimpleWebServer(
       out.println(generateFailBody("$it"))
     }
 
-    this.channel.offer(result) || throw IllegalStateException("unable to send to channel")
+    this.channel.trySend(result).isSuccess || throw IllegalStateException("unable to send to channel")
   }
 
   private fun generateSuccessBody(): String = """<html>

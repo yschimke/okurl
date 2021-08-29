@@ -8,12 +8,12 @@ plugins {
   application
   id("net.nemerosa.versioning") version "2.13.1"
   id("com.diffplug.spotless") version "5.1.0"
-  id("com.palantir.graal") version "0.7.2"
+  id("com.palantir.graal") version "0.9.0"
   id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 application {
-  mainClassName = "com.baulsupp.okurl.MainKt"
+  mainClass.set("com.baulsupp.okurl.MainKt")
 }
 
 tasks.test {
@@ -22,7 +22,6 @@ tasks.test {
 
 repositories {
   mavenLocal()
-  jcenter()
   mavenCentral()
   maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
   maven(url = "https://jitpack.io")
@@ -41,7 +40,7 @@ description = "OkHttp Kotlin CLI"
 version = versioning.info.display
 
 base {
-  archivesBaseName = "okurl"
+  archivesName.set("okurl")
 }
 
 java {
@@ -52,8 +51,8 @@ java {
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.apiVersion = "1.4"
-    kotlinOptions.languageVersion = "1.4"
+    kotlinOptions.apiVersion = "1.5"
+    kotlinOptions.languageVersion = "1.5"
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable", "-Xopt-in=kotlin.RequiresOptIn")
@@ -76,7 +75,7 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
   graal {
     mainClass("com.baulsupp.okurl.MainKt")
     outputName("okurl")
-    graalVersion("21.0.0")
+    graalVersion("21.2.0")
     javaVersion("11")
 
     option("--enable-https")
@@ -93,82 +92,67 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
 }
 
 dependencies {
-  api("com.github.yschimke:oksocial-output:6.2")
-  api("com.squareup.moshi:moshi:1.11.0")
-  api("com.squareup.moshi:moshi-adapters:1.11.0")
-  api("com.squareup.moshi:moshi-kotlin:1.11.0")
   implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.2"))
+
+  api("com.github.yschimke:oksocial-output:6.5")
+  api("com.squareup.moshi:moshi:1.12.0")
+  api("com.squareup.moshi:moshi-adapters:1.12.0")
+  api("com.squareup.moshi:moshi-kotlin:1.12.0")
   api("com.squareup.okhttp3:logging-interceptor")
   api("com.squareup.okhttp3:okhttp")
   api("com.squareup.okhttp3:okhttp-brotli")
   implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
   implementation("com.squareup.okhttp3:okhttp-sse")
   api("com.squareup.okhttp3:okhttp-tls")
-  api("com.squareup.okio:okio:3.0.0-alpha.1")
-  implementation("info.picocli:picocli:4.5.2")
-  implementation("org.fusesource.jansi:jansi:1.18")
-  implementation("io.jsonwebtoken:jjwt-api:0.10.6")
-  implementation("io.jsonwebtoken:jjwt-impl:0.10.6")
-  implementation("io.jsonwebtoken:jjwt-jackson:0.10.6")
-  implementation("io.zipkin.brave:brave:5.7.0")
-  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.6.10")
+  api("com.squareup.okio:okio:3.0.0-alpha.9")
+  implementation("info.picocli:picocli:4.6.1")
+  implementation("org.fusesource.jansi:jansi:2.3.4")
+  implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+  implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
+  implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
+  implementation("io.zipkin.brave:brave:5.13.3")
+  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.13.3")
   implementation("io.zipkin.brave:brave-okhttp:4.13.6")
   implementation("io.zipkin.java:zipkin:2.10.1")
-  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.10.2")
+  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
   implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}")
   api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
-  api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
-  api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
+  api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+  api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.1")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
-  api("com.github.pgreze:kotlin-process:1.2")
+  api("com.github.pgreze:kotlin-process:1.3.1")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}")
-  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
   testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
 
-  compileOnly("org.graalvm.nativeimage:svm:21.0.0.2") {
-    // https://youtrack.jetbrains.com/issue/KT-29513
-    exclude(group= "org.graalvm.nativeimage")
-    exclude(group= "org.graalvm.truffle")
-//    exclude(group= "org.graalvm.sdk")
-    exclude(group= "org.graalvm.compiler")
-  }
-  kapt("info.picocli:picocli-codegen:4.5.2")
+  compileOnly("org.graalvm.nativeimage:svm:21.2.0")
+  kapt("info.picocli:picocli-codegen:4.6.1")
 
-  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
-  implementation("io.github.classgraph:classgraph:4.8.87")
+  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
+  implementation("io.github.classgraph:classgraph:4.8.114")
 
-  implementation("io.swagger.parser.v3:swagger-parser:2.0.21")
+  implementation("io.swagger.parser.v3:swagger-parser:2.0.27")
 
   implementation("io.github.rburgst:okhttp-digest:2.5")
 
-  testRuntime("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
+  testRuntimeOnly("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-  classifier = "sources"
+  archiveClassifier.set("sources")
   from(kotlin.sourceSets["main"].kotlin)
-}
-
-val javadocJar by tasks.creating(Jar::class) {
-  classifier = "javadoc"
-  from("$buildDir/javadoc")
 }
 
 val jar = tasks["jar"] as org.gradle.jvm.tasks.Jar
 
 publishing {
-  repositories {
-    maven(url = "build/repository")
-  }
-
   publications {
     create("mavenJava", MavenPublication::class) {
       from(components["java"])

@@ -15,6 +15,7 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.*
 import java.util.function.Consumer
 
 class ZipkinTracingListener(
@@ -41,7 +42,7 @@ class ZipkinTracingListener(
     callSpan.tag("http.method", call.request().method)
     callSpan.tag("http.host", call.request().url.host)
     callSpan.tag("http.url", call.request().url.toString())
-    callSpan.tag("http.route", "${call.request().method.toUpperCase()} ${call.request().url.encodedPath}")
+    callSpan.tag("http.route", "${call.request().method.uppercase(Locale.getDefault())} ${call.request().url.encodedPath}")
     callSpan.kind(Span.Kind.CLIENT)
 
     spanInScope = tracer.withSpanInScope(callSpan)

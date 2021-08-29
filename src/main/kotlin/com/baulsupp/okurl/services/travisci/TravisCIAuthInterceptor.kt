@@ -17,6 +17,7 @@ import com.baulsupp.okurl.services.travisci.model.RepositoryList
 import com.baulsupp.okurl.services.travisci.model.User
 import com.github.pgreze.process.Redirect.CAPTURE
 import com.github.pgreze.process.process
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -73,8 +74,10 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
     return TravisToken(token)
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   private suspend fun isTravisInstalled(): Boolean = process("which", "travis").resultCode == 0
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   private suspend fun travisToken(pro: Boolean): String {
     val result = process(
       "travis", "token", "-E", "--no-interactive", if (pro) "--pro" else "--org",

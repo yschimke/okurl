@@ -16,6 +16,6 @@ interface ApiCompleter {
   suspend fun siteUrls(url: HttpUrl, tokenSet: Token): UrlList
 
   companion object {
-    val cache = Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256 * 1024 * 1024)
+    val cache = Cache(File(FileUtil.okurlSettingsDir, "completion-cache"), 256L * 1024 * 1024)
   }
 }

@@ -6,13 +6,14 @@ import com.baulsupp.okurl.network.IPvMode
 import com.baulsupp.okurl.okhttp.ConnectionSpecOption
 import okhttp3.Protocol
 import okhttp3.TlsVersion
+import java.util.*
 
 suspend fun Main.listOptions(option: String): Collection<String> {
   return when (option) {
     "service" -> authenticatingInterceptor.names()
     "tokenset" -> credentialsStore.names()
     "ipmode" -> IPvMode.values().map { it.code }
-    "dnsmode" -> DnsMode.values().map { it.name.toLowerCase() }
+    "dnsmode" -> DnsMode.values().map { it.name.lowercase(Locale.getDefault()) }
     "protocol" -> Protocol.values().map { it.toString() }
     "method" -> listOf("GET", "HEAD", "POST", "DELETE", "PUT", "PATCH")
     "connectionSpec" -> ConnectionSpecOption.values().map { it.name }
