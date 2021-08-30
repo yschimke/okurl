@@ -9,7 +9,6 @@ plugins {
   id("net.nemerosa.versioning") version "2.13.1"
   id("com.diffplug.spotless") version "5.1.0"
   id("com.palantir.graal") version "0.9.0"
-  id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 application {
