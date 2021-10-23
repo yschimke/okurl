@@ -127,6 +127,7 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.sheetsu.SheetsuAuthInterceptor(),
         com.baulsupp.okurl.services.slack.SlackAuthInterceptor(),
         com.baulsupp.okurl.services.smartystreets.SmartyStreetsAuthInterceptor(),
+        com.baulsupp.okurl.services.snapkit.SnapkitAuthInterceptor(),
         com.baulsupp.okurl.services.spotify.SpotifyAuthInterceptor(),
         com.baulsupp.okurl.services.squareup.SquareUpAuthInterceptor(),
         com.baulsupp.okurl.services.stackexchange.StackExchangeAuthInterceptor(),

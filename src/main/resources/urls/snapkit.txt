@@ -1,0 +1,4 @@
+https://bitmoji.api.snapchat.com/direct/avatar
+https://bitmoji.api.snapchat.com/direct/me/{avatar_id}.webp
+https://bitmoji.api.snapchat.com/direct/me/sticker/{avatar_id}.webp
+https://bitmoji.api.snapchat.com/direct/me/sticker/{avatar_id}/{sticker_id}.webp?size=large
