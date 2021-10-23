@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  kotlin("jvm") version Versions.kotlin
-  kotlin("kapt") version Versions.kotlin
+  kotlin("jvm") version libs.versions.kotlin
+  kotlin("kapt") version libs.versions.kotlin
   `maven-publish`
   application
   id("net.nemerosa.versioning") version "2.13.1"
@@ -43,13 +43,19 @@ base {
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}
+
+kotlin {
+  jvmToolchain {
+    (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of("17"))
+  }
 }
 
 tasks {
   withType(KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.apiVersion = "1.5"
     kotlinOptions.languageVersion = "1.5"
 
@@ -74,8 +80,10 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
   graal {
     mainClass("com.baulsupp.okurl.MainKt")
     outputName("okurl")
-    graalVersion("21.2.0")
-    javaVersion("11")
+    graalVersion("21.3.0")
+
+    (javaVersion as Property<String>).set("17")
+//    javaVersion("16")
 
     option("--enable-https")
     option("--no-fallback")
@@ -105,7 +113,7 @@ dependencies {
   api("com.squareup.okhttp3:okhttp-tls")
   api("com.squareup.okio:okio:3.0.0-alpha.9")
   implementation("info.picocli:picocli:4.6.1")
-  implementation("org.fusesource.jansi:jansi:2.3.4")
+  implementation("org.fusesource.jansi:jansi:2.4.0")
   implementation("io.jsonwebtoken:jjwt-api:0.11.2")
   implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
   implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
@@ -115,29 +123,29 @@ dependencies {
   implementation("io.zipkin.java:zipkin:2.10.1")
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3")
   implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}")
-  api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
-  api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
-  api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.1")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0-RC")
+  api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0-RC")
+  api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+  api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.2")
   implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
   implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
   implementation("pt.davidafsilva.apple:jkeychain:1.0.0")
   api("com.github.pgreze:kotlin-process:1.3.1")
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.0-RC")
   testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
-  compileOnly("org.graalvm.nativeimage:svm:21.2.0")
+  compileOnly("org.graalvm.nativeimage:svm:21.3.0")
   kapt("info.picocli:picocli-codegen:4.6.1")
 
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
-  implementation("io.github.classgraph:classgraph:4.8.114")
+  implementation("io.github.classgraph:classgraph:4.8.128")
 
-  implementation("io.swagger.parser.v3:swagger-parser:2.0.27")
+  implementation("io.swagger.parser.v3:swagger-parser:2.0.28")
 
   implementation("io.github.rburgst:okhttp-digest:2.5")
 

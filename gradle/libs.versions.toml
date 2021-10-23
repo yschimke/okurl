@@ -1,0 +1,26 @@
+[versions]
+kotlin = "1.6.0-RC"
+okhttp = "5.0.0-alpha.2"
+junit = "5.7.1"
+okio = "3.0.0-alpha.10"
+
+[libraries]
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-stdlibJdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+
+okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
+
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
+activation = "javax.activation:activation:1.1.1"
+byteunits = "com.jakewharton.byteunits:byteunits:0.9.1"
+junitJupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junitJupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+process = "com.github.pgreze:kotlin-process:1.3.1"
+
+[bundles]
