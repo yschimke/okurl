@@ -34,7 +34,7 @@ class AuthenticatingInterceptor(
   override val services: List<AuthInterceptor<*>> = defaultServices()
 ) : Interceptor, ServiceLibrary {
   override fun intercept(chain: Interceptor.Chain): Response {
-    return runBlocking {
+    return runBlocking(Dispatchers.IO) {
       val firstInterceptor =
         services.find { it.supportsUrl(chain.request().url, credentialsStore) }
 
@@ -43,9 +43,7 @@ class AuthenticatingInterceptor(
       if (firstInterceptor != null) {
         intercept(firstInterceptor, chain)
       } else {
-        withContext(Dispatchers.IO) {
-          chain.proceed(chain.request())
-        }
+        chain.proceed(chain.request())
       }
     }
   }
@@ -113,6 +111,7 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.httpbin.HttpBinAuthInterceptor(),
         com.baulsupp.okurl.services.imgur.ImgurAuthInterceptor(),
         com.baulsupp.okurl.services.instagram.InstagramAuthInterceptor(),
+        com.baulsupp.okurl.services.life360.Life360AuthInterceptor(),
         com.baulsupp.okurl.services.linkedin.LinkedinAuthInterceptor(),
         com.baulsupp.okurl.services.lyft.LyftAuthInterceptor(),
         com.baulsupp.okurl.services.mapbox.MapboxAuthInterceptor(),
