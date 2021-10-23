@@ -1,7 +1,7 @@
 {
   "resources": [
     {"pattern": "com/baulsupp/.*/.*txt"},
-    {"pattern": "com/baulsupp/.*json"},
+    {"pattern": "com/baulsupp/.*/.*json"},
     {"pattern": "urls/.*txt"},
     {"pattern": "okurl-.*properties"},
     {"pattern": "datasettes.txt"}

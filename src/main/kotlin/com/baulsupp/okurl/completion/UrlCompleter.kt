@@ -61,8 +61,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
         withTimeout(SECONDS.toMillis(2)) {
           it.apiCompleter(
             "", Main.client, main.credentialsStore, main.completionVariableCache, tokenSet
-          )
-            .prefixUrls()
+          ).prefixUrls()
         }
       }
     }
@@ -70,15 +69,14 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     val results = mutableListOf<String>()
     for (f in futures) {
       try {
-        results.addAll(
-          f.await()
-            .getUrls("")
-        )
+        results.addAll(f.await().getUrls("").orEmpty())
       } catch (e: ClientException) {
         logger.log(Level.WARNING, "http error during url completion", e)
       } catch (e: CancellationException) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       } catch (e: ExecutionException) {
+        logger.log(Level.WARNING, "failure during url completion", e.cause)
+      } catch (e: Exception) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       }
     }
