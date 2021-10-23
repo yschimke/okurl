@@ -71,13 +71,13 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       try {
         results.addAll(f.await().getUrls(""))
       } catch (e: ClientException) {
-        logger.log(Level.WARNING, "http error during url completion", e)
+        logger.log(Level.FINE, "http error during url completion", e)
       } catch (e: CancellationException) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       } catch (e: ExecutionException) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       } catch (e: Exception) {
-        logger.log(Level.WARNING, "failure during url completion", e)
+        logger.log(Level.FINE, "failure during url completion", e)
       }
     }
 
