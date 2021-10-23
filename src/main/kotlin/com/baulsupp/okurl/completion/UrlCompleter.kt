@@ -69,7 +69,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
     val results = mutableListOf<String>()
     for (f in futures) {
       try {
-        results.addAll(f.await().getUrls("").orEmpty())
+        results.addAll(f.await().getUrls(""))
       } catch (e: ClientException) {
         logger.log(Level.WARNING, "http error during url completion", e)
       } catch (e: CancellationException) {
@@ -77,7 +77,7 @@ class UrlCompleter(val main: Main) : ArgumentCompleter {
       } catch (e: ExecutionException) {
         logger.log(Level.WARNING, "failure during url completion", e.cause)
       } catch (e: Exception) {
-        logger.log(Level.WARNING, "failure during url completion", e.cause)
+        logger.log(Level.WARNING, "failure during url completion", e)
       }
     }
 
