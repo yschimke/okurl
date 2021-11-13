@@ -21,7 +21,7 @@ data class Location(
     val since: Int,
     val source: String?,
     val sourceId: String?,
-    val speed: Int,
+    val speed: Double,
     val startTimestamp: Int,
     val timestamp: String,
     val tripId: Any?,

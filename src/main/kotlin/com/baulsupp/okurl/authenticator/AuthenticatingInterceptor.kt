@@ -1,13 +1,9 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.okurl.credentials.CredentialsStore
-import com.baulsupp.okurl.credentials.NoToken
-import com.baulsupp.okurl.credentials.Token
-import com.baulsupp.okurl.credentials.TokenValue
+import com.baulsupp.okurl.credentials.*
 import com.baulsupp.okurl.services.ServiceLibrary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -21,10 +17,11 @@ suspend fun <T> credentials(
   interceptor: AuthInterceptor<T>,
   credentialsStore: CredentialsStore
 ): T? {
+  val serviceDefinition: ServiceDefinition<T> = interceptor.serviceDefinition
   return when (tokenSet) {
-    is TokenValue -> interceptor.serviceDefinition.castToken(tokenSet.token)
+    is TokenValue -> serviceDefinition.castToken(tokenSet.token)
     is NoToken -> null
-    else -> credentialsStore.get(interceptor.serviceDefinition, tokenSet)
+    else -> credentialsStore.get(serviceDefinition, tokenSet)
       ?: interceptor.defaultCredentials()
   }
 }
@@ -123,6 +120,7 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.paypal.PaypalSandboxAuthInterceptor(),
         com.baulsupp.okurl.services.postman.PostmanAuthInterceptor(),
         com.baulsupp.okurl.services.quip.QuipAuthInterceptor(),
+        com.baulsupp.okurl.services.soundcloud.SoundcloudAuthInterceptor(),
         com.baulsupp.okurl.services.sheetsu.SheetsuAuthInterceptor(),
         com.baulsupp.okurl.services.slack.SlackAuthInterceptor(),
         com.baulsupp.okurl.services.smartystreets.SmartyStreetsAuthInterceptor(),
