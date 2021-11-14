@@ -2,7 +2,7 @@
 kotlin = "1.6.0-RC"
 okhttp = "5.0.0-alpha.2"
 junit = "5.7.1"
-okio = "3.0.0-alpha.10"
+okio = "3.0.0"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }

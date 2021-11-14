@@ -37,14 +37,12 @@ object TestUtil {
     }
   }
 
-  @Synchronized
   suspend fun assumeHasToken(
     serviceDefinition: ServiceDefinition<out Any>
   ) {
     initialise()
 
-    val token = credentialsStore.get(serviceDefinition,
-      DefaultToken)
+    val token = credentialsStore.get(serviceDefinition, DefaultToken)
 
     assumeTrue(token != null)
   }
