@@ -1,6 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
+@Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
   kotlin("jvm") version libs.versions.kotlin
   kotlin("kapt") version libs.versions.kotlin
@@ -111,7 +113,11 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
   implementation("com.squareup.okhttp3:okhttp-sse")
   api("com.squareup.okhttp3:okhttp-tls")
-  api("com.squareup.okio:okio:3.0.0")
+  api("com.squareup.okio:okio:3.0.0") {
+    version {
+      strictly("3.0.0")
+    }
+  }
   implementation("info.picocli:picocli:4.6.2")
   implementation("org.fusesource.jansi:jansi:2.4.0")
   implementation("io.jsonwebtoken:jjwt-api:0.11.2")
@@ -137,7 +143,7 @@ dependencies {
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+  testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
   compileOnly("org.graalvm.nativeimage:svm:21.3.0")
   kapt("info.picocli:picocli-codegen:4.6.2")
