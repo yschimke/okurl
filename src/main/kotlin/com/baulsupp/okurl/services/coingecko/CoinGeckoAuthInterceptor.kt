@@ -10,14 +10,12 @@ import com.baulsupp.okurl.openapi.OpenApiCompleter
 import com.baulsupp.okurl.openapi.OpenApiDocPresenter
 import com.baulsupp.okurl.openapi.readOpenAPI
 import okhttp3.OkHttpClient
-import okio.ExperimentalFileSystem
 import okio.FileSystem
 import okio.Path.Companion.toPath
 
 /**
  * https://coingecko.com/
  */
-@OptIn(ExperimentalFileSystem::class)
 class CoinGeckoAuthInterceptor : CompletionOnlyAuthInterceptor(
   "api.coingecko.com", "CoinGecko", "coingecko",
   "https://www.coingecko.com/api/documentations/v3"

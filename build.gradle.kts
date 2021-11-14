@@ -6,7 +6,7 @@ plugins {
   kotlin("kapt") version libs.versions.kotlin
   `maven-publish`
   application
-  id("net.nemerosa.versioning") version "2.13.1"
+  id("net.nemerosa.versioning") version "2.15.1"
   id("com.diffplug.spotless") version "5.1.0"
   id("com.palantir.graal") version "0.9.0"
 }
@@ -111,8 +111,8 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
   implementation("com.squareup.okhttp3:okhttp-sse")
   api("com.squareup.okhttp3:okhttp-tls")
-  api("com.squareup.okio:okio:3.0.0-alpha.9")
-  implementation("info.picocli:picocli:4.6.1")
+  api("com.squareup.okio:okio:3.0.0")
+  implementation("info.picocli:picocli:4.6.2")
   implementation("org.fusesource.jansi:jansi:2.4.0")
   implementation("io.jsonwebtoken:jjwt-api:0.11.2")
   implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
@@ -140,10 +140,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
   compileOnly("org.graalvm.nativeimage:svm:21.3.0")
-  kapt("info.picocli:picocli-codegen:4.6.1")
+  kapt("info.picocli:picocli-codegen:4.6.2")
 
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
-  implementation("io.github.classgraph:classgraph:4.8.128")
+  implementation("io.github.classgraph:classgraph:4.8.131")
 
   implementation("io.swagger.parser.v3:swagger-parser:2.0.28")
 

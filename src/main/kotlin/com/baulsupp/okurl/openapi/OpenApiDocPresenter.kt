@@ -11,7 +11,6 @@ import io.swagger.v3.parser.core.models.ParseOptions
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
-import okio.ExperimentalFileSystem
 import okio.FileSystem
 import okio.Path
 
@@ -28,7 +27,6 @@ suspend fun readOpenAPI(
   return readContents.openAPI
 }
 
-@OptIn(ExperimentalFileSystem::class)
 suspend fun readOpenAPI(
   path: Path,
   fileSystem: FileSystem
