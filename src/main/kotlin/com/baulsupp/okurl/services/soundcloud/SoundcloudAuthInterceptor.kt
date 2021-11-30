@@ -2,6 +2,9 @@ package com.baulsupp.okurl.services.soundcloud
 
 import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
+import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
+import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.AbstractServiceDefinition
@@ -9,33 +12,24 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class SoundcloudAuthInterceptor : AuthInterceptor<SoundcloudCredentials>() {
-  override val serviceDefinition = object : AbstractServiceDefinition<SoundcloudCredentials>(
+class SoundcloudAuthInterceptor : Oauth2AuthInterceptor() {
+  override val serviceDefinition = Oauth2ServiceDefinition(
     "api.soundcloud.com", "Soundcloud API", "soundcloud",
     "https://developers.soundcloud.com/docs/api/guide", "https://soundcloud.com/you/apps"
-  ) {
-
-    override fun parseCredentialsString(s: String): SoundcloudCredentials {
-      val parts = s.split(":".toRegex(), 2)
-      return SoundcloudCredentials(parts[0], parts[1].ifEmpty { null })
-    }
-
-    override fun formatCredentialsString(credentials: SoundcloudCredentials) =
-      "${credentials.clientId}:${credentials.token.orEmpty()}"
-  }
+  )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> {
     return setOf("api.soundcloud.com", "api-v2.soundcloud.com", "api-mobile.soundcloud.com")
   }
 
-  override suspend fun intercept(chain: Interceptor.Chain, credentials: SoundcloudCredentials): Response {
+  override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
     val signedUrl = request.url.newBuilder()
       .addQueryParameter("client_id", credentials.clientId)
       .apply {
-        if (credentials.token != null) {
-          addQueryParameter("oauth_token", credentials.token)
+        if (credentials.accessToken != null) {
+          addQueryParameter("oauth_token", credentials.accessToken)
         }
       }
       .build()
@@ -53,10 +47,10 @@ class SoundcloudAuthInterceptor : AuthInterceptor<SoundcloudCredentials>() {
     client: OkHttpClient,
     outputHandler: OutputHandler<Response>,
     authArguments: List<String>
-  ): SoundcloudCredentials {
-    val apiKey = Secrets.prompt("Soundcloud ClientId", "soundcloud.clientId", "", false)
-    val apiSecret = Secrets.prompt("Soundcloud Token", "soundcloud.token", "", true)
+  ): Oauth2Token {
+    val clientId = Secrets.prompt("Soundcloud ClientId", "soundcloud.clientId", "", false)
+    val clientSecret = Secrets.prompt("Soundcloud ClientSecret", "soundcloud.clientSecret", "", true)
 
-    return SoundcloudCredentials(apiKey, apiSecret.ifEmpty { null })
+    return SoundcloudAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 }
