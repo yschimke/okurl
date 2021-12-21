@@ -2,6 +2,7 @@ package com.baulsupp.okurl.authenticator
 
 import com.baulsupp.okurl.credentials.*
 import com.baulsupp.okurl.services.ServiceLibrary
+import com.baulsupp.okurl.services.rememberthemilk.RememberTheMilkAuthInterceptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -120,7 +121,8 @@ class AuthenticatingInterceptor(
         com.baulsupp.okurl.services.paypal.PaypalSandboxAuthInterceptor(),
         com.baulsupp.okurl.services.postman.PostmanAuthInterceptor(),
         com.baulsupp.okurl.services.quip.QuipAuthInterceptor(),
-        com.baulsupp.okurl.services.soundcloud.SoundcloudAuthInterceptor(),
+        com.baulsupp.okurl.services.rememberthemilk.RememberTheMilkAuthInterceptor(),
+        RememberTheMilkAuthInterceptor(),
         com.baulsupp.okurl.services.sheetsu.SheetsuAuthInterceptor(),
         com.baulsupp.okurl.services.slack.SlackAuthInterceptor(),
         com.baulsupp.okurl.services.smartystreets.SmartyStreetsAuthInterceptor(),
