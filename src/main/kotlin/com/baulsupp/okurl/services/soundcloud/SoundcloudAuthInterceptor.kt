@@ -25,17 +25,8 @@ class SoundcloudAuthInterceptor : Oauth2AuthInterceptor() {
   override suspend fun intercept(chain: Interceptor.Chain, credentials: Oauth2Token): Response {
     var request = chain.request()
 
-    val signedUrl = request.url.newBuilder()
-      .addQueryParameter("client_id", credentials.clientId)
-      .apply {
-        if (credentials.accessToken != null) {
-          addQueryParameter("oauth_token", credentials.accessToken)
-        }
-      }
-      .build()
-
     request = request.newBuilder()
-      .url(signedUrl)
+      .header("Authorization", "OAuth ${credentials.accessToken}")
       .header("Referer", "https://soundcloud.com/stream")
       .header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0")
       .build()
