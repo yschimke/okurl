@@ -4,6 +4,7 @@ import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.kotlin.edit
+import com.baulsupp.okurl.services.ServiceList
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -16,8 +17,8 @@ fun Request.isRetry() = tag(Retried::class.java) != null
 fun Request.markAsRetry() = this.edit { tag(Retried::class.java, Retried) }
 
 class RenewingInterceptor(
-  private val credentialsStore: CredentialsStore,
-  private val services: List<AuthInterceptor<*>> = AuthenticatingInterceptor.defaultServices()
+    private val credentialsStore: CredentialsStore,
+    private val services: List<AuthInterceptor<*>> = ServiceList.defaultServices()
 ) : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
