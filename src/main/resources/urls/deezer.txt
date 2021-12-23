@@ -1,0 +1,15 @@
+https://api.deezer.com/album/{albumId}
+https://api.deezer.com/artist/{artistId}
+https://api.deezer.com/chart
+https://api.deezer.com/editorial
+https://api.deezer.com/editorial/{editorialId}
+https://api.deezer.com/episode/{episodeId}
+https://api.deezer.com/genre/{genreId}
+https://api.deezer.com/infos/
+https://api.deezer.com/options/
+https://api.deezer.com/playlist/{playlistId}
+https://api.deezer.com/podcast/{podcastId}
+https://api.deezer.com/radio/{radioId}
+https://api.deezer.com/search?q={query}
+https://api.deezer.com/track/{trackId}
+https://api.deezer.com/user/me

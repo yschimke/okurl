@@ -19,6 +19,7 @@ object ServiceList {
       com.baulsupp.okurl.services.cooee.CooeeAuthInterceptor(),
       com.baulsupp.okurl.services.cronhub.CronhubAuthInterceptor(),
       com.baulsupp.okurl.services.datasettes.DatasettesAuthInterceptor(),
+      com.baulsupp.okurl.services.deezer.DeezerAuthInterceptor(),
       com.baulsupp.okurl.services.dropbox.DropboxAuthInterceptor(),
       com.baulsupp.okurl.services.facebook.FacebookAuthInterceptor(),
       com.baulsupp.okurl.services.fitbit.FitbitAuthInterceptor(),
