@@ -22,5 +22,8 @@ jobs:
       - name: Build Native Image
         run: ./gradlew assembleGraalDist
 
+      - name: JReleaser Config
+        run: ./gradlew jreleaserConfig
+
       - name: Release
         run: ./gradlew jreleaserFullRelease
