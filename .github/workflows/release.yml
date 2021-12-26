@@ -43,4 +43,4 @@ jobs:
           name: artifact
           path: |
             build/jreleaser/trace.log
-            out/jreleaser/output.properties
+            build/jreleaser/output.properties
