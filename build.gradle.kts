@@ -39,7 +39,7 @@ repositories {
 
 group = "com.github.yschimke"
 description = "OkHttp Kotlin CLI"
-version = "3.7"//versioning.info.display
+version = versioning.info.display
 
 base {
   archivesName.set("okurl")
