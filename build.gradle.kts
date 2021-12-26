@@ -1,3 +1,4 @@
+import net.nemerosa.versioning.ReleaseInfo
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -12,6 +13,18 @@ plugins {
   id("com.diffplug.spotless") version "5.1.0"
   id("com.palantir.graal") version "0.10.0"
   id("org.jreleaser") version "0.9.1"
+}
+
+versioning {
+  scm = "git"
+  releaseParser = KotlinClosure2<net.nemerosa.versioning.SCMInfo, String, ReleaseInfo>({ scmInfo, _ ->
+    if (scmInfo.tag != null && scmInfo.tag.startsWith("v")) {
+      ReleaseInfo("release", scmInfo.tag.substring(1))
+    } else {
+      val parts = scmInfo.branch.split("/", limit = 2)
+      ReleaseInfo(parts[0], parts.getOrNull(1) ?: "")
+    }
+  })
 }
 
 application {
