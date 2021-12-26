@@ -27,6 +27,10 @@ jobs:
 
       - name: JReleaser Config
         run: ./gradlew jreleaserConfig
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
         run: ./gradlew jreleaserFullRelease
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
