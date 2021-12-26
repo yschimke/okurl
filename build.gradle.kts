@@ -104,9 +104,9 @@ dependencies {
   implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.2"))
 
   api("com.github.yschimke:oksocial-output:6.5")
-  api("com.squareup.moshi:moshi:1.12.0")
-  api("com.squareup.moshi:moshi-adapters:1.12.0")
-  api("com.squareup.moshi:moshi-kotlin:1.12.0")
+  api("com.squareup.moshi:moshi:1.13.0")
+  api("com.squareup.moshi:moshi-adapters:1.13.0")
+  api("com.squareup.moshi:moshi-kotlin:1.13.0")
   api("com.squareup.okhttp3:logging-interceptor")
   api("com.squareup.okhttp3:okhttp")
   api("com.squareup.okhttp3:okhttp-brotli")
@@ -123,8 +123,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-api:0.11.2")
   implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
   implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
-  implementation("io.zipkin.brave:brave:5.13.3")
-  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.13.3")
+  implementation("io.zipkin.brave:brave:5.13.5")
+  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.13.5")
   implementation("io.zipkin.brave:brave-okhttp:4.13.6")
   implementation("io.zipkin.java:zipkin:2.10.1")
   implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3")
@@ -142,18 +142,18 @@ dependencies {
   testImplementation("com.squareup.okhttp3:mockwebserver")
   testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-  testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+  testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
   compileOnly("org.graalvm.nativeimage:svm:21.3.0")
   kapt("info.picocli:picocli-codegen:4.6.2")
 
-  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
-  implementation("io.github.classgraph:classgraph:4.8.131")
+  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
+  implementation("io.github.classgraph:classgraph:4.8.138")
 
-  implementation("io.swagger.parser.v3:swagger-parser:2.0.28")
+  implementation("io.swagger.parser.v3:swagger-parser:2.0.29")
 
-  implementation("io.github.rburgst:okhttp-digest:2.5")
+  implementation("io.github.rburgst:okhttp-digest:2.6")
 
   testRuntimeOnly("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
 }
