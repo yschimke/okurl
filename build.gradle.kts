@@ -195,6 +195,7 @@ jreleaser {
     github {
       owner.set("yschimke")
       overwrite.set(true)
+      skipTag.set(true)
     }
   }
 
