@@ -67,18 +67,6 @@ tasks {
   }
 }
 
-tasks {
-  withType(Tar::class) {
-    compression = Compression.NONE
-  }
-}
-
-tasks {
-  withType(Tar::class) {
-    compression = Compression.NONE
-  }
-}
-
 if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
   graal {
     mainClass("com.baulsupp.okurl.MainKt")
@@ -163,7 +151,7 @@ publishing {
     create("mavenJava", MavenPublication::class) {
       from(components["java"])
       artifact(sourcesJar)
-      artifact(tasks.distTar.get())
+      artifact(tasks.distZip.get())
     }
   }
 }
@@ -206,15 +194,23 @@ jreleaser {
     enabled.set(true)
   }
 
+  packagers {
+    brew {
+      active.set(org.jreleaser.model.Active.ALWAYS)
+      addDependency("jq")
+      repoTap {
+        owner.set("yschimke")
+        formulaName.set("okurl")
+      }
+    }
+  }
+
   this.distributions.create("okurl") {
     active.set(org.jreleaser.model.Active.ALWAYS)
     distributionType.set(org.jreleaser.model.Distribution.DistributionType.NATIVE_IMAGE)
     artifact {
-      path.set(file("build/distributions/okurl-graal-$version.tar"))
-    }
-    brew {
-      active.set(org.jreleaser.model.Active.ALWAYS)
-      tap.active.set(org.jreleaser.model.Active.ALWAYS)
+      platform.set("osx")
+      path.set(file("build/distributions/okurl-graal-$version.zip"))
     }
   }
 }
