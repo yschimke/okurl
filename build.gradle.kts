@@ -23,18 +23,13 @@ tasks.test {
 }
 
 repositories {
-  mavenLocal()
   mavenCentral()
-  maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-  maven(url = "https://jitpack.io")
-  maven(url = "https://repo.maven.apache.org/maven2")
-  maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/")
-  maven(url = "https://dl.bintray.com/kotlin/kotlin-dev/")
-  maven(url = "https://repo.spring.io/milestone/")
-  maven(url = "https://dl.bintray.com/reactivesocket/RSocket/")
-  maven(url = "https://oss.sonatype.org/content/repositories/releases/")
-  maven(url = "https://dl.bintray.com/yschimke/baulsupp.com/")
-  maven(url = "https://packages.atlassian.com/maven-public")
+  maven {
+    url = uri("https://jitpack.io")
+    content {
+      includeGroup("com.github.yschimke")
+    }
+  }
 }
 
 group = "com.github.yschimke"
