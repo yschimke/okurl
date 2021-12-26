@@ -19,5 +19,8 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Build
+      - name: Build Native Image
         run: ./gradlew assembleGraalDist
+
+      - name: Release
+        run: ./gradlew jreleaserFullRelease
