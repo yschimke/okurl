@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.6.0-RC"
+kotlin = "1.6.10"
 okhttp = "5.0.0-alpha.2"
 junit = "5.7.1"
 okio = "3.0.0"
@@ -9,7 +9,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlin-stdlibJdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 
-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
 
 okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
