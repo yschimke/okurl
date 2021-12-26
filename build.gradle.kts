@@ -10,7 +10,8 @@ plugins {
   application
   id("net.nemerosa.versioning") version "2.15.1"
   id("com.diffplug.spotless") version "5.1.0"
-  id("com.palantir.graal") version "0.9.0"
+  id("com.palantir.graal") version "0.10.0"
+  id("org.jreleaser") version "0.9.1"
 }
 
 application {
@@ -38,7 +39,7 @@ repositories {
 
 group = "com.github.yschimke"
 description = "OkHttp Kotlin CLI"
-version = versioning.info.display
+version = "3.7"//versioning.info.display
 
 base {
   archivesName.set("okurl")
@@ -58,8 +59,8 @@ kotlin {
 
 tasks {
   withType(KotlinCompile::class) {
-    kotlinOptions.apiVersion = "1.5"
-    kotlinOptions.languageVersion = "1.5"
+    kotlinOptions.apiVersion = "1.6"
+    kotlinOptions.languageVersion = "1.6"
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable", "-Xopt-in=kotlin.RequiresOptIn")
@@ -85,18 +86,10 @@ if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
     graalVersion("21.3.0")
 
     (javaVersion as Property<String>).set("17")
-//    javaVersion("16")
 
     option("--enable-https")
     option("--no-fallback")
     option("--allow-incomplete-classpath")
-
-//  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-//    // May be possible without, but autodetection is problematic on Windows 10
-//    // see https://github.com/palantir/gradle-graal
-//    // see https://www.graalvm.org/docs/reference-manual/native-image/#prerequisites
-//    windowsVsVarsPath('C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat')
-//  }
   }
 }
 
@@ -175,22 +168,53 @@ publishing {
   }
 }
 
-if (properties.containsKey("graalbuild")) {
-  val nativeImage = tasks["nativeImage"]
+val nativeImage = tasks["nativeImage"]
 
-  distributions {
-    val graal = create("graal") {
-      contents {
-        from("${rootProject.projectDir}") {
-          include("README.md", "LICENSE")
-        }
-        from("${rootProject.projectDir}/zsh") {
-          into("zsh")
-        }
-        into("bin") {
-          from(nativeImage)
-        }
+distributions {
+  create("graal") {
+    contents {
+      from("${rootProject.projectDir}") {
+        include("README.md", "LICENSE")
       }
+      from("${rootProject.projectDir}/zsh") {
+        into("zsh")
+      }
+      into("bin") {
+        from(nativeImage)
+      }
+    }
+  }
+}
+
+jreleaser {
+  project {
+    website.set("https://github.com/yschimke/okurl")
+    description.set("OkHttp Kotlin command line")
+    authors.set(listOf("yschimke"))
+    license.set("Apache-2.0")
+    copyright.set("Yuri Schimke")
+  }
+
+  release {
+    github {
+      owner.set("yschimke")
+      overwrite.set(true)
+    }
+  }
+
+  assemble {
+    enabled.set(true)
+  }
+
+  this.distributions.create("okurl") {
+    active.set(org.jreleaser.model.Active.ALWAYS)
+    distributionType.set(org.jreleaser.model.Distribution.DistributionType.NATIVE_IMAGE)
+    artifact {
+      path.set(file("build/distributions/okurl-graal-$version.tar"))
+    }
+    brew {
+      active.set(org.jreleaser.model.Active.ALWAYS)
+      tap.active.set(org.jreleaser.model.Active.ALWAYS)
     }
   }
 }
