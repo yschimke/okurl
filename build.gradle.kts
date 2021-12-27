@@ -235,6 +235,31 @@ fun Project.booleanProperty(name: String) = this.findProperty(name).toString().t
 
 fun Project.booleanEnv(name: String) = (System.getenv(name) as String?).toString().toBoolean()
 
+task("tagRelease") {
+  val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
+  exec {
+    commandLine("git", "tag", tagName)
+  }
+  exec {
+    commandLine("git", "push", "origin", "refs/tags/$tagName")
+  }
+}
+
+fun VersionInfo.nextVersion() = when {
+  this.tag == null && this.branch == "main" -> {
+    val matchResult = Regex("v(\\d+)\\.(\\d+)").matchEntire(this.lastTag ?: "")
+    if (matchResult != null) {
+      val (_, major, minor) = matchResult.groupValues
+      "v$major.${minor.toInt() + 1}"
+    } else {
+      null
+    }
+  }
+  else -> {
+    null
+  }
+}
+
 fun VersionInfo.effectiveVersion() = when {
   this.tag == null && this.branch == "main" -> {
     val matchResult = Regex("v(\\d+)\\.(\\d+)").matchEntire(this.lastTag ?: "")
