@@ -239,10 +239,10 @@ task("tagRelease") {
   doLast {
     val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
     exec {
-      commandLine("echo", "git", "tag", tagName)
+      commandLine("git", "tag", tagName)
     }
     exec {
-      commandLine("echo", "git", "push", "origin", "refs/tags/$tagName")
+      commandLine("git", "push", "origin", "refs/tags/$tagName")
     }
   }
 }
