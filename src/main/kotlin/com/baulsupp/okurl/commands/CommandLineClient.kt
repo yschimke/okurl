@@ -9,6 +9,7 @@ import com.baulsupp.oksocial.output.handler.ConsoleHandler
 import com.baulsupp.oksocial.output.handler.DownloadHandler
 import com.baulsupp.oksocial.output.handler.OutputHandler
 import com.baulsupp.okurl.Main
+import com.baulsupp.okurl.OkUrl
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.AuthenticatingInterceptor
 import com.baulsupp.okurl.authenticator.Authorisation
@@ -602,7 +603,7 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   companion object {
     fun versionString(): String {
-      return this::class.java.`package`.implementationVersion ?: "dev"
+      return OkUrl.VERSION
     }
   }
 }
