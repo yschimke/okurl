@@ -236,12 +236,14 @@ fun Project.booleanProperty(name: String) = this.findProperty(name).toString().t
 fun Project.booleanEnv(name: String) = (System.getenv(name) as String?).toString().toBoolean()
 
 task("tagRelease") {
-  val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
-  exec {
-    commandLine("git", "tag", tagName)
-  }
-  exec {
-    commandLine("git", "push", "origin", "refs/tags/$tagName")
+  doLast {
+    val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
+    exec {
+      commandLine("git", "tag", tagName)
+    }
+    exec {
+      commandLine("git", "push", "origin", "refs/tags/$tagName")
+    }
   }
 }
 
