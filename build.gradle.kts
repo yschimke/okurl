@@ -239,17 +239,17 @@ task("tagRelease") {
   doLast {
     val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
     exec {
-      commandLine("git", "tag", tagName)
+      commandLine("echo", "git", "tag", tagName)
     }
     exec {
-      commandLine("git", "push", "origin", "refs/tags/$tagName")
+      commandLine("echo", "git", "push", "origin", "refs/tags/$tagName")
     }
   }
 }
 
 fun VersionInfo.nextVersion() = when {
   this.tag == null && this.branch == "main" -> {
-    val matchResult = Regex("v(\\d+)\\.(\\d+)").matchEntire(this.lastTag ?: "")
+    val matchResult = Regex("v(\\d+)\\.(\\d+)(?:.\\d+)").matchEntire(this.lastTag ?: "")
     if (matchResult != null) {
       val (_, major, minor) = matchResult.groupValues
       "v$major.${minor.toInt() + 1}"
