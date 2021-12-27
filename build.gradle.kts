@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.Ref
 import java.nio.charset.StandardCharsets
 
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -17,30 +19,16 @@ plugins {
 }
 
 versioner {
-  val gitFolder = File("${project.rootDir}/.git")
-  val git = org.eclipse.jgit.api.Git.open(gitFolder)
-
-  val lastCommit = git.log().setMaxCount(1).call().single()
-  val tags = git.tagList().call()
-
-  val tagsThisCommit = tags.filter {
-    it.objectId == lastCommit.toObjectId() && it.name.startsWith("refs/tags/v")
-  }.firstOrNull()
-
   startFrom {
     major = 4
-    minor = 0
+    minor = 1
     patch = 0
   }
   tag {
     prefix = "v"
   }
   pattern {
-    pattern = if (tagsThisCommit != null) {
-      "%M.%m.%p"
-    } else {
-      "%M.%m.%p-SNAPSHOT"
-    }
+    pattern = "%M.%m.%p"
   }
 }
 
@@ -263,3 +251,22 @@ jreleaser {
 fun Project.booleanProperty(name: String) = this.findProperty(name).toString().toBoolean()
 
 fun Project.booleanEnv(name: String) = (System.getenv(name) as String?).toString().toBoolean()
+
+fun Project.snapshotFor(): String {
+  val parts = this.version.toString().split(".").map { it.toInt() }.toMutableList()
+  parts[1] = parts[1] + 1
+  return parts.joinToString(".") + "-SNAPSHOT"
+}
+
+fun Project.releaseTagsThisCommit(): Ref? {
+  val gitFolder = File("${project.rootDir}/.git")
+  val git = Git.open(gitFolder)
+
+  val lastCommit = git.log().setMaxCount(1).call().single()
+  val tags = git.tagList().call()
+
+  val tagsThisCommit = tags.filter {
+    it.objectId == lastCommit.toObjectId() && it.name.startsWith("refs/tags/v")
+  }.firstOrNull()
+  return tagsThisCommit
+}
