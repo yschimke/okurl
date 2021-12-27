@@ -1,8 +1,7 @@
+import net.nemerosa.versioning.ReleaseInfo
+import net.nemerosa.versioning.VersionInfo
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.Ref
-import java.nio.charset.StandardCharsets
 
 @Suppress("DSL_SCOPE_VIOLATION")
 
@@ -15,21 +14,18 @@ plugins {
   id("com.diffplug.spotless") version "5.1.0"
   id("com.palantir.graal") version "0.10.0"
   id("org.jreleaser") version "0.9.1"
-  id("io.toolebox.git-versioner") version "1.6.5"
 }
 
-versioner {
-  startFrom {
-    major = 4
-    minor = 1
-    patch = 0
-  }
-  tag {
-    prefix = "v"
-  }
-  pattern {
-    pattern = "%M.%m.%p"
-  }
+versioning {
+  scm = "git"
+  releaseParser = KotlinClosure2<net.nemerosa.versioning.SCMInfo, String, ReleaseInfo>({ scmInfo, _ ->
+    if (scmInfo.tag != null && scmInfo.tag.startsWith("v")) {
+      ReleaseInfo("release", scmInfo.tag.substring(1))
+    } else {
+      val parts = scmInfo.branch.split("/", limit = 2)
+      ReleaseInfo(parts[0], parts.getOrNull(1) ?: "")
+    }
+  })
 }
 
 application {
@@ -53,6 +49,8 @@ repositories {
 group = "com.github.yschimke"
 description = "OkHttp Kotlin CLI"
 
+version = versioning.info.effectiveVersion()
+
 base {
   archivesName.set("okurl")
 }
@@ -69,19 +67,6 @@ kotlin {
   }
 }
 
-sourceSets {
-  main {
-    java.srcDirs("$buildDir/generated/source/kotlinTemplates/main")
-  }
-}
-
-val copyKotlinTemplates = tasks.register<Copy>("copyJavaTemplates") {
-  from("src/main/kotlinTemplates")
-  into("$buildDir/generated/source/kotlinTemplates/main")
-  expand("projectVersion" to project.version)
-  filteringCharset = StandardCharsets.UTF_8.toString()
-}
-
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.apiVersion = "1.6"
@@ -89,8 +74,6 @@ tasks {
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable", "-Xopt-in=kotlin.RequiresOptIn")
-
-    dependsOn(copyKotlinTemplates)
   }
 }
 
@@ -252,21 +235,44 @@ fun Project.booleanProperty(name: String) = this.findProperty(name).toString().t
 
 fun Project.booleanEnv(name: String) = (System.getenv(name) as String?).toString().toBoolean()
 
-fun Project.snapshotFor(): String {
-  val parts = this.version.toString().split(".").map { it.toInt() }.toMutableList()
-  parts[1] = parts[1] + 1
-  return parts.joinToString(".") + "-SNAPSHOT"
+task("tagRelease") {
+  doLast {
+    val tagName = versioning.info.nextVersion() ?: throw IllegalStateException("unable to compute tag name")
+    exec {
+      commandLine("git", "tag", tagName)
+    }
+    exec {
+      commandLine("git", "push", "origin", "refs/tags/$tagName")
+    }
+  }
 }
 
-fun Project.releaseTagsThisCommit(): Ref? {
-  val gitFolder = File("${project.rootDir}/.git")
-  val git = Git.open(gitFolder)
+fun VersionInfo.nextVersion() = when {
+  this.tag == null && this.branch == "main" -> {
+    val matchResult = Regex("v(\\d+)\\.(\\d+)").matchEntire(this.lastTag ?: "")
+    if (matchResult != null) {
+      val (_, major, minor) = matchResult.groupValues
+      "v$major.${minor.toInt() + 1}"
+    } else {
+      null
+    }
+  }
+  else -> {
+    null
+  }
+}
 
-  val lastCommit = git.log().setMaxCount(1).call().single()
-  val tags = git.tagList().call()
-
-  val tagsThisCommit = tags.filter {
-    it.objectId == lastCommit.toObjectId() && it.name.startsWith("refs/tags/v")
-  }.firstOrNull()
-  return tagsThisCommit
+fun VersionInfo.effectiveVersion() = when {
+  this.tag == null && this.branch == "main" -> {
+    val matchResult = Regex("v(\\d+)\\.(\\d+)").matchEntire(this.lastTag ?: "")
+    if (matchResult != null) {
+      val (_, major, minor) = matchResult.groupValues
+      "$major.${minor.toInt() + 1}.0-SNAPSHOT"
+    } else {
+      "0.0.1-SNAPSHOT"
+    }
+  }
+  else -> {
+    this.display
+  }
 }
