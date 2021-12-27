@@ -165,24 +165,29 @@ publishing {
 }
 
 val nativeImage = tasks["nativeImage"]
+val isJitpack = rootProject.booleanEnv("JITPACK")
 
-distributions {
-  create("graal") {
-    contents {
-      from("${rootProject.projectDir}") {
-        include("README.md", "LICENSE")
-      }
-      from("${rootProject.projectDir}/zsh") {
-        into("zsh")
-      }
-      into("bin") {
-        from(nativeImage)
+if (!isJitpack) {
+  distributions {
+    create("graal") {
+      contents {
+        from("${rootProject.projectDir}") {
+          include("README.md", "LICENSE")
+        }
+        from("${rootProject.projectDir}/zsh") {
+          into("zsh")
+        }
+        into("bin") {
+          from(nativeImage)
+        }
       }
     }
   }
 }
 
 jreleaser {
+  dryrun.set(rootProject.booleanProperty("jreleaser.dryrun"))
+
   project {
     website.set("https://github.com/yschimke/okurl")
     description.set("OkHttp Kotlin command line")
@@ -223,3 +228,7 @@ jreleaser {
     }
   }
 }
+
+fun Project.booleanProperty(name: String) = this.findProperty(name).toString().toBoolean()
+
+fun Project.booleanEnv(name: String) = System.getenv(name).toString().toBoolean()
