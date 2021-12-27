@@ -2,6 +2,7 @@ import net.nemerosa.versioning.ReleaseInfo
 import net.nemerosa.versioning.VersionInfo
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.apache.tools.ant.taskdefs.condition.Os
+import java.nio.charset.StandardCharsets
 
 @Suppress("DSL_SCOPE_VIOLATION")
 
@@ -67,6 +68,19 @@ kotlin {
   }
 }
 
+sourceSets {
+  main {
+    java.srcDirs("$buildDir/generated/source/kotlinTemplates/main")
+  }
+}
+
+val copyKotlinTemplates = tasks.register<Copy>("copyJavaTemplates") {
+  from("src/main/kotlinTemplates")
+  into("$buildDir/generated/source/kotlinTemplates/main")
+  expand("projectVersion" to project.version)
+  filteringCharset = StandardCharsets.UTF_8.toString()
+}
+
 tasks {
   withType(KotlinCompile::class) {
     kotlinOptions.apiVersion = "1.6"
@@ -74,6 +88,8 @@ tasks {
 
     kotlinOptions.allWarningsAsErrors = false
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=enable", "-Xopt-in=kotlin.RequiresOptIn")
+
+    dependsOn(copyKotlinTemplates)
   }
 }
 
