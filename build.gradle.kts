@@ -14,7 +14,7 @@ plugins {
   id("net.nemerosa.versioning") version "2.15.1"
   id("com.diffplug.spotless") version "5.1.0"
   id("com.palantir.graal") version "0.10.0"
-  id("org.jreleaser") version "0.9.1"
+  id("org.jreleaser") version "0.10.0"
 }
 
 versioning {
@@ -185,24 +185,6 @@ publishing {
 val nativeImage = tasks["nativeImage"]
 val isJitpack = rootProject.booleanEnv("JITPACK")
 
-if (!isJitpack) {
-  distributions {
-    create("graal") {
-      contents {
-        from("${rootProject.projectDir}") {
-          include("README.md", "LICENSE")
-        }
-        from("${rootProject.projectDir}/zsh") {
-          into("zsh")
-        }
-        into("bin") {
-          from(nativeImage)
-        }
-      }
-    }
-  }
-}
-
 jreleaser {
   dryrun.set(rootProject.booleanProperty("jreleaser.dryrun"))
 
@@ -224,6 +206,26 @@ jreleaser {
 
   assemble {
     enabled.set(true)
+
+    nativeImage {
+      create("okurl") {
+        active.set(org.jreleaser.model.Active.ALWAYS)
+        exported.set(true)
+
+        graal {
+          path.set(File("/Library/Java/JavaVirtualMachines/graalvm-ce-java17-21.3.0/Contents/Home"))
+        }
+
+        mainJar {
+          path.set(File("build/install/okurl/lib/okurl-$version.jar"))
+        }
+
+        jars {
+          directory.set(File("build/install/okurl/lib"))
+          pattern.set("*.jar")
+        }
+      }
+    }
   }
 
   packagers {
