@@ -93,18 +93,16 @@ tasks {
   }
 }
 
-if (Os.isFamily(Os.FAMILY_MAC) || properties.containsKey("graalbuild")) {
-  graal {
-    mainClass("com.baulsupp.okurl.MainKt")
-    outputName("okurl")
-    graalVersion("21.3.0")
+graal {
+  mainClass("com.baulsupp.okurl.MainKt")
+  outputName("okurl")
+  graalVersion("21.3.0")
 
-    (javaVersion as Property<String>).set("17")
+  (javaVersion as Property<String>).set("17")
 
-    option("--enable-https")
-    option("--no-fallback")
-    option("--allow-incomplete-classpath")
-  }
+  option("--enable-https")
+  option("--no-fallback")
+  option("--allow-incomplete-classpath")
 }
 
 dependencies {
