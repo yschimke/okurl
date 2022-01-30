@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.twitter
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials

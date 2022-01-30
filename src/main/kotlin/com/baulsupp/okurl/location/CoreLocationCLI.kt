@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.location
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
-import com.baulsupp.oksocial.output.isOSX
+import com.baulsupp.schoutput.handler.OutputHandler
+import com.baulsupp.schoutput.isOSX
 import com.github.pgreze.process.Redirect.CAPTURE
 import com.github.pgreze.process.process
 import com.github.pgreze.process.unwrap

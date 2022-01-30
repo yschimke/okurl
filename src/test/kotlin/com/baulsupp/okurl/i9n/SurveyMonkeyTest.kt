@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.i9n
 
-import com.baulsupp.oksocial.output.handler.TestOutputHandler
+import com.baulsupp.schoutput.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.DefaultToken

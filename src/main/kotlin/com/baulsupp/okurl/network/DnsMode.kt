@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.network
 
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.UsageException
 import java.util.*
 
 enum class DnsMode {

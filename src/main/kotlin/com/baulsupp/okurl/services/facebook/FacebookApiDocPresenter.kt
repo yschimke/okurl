@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.facebook
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.credentials.ServiceDefinition

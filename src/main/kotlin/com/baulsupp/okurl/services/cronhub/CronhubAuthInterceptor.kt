@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.cronhub
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.BaseUrlCompleter

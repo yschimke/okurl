@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.UsageException
 import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.secrets.Secrets
 

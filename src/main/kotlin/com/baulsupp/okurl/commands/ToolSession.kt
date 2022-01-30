@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.commands
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.TokenSet
 import com.baulsupp.okurl.location.LocationSource

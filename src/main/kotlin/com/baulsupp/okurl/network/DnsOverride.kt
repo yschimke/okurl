@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.network
 
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.UsageException
 import okhttp3.Dns
 import java.net.InetAddress
 import java.util.logging.Logger

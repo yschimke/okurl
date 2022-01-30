@@ -1,8 +1,5 @@
 package com.baulsupp.okurl
 
-import com.baulsupp.oksocial.output.handler.DownloadHandler
-import com.baulsupp.oksocial.output.handler.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
 import com.baulsupp.okurl.Main.Companion.NAME
 import com.baulsupp.okurl.apidocs.ServiceApiDocPresenter
 import com.baulsupp.okurl.authenticator.AuthInterceptor
@@ -28,6 +25,9 @@ import com.baulsupp.okurl.sse.handleSseResponse
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.FileContent
 import com.baulsupp.okurl.util.HeaderUtil
+import com.baulsupp.schoutput.UsageException
+import com.baulsupp.schoutput.handler.DownloadHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -44,6 +44,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.internal.http.StatusLine
 import okhttp3.internal.platform.Platform
+import okio.FileSystem
+import okio.Path.Companion.toOkioPath
 import org.conscrypt.Conscrypt
 import picocli.CommandLine
 import picocli.CommandLine.Command
@@ -356,7 +358,7 @@ class Main : CommandLineClient() {
   }
 
   override fun buildHandler(): OutputHandler<Response> = when {
-    outputDirectory != null -> DownloadHandler(OkHttpResponseExtractor(), outputDirectory!!)
+    outputDirectory != null -> DownloadHandler(OkHttpResponseExtractor(), FileSystem.SYSTEM, outputDirectory!!.toOkioPath())
     else -> super.buildHandler()
   }
 

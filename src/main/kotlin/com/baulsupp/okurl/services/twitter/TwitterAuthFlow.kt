@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.twitter
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.kotlin.queryForString
 import com.baulsupp.okurl.kotlin.requestBuilder

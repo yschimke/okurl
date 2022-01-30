@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.util
 
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.UsageException
 import java.io.File
 
 object FileUtil {

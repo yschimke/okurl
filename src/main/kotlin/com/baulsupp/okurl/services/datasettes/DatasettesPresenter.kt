@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.datasettes
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.handler.OutputHandler
+import com.baulsupp.schoutput.UsageException
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
 import com.baulsupp.okurl.credentials.NoToken
 import com.baulsupp.okurl.credentials.Token

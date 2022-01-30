@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.tracing
 
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.UsageException
 import com.baulsupp.okurl.tracing.UriHandler.Companion.loadServices
 import zipkin2.Span
 import zipkin2.reporter.Reporter

@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.twitter
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.SimpleWebServer
 import okhttp3.OkHttpClient
 import okhttp3.Response

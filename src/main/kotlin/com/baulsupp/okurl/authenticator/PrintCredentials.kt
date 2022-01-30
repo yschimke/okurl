@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.PrintCredentials.Key
 import com.baulsupp.okurl.commands.ToolSession
 import com.baulsupp.okurl.credentials.CredentialsStore

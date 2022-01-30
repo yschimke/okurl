@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.cooee
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.Jwt
 import com.baulsupp.okurl.authenticator.ValidatedCredentials

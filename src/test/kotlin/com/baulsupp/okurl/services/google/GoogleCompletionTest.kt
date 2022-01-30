@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.google
 
-import com.baulsupp.oksocial.output.handler.TestOutputHandler
+import com.baulsupp.schoutput.handler.TestOutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.i9n.TestCredentialsStore
 import com.baulsupp.okurl.util.TestUtil.assumeHasNetwork

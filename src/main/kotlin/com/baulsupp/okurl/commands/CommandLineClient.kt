@@ -4,10 +4,10 @@ import brave.Tracing
 import brave.http.HttpTracing
 import brave.propagation.TraceContext
 import brave.sampler.Sampler
-import com.baulsupp.oksocial.output.UsageException
-import com.baulsupp.oksocial.output.handler.ConsoleHandler
-import com.baulsupp.oksocial.output.handler.DownloadHandler
-import com.baulsupp.oksocial.output.handler.OutputHandler
+import com.baulsupp.schoutput.UsageException
+import com.baulsupp.schoutput.handler.ConsoleHandler
+import com.baulsupp.schoutput.handler.DownloadHandler
+import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.Main
 import com.baulsupp.okurl.OkUrl
 import com.baulsupp.okurl.authenticator.AuthInterceptor
@@ -53,6 +53,7 @@ import com.baulsupp.okurl.tracing.ZipkinTracingListener
 import com.baulsupp.okurl.util.ClientException
 import com.baulsupp.okurl.util.InetAddressParam
 import com.baulsupp.okurl.util.LoggingUtil
+import com.baulsupp.schoutput.outputHandlerInstance
 import com.burgstaller.okhttp.AuthenticationCacheInterceptor
 import com.burgstaller.okhttp.CachingAuthenticatorDecorator
 import com.burgstaller.okhttp.DispatchingAuthenticator
@@ -80,6 +81,8 @@ import okhttp3.internal.platform.Platform
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.LoggingEventListener
 import okhttp3.tls.HandshakeCertificates
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import picocli.CommandLine
 import picocli.CommandLine.Option
 import zipkin2.Span
@@ -590,8 +593,8 @@ abstract class CommandLineClient : ToolSession, Runnable {
 
   open fun buildHandler(): OutputHandler<Response> {
     return when {
-      rawOutput -> DownloadHandler(OkHttpResponseExtractor(), File("-"))
-      else -> ConsoleHandler.instance(OkHttpResponseExtractor())
+      rawOutput -> DownloadHandler(OkHttpResponseExtractor(), FileSystem.Companion.SYSTEM, "-".toPath())
+      else -> outputHandlerInstance(OkHttpResponseExtractor())
     }
   }
 

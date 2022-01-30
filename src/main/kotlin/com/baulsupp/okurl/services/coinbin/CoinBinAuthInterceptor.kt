@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.services.coinbin
 
-import com.baulsupp.oksocial.output.handler.OutputHandler
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.handler.OutputHandler
+import com.baulsupp.schoutput.UsageException
 import com.baulsupp.okurl.authenticator.AuthInterceptor
 import com.baulsupp.okurl.authenticator.BasicCredentials
 import com.baulsupp.okurl.authenticator.ValidatedCredentials

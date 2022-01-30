@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.services.google.indexer
 
-import com.baulsupp.oksocial.output.writeToSink
+import com.baulsupp.schoutput.writeToSink
 import com.baulsupp.okurl.commands.CommandLineClient
 import com.baulsupp.okurl.kotlin.execute
 import com.baulsupp.okurl.kotlin.request

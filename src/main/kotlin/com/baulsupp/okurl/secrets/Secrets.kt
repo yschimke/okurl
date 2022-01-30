@@ -1,7 +1,7 @@
 package com.baulsupp.okurl.secrets
 
-import com.baulsupp.oksocial.output.readPasswordString
-import com.baulsupp.oksocial.output.readString
+import com.baulsupp.schoutput.readPasswordString
+import com.baulsupp.schoutput.readString
 import com.baulsupp.okurl.util.FileUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

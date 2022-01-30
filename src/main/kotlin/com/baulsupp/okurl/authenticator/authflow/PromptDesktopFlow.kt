@@ -1,6 +1,6 @@
 package com.baulsupp.okurl.authenticator.authflow
 
-import com.baulsupp.oksocial.output.UsageException
+import com.baulsupp.schoutput.UsageException
 import com.baulsupp.okurl.secrets.Secrets
 import okhttp3.OkHttpClient
 
