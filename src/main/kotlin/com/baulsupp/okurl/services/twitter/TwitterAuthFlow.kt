@@ -12,7 +12,6 @@ import com.baulsupp.okurl.credentials.ServiceDefinition
 import com.baulsupp.okurl.kotlin.form
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -43,7 +42,9 @@ class TwitterAuthFlow(
       Prompt("twitter.clientSecret", "Twitter Client Secret", null, true),
       Scopes(
         "twitter.scopes", "Scopes", known = listOf(
-        "offline.access", "tweet.read", "users.read"
+        "offline.access", "tweet.write", "users.read", "like.write", "tweet.moderate.write",
+        "follows.write", "block.write", "mute.write", "space.read", "list.write",
+
       )
       ),
       Callback,
@@ -82,8 +83,6 @@ class TwitterAuthFlow(
         add("code_verifier", "challenge")
       })
     }
-
-    println(request)
 
     val responseMap =
       client.query<ExchangeResponse>(request)
