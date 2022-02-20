@@ -13,7 +13,7 @@ plugins {
   id("net.nemerosa.versioning") version "2.15.1"
   id("com.diffplug.spotless") version "5.1.0"
   id("com.palantir.graal") version "0.10.0"
-  id("org.jreleaser") version "1.0.0-M1"
+  id("org.jreleaser") version "1.0.0-M2"
 }
 
 versioning {

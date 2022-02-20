@@ -15,6 +15,7 @@ import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.secrets.Secrets
 import com.baulsupp.okurl.services.surveymonkey.model.SurveyList
+import com.squareup.moshi.JsonClass
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -52,6 +53,7 @@ class SurveyMonkeyAuthInterceptor : Oauth2AuthInterceptor() {
     return SurveyMonkeyAuthFlow.login(client, outputHandler, clientId, clientSecret)
   }
 
+  @JsonClass(generateAdapter = true)
   data class User(
     val username: String,
     val first_name: String?,

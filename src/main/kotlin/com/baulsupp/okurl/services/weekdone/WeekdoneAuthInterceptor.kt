@@ -6,11 +6,13 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
 import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
+import com.squareup.moshi.JsonClass
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
+@JsonClass(generateAdapter = true)
 data class RefreshResponse(val access_token: String)
 
 class WeekdoneAuthInterceptor : Oauth2AuthInterceptor() {

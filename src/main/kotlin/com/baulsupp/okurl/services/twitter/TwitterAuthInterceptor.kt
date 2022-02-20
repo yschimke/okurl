@@ -1,56 +1,42 @@
 package com.baulsupp.okurl.services.twitter
 
-import com.baulsupp.schoutput.handler.OutputHandler
 import com.baulsupp.okurl.apidocs.ApiDocPresenter
-import com.baulsupp.okurl.authenticator.AuthInterceptor
+import com.baulsupp.okurl.authenticator.Oauth2AuthInterceptor
 import com.baulsupp.okurl.authenticator.ValidatedCredentials
+import com.baulsupp.okurl.authenticator.oauth2.Oauth2ServiceDefinition
+import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.completion.ApiCompleter
 import com.baulsupp.okurl.completion.CompletionVariableCache
 import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
+import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.queryMapValue
 import com.baulsupp.okurl.openapi.OpenApiDocPresenter
 import com.baulsupp.okurl.secrets.Secrets
-import com.baulsupp.okurl.services.twitter.joauth.Signature
+import com.baulsupp.okurl.services.atlassian.AtlassianAuthFlow
+import com.baulsupp.okurl.services.lyft.LyftClientAuthFlow
+import com.baulsupp.okurl.services.twitter.model.UserResponse2
+import com.baulsupp.schoutput.handler.OutputHandler
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-class TwitterAuthInterceptor : AuthInterceptor<TwitterCredentials>() {
+class TwitterAuthInterceptor : Oauth2AuthInterceptor() {
+  override val serviceDefinition = Oauth2ServiceDefinition("api.twitter.com", "Twitter API", "twitter",
+    "https://developer.twitter.com/en/docs/api-reference-index", "https://developer.twitter.com/en/apps")
 
-  override val serviceDefinition = TwitterServiceDefinition()
-
-  override suspend fun intercept(chain: Interceptor.Chain, credentials: TwitterCredentials): Response {
-    var request = chain.request()
-
-    val authHeader = Signature().generateAuthorization(request, credentials)
-    request = request.newBuilder().addHeader("Authorization", authHeader).build()
-
-    return chain.proceed(request)
-  }
-
-  override suspend fun authorize(
-    client: OkHttpClient,
-    outputHandler: OutputHandler<Response>,
-    authArguments: List<String>
-  ): TwitterCredentials {
-    val consumerKey = Secrets.prompt("Consumer Key", "twitter.consumerKey", "", false)
-    val consumerSecret = Secrets.prompt("Consumer Secret", "twitter.consumerSecret", "", true)
-
-    return WebAuthorizationFlow(client, outputHandler).authorise(consumerKey, consumerSecret)
-  }
+  override fun authFlow() = TwitterAuthFlow(serviceDefinition)
 
   override suspend fun validate(
     client: OkHttpClient,
-    credentials: TwitterCredentials
+    credentials: Oauth2Token
   ): ValidatedCredentials =
     ValidatedCredentials(
-      client.queryMapValue<String>(
-        "https://api.twitter.com/1.1/account/verify_credentials.json",
-        TokenValue(credentials), "name"
-      )
+      client.query<UserResponse2>(
+        "https://api.twitter.com/2/users/me",
+        TokenValue(credentials)
+      ).data.name
     )
 
   override fun hosts(credentialsStore: CredentialsStore): Set<String> = TwitterUtil.TWITTER_API_HOSTS

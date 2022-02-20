@@ -93,3 +93,5 @@ gradle-app.setting
 
 src/test/kotlin/commands/local/*
 /local.properties
+
+.java-version

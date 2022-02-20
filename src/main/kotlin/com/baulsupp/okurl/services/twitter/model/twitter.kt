@@ -35,3 +35,15 @@ data class Tweet(val id_str: String, val full_text: String, val user: User, val 
 
 @JsonClass(generateAdapter = true)
 data class SearchResults(val statuses: List<Tweet>)
+
+@JsonClass(generateAdapter = true)
+data class UserResponse2(
+  val data: User2,
+)
+
+@JsonClass(generateAdapter = true)
+data class User2(
+  val id: String,
+  val name: String,
+  val username: String,
+)

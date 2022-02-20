@@ -6,10 +6,12 @@ import com.baulsupp.okurl.authenticator.oauth2.Oauth2Token
 import com.baulsupp.okurl.kotlin.query
 import com.baulsupp.okurl.kotlin.request
 import com.baulsupp.okurl.secrets.Secrets
+import com.squareup.moshi.JsonClass
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
+@JsonClass(generateAdapter = true)
 data class OauthTokenResponse(val access_token: String, val refresh_token: String)
 
 object WeekdoneAuthFlow {
