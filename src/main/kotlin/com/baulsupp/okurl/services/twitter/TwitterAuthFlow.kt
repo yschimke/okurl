@@ -42,9 +42,9 @@ class TwitterAuthFlow(
       Prompt("twitter.clientSecret", "Twitter Client Secret", null, true),
       Scopes(
         "twitter.scopes", "Scopes", known = listOf(
-        "offline.access", "tweet.write", "users.read", "like.write", "tweet.moderate.write",
+        "offline.access", "tweet.read", "like.read", "list.read", "block.read", "follows.read",
+        "tweet.write", "users.read", "like.write", "tweet.moderate.write",
         "follows.write", "block.write", "mute.write", "space.read", "list.write",
-
       )
       ),
       Callback,

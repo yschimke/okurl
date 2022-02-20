@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
-  kotlin("jvm") version libs.versions.kotlin
-  kotlin("kapt") version libs.versions.kotlin
+  kotlin("jvm") version libs.versions.kotlin.get()
+  kotlin("kapt") version libs.versions.kotlin.get()
   `maven-publish`
   application
   id("net.nemerosa.versioning") version "2.15.1"
@@ -100,66 +100,60 @@ graal {
   (javaVersion as Property<String>).set("17")
 
   option("--enable-https")
-  option("--no-fallback")
   option("--allow-incomplete-classpath")
+  option("--no-fallback")
 }
 
 dependencies {
   implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.2"))
 
-  api("com.github.yschimke.schoutput:schoutput:0.9.2")
-  api("com.squareup.moshi:moshi:1.13.0")
-  api("com.squareup.moshi:moshi-adapters:1.13.0")
-  api("com.squareup.moshi:moshi-kotlin:1.13.0")
-  api("com.squareup.okhttp3:logging-interceptor")
-  api("com.squareup.okhttp3:okhttp")
-  api("com.squareup.okhttp3:okhttp-brotli")
-  implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
-  implementation("com.squareup.okhttp3:okhttp-sse")
-  api("com.squareup.okhttp3:okhttp-tls")
-  api("com.squareup.okio:okio:3.0.0") {
-    version {
-      strictly("3.0.0")
-    }
-  }
-  implementation("info.picocli:picocli:4.6.2")
-  implementation("org.fusesource.jansi:jansi:2.4.0")
-  implementation("io.jsonwebtoken:jjwt-api:0.11.2")
-  implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
-  implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
-  implementation("io.zipkin.brave:brave:5.13.7")
-  implementation("io.zipkin.brave:brave-instrumentation-okhttp3:5.13.7")
-  implementation("io.zipkin.brave:brave-okhttp:4.13.6")
-  implementation("io.zipkin.java:zipkin:2.10.1")
-  implementation("io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3")
-  implementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-  api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
-  api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-  api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.0")
-  implementation("org.slf4j:slf4j-api:2.0.0-alpha0")
-  implementation("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
-  implementation("pt.davidafsilva.apple:jkeychain:1.1.0")
-  api("com.github.pgreze:kotlin-process:1.3.1")
+  api(libs.yschimke.schoutput)
+  api(libs.moshi)
+  api(libs.moshi.adapters)
+  api(libs.moshi.kotlin)
+  api(libs.okhttp3.logginginterceptor)
+  api(libs.okhttp3.brotli)
+  implementation(libs.okhttp3.dnsoverhttps)
+  implementation(libs.okhttp3.sse)
+  api(libs.okhttp3.tls)
+  api(libs.okio)
+  implementation(libs.picocli)
+  implementation(libs.fusesource.jansi)
+  implementation(libs.jsonwebtoken.jjwtapi)
+  implementation(libs.jsonwebtoken.jjwtimpl)
+  implementation(libs.jsonwebtoken.jjwtjackson)
+  implementation(libs.zipkin.brave)
+  implementation(libs.zipkin.braveinstrumentationokhttp3)
+  implementation(libs.zipkin.braveokhttp)
+  implementation(libs.zipkin.javazipkin)
+  implementation(libs.zipkin.zipkinsenderokhttp3)
+  implementation(libs.conscrypt.openjdkuber)
+  implementation(libs.kotlin.reflect)
+  api(libs.kotlin.stdlibjdk8)
+  api(libs.kotlinx.coroutinescore)
+  api(libs.kotlinx.coroutinesjdk8)
+  implementation(libs.slf4j.api)
+  implementation(libs.slf4j.jdk14)
+  implementation(libs.davidafsilva.applejkeychain)
+  api(libs.pgreze.kotlinprocess)
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
-  testImplementation("com.squareup.okhttp3:mockwebserver")
-  testImplementation("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
+  testImplementation(libs.kotlin.test)
+  testImplementation(libs.okhttp3.mockwebserver)
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-  testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+  testImplementation(libs.junit.jupiterapi)
+  testImplementation(libs.junit.jupiterengine)
 
-  compileOnly("org.graalvm.nativeimage:svm:22.0.0.2")
-  kapt("info.picocli:picocli-codegen:4.6.2")
+  compileOnly(libs.nativeimage.svm)
+  kapt(libs.picocli.codegen)
 
-  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
-  implementation("io.github.classgraph:classgraph:4.8.138")
+  kapt(libs.moshi.kotlincodegen)
+  implementation(libs.classgraph)
 
-  implementation("io.swagger.parser.v3:swagger-parser:2.0.29")
+  implementation(libs.swagger.parser)
 
-  implementation("io.github.rburgst:okhttp-digest:2.6")
+  implementation(libs.rburgst.okhttpdigest)
 
-  testRuntimeOnly("org.slf4j:slf4j-jdk14:2.0.0-alpha0")
+  testRuntimeOnly(libs.slf4j.jdk14)
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
@@ -226,7 +220,9 @@ jreleaser {
   packagers {
     brew {
       active.set(org.jreleaser.model.Active.RELEASE)
-      addDependency("jq")
+      dependencies {
+        dependency("jq")
+      }
       repoTap {
         owner.set("yschimke")
         formulaName.set("okurl")
@@ -244,9 +240,9 @@ jreleaser {
   }
 }
 
-fun Project.booleanProperty(name: String) = this.findProperty(name).toString().toBoolean()
+fun Project.booleanProperty(name: String) = findProperty(name).toString().toBoolean()
 
-fun Project.booleanEnv(name: String) = (System.getenv(name) as String?).toString().toBoolean()
+fun Project.booleanEnv(name: String) = System.getenv(name).toString().toBoolean()
 
 task("tagRelease") {
   doLast {

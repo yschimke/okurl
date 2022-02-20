@@ -1,26 +1,63 @@
 [versions]
+moshi = "1.13.0"
+okhttp3 = "5.0.0-alpha04"
+picocli = "4.6.3"
+jsonwebtoken = "0.11.2"
 kotlin = "1.6.10"
-okhttp = "5.0.0-alpha.2"
-junit = "5.7.1"
-okio = "3.0.0"
+kotlinx = "1.6.0"
+jupiter = "5.8.2"
+slf4j = "1.7.36"
 
 [libraries]
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-kotlin-stdlibJdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+pgreze-kotlinprocess = "com.github.pgreze:kotlin-process:1.3.1"
+yschimke-schoutput = "com.github.yschimke.schoutput:schoutput:0.9.2"
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
+moshi-kotlincodegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
+okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp3" }
+okhttp3-dnsoverhttps = { module = "com.squareup.okhttp3:okhttp-dnsoverhttps", version.ref = "okhttp3" }
+okhttp3-sse = { module = "com.squareup.okhttp3:okhttp-sse", version.ref = "okhttp3" }
+okhttp3-logginginterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3" }
+okhttp3-tls = { module = "com.squareup.okhttp3:okhttp-tls", version.ref = "okhttp3" }
+okhttp3-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "okhttp3" }
+okio = "com.squareup.okio:okio:3.0.0"
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
+classgraph = "io.github.classgraph:classgraph:4.8.139"
+rburgst-okhttpdigest = "io.github.rburgst:okhttp-digest:2.6"
+jsonwebtoken-jjwtapi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
+jsonwebtoken-jjwtimpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
+jsonwebtoken-jjwtjackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
+swagger-parser = "io.swagger.parser.v3:swagger-parser:2.0.30"
+zipkin-brave = "io.zipkin.brave:brave:5.13.7"
+zipkin-braveinstrumentationokhttp3 = "io.zipkin.brave:brave-instrumentation-okhttp3:5.13.7"
+zipkin-braveokhttp = "io.zipkin.brave:brave-okhttp:4.13.6"
+zipkin-javazipkin = "io.zipkin.java:zipkin:2.10.1"
+zipkin-zipkinsenderokhttp3 = "io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3"
+conscrypt-openjdkuber = "org.conscrypt:conscrypt-openjdk-uber:2.5.2"
+fusesource-jansi = "org.fusesource.jansi:jansi:2.4.0"
+nativeimage-svm = "org.graalvm.nativeimage:svm:22.0.0.2"
+kotlin-annotationprocessinggradle = { module = "org.jetbrains.kotlin:kotlin-annotation-processing-gradle", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-scriptingcompilerembeddable = { module = "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-stdlibjdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutinescore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
+kotlinx-coroutinesjdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx" }
+junit-jupiterapi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+junit-jupiterengine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-jdk14 = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
+davidafsilva-applejkeychain = "pt.davidafsilva.apple:jkeychain:1.1.0"
 
-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-
-okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
-
-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-
-activation = "javax.activation:activation:1.1.1"
-byteunits = "com.jakewharton.byteunits:byteunits:0.9.1"
-junitJupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junitJupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-process = "com.github.pgreze:kotlin-process:1.3.1"
-
-[bundles]
+[plugins]
+com-diffplug-spotless = "com.diffplug.spotless:6.3.0"
+com-github-ben-manes-versions = "com.github.ben-manes.versions:0.42.0"
+com-palantir-graal = "com.palantir.graal:0.10.0"
+net-nemerosa-versioning = "net.nemerosa.versioning:2.15.1"
+nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.3.0"
+org-jetbrains-kotlin-jvm = "org.jetbrains.kotlin.jvm:1.6.10"
+org-jetbrains-kotlin-kapt = "org.jetbrains.kotlin.kapt:1.6.10"
+org-jreleaser = "org.jreleaser:1.0.0-M2"
