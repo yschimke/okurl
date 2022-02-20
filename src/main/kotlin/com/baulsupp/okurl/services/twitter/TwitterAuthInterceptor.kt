@@ -11,20 +11,18 @@ import com.baulsupp.okurl.credentials.CredentialsStore
 import com.baulsupp.okurl.credentials.Token
 import com.baulsupp.okurl.credentials.TokenValue
 import com.baulsupp.okurl.kotlin.query
-import com.baulsupp.okurl.kotlin.queryMapValue
+import com.baulsupp.okurl.openapi.OpenApiCompleter
 import com.baulsupp.okurl.openapi.OpenApiDocPresenter
-import com.baulsupp.okurl.secrets.Secrets
-import com.baulsupp.okurl.services.atlassian.AtlassianAuthFlow
-import com.baulsupp.okurl.services.lyft.LyftClientAuthFlow
 import com.baulsupp.okurl.services.twitter.model.UserResponse2
-import com.baulsupp.schoutput.handler.OutputHandler
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.Response
 
 class TwitterAuthInterceptor : Oauth2AuthInterceptor() {
-  override val serviceDefinition = Oauth2ServiceDefinition("api.twitter.com", "Twitter API", "twitter",
-    "https://developer.twitter.com/en/docs/api-reference-index", "https://developer.twitter.com/en/apps")
+  override val serviceDefinition = Oauth2ServiceDefinition(
+    "api.twitter.com", "Twitter API", "twitter",
+    "https://developer.twitter.com/en/docs/api-reference-index",
+    "https://developer.twitter.com/en/apps"
+  )
 
   override fun authFlow() = TwitterAuthFlow(serviceDefinition)
 
@@ -39,7 +37,11 @@ class TwitterAuthInterceptor : Oauth2AuthInterceptor() {
       ).data.name
     )
 
-  override fun hosts(credentialsStore: CredentialsStore): Set<String> = TwitterUtil.TWITTER_API_HOSTS
+  override fun hosts(credentialsStore: CredentialsStore): Set<String> = setOf(
+    "api.twitter.com", "upload.twitter.com", "stream.twitter.com", "mobile.twitter.com",
+    "syndication.twitter.com", "pbs.twimg.com", "t.co", "userstream.twitter.com",
+    "sitestream.twitter.com", "search.twitter.com"
+  )
 
   override suspend fun apiCompleter(
     prefix: String,
@@ -47,13 +49,13 @@ class TwitterAuthInterceptor : Oauth2AuthInterceptor() {
     credentialsStore: CredentialsStore,
     completionVariableCache: CompletionVariableCache,
     tokenSet: Token
-  ): ApiCompleter = TwitterApiCompleter(client, credentialsStore, completionVariableCache)
+  ): ApiCompleter = OpenApiCompleter("https://api.twitter.com/2/openapi.json".toHttpUrl(), client)
 
   override fun apiDocPresenter(
     url: String,
     client: OkHttpClient
   ): ApiDocPresenter = OpenApiDocPresenter(
-    "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/twitter.com/legacy/1.1/swagger.yaml".toHttpUrl(),
+    "https://api.twitter.com/2/openapi.json".toHttpUrl(),
     client
   )
 }
