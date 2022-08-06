@@ -242,7 +242,7 @@ jreleaser {
 
 fun Project.booleanProperty(name: String) = findProperty(name).toString().toBoolean()
 
-fun Project.booleanEnv(name: String) = System.getenv(name).toString().toBoolean()
+fun Project.booleanEnv(name: String) = System.getenv(name)?.toString().toBoolean()
 
 task("tagRelease") {
   doLast {
