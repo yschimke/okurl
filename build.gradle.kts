@@ -10,10 +10,10 @@ plugins {
   kotlin("kapt") version libs.versions.kotlin.get()
   `maven-publish`
   application
-  id("net.nemerosa.versioning") version "2.15.1"
-  id("com.diffplug.spotless") version "5.1.0"
-  id("com.palantir.graal") version "0.10.0"
-  id("org.jreleaser") version "1.0.0-M2"
+  alias(libs.plugins.net.nemerosa.versioning)
+  alias(libs.plugins.com.diffplug.spotless)
+  alias(libs.plugins.com.palantir.graal)
+  alias(libs.plugins.org.jreleaser)
 }
 
 versioning {
