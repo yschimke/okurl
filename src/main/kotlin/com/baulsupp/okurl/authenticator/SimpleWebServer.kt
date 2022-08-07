@@ -91,7 +91,7 @@ class SimpleWebServer(
 
     @JvmStatic
     fun main(args: Array<String>) {
-      SimpleWebServer.forCode().use { ws ->
+      forCode().use { ws ->
         val s = runBlocking {
           ws.waitForCode()
         }

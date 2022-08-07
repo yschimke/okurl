@@ -40,7 +40,7 @@ class MapboxAuthInterceptor : Oauth2AuthInterceptor() {
     return Oauth2Token(apiKey)
   }
 
-  override fun defaultCredentials(): Oauth2Token? = Oauth2Token(
+  override fun defaultCredentials(): Oauth2Token = Oauth2Token(
     "pk.eyJ1IjoieXNjaGlta2UiLCJhIjoiY2tlb3E5MWIyMWp4eDJ2azdraWg5cHkxYyJ9.UHmWRzY_VE7gqIjCwIAmNA"
   )
 }

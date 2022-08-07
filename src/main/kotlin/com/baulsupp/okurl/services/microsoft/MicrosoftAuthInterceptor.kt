@@ -58,7 +58,7 @@ class MicrosoftAuthInterceptor : Oauth2AuthInterceptor() {
     return MicrosoftAuthFlow.login(client, outputHandler, clientId, clientSecret, scopes)
   }
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
 
     val body = FormBody.Builder().add("grant_type", "refresh_token")
       .add("redirect_uri", "http://localhost:3000/callback")

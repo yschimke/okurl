@@ -9,7 +9,7 @@ class OkHttpResponseExtractor : ResponseExtractor<Response> {
   override fun mimeType(response: Response): String? {
     val host = response.request.url.host
 
-    val mediaType = response.body?.contentType()
+    val mediaType = response.body.contentType()
 
     return when {
       host == "graph.facebook.com" && mediaType?.subtype == "javascript" -> JSON.toString()
@@ -18,7 +18,7 @@ class OkHttpResponseExtractor : ResponseExtractor<Response> {
     }
   }
 
-  override fun source(response: Response): BufferedSource = response.body!!.source()
+  override fun source(response: Response): BufferedSource = response.body.source()
 
   override fun filename(response: Response): String {
     val segments = response.request.url.pathSegments

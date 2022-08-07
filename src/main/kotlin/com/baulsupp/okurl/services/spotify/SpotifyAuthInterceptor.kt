@@ -99,7 +99,7 @@ class SpotifyAuthInterceptor : Oauth2AuthInterceptor() {
     return super.errorMessage(ce)
   }
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val tokenUrl = "https://accounts.spotify.com/api/token"
 
     val body = FormBody.Builder()

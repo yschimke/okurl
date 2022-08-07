@@ -7,7 +7,7 @@ sealed class Token {
 val DefaultToken = TokenSet("default")
 
 data class TokenSet(val name: String) : Token() {
-  override fun name(): String? = name
+  override fun name(): String = name
 }
 
 data class TokenValue(val token: Any) : Token()

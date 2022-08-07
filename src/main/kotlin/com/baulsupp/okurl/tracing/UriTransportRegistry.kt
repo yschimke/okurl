@@ -29,7 +29,7 @@ class UriTransportRegistry(val handlers: List<UriHandler>) {
     }
 
     fun forUri(uri: String): Reporter<Span> {
-      return UriTransportRegistry.fromServices().findClient(uri)
+      return fromServices().findClient(uri)
     }
   }
 }

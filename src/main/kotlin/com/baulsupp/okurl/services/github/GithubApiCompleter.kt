@@ -104,7 +104,7 @@ suspend inline fun <reified T> OkHttpClient.queryResponsePages(
   val page1 = execute(request(url, tokenSet))
 
   val page1Results = async {
-    val string = page1.body!!.readString()
+    val string = page1.body.readString()
 
     @Suppress("BlockingMethodInNonBlockingContext")
     Main.moshi.listAdapter<T>().fromJson(string)!!

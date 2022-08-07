@@ -159,7 +159,7 @@ suspend inline fun <reified T> OkHttpClient.queryMapValue(
 // TODO
 fun HttpUrl.request(): Request = Request.Builder().url(this).build()
 
-suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body!!.readString()
+suspend fun OkHttpClient.queryForString(request: Request): String = execute(request).body.readString()
 
 suspend fun OkHttpClient.queryForString(url: String, tokenSet: Token = DefaultToken): String =
   this.queryForString(request(url, tokenSet))
@@ -173,7 +173,7 @@ suspend fun OkHttpClient.execute(request: Request): Response {
   val response = call.await()
 
   if (!response.isSuccessful) {
-    val responseString = response.body?.readString()
+    val responseString = response.body.readString()
 
     val msg: String = if (responseString.isNullOrEmpty()) {
       response.statusMessage()

@@ -51,7 +51,7 @@ class FitbitAuthInterceptor : Oauth2AuthInterceptor() {
       )
     )
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("grant_type", "refresh_token")
       .add("refresh_token", credentials.refreshToken!!)
       .build()

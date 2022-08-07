@@ -289,7 +289,7 @@ class Main : CommandLineClient() {
       )
     }
 
-    if (isEventStream(response.body?.contentType())) {
+    if (isEventStream(response.body.contentType())) {
       response.handleSseResponse(SseOutput(outputHandler))
     } else {
       outputHandler.showOutput(response)

@@ -59,7 +59,7 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
     return response
   }
 
-  override fun authFlow(): AuthFlow<Oauth2Token>? {
+  override fun authFlow(): AuthFlow<Oauth2Token> {
     return GoogleAuthFlow(serviceDefinition)
   }
 
@@ -82,7 +82,7 @@ class GoogleAuthInterceptor : Oauth2AuthInterceptor() {
 
   override fun canRenew(credentials: Oauth2Token): Boolean = credentials.isRenewable()
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)
       .add("refresh_token", credentials.refreshToken!!)
       .add("client_secret", credentials.clientSecret!!)

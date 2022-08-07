@@ -56,9 +56,9 @@ data class UrlList(val match: Match, val urls: List<String>) {
 
   private fun regex(prefix: String): String {
     return when (match) {
-      UrlList.Match.EXACT -> prefix
-      UrlList.Match.HOSTS -> "[^/]*:?/?/?[^/]*"
-      UrlList.Match.SITE -> "$prefix.*"
+      Match.EXACT -> prefix
+      Match.HOSTS -> "[^/]*:?/?/?[^/]*"
+      Match.SITE -> "$prefix.*"
     }
   }
 
@@ -80,7 +80,7 @@ data class UrlList(val match: Match, val urls: List<String>) {
   override fun toString() = urls.joinToString("\n")
 
   companion object {
-    val None = UrlList(UrlList.Match.EXACT, listOf())
+    val None = UrlList(Match.EXACT, listOf())
 
     fun fromResource(serviceName: String): UrlList? {
       return UrlList::class.java.getResource("/urls/$serviceName.txt")?.let {

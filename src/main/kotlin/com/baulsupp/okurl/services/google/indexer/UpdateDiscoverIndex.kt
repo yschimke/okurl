@@ -25,7 +25,7 @@ object UpdateDiscoverIndex: CommandLineClient() {
       withContext(Dispatchers.IO) {
         val discoveryJsonSink =
           File("src/main/resources/com/baulsupp/okurl/services/google/discovery.json").sink()
-        response.body!!.source().writeToSink(discoveryJsonSink)
+        response.body.source().writeToSink(discoveryJsonSink)
       }
     }
 

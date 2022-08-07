@@ -50,7 +50,7 @@ class TravisCIAuthInterceptor : AuthInterceptor<TravisToken>() {
 
     // TODO incorrect response type for errors
     if (!response.isSuccessful && response.header("Content-Type") == "application/json") {
-      val newBody = response.body!!.bytes().toResponseBody(null)
+      val newBody = response.body.bytes().toResponseBody(null)
       response = response.newBuilder().body(newBody).removeHeader("Content-Type").build()
     }
 

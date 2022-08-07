@@ -66,7 +66,7 @@ class UberAuthInterceptor : Oauth2AuthInterceptor() {
   override fun hosts(credentialsStore: CredentialsStore): Set<String> =
     setOf("api.uber.com", "login.uber.com", "sandbox-api.uber.com")
 
-  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token? {
+  override suspend fun renew(client: OkHttpClient, credentials: Oauth2Token): Oauth2Token {
     val tokenUrl = "https://login.uber.com/oauth/v2/token"
 
     val body = FormBody.Builder().add("client_id", credentials.clientId!!)

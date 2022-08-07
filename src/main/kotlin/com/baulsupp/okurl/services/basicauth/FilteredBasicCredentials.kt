@@ -15,7 +15,7 @@ data class FilteredBasicCredentials(val basicCredentials: BasicCredentials, val 
       return tokens.any { it.matches(url) }
     }
 
-    fun firstMatch(tokens: Collection<FilteredBasicCredentials>, url: HttpUrl): FilteredBasicCredentials? {
+    fun firstMatch(tokens: Collection<FilteredBasicCredentials>, url: HttpUrl): FilteredBasicCredentials {
       return tokens.first { it.matches(url) }
     }
 
