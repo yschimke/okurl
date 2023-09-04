@@ -105,7 +105,7 @@ graal {
 }
 
 dependencies {
-  implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.10"))
+  implementation(platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.11"))
 
   api(libs.yschimke.schoutput)
   api(libs.moshi)
