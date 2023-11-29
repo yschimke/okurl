@@ -36,7 +36,7 @@ zipkin-braveokhttp = "io.zipkin.brave:brave-okhttp:4.13.6"
 zipkin-javazipkin = "io.zipkin.java:zipkin:2.10.1"
 zipkin-zipkinsenderokhttp3 = "io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3"
 conscrypt-openjdkuber = "org.conscrypt:conscrypt-openjdk-uber:2.5.2"
-fusesource-jansi = "org.fusesource.jansi:jansi:2.4.0"
+fusesource-jansi = "org.fusesource.jansi:jansi:2.4.1"
 nativeimage-svm = "org.graalvm.nativeimage:svm:22.2.0"
 kotlin-annotationprocessinggradle = { module = "org.jetbrains.kotlin:kotlin-annotation-processing-gradle", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
