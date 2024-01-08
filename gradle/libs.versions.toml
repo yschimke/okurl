@@ -30,8 +30,8 @@ jsonwebtoken-jjwtapi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jso
 jsonwebtoken-jjwtimpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
 jsonwebtoken-jjwtjackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
 swagger-parser = "io.swagger.parser.v3:swagger-parser:2.1.1"
-zipkin-brave = "io.zipkin.brave:brave:5.13.10"
-zipkin-braveinstrumentationokhttp3 = "io.zipkin.brave:brave-instrumentation-okhttp3:5.13.10"
+zipkin-brave = "io.zipkin.brave:brave:5.18.1"
+zipkin-braveinstrumentationokhttp3 = "io.zipkin.brave:brave-instrumentation-okhttp3:5.18.1"
 zipkin-braveokhttp = "io.zipkin.brave:brave-okhttp:4.13.6"
 zipkin-javazipkin = "io.zipkin.java:zipkin:2.10.1"
 zipkin-zipkinsenderokhttp3 = "io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.3"
