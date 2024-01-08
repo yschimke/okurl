@@ -6,7 +6,7 @@ jsonwebtoken = "0.11.2"
 kotlin = "1.7.10"
 kotlinx = "1.6.4"
 jupiter = "5.9.0"
-slf4j = "1.7.36"
+slf4j = "2.0.11"
 
 [libraries]
 pgreze-kotlinprocess = "com.github.pgreze:kotlin-process:1.3.1"
