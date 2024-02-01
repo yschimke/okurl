@@ -2,7 +2,7 @@
 moshi = "1.13.0"
 okhttp3 = "5.0.0-alpha.10"
 picocli = "4.6.3"
-jsonwebtoken = "0.11.2"
+jsonwebtoken = "0.12.5"
 kotlin = "1.7.10"
 kotlinx = "1.6.4"
 jupiter = "5.9.0"
