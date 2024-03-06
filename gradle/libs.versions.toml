@@ -29,7 +29,7 @@ rburgst-okhttpdigest = "io.github.rburgst:okhttp-digest:2.7"
 jsonwebtoken-jjwtapi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jsonwebtoken-jjwtimpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
 jsonwebtoken-jjwtjackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
-swagger-parser = "io.swagger.parser.v3:swagger-parser:2.1.1"
+swagger-parser = "io.swagger.parser.v3:swagger-parser:2.1.21"
 zipkin-brave = "io.zipkin.brave:brave:5.13.10"
 zipkin-braveinstrumentationokhttp3 = "io.zipkin.brave:brave-instrumentation-okhttp3:5.13.10"
 zipkin-braveokhttp = "io.zipkin.brave:brave-okhttp:4.13.6"
